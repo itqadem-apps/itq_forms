@@ -40,8 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     "strawberry.django",
-    "sponsors",
-    'surveys'
+    'surveys',
+    "taxonomy",
+    "survey_collections",
+    "user_surveys",
 ]
 
 MIDDLEWARE = [
@@ -72,12 +74,18 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
+        'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
+        'USER': os.environ.get('DATABASE_USER', 'default'),
+        'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
+        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+        "PORT": os.environ.get("DATABASE_PORT", "5432"),
     }
 }
+
 
 
 # Password validation

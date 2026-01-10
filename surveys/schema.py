@@ -30,6 +30,8 @@ class Query:
         qs = Survey.objects.all()
         if has_any_under_prefix(paths, ("items", "contentType")):
             qs = qs.select_related("content_type")
+        # Prefetching is delegated to strawberry_django optimizer to avoid
+        # conflicting lookups when it applies its own Prefetch querysets.
 
         filters_input: SurveyFiltersInput | None = surveys_list_input.filters
         filters_data = {}
@@ -79,6 +81,12 @@ class Query:
 
         return SurveyResultsGQL(items=items, total=total, facets=facets)
 
+    @strawberry.field()
+    def survey(self, info: Info, id: int) -> SurveyType | None:
+        try:
+            return Survey.objects.get(pk=id)
+        except Survey.DoesNotExist:
+            return None
 
     @strawberry.field(permission_classes=[RequireAuth])
     def me(self, info: Info) -> str:

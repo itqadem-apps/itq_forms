@@ -1,0 +1,60 @@
+[
+{
+  "model": "users.user",
+  "fields": {
+    "password": "!16TIAJp7phztotuk6AVpnnOrcYLfS6Aj5c0VqqyK",
+    "last_login": "2025-04-22T18:55:17.407Z",
+    "is_superuser": true,
+    "first_name": "Sohype",
+    "last_name": "Khaled",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-03-16T14:26:14.378Z",
+    "username": "sohype.mop+10@gmail.com",
+    "email": "sohype.mop+10@gmail.com",
+    "email_verified_at": null,
+    "birth_date": null,
+    "phone": null,
+    "phone_verified_at": null,
+    "is_child": false,
+    "is_approved": false,
+    "gender": "",
+    "locale": "ar",
+    "image": "",
+    "account_type": "user",
+    "keycloak_sub": "22daf289-b9b0-419b-b936-32c79cd83269",
+    "user_permissions": [],
+    "groups": [],
+    "permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "!5jHshMQaqmLaxaKhfQzeYhVaHBjeYmY1NNmUsKFT",
+    "last_login": "2025-04-18T23:49:53.123Z",
+    "is_superuser": true,
+    "first_name": "Sohype",
+    "last_name": "Khaled",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-04-02T14:37:31.328Z",
+    "username": "sohype.mop+100@gmail.com",
+    "email": "sohype.mop+100@gmail.com",
+    "email_verified_at": null,
+    "birth_date": null,
+    "phone": null,
+    "phone_verified_at": null,
+    "is_child": false,
+    "is_approved": false,
+    "gender": "",
+    "locale": "en",
+    "image": "",
+    "account_type": "admin",
+    "keycloak_sub": "dc092d71-3110-4de7-a6b8-b647a32e2dbe",
+    "user_permissions": [],
+    "groups": [],
+    "permissions": []
+  }
+}
+]

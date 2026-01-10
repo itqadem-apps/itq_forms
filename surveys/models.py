@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from uuid import uuid4
 
-from sponsors.models import Sponsor
+from taxonomy.models import Category
 
 UserModel = get_user_model()
 
@@ -77,49 +77,6 @@ class Status(models.Model):
         return dict(self.STATUS_CHOICES).get(self.status)
 
 
-class Category(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["tree_id", "category_id"],
-                name="uq_category_tree_category_id",
-            ),
-        ]
-        indexes = [
-            models.Index(fields=["tree_id", "category_id"], name="ix_category_tree_category_id"),
-        ]
-
-    category_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    tree_id = models.UUIDField()
-    name = models.CharField(max_length=255, null=True, blank=True)
-    path_text = models.TextField(null=True, blank=True)
-
-    def __str__(self) -> str:
-        return self.name or str(self.category_id)
-
-
-class CategoryTranslation(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["category", "language"], name="uq_category_language"),
-        ]
-        indexes = [
-            models.Index(
-                fields=["category", "language"],
-                name="ix_cat_tr_cat_lang",
-            ),
-        ]
-
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="translations")
-    language = models.CharField(max_length=10)
-    name = models.TextField(null=True, blank=True)
-    slug = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self) -> str:
-        return f"{self.category_id}:{self.language}"
-
-
 class Survey(models.Model):
     DISPLAY_OPTION_SINGLE_QUESTION = "single_question"
     DISPLAY_OPTION_LIST = "list"
@@ -135,12 +92,14 @@ class Survey(models.Model):
     ASSESSMENT_TYPE_CURRICULUM = "curriculum"
     ASSESSMENT_TYPE_EXAM = "exam"
     ASSESSMENT_TYPE_SMART_FORM = "smart_form"
+    ASSESSMENT_TYPE_COLLECTION = "collection"
     ASSESSMENT_TYPES = (
         (ASSESSMENT_TYPE_SURVEY, _("Survey")),
         (ASSESSMENT_TYPE_QUESTIONNAIRE, _("Questionnaire")),
         (ASSESSMENT_TYPE_CURRICULUM, _("Curriculum")),
         (ASSESSMENT_TYPE_EXAM, _("Exam")),
         (ASSESSMENT_TYPE_SMART_FORM, _("Smart Form")),
+        (ASSESSMENT_TYPE_COLLECTION, _("Collection")),
     )
 
     EVALUATION_TYPE_AUTOMATIC_EVALUATION = "automatic_evaluation"
@@ -236,17 +195,12 @@ class Survey(models.Model):
         blank=True,
         related_name="assessments",
     )
-    sponsor = models.ForeignKey(
-        Sponsor,
-        on_delete=models.SET_NULL,
+    sponsor = models.PositiveIntegerField(
         null=True,
         blank=True,
-        related_name="surveys",
         verbose_name=_("Sponsor"),
     )
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
-    content_object = GenericForeignKey()
+    price = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.title)
@@ -282,34 +236,6 @@ class Survey(models.Model):
     @property
     def get_display_option(self):
         return dict(self.DISPLAY_OPTIONS).get(self.display_option)
-
-    def get_absolute_url(self):
-        return reverse("site:assessments:details", args=[self.id])
-
-    @property
-    def get_edit_url(self):
-        if self.assessment_type in [self.ASSESSMENT_TYPE_CURRICULUM, self.ASSESSMENT_TYPE_EXAM]:
-            if self.content_type and self.object_id:
-                return reverse(
-                    "admin:assessments:edit-related",
-                    args=[
-                        self.content_type.app_label,
-                        self.content_type.model,
-                        self.object_id,
-                        self.assessment_type,
-                        self.id,
-                    ],
-                )
-        return reverse("admin:assessments:edit", args=[self.assessment_type, self.id])
-
-    @property
-    def get_details_url(self):
-        return reverse("admin:assessments:details", args=[self.assessment_type, self.id])
-
-    @property
-    def get_delete_url(self):
-        return reverse("admin:assessments:delete", args=[self.assessment_type, self.pk])
-
 
 class SurveyMediaAsset(models.Model):
     class Meta:
@@ -557,58 +483,6 @@ class Recommendation(HasSoftDelete):
         return self.description
 
 
-class UserAssessment(models.Model):
-    class Meta:
-        ordering = ["submitted_at"]
-
-    is_paid = models.BooleanField(default=False)
-    survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
-    child_id = models.CharField(max_length=255, null=True, blank=True)
-    count_of_ending_options = models.IntegerField(default=0)
-    evaluated_at = models.DateTimeField(null=True, blank=True)
-    submitted_at = models.DateTimeField(null=True, blank=True)
-    score = models.IntegerField(null=True, blank=True)
-    progress = models.IntegerField(null=True, blank=True, default=0)
-    last_question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True, blank=True)
-    classifications = models.ManyToManyField(Classification, through="UserAssessmentClassification")
-    recommendations = models.ManyToManyField(Recommendation, through="UserAssessmentRecommendation")
-    action = models.ForeignKey(Action, on_delete=models.SET_NULL, null=True, blank=True)
-
-
-class UserAssessmentClassification(models.Model):
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE)
-    classification = models.ForeignKey(Classification, on_delete=models.CASCADE)
-    count = models.IntegerField(default=0)
-
-
-class UserAssessmentRecommendation(models.Model):
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE)
-    recommendation = models.ForeignKey(Recommendation, on_delete=models.CASCADE)
-    count = models.IntegerField(default=0)
-
-
-class UserAnswer(models.Model):
-    class Meta:
-        ordering = ["question__section__order", "question__order"]
-
-    survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
-    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, blank=True)
-    question_title = models.CharField(max_length=255, null=True)
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE, null=True, blank=True)
-    answer = models.TextField(default=None, blank=True, null=True)
-    type = models.CharField(max_length=50, choices=Question.QUESTION_TYPE_CHOICES, default=Question.QUESTION_TYPE_RADIO_MCQ)
-    selected_options = models.ManyToManyField(AnswerSchemaOption, blank=True)
-    score = models.IntegerField(null=True, blank=True)
-    order = models.IntegerField(null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        if self.question_id:
-            self.question_title = self.question.title
-        super().save(*args, **kwargs)
-
-
 @receiver(post_save, sender=Section)
 def _create_section_first_question(sender, instance: Section, created: bool, **kwargs):
     if created:
@@ -706,24 +580,6 @@ def _update_question_order(sender, instance: Question, **kwargs):
     for idx, question in enumerate(questions):
         question.order = idx + 1
     Question.objects.bulk_update(questions, ["order"])
-
-
-@receiver(post_save, sender=UserAssessment)
-def _create_user_assessment_tree(sender, instance: UserAssessment, created: bool, **kwargs):
-    if not created or not instance.survey_id:
-        return
-
-    survey = instance.survey
-    for idx, question in enumerate(survey.questions.all().order_by("section__order", "order"), start=1):
-        UserAnswer.objects.create(
-            user=instance.user,
-            question=question,
-            question_title=question.title,
-            survey=instance.survey,
-            user_assessment=instance,
-            type=question.type,
-            order=idx,
-        )
 
 
 # NOTE: The rest of this file contains legacy (monolith) Django models that

@@ -7,7 +7,7 @@ import strawberry_django
 from strawberry import auto
 
 
-from .models import Survey
+from .models import Question, Section, Survey
 
 
 @strawberry_django.type(Survey)
@@ -18,7 +18,6 @@ class SurveyType:
     short_description: auto
     language: auto
     status_id: auto
-    sponsor_id: auto
     assessment_type: auto
     display_option: auto
     is_timed: auto
@@ -35,14 +34,51 @@ class SurveyType:
     allow_update_answer_options_scores_based_on_classification: auto
     allow_update_answer_options_text_based_on_classification: auto
     create_option_for_each_classification: auto
+    category_id: auto
+    sponsor: auto
+    price: auto
     created_at: auto
     updated_at: auto
-    content_type_id: auto
-    object_id: auto
+    sections: List["SectionType"]
 
     @strawberry.field
     def status(self) -> str | None:
         return self.status.status if self.status_id else None
+
+
+@strawberry_django.type(Section)
+class SectionType:
+    id: auto
+    title: auto
+    description: auto
+    survey_id: auto
+    order: auto
+    is_hidden: auto
+    cover_asset_id: auto
+    created_at: auto
+    updated_at: auto
+    questions: List["QuestionType"]
+
+
+@strawberry_django.type(Question)
+class QuestionType:
+    id: auto
+    title: auto
+    description: auto
+    survey_id: auto
+    section_id: auto
+    order: auto
+    is_required: auto
+    type: auto
+    cover_asset_id: auto
+    created_at: auto
+    updated_at: auto
+
+    @strawberry.field
+    def answer_time(self) -> str | None:
+        if self.answer_time is None:
+            return None
+        return str(self.answer_time)
 
 
 @strawberry.type

@@ -1,0 +1,122 @@
+[
+{
+  "model": "assessments.userassessment",
+  "pk": 394,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "child": 1,
+    "count_of_ending_options": 0,
+    "evaluated_at": null,
+    "submitted_at": "2025-04-18T07:39:03.620Z",
+    "score": null,
+    "progress": 0,
+    "last_question": null,
+    "action": null
+  }
+},
+{
+  "model": "assessments.userassessment",
+  "pk": 395,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "child": 1,
+    "count_of_ending_options": 0,
+    "evaluated_at": "2025-04-18T07:44:48.571Z",
+    "submitted_at": "2025-04-18T07:44:48.474Z",
+    "score": 22,
+    "progress": 0,
+    "last_question": null,
+    "action": null
+  }
+},
+{
+  "model": "assessments.userassessment",
+  "pk": 396,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "child": null,
+    "count_of_ending_options": 0,
+    "evaluated_at": "2025-04-18T11:08:43.946Z",
+    "submitted_at": "2025-04-18T11:08:43.888Z",
+    "score": 0,
+    "progress": 0,
+    "last_question": null,
+    "action": null
+  }
+},
+{
+  "model": "assessments.userassessment",
+  "pk": 397,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "child": null,
+    "count_of_ending_options": 0,
+    "evaluated_at": "2025-04-18T11:15:31.526Z",
+    "submitted_at": "2025-04-18T11:15:31.488Z",
+    "score": 0,
+    "progress": 0,
+    "last_question": null,
+    "action": null
+  }
+},
+{
+  "model": "assessments.userassessment",
+  "pk": 398,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "child": null,
+    "count_of_ending_options": 0,
+    "evaluated_at": null,
+    "submitted_at": null,
+    "score": null,
+    "progress": 0,
+    "last_question": 736,
+    "action": null
+  }
+},
+{
+  "model": "assessments.userassessment",
+  "pk": 399,
+  "fields": {
+    "price": 0.0,
+    "is_paid": false,
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "child": null,
+    "count_of_ending_options": 0,
+    "evaluated_at": null,
+    "submitted_at": null,
+    "score": null,
+    "progress": 0,
+    "last_question": 694,
+    "action": null
+  }
+}
+]

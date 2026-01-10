@@ -1,0 +1,3572 @@
+[
+{
+  "model": "assessments.section",
+  "pk": 2,
+  "fields": {
+    "created_at": "2022-07-13T16:06:39.766Z",
+    "title": null,
+    "description": "",
+    "assessment": 2,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T05:25:16.055Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 3,
+  "fields": {
+    "created_at": "2022-07-13T19:55:08.997Z",
+    "title": "استبيان المؤشرات المبكرة لاضطراب طيف التوحد",
+    "description": "يهدف استبيان المؤشرات المبكرة لاضطراب طيف التوحد إلى التشخيص المبكر لاضطراب طيف التوحد من خلال رصد الأعراض المبكرة التي تتطور لدى الأطفال قبل عمر عامين. والمطلوب من سيادتكم قراءة كل عبارة من عبارات الاستبيان بدقة، وتحديد ما إذا كانت العبارة تنطبق على الطفل أم لا من خلال وضع علامة صح في الخانة المناسبة التي أمام كل عبارة (نعم – لا). وفي حالة عدم التأكد من الإجابة المناسبة على بعض البنود؛ يمكن الرجوع إلى أشخاص مقربين من الطفل لاستكمال الإجابة على هذه البنود.",
+    "assessment": 3,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-14T17:12:02.580Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 12,
+  "fields": {
+    "created_at": "2022-07-13T22:33:04.166Z",
+    "title": "التفاعل الاجتماعى",
+    "description": "",
+    "assessment": 5,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T04:43:52.638Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 13,
+  "fields": {
+    "created_at": "2022-07-13T22:50:57.971Z",
+    "title": "تنمية القدرة على قراءة كلمات بالشكل الكلى والتعرف على دلالاتها",
+    "description": "",
+    "assessment": 6,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T02:04:53.460Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 14,
+  "fields": {
+    "created_at": "2022-07-13T23:08:01.867Z",
+    "title": "الطريقه الجزئيه",
+    "description": "تنمية القدرة على قراءة الأحرف ودمجها لقراءة الكلمات والجمل.",
+    "assessment": 6,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T02:04:53.473Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 18,
+  "fields": {
+    "created_at": "2022-07-14T00:35:18.971Z",
+    "title": null,
+    "description": null,
+    "assessment": 7,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-14T00:35:18.972Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 19,
+  "fields": {
+    "created_at": "2022-07-14T01:33:19.233Z",
+    "title": "استخدام النقود",
+    "description": "",
+    "assessment": 9,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-29T10:55:26.696Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 20,
+  "fields": {
+    "created_at": "2022-07-14T03:08:20.519Z",
+    "title": null,
+    "description": null,
+    "assessment": 10,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-14T03:08:20.520Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 21,
+  "fields": {
+    "created_at": "2022-07-14T04:12:54.938Z",
+    "title": null,
+    "description": "",
+    "assessment": 12,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T18:37:55.005Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 22,
+  "fields": {
+    "created_at": "2022-07-14T04:33:36.675Z",
+    "title": null,
+    "description": null,
+    "assessment": 11,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-14T04:33:36.676Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 23,
+  "fields": {
+    "created_at": "2022-07-14T17:48:23.660Z",
+    "title": "الأمن و السلامة",
+    "description": "",
+    "assessment": 14,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-14T17:50:42.573Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 25,
+  "fields": {
+    "created_at": "2022-07-14T19:18:01.517Z",
+    "title": "تنمية مهارة استخدام الظواهر اللغوية والتراكيب النحوية لزيادة الفهم القرائي",
+    "description": "",
+    "assessment": 6,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T02:04:53.469Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 27,
+  "fields": {
+    "created_at": "2022-07-14T19:48:51.340Z",
+    "title": "تنمية القدرة على رسم الخطوط والأشكال",
+    "description": "",
+    "assessment": 8,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T03:45:37.382Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 28,
+  "fields": {
+    "created_at": "2022-07-14T20:44:53.080Z",
+    "title": "تنمية القدرة على كتابة الأرقام والأحرف والمقاطع  وكلمات بخط النسخ",
+    "description": "",
+    "assessment": 8,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T03:45:37.399Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 29,
+  "fields": {
+    "created_at": "2022-07-14T21:14:20.224Z",
+    "title": "تنمية القدرة على الكتابة الإملائية والتعبيرية",
+    "description": "",
+    "assessment": 8,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-15T03:45:37.393Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 30,
+  "fields": {
+    "created_at": "2022-07-14T22:04:07.068Z",
+    "title": "مهارات التواصل",
+    "description": "",
+    "assessment": 5,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T04:43:52.648Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 31,
+  "fields": {
+    "created_at": "2022-07-14T22:22:37.940Z",
+    "title": "السلوكيات و الاهتمامات",
+    "description": "",
+    "assessment": 5,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T04:43:52.656Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 32,
+  "fields": {
+    "created_at": "2022-07-14T22:34:18.258Z",
+    "title": "الأداء المعرفى",
+    "description": "",
+    "assessment": 5,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T04:43:52.671Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 33,
+  "fields": {
+    "created_at": "2022-07-14T22:40:33.063Z",
+    "title": "الاستجابات الحسحركية",
+    "description": "",
+    "assessment": 5,
+    "order": 5,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T04:43:52.667Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 34,
+  "fields": {
+    "created_at": "2022-07-18T00:16:01.184Z",
+    "title": null,
+    "description": "",
+    "assessment": 15,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "submit",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-19T00:54:21.435Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 35,
+  "fields": {
+    "created_at": "2022-07-18T13:00:11.625Z",
+    "title": null,
+    "description": null,
+    "assessment": 16,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T13:00:11.626Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 36,
+  "fields": {
+    "created_at": "2022-07-18T13:00:57.069Z",
+    "title": null,
+    "description": null,
+    "assessment": 16,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-18T13:00:57.070Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 38,
+  "fields": {
+    "created_at": "2022-07-28T18:24:55.552Z",
+    "title": null,
+    "description": null,
+    "assessment": 17,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T18:24:55.553Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 39,
+  "fields": {
+    "created_at": "2022-07-28T19:08:58.179Z",
+    "title": null,
+    "description": null,
+    "assessment": 18,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T19:08:58.180Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 40,
+  "fields": {
+    "created_at": "2022-07-28T20:49:38.383Z",
+    "title": null,
+    "description": null,
+    "assessment": 19,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T20:49:38.383Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 41,
+  "fields": {
+    "created_at": "2022-07-28T21:41:37.132Z",
+    "title": null,
+    "description": null,
+    "assessment": 20,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T21:41:37.132Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 42,
+  "fields": {
+    "created_at": "2022-07-28T22:35:26.099Z",
+    "title": null,
+    "description": null,
+    "assessment": 21,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T22:35:26.099Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 43,
+  "fields": {
+    "created_at": "2022-07-28T23:50:52.324Z",
+    "title": null,
+    "description": null,
+    "assessment": 22,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-28T23:50:52.324Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 44,
+  "fields": {
+    "created_at": "2022-07-29T01:10:31.549Z",
+    "title": null,
+    "description": null,
+    "assessment": 23,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-29T01:10:31.549Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 45,
+  "fields": {
+    "created_at": "2022-07-29T22:14:02.367Z",
+    "title": "تنمية القدرة على القراءة بطلاقة والتعرف على مفردات جديدة لزيادة الفهم القرائى.",
+    "description": "",
+    "assessment": 24,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-29T22:29:05.094Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 46,
+  "fields": {
+    "created_at": "2022-07-29T22:29:10.075Z",
+    "title": "التعرف على ظواهر لغوية وتراكيب نحوية لزيادة الفهم القرائي.",
+    "description": "",
+    "assessment": 24,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-29T22:31:24.646Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 47,
+  "fields": {
+    "created_at": "2022-07-29T23:24:53.943Z",
+    "title": "تنمية القدرة على الكتابة الإملائية والتعبير الكتابى.",
+    "description": "",
+    "assessment": 25,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-29T23:25:02.512Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 48,
+  "fields": {
+    "created_at": "2022-07-29T23:55:42.955Z",
+    "title": null,
+    "description": null,
+    "assessment": 26,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-29T23:55:42.956Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 49,
+  "fields": {
+    "created_at": "2022-07-30T00:46:14.973Z",
+    "title": "تنمية القدرة على قراءة كلمات جديدة والتعرف على دلالاتها",
+    "description": "",
+    "assessment": 27,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-30T00:46:20.690Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 50,
+  "fields": {
+    "created_at": "2022-07-30T01:47:29.715Z",
+    "title": "تنمية مهارة استخدام الظواهر اللغوية والتراكيب النحوية لزيادة الفهم القرائي.",
+    "description": "",
+    "assessment": 27,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-30T01:49:31.044Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 51,
+  "fields": {
+    "created_at": "2022-07-30T02:30:58.910Z",
+    "title": "تنمية القدرة على الكتابة الإملائية والتعبير الكتابى.",
+    "description": "",
+    "assessment": 28,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-30T02:31:06.142Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 52,
+  "fields": {
+    "created_at": "2022-07-30T02:55:12.885Z",
+    "title": "منهج المهارات الأساسية للطلاب المدمجين (المعالجة البصرية)",
+    "description": "منهج المهارات الأساسية للطلاب المدمجين (المعالجة البصرية)",
+    "assessment": 29,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-19T09:05:27.005Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 53,
+  "fields": {
+    "created_at": "2022-07-30T16:44:23.437Z",
+    "title": "المستوى الأساسى",
+    "description": "(1)اللغة الاستقبالية",
+    "assessment": 30,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-07-30T16:45:28.741Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 54,
+  "fields": {
+    "created_at": "2022-07-30T18:03:52.527Z",
+    "title": "الشاشة اللمسية",
+    "description": "الهدف العام: تنمية قدرة الطالب في استخدام الشاشة اللمسية.",
+    "assessment": 31,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-23T19:52:22.240Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 55,
+  "fields": {
+    "created_at": "2022-07-30T18:13:41.864Z",
+    "title": "الألعاب التعليمية",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع الألعاب التعليمية.",
+    "assessment": 31,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-23T19:52:22.255Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 56,
+  "fields": {
+    "created_at": "2022-07-30T18:38:12.942Z",
+    "title": "الأسطوانات التعليمية",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع الأسطوانات التعليمية.",
+    "assessment": 31,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-23T19:52:22.250Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 57,
+  "fields": {
+    "created_at": "2022-07-30T18:49:41.894Z",
+    "title": "مهارة تشغيل الأغاني والأفلام",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع ملفات الفيديو والأغاني",
+    "assessment": 31,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-23T19:52:22.286Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 58,
+  "fields": {
+    "created_at": "2022-07-30T19:34:54.247Z",
+    "title": "مهارات التعامل مع الماوس",
+    "description": "الهدف العام: تنمية قدرة الطالب في التعامل مع الماوس والتحكم فيه واستخدامه بشكل تطبيقي عملي.",
+    "assessment": 32,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-24T20:17:45.580Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 59,
+  "fields": {
+    "created_at": "2022-07-30T22:13:52.054Z",
+    "title": "مهارات التعامل مع برنامج الرسام",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع برنامج الرسام.",
+    "assessment": 32,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-24T20:17:45.558Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 60,
+  "fields": {
+    "created_at": "2022-07-30T22:23:41.965Z",
+    "title": "مهارات التعامل مع لوحة المفاتيح",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع لوحة المفاتيح بشكل توظيفي.",
+    "assessment": 32,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-24T20:17:45.598Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 61,
+  "fields": {
+    "created_at": "2022-07-31T20:49:25.172Z",
+    "title": "برنامج Word",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع برنامج الكتابة",
+    "assessment": 32,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-24T20:17:45.562Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 62,
+  "fields": {
+    "created_at": "2022-07-31T22:39:41.098Z",
+    "title": "التعامل مع السبورة الذكية (Smart board)",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع السبورة الذكية.",
+    "assessment": 33,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-01T00:05:23.262Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 63,
+  "fields": {
+    "created_at": "2022-07-31T22:58:44.620Z",
+    "title": "برنامج PowerPoint",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع برنامج PowerPoint",
+    "assessment": 33,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-01T00:05:23.259Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 64,
+  "fields": {
+    "created_at": "2022-07-31T23:28:14.492Z",
+    "title": "التصفح عبر مواقع Internet",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع الانترنت.",
+    "assessment": 33,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-01T00:05:23.269Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 65,
+  "fields": {
+    "created_at": "2022-08-01T00:04:22.942Z",
+    "title": "التعامل مع Face book",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع Face book",
+    "assessment": 33,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-01T00:05:47.604Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 66,
+  "fields": {
+    "created_at": "2022-08-03T16:28:38.950Z",
+    "title": "التعامل مع اليوتيوب YouTube",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع قناة اليوتيوب YouTube",
+    "assessment": 34,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-25T00:06:16.992Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 67,
+  "fields": {
+    "created_at": "2022-08-03T16:55:29.679Z",
+    "title": "التعامل مع الهاتف المحمول(الموبايل) و(التابليت)",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع الهاتف المحمول و التابيلت",
+    "assessment": 34,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-25T00:06:16.970Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 68,
+  "fields": {
+    "created_at": "2022-08-03T18:55:15.231Z",
+    "title": "برنامج Excel",
+    "description": "الهدف العام: تنمية قدرة الطالب على التعامل مع برنامج Excel",
+    "assessment": 34,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-25T00:06:16.984Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 69,
+  "fields": {
+    "created_at": "2022-08-03T20:04:09.573Z",
+    "title": null,
+    "description": null,
+    "assessment": 35,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-03T20:04:09.574Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 70,
+  "fields": {
+    "created_at": "2022-08-03T20:40:51.870Z",
+    "title": null,
+    "description": null,
+    "assessment": 36,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-03T20:40:51.870Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 71,
+  "fields": {
+    "created_at": "2022-08-03T21:45:45.609Z",
+    "title": null,
+    "description": null,
+    "assessment": 38,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-03T21:45:45.609Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 72,
+  "fields": {
+    "created_at": "2022-08-03T22:27:08.130Z",
+    "title": null,
+    "description": null,
+    "assessment": 39,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-03T22:27:08.130Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 73,
+  "fields": {
+    "created_at": "2022-08-03T23:15:57.887Z",
+    "title": null,
+    "description": null,
+    "assessment": 40,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-03T23:15:57.887Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 74,
+  "fields": {
+    "created_at": "2022-08-04T19:36:46.954Z",
+    "title": "مهارات التحضير والتجهيز",
+    "description": "",
+    "assessment": 41,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.735Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 75,
+  "fields": {
+    "created_at": "2022-08-04T19:53:08.382Z",
+    "title": "مهارات تشغيل ماكينة التغليف",
+    "description": "",
+    "assessment": 41,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.756Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 76,
+  "fields": {
+    "created_at": "2022-08-04T19:58:46.596Z",
+    "title": "مهارات تحضير الأدوات اللازمة للتغليف",
+    "description": "",
+    "assessment": 41,
+    "order": 5,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.742Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 77,
+  "fields": {
+    "created_at": "2022-08-04T20:04:41.420Z",
+    "title": "مهارات بدء العمل مع ماكينة التغليف",
+    "description": "",
+    "assessment": 41,
+    "order": 7,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.746Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 78,
+  "fields": {
+    "created_at": "2022-08-04T20:58:01.970Z",
+    "title": "مهارات تغليف أكثر من صورة فى نفس ورقة الغلاف",
+    "description": "",
+    "assessment": 41,
+    "order": 6,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.744Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 79,
+  "fields": {
+    "created_at": "2022-08-04T22:00:32.250Z",
+    "title": "مهارات غلق ماكينة التغليف",
+    "description": "",
+    "assessment": 41,
+    "order": 8,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.748Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 80,
+  "fields": {
+    "created_at": "2022-08-04T22:02:29.228Z",
+    "title": "مهارات التعامل مع أعطال الماكينة ( حشر ورقة الغلاف فى الماكينة )",
+    "description": "",
+    "assessment": 41,
+    "order": 9,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:05.764Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 81,
+  "fields": {
+    "created_at": "2022-08-04T22:04:34.544Z",
+    "title": "مهارات تحضير الماكينة والأدوات المستخدمة",
+    "description": "",
+    "assessment": 41,
+    "order": 10,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:06:31.740Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 82,
+  "fields": {
+    "created_at": "2022-08-04T22:10:15.942Z",
+    "title": "مهارات تشغيل الماكينة لتكعيب الورق",
+    "description": "",
+    "assessment": 41,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:10:45.797Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 83,
+  "fields": {
+    "created_at": "2022-08-04T22:33:06.571Z",
+    "title": "مهارات غلق ماكينة التكعيب",
+    "description": "",
+    "assessment": 41,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T22:33:14.209Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 84,
+  "fields": {
+    "created_at": "2022-08-04T22:39:20.275Z",
+    "title": "المرحلة الأولى: المهارات ما قبل المهنية في مجال البامبو، والمهام البسيطة والإعداد والتجهيز للعمل",
+    "description": "",
+    "assessment": 42,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-04T23:28:21.120Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 85,
+  "fields": {
+    "created_at": "2022-08-04T23:30:34.717Z",
+    "title": "المرحلة الثانية ( مرحلة المهام  المركبة وتنفيذ المنتجات )",
+    "description": "",
+    "assessment": 42,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-05T00:27:42.278Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 86,
+  "fields": {
+    "created_at": "2022-08-05T01:04:56.383Z",
+    "title": null,
+    "description": null,
+    "assessment": 43,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-05T01:04:56.384Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 87,
+  "fields": {
+    "created_at": "2022-08-05T01:18:40.638Z",
+    "title": "أهداف مجال التفصيل",
+    "description": "",
+    "assessment": 44,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-05T01:19:11.432Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 88,
+  "fields": {
+    "created_at": "2022-08-06T19:05:08.309Z",
+    "title": "أهداف مجال التريكو",
+    "description": "",
+    "assessment": 44,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-06T19:05:16.224Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 89,
+  "fields": {
+    "created_at": "2022-08-06T19:33:28.271Z",
+    "title": "المرحلة الأولى: المهارات ما قبل المهنية في مجال الحلي، والمهام البسيطة والإعداد والتجهيز للعمل",
+    "description": "",
+    "assessment": 45,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-06T19:33:46.187Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 90,
+  "fields": {
+    "created_at": "2022-08-07T19:40:25.802Z",
+    "title": "المرحلة الثانية ( تنفيذ المنتجات - المهام المركبة )",
+    "description": "",
+    "assessment": 45,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-07T19:40:42.479Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 91,
+  "fields": {
+    "created_at": "2022-08-07T20:10:35.378Z",
+    "title": "المهارات ما قبل المهنية في مجال الزراعة، ومهارات الإعداد والتجهيز",
+    "description": "",
+    "assessment": 46,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-07T20:11:00.698Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 92,
+  "fields": {
+    "created_at": "2022-08-07T23:53:13.140Z",
+    "title": "زراعة الأحواض / الزراعة داخل الصوبة",
+    "description": "",
+    "assessment": 46,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-07T23:53:40.033Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 93,
+  "fields": {
+    "created_at": "2022-08-09T16:24:00.453Z",
+    "title": null,
+    "description": null,
+    "assessment": 47,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-09T16:24:00.453Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 94,
+  "fields": {
+    "created_at": "2022-08-09T18:54:44.788Z",
+    "title": "المرحلة الأولى: المهارات ما قبل المهنية في مجال الصدف",
+    "description": "",
+    "assessment": 48,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-05-15T20:29:57.191Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 95,
+  "fields": {
+    "created_at": "2022-08-09T22:30:27.185Z",
+    "title": "المرحلة الثانية  ( تجهيز الأدوات والخامات )",
+    "description": "",
+    "assessment": 48,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-05-15T20:29:57.219Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 96,
+  "fields": {
+    "created_at": "2022-08-09T22:45:10.641Z",
+    "title": "المرحلة الثالثة ( الإعداد للصق الصدف )",
+    "description": "",
+    "assessment": 48,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-05-15T20:29:57.207Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 97,
+  "fields": {
+    "created_at": "2022-08-10T01:07:03.077Z",
+    "title": "المرحلة الرابعة (  لصق قطع الصدف وانهاء المنتج )",
+    "description": "",
+    "assessment": 48,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-05-15T20:29:57.215Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 98,
+  "fields": {
+    "created_at": "2022-08-10T23:54:18.242Z",
+    "title": "المرحلة الأولى: المهارات ما قبل المهنية في مجال النسيج، والمهام البسيطة و الإعداد و التجهيز للعمل",
+    "description": "",
+    "assessment": 49,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-10T23:55:21.869Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 99,
+  "fields": {
+    "created_at": "2022-08-11T14:15:11.189Z",
+    "title": "المرحلة الأولى: المهارات ما قبل المهنية في مجال الجلد، والمهام البسيطة والإعداد والتجهيز للعمل",
+    "description": "",
+    "assessment": 50,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T14:15:39.197Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 100,
+  "fields": {
+    "created_at": "2022-08-11T15:04:17.943Z",
+    "title": "أهداف مجال دهانات الأخشاب",
+    "description": "",
+    "assessment": 51,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T15:04:23.897Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 101,
+  "fields": {
+    "created_at": "2022-08-11T15:17:53.992Z",
+    "title": "أهداف مجال دهانات الحوائط",
+    "description": "",
+    "assessment": 51,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T15:18:00.801Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 102,
+  "fields": {
+    "created_at": "2022-08-11T16:16:35.987Z",
+    "title": "مهارات النمو الشخصى",
+    "description": "",
+    "assessment": 52,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T16:16:42.072Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 103,
+  "fields": {
+    "created_at": "2022-08-11T16:54:29.174Z",
+    "title": null,
+    "description": "",
+    "assessment": 53,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T16:55:31.643Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 104,
+  "fields": {
+    "created_at": "2022-08-11T17:27:17.165Z",
+    "title": "التواصل والتعامل مع الآخرين",
+    "description": "الاتصال الشخصي\r\nهى قدرة الطالب على إبداء معلومات شخصية عن نفسه من جانب، بالإضافة إلى القيام بالتصرف في حال حدوث مشكلات حياتية يومية ومن شأن هذا التصرف أن يعمل على حمايته من المخاطر",
+    "assessment": 54,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T17:28:03.548Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 105,
+  "fields": {
+    "created_at": "2022-08-11T18:52:48.306Z",
+    "title": null,
+    "description": null,
+    "assessment": 56,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T18:52:48.307Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 106,
+  "fields": {
+    "created_at": "2022-08-11T19:42:54.886Z",
+    "title": null,
+    "description": null,
+    "assessment": 55,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T19:42:54.886Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 107,
+  "fields": {
+    "created_at": "2022-08-11T20:35:21.789Z",
+    "title": "الضبط الذاتى",
+    "description": "",
+    "assessment": 57,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-10-01T10:38:12.153Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 108,
+  "fields": {
+    "created_at": "2022-08-11T21:39:37.262Z",
+    "title": "العادات الصحية في الأكل",
+    "description": "",
+    "assessment": 58,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T21:40:04.661Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 109,
+  "fields": {
+    "created_at": "2022-08-11T22:06:06.397Z",
+    "title": "العادات الصحية في النوم",
+    "description": "",
+    "assessment": 58,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-11T22:06:24.303Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 110,
+  "fields": {
+    "created_at": "2022-08-11T22:21:23.686Z",
+    "title": "المعارف العامة أهداف",
+    "description": "المعارف العامة أهداف",
+    "assessment": 59,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-29T16:24:55.233Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 111,
+  "fields": {
+    "created_at": "2022-08-12T00:11:19.964Z",
+    "title": "السيارة",
+    "description": "",
+    "assessment": 60,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-12T01:11:59.752Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 112,
+  "fields": {
+    "created_at": "2022-08-12T00:29:42.747Z",
+    "title": "التاكسي",
+    "description": "",
+    "assessment": 60,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-12T01:11:59.758Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 113,
+  "fields": {
+    "created_at": "2022-08-12T00:38:20.788Z",
+    "title": "الأتوبيس/الميكروباص",
+    "description": "",
+    "assessment": 60,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-12T01:11:59.763Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 114,
+  "fields": {
+    "created_at": "2022-08-12T00:49:16.809Z",
+    "title": "المترو",
+    "description": "",
+    "assessment": 60,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-12T01:11:59.769Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 115,
+  "fields": {
+    "created_at": "2022-08-12T01:11:39.260Z",
+    "title": "القطار",
+    "description": "",
+    "assessment": 60,
+    "order": 5,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-12T01:12:15.074Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 116,
+  "fields": {
+    "created_at": "2022-08-14T19:07:03.607Z",
+    "title": "مرحلة البحث عن وظيفة",
+    "description": "",
+    "assessment": 61,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-14T19:07:34.417Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 117,
+  "fields": {
+    "created_at": "2022-08-14T19:19:24.273Z",
+    "title": "في مكان العمل",
+    "description": "",
+    "assessment": 61,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2022-08-14T19:19:31.633Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 118,
+  "fields": {
+    "created_at": "2022-08-14T19:39:34.140Z",
+    "title": "المهارات الحياتية المجتمعية - الميزانية والادخار",
+    "description": "المهارات الحياتية المجتمعية - الميزانية والادخار",
+    "assessment": 62,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-29T11:49:53.218Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 119,
+  "fields": {
+    "created_at": "2022-08-14T19:54:19.585Z",
+    "title": "النظافة المنزلية",
+    "description": "النظافة المنزلية",
+    "assessment": 63,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-29T09:36:42.470Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 120,
+  "fields": {
+    "created_at": "2022-08-14T20:25:06.908Z",
+    "title": "الغسيل",
+    "description": "",
+    "assessment": 64,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-04-06T00:26:46.012Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 121,
+  "fields": {
+    "created_at": "2022-08-14T21:32:54.304Z",
+    "title": "الكي",
+    "description": "",
+    "assessment": 64,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-04-06T00:26:46.001Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 122,
+  "fields": {
+    "created_at": "2022-08-14T21:45:27.281Z",
+    "title": "تنظيم و ادارة الوقت",
+    "description": "",
+    "assessment": 65,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-10-21T06:40:06.639Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 123,
+  "fields": {
+    "created_at": "2022-08-14T22:06:23.177Z",
+    "title": null,
+    "description": "",
+    "assessment": 66,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "assessments/66/sections/123/3273583.png",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-05-21T00:33:29.862Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 125,
+  "fields": {
+    "created_at": "2023-03-22T00:26:08.865Z",
+    "title": null,
+    "description": "",
+    "assessment": 72,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-03-22T00:26:08.866Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 126,
+  "fields": {
+    "created_at": "2023-04-13T11:18:43.839Z",
+    "title": "new section",
+    "description": "section",
+    "assessment": 70,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-04-13T11:18:43.840Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 127,
+  "fields": {
+    "created_at": "2023-08-06T09:54:29.089Z",
+    "title": "New Seection",
+    "description": "New",
+    "assessment": 74,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-08-06T09:54:29.090Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 128,
+  "fields": {
+    "created_at": "2023-10-03T21:38:24.528Z",
+    "title": "تقييم منهج",
+    "description": "",
+    "assessment": 75,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-03T21:38:24.529Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 129,
+  "fields": {
+    "created_at": "2023-10-06T19:12:16.849Z",
+    "title": "السلوك المهني",
+    "description": "",
+    "assessment": 77,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-06T19:12:16.850Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 130,
+  "fields": {
+    "created_at": "2023-10-09T19:36:43.360Z",
+    "title": "قواعد ولوائح وإجراءات العمل",
+    "description": "",
+    "assessment": 79,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-09T19:36:43.362Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 131,
+  "fields": {
+    "created_at": "2023-10-10T17:46:26.742Z",
+    "title": "إجراءات الأمان والسلامة المهنية",
+    "description": "",
+    "assessment": 80,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-10T17:46:26.743Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 132,
+  "fields": {
+    "created_at": "2023-10-12T18:57:14.202Z",
+    "title": "التعلم الجماعي",
+    "description": "",
+    "assessment": 81,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-19T08:49:12.301Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 133,
+  "fields": {
+    "created_at": "2023-10-12T19:31:53.988Z",
+    "title": "الروتين المدرسي",
+    "description": "",
+    "assessment": 81,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-12T20:40:36.902Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 134,
+  "fields": {
+    "created_at": "2023-10-12T20:37:02.550Z",
+    "title": "التنقل داخل المدرسة",
+    "description": "",
+    "assessment": 81,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-12T20:40:36.893Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 135,
+  "fields": {
+    "created_at": "2023-10-12T21:06:48.374Z",
+    "title": "الجانب الصحي والطبي ( بيئة المدرسة والعمل )",
+    "description": "",
+    "assessment": 82,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-12T21:06:48.375Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 136,
+  "fields": {
+    "created_at": "2023-10-13T16:31:55.340Z",
+    "title": "الضبط الذاتي وحسن التصرف",
+    "description": "",
+    "assessment": 83,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T16:31:55.342Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 137,
+  "fields": {
+    "created_at": "2023-10-13T18:16:14.089Z",
+    "title": "المواصلات",
+    "description": "الهدف العام\r\nاستخدام وسائل المواصلات في الإنتقال للمدرسة أو العمل",
+    "assessment": 84,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T19:15:18.550Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 138,
+  "fields": {
+    "created_at": "2023-10-13T18:38:28.214Z",
+    "title": "النقود",
+    "description": "الهدف العام\r\nالقدرة على التعامل النقدي للإنتقال من وإلى المدرسة والعمل",
+    "assessment": 84,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T19:15:18.577Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 139,
+  "fields": {
+    "created_at": "2023-10-13T18:54:32.994Z",
+    "title": "المهارات الأكاديمية",
+    "description": "الهدف العام\r\nتوظيف المهارات الأكاديمية في الإنتقال من وإلى المدرسة والعمل",
+    "assessment": 84,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T19:15:18.566Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 140,
+  "fields": {
+    "created_at": "2023-10-13T19:14:39.720Z",
+    "title": "الوقت",
+    "description": "الهدف العام\r\nتوظيف المهارات المتعلقة بإدراك الوقت والزمن في الإنتقال من وإلى المدرسة والعمل",
+    "assessment": 84,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T19:15:18.587Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 141,
+  "fields": {
+    "created_at": "2023-10-13T20:33:12.173Z",
+    "title": "مهارات التفاعل مع الزملاء",
+    "description": "",
+    "assessment": 85,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T20:33:12.175Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 142,
+  "fields": {
+    "created_at": "2023-10-13T21:46:48.066Z",
+    "title": "مهارات التنقل داخل بيئة العمل",
+    "description": "",
+    "assessment": 86,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-09-16T11:13:44.498Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 143,
+  "fields": {
+    "created_at": "2023-10-13T22:19:41.651Z",
+    "title": "الروتين اليومى",
+    "description": "",
+    "assessment": 89,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-13T22:19:41.653Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 144,
+  "fields": {
+    "created_at": "2023-10-17T18:31:03.425Z",
+    "title": "التنقل واستخدام المواصلات",
+    "description": "",
+    "assessment": 90,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-17T20:28:01.778Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 145,
+  "fields": {
+    "created_at": "2023-10-17T19:19:20.738Z",
+    "title": "الأتوبيس و الميكروباص",
+    "description": "",
+    "assessment": 90,
+    "order": 2,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-17T20:28:01.800Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 146,
+  "fields": {
+    "created_at": "2023-10-17T19:48:12.756Z",
+    "title": "التاكسى",
+    "description": "",
+    "assessment": 90,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-17T20:28:01.813Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 147,
+  "fields": {
+    "created_at": "2023-10-17T20:08:17.279Z",
+    "title": "المترو",
+    "description": "",
+    "assessment": 90,
+    "order": 4,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-17T20:28:01.827Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 148,
+  "fields": {
+    "created_at": "2023-10-17T20:27:17.269Z",
+    "title": "القطار",
+    "description": "",
+    "assessment": 90,
+    "order": 5,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-17T20:28:01.792Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 149,
+  "fields": {
+    "created_at": "2023-10-20T18:06:58.240Z",
+    "title": "الاتصال الشخصي - السلامة والأمان",
+    "description": "",
+    "assessment": 91,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-20T18:06:58.242Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 150,
+  "fields": {
+    "created_at": "2023-10-20T19:35:42.567Z",
+    "title": "شغل أوقات الفراغ والترويح",
+    "description": "",
+    "assessment": 92,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-20T19:35:42.568Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 151,
+  "fields": {
+    "created_at": "2023-10-21T17:34:43.482Z",
+    "title": "فواتير الخدمات",
+    "description": "",
+    "assessment": 94,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-21T17:34:43.483Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 152,
+  "fields": {
+    "created_at": "2023-10-22T18:30:07.306Z",
+    "title": "مهارات التمشية والتسوق",
+    "description": "",
+    "assessment": 95,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-22T18:30:07.308Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 153,
+  "fields": {
+    "created_at": "2023-10-23T18:09:51.834Z",
+    "title": "مهارات الروتين اليومي",
+    "description": "",
+    "assessment": 96,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-23T18:09:51.836Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 154,
+  "fields": {
+    "created_at": "2023-10-23T19:26:08.402Z",
+    "title": "مهارات الهاتف",
+    "description": "",
+    "assessment": 97,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-23T19:26:08.403Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 155,
+  "fields": {
+    "created_at": "2023-10-24T20:22:31.022Z",
+    "title": "تنظيف وتنسيق الغرف",
+    "description": "",
+    "assessment": 98,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-24T20:22:31.023Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 156,
+  "fields": {
+    "created_at": "2023-10-24T20:33:35.439Z",
+    "title": "ترتيب الفراش",
+    "description": "",
+    "assessment": 99,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-24T20:33:35.440Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 157,
+  "fields": {
+    "created_at": "2023-10-24T20:44:07.148Z",
+    "title": "الإعتناء بالملابس",
+    "description": "",
+    "assessment": 100,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-24T20:44:07.150Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 158,
+  "fields": {
+    "created_at": "2023-10-29T17:59:09.775Z",
+    "title": "الإعتناء بالمطبخ",
+    "description": "",
+    "assessment": 101,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-29T17:59:09.776Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 159,
+  "fields": {
+    "created_at": "2023-10-29T18:33:55.693Z",
+    "title": "اعداد الطعام",
+    "description": "",
+    "assessment": 102,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-29T18:33:55.694Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 160,
+  "fields": {
+    "created_at": "2023-10-29T21:35:33.104Z",
+    "title": "غسل الأطباق",
+    "description": "",
+    "assessment": 103,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-29T21:35:33.105Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 161,
+  "fields": {
+    "created_at": "2023-10-29T22:52:07.208Z",
+    "title": "ترتيب المائدة",
+    "description": "",
+    "assessment": 104,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-29T22:52:07.209Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 162,
+  "fields": {
+    "created_at": "2023-10-29T23:07:53.288Z",
+    "title": "إعداد المائدة",
+    "description": "",
+    "assessment": 105,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-10-29T23:07:53.289Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 163,
+  "fields": {
+    "created_at": "2023-11-06T21:01:51.647Z",
+    "title": "مهارات حل المشكلات",
+    "description": "",
+    "assessment": 106,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-06T21:01:51.648Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 164,
+  "fields": {
+    "created_at": "2023-11-06T21:18:03.345Z",
+    "title": "مهارات العلاقات المكانية",
+    "description": "",
+    "assessment": 107,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-06T21:18:03.346Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 165,
+  "fields": {
+    "created_at": "2023-11-06T21:33:45.883Z",
+    "title": "مهارات الذاكرة البصرية",
+    "description": "",
+    "assessment": 108,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-06T21:33:45.884Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 166,
+  "fields": {
+    "created_at": "2023-11-11T22:45:41.748Z",
+    "title": "مهارات التمييز البصري",
+    "description": "",
+    "assessment": 109,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-11T22:45:41.749Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 167,
+  "fields": {
+    "created_at": "2023-11-13T21:14:35.726Z",
+    "title": "مهارات التتابع والتسلسل",
+    "description": "",
+    "assessment": 110,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-13T21:14:35.728Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 168,
+  "fields": {
+    "created_at": "2023-11-13T22:26:07.776Z",
+    "title": "مهارات الإغلاق البصري",
+    "description": "",
+    "assessment": 111,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-13T22:26:07.778Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 169,
+  "fields": {
+    "created_at": "2023-11-13T22:46:38.627Z",
+    "title": "مهارات الإدراك البصري المكانى",
+    "description": "",
+    "assessment": 112,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-13T22:46:38.628Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 170,
+  "fields": {
+    "created_at": "2023-11-13T23:05:18.265Z",
+    "title": "الانتباه البصري ودوام الشيء",
+    "description": "",
+    "assessment": 113,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-13T23:05:18.267Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 171,
+  "fields": {
+    "created_at": "2023-11-13T23:28:25.405Z",
+    "title": "الإدراك البصرى للون",
+    "description": "",
+    "assessment": 114,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-13T23:28:25.406Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 172,
+  "fields": {
+    "created_at": "2023-11-15T20:09:49.073Z",
+    "title": "مجال العادات الصحية",
+    "description": "",
+    "assessment": 115,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-15T20:09:49.075Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 173,
+  "fields": {
+    "created_at": "2023-11-15T21:06:24.658Z",
+    "title": "مهارات إستخدام الحمام",
+    "description": "",
+    "assessment": 116,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-15T21:06:24.659Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 174,
+  "fields": {
+    "created_at": "2023-11-15T22:06:57.595Z",
+    "title": "مهارات النظافة الشخصية",
+    "description": "",
+    "assessment": 117,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-15T22:06:57.596Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 175,
+  "fields": {
+    "created_at": "2023-11-15T22:56:43.857Z",
+    "title": "مهارات تناول الطعام",
+    "description": "",
+    "assessment": 118,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-15T22:56:43.858Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 176,
+  "fields": {
+    "created_at": "2023-11-17T21:29:24.210Z",
+    "title": "مهارات خلع الملابس",
+    "description": "",
+    "assessment": 119,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-17T21:29:24.211Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 177,
+  "fields": {
+    "created_at": "2023-11-17T23:40:57.385Z",
+    "title": "مهارات ارتداء الملابس",
+    "description": "",
+    "assessment": 120,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-17T23:40:57.386Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 178,
+  "fields": {
+    "created_at": "2023-11-19T20:51:01.825Z",
+    "title": "الأحداث الرياضية",
+    "description": "",
+    "assessment": 121,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-19T20:51:01.827Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 179,
+  "fields": {
+    "created_at": "2023-11-19T21:20:18.204Z",
+    "title": "الأحداث الفنية",
+    "description": "",
+    "assessment": 122,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-19T21:20:18.205Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 180,
+  "fields": {
+    "created_at": "2023-11-19T21:56:17.570Z",
+    "title": "الصيد",
+    "description": "",
+    "assessment": 123,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-19T21:56:17.571Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 181,
+  "fields": {
+    "created_at": "2023-11-19T22:15:35.125Z",
+    "title": "الموضة والتجميل",
+    "description": "",
+    "assessment": 124,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-19T22:15:35.126Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 182,
+  "fields": {
+    "created_at": "2023-11-21T19:39:52.278Z",
+    "title": "رعاية الحيوانات الأليفة",
+    "description": "",
+    "assessment": 125,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T19:39:52.280Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 183,
+  "fields": {
+    "created_at": "2023-11-21T20:04:13.135Z",
+    "title": "الألعاب الألكترونية",
+    "description": "",
+    "assessment": 126,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T20:04:13.136Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 184,
+  "fields": {
+    "created_at": "2023-11-21T20:45:03.225Z",
+    "title": "التصوير الضوئى",
+    "description": "",
+    "assessment": 127,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T20:45:03.227Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 185,
+  "fields": {
+    "created_at": "2023-11-21T21:41:37.310Z",
+    "title": "التقليد باستخدام الأشياء",
+    "description": "",
+    "assessment": 128,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T21:41:37.312Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 186,
+  "fields": {
+    "created_at": "2023-11-21T22:09:43.530Z",
+    "title": "تقليد التتابع الحركي من الذاكرة",
+    "description": "",
+    "assessment": 129,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T22:09:43.531Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 187,
+  "fields": {
+    "created_at": "2023-11-21T22:36:00.954Z",
+    "title": "تقليد المهارات الحركية الكبرى والصغرى",
+    "description": "",
+    "assessment": 130,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-21T22:36:00.956Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 188,
+  "fields": {
+    "created_at": "2023-11-24T15:13:13.260Z",
+    "title": "اللعب التظاهري أو الرمزي",
+    "description": "",
+    "assessment": 131,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-24T15:13:13.261Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 189,
+  "fields": {
+    "created_at": "2023-11-24T15:37:41.206Z",
+    "title": "اللعب الجماعي",
+    "description": "",
+    "assessment": 132,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-24T15:37:41.208Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 190,
+  "fields": {
+    "created_at": "2023-11-24T16:08:21.316Z",
+    "title": "اللعب الاستكشافي",
+    "description": "",
+    "assessment": 133,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-24T16:08:21.318Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 191,
+  "fields": {
+    "created_at": "2023-11-24T16:37:37.913Z",
+    "title": "تنظيم الانفعال الذاتي",
+    "description": "",
+    "assessment": 134,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-24T16:58:26.874Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 192,
+  "fields": {
+    "created_at": "2023-11-24T17:00:05.637Z",
+    "title": "فهم مشاعر وانفعالات الآخرين",
+    "description": "",
+    "assessment": 135,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-24T17:00:05.639Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 193,
+  "fields": {
+    "created_at": "2023-11-26T20:28:29.751Z",
+    "title": "المهارات الاجتماعية",
+    "description": "",
+    "assessment": 136,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-26T20:28:29.753Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 194,
+  "fields": {
+    "created_at": "2023-11-27T16:30:22.927Z",
+    "title": "مهارات التواصل باستخدام الأجهزه الالكترونية - التابلت",
+    "description": "",
+    "assessment": 137,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-27T16:30:22.928Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 195,
+  "fields": {
+    "created_at": "2023-11-27T17:36:22.872Z",
+    "title": "مهارات الصداقة",
+    "description": "",
+    "assessment": 138,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2023-11-27T17:36:22.873Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 196,
+  "fields": {
+    "created_at": "2023-12-10T13:50:46.582Z",
+    "title": "مهارات التقليد الصوتى",
+    "description": "",
+    "assessment": 140,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "assessments/140/sections/196/survey_10266602.png",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-05-21T00:44:48.726Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 197,
+  "fields": {
+    "created_at": "2024-02-20T12:10:52.493Z",
+    "title": ",NKLSLKJaks",
+    "description": "lkjKAJSKJas",
+    "assessment": 141,
+    "order": 1,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-02-20T12:10:52.496Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 198,
+  "fields": {
+    "created_at": "2024-08-27T11:26:44.402Z",
+    "title": "قسم الاول",
+    "description": "",
+    "assessment": 144,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "submit",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2024-08-27T11:26:44.405Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 200,
+  "fields": {
+    "created_at": "2025-01-30T08:30:38.138Z",
+    "title": "مهارات تناول الطعام",
+    "description": "",
+    "assessment": 156,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:30:38.141Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 201,
+  "fields": {
+    "created_at": "2025-01-30T08:31:11.401Z",
+    "title": "مهارات النظافة الشخصية",
+    "description": "",
+    "assessment": 156,
+    "order": 4,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:31:11.403Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 202,
+  "fields": {
+    "created_at": "2025-01-30T08:31:39.646Z",
+    "title": "مهارات استخدام الحمام",
+    "description": "",
+    "assessment": 156,
+    "order": 3,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:31:39.649Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 203,
+  "fields": {
+    "created_at": "2025-01-30T08:32:01.873Z",
+    "title": "مهارات خلع وارتداء الملابس",
+    "description": "",
+    "assessment": 156,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:32:01.875Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 204,
+  "fields": {
+    "created_at": "2025-01-30T08:40:37.519Z",
+    "title": "مهارات التسمية",
+    "description": "",
+    "assessment": 157,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.489Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 205,
+  "fields": {
+    "created_at": "2025-01-30T08:41:23.163Z",
+    "title": "مهارات الوصف والمحادثة",
+    "description": "",
+    "assessment": 157,
+    "order": 5,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.512Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 206,
+  "fields": {
+    "created_at": "2025-01-30T08:41:47.612Z",
+    "title": "تنمية مهارات المبادرة والتعليق",
+    "description": "",
+    "assessment": 157,
+    "order": 4,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.504Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 207,
+  "fields": {
+    "created_at": "2025-01-30T08:42:04.582Z",
+    "title": "مهارات المحادثة",
+    "description": "",
+    "assessment": 157,
+    "order": 3,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.497Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 208,
+  "fields": {
+    "created_at": "2025-01-30T08:42:28.153Z",
+    "title": "الاستجابة للأسئلة",
+    "description": "",
+    "assessment": 157,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.473Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 210,
+  "fields": {
+    "created_at": "2025-01-30T08:43:48.683Z",
+    "title": "مهارات الطلب",
+    "description": "",
+    "assessment": 157,
+    "order": 6,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:44:06.481Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 211,
+  "fields": {
+    "created_at": "2025-01-30T08:46:50.592Z",
+    "title": "فهم التعليمات",
+    "description": "",
+    "assessment": 158,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:48:14.617Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 212,
+  "fields": {
+    "created_at": "2025-01-30T08:47:21.979Z",
+    "title": "فهم المفردات والمفاهيم اللغوية",
+    "description": "",
+    "assessment": 158,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:48:14.626Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 213,
+  "fields": {
+    "created_at": "2025-01-30T08:47:59.688Z",
+    "title": "فهم التراكيب اللغوية",
+    "description": "",
+    "assessment": 158,
+    "order": 3,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:48:14.624Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 214,
+  "fields": {
+    "created_at": "2025-01-30T08:51:40.626Z",
+    "title": "مهارات اللعب الاستكشافي",
+    "description": "",
+    "assessment": 159,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:51:40.629Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 215,
+  "fields": {
+    "created_at": "2025-01-30T08:52:07.515Z",
+    "title": "مهارات اللعب التظاهري – الرمزي",
+    "description": "",
+    "assessment": 159,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:52:07.518Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 216,
+  "fields": {
+    "created_at": "2025-01-30T08:56:28.815Z",
+    "title": "الانتباه السمعي",
+    "description": "",
+    "assessment": 161,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:57:56.855Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 217,
+  "fields": {
+    "created_at": "2025-01-30T08:56:47.239Z",
+    "title": "التمييز السمعي",
+    "description": "",
+    "assessment": 161,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:57:56.862Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 218,
+  "fields": {
+    "created_at": "2025-01-30T08:57:10.490Z",
+    "title": "الإغلاق السمعي",
+    "description": "",
+    "assessment": 161,
+    "order": 3,
+    "is_hidden": false,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:57:56.869Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 219,
+  "fields": {
+    "created_at": "2025-01-30T08:57:44.958Z",
+    "title": "الذاكرة السمعية",
+    "description": "",
+    "assessment": 161,
+    "order": 4,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T08:58:06.778Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 220,
+  "fields": {
+    "created_at": "2025-01-30T09:00:16.306Z",
+    "title": "الانتباه البصري ودوام الشيء",
+    "description": "",
+    "assessment": 162,
+    "order": 1,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.957Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 221,
+  "fields": {
+    "created_at": "2025-01-30T09:00:36.114Z",
+    "title": "مهارات التمييز البصري",
+    "description": "",
+    "assessment": 162,
+    "order": 2,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.934Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 222,
+  "fields": {
+    "created_at": "2025-01-30T09:01:22.141Z",
+    "title": "مهارات الإدراك البصري المكاني",
+    "description": "",
+    "assessment": 162,
+    "order": 4,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.939Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 223,
+  "fields": {
+    "created_at": "2025-01-30T09:02:05.393Z",
+    "title": "مهارات العلاقات المكانية",
+    "description": "",
+    "assessment": 162,
+    "order": 3,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.974Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 224,
+  "fields": {
+    "created_at": "2025-01-30T09:02:52.057Z",
+    "title": "الإدراك البصري للون",
+    "description": "",
+    "assessment": 162,
+    "order": 5,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.943Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 225,
+  "fields": {
+    "created_at": "2025-01-30T09:03:33.679Z",
+    "title": "مهارات الإغلاق البصري",
+    "description": "",
+    "assessment": 162,
+    "order": 7,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.970Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 226,
+  "fields": {
+    "created_at": "2025-01-30T09:04:01.953Z",
+    "title": "مهارات التتابع والتسلسل",
+    "description": "",
+    "assessment": 162,
+    "order": 6,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.989Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 227,
+  "fields": {
+    "created_at": "2025-01-30T09:04:40.253Z",
+    "title": "مهارات الذاكرة البصرية",
+    "description": "",
+    "assessment": 162,
+    "order": 9,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:27.986Z"
+  }
+},
+{
+  "model": "assessments.section",
+  "pk": 228,
+  "fields": {
+    "created_at": "2025-01-30T09:05:38.078Z",
+    "title": "مهارات حل المشكلات",
+    "description": "",
+    "assessment": 162,
+    "order": 8,
+    "is_hidden": true,
+    "cover": "",
+    "submit_action": "next",
+    "submit_action_target": null,
+    "deleted_at": null,
+    "updated_at": "2025-01-30T09:07:28.001Z"
+  }
+}
+]

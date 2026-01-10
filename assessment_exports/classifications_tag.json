@@ -1,0 +1,74 @@
+[
+{
+  "model": "classifications.tag",
+  "pk": 1,
+  "fields": {
+    "created_at": "2022-07-19T12:15:39.060Z",
+    "name": {
+      "ar": "إضطراب طيف التوحد"
+    },
+    "slug": "autism1",
+    "updated_at": "2022-07-19T12:15:39.061Z"
+  }
+},
+{
+  "model": "classifications.tag",
+  "pk": 3,
+  "fields": {
+    "created_at": "2023-02-26T21:41:52.332Z",
+    "name": {
+      "ar": "اضطراب التوحد"
+    },
+    "slug": "none",
+    "updated_at": "2023-02-26T21:41:52.333Z"
+  }
+},
+{
+  "model": "classifications.tag",
+  "pk": 4,
+  "fields": {
+    "created_at": "2023-02-26T21:42:17.527Z",
+    "name": {
+      "ar": "اضطرابات النمو الشاملة"
+    },
+    "slug": "none",
+    "updated_at": "2023-02-26T21:42:17.528Z"
+  }
+},
+{
+  "model": "classifications.tag",
+  "pk": 5,
+  "fields": {
+    "created_at": "2023-02-26T21:42:37.733Z",
+    "name": {
+      "ar": "اعاقات النمو"
+    },
+    "slug": "none",
+    "updated_at": "2023-02-26T21:42:37.733Z"
+  }
+},
+{
+  "model": "classifications.tag",
+  "pk": 6,
+  "fields": {
+    "created_at": "2023-02-26T21:43:16.449Z",
+    "name": {
+      "ar": "Autism"
+    },
+    "slug": "none",
+    "updated_at": "2023-02-26T21:43:16.449Z"
+  }
+},
+{
+  "model": "classifications.tag",
+  "pk": 30,
+  "fields": {
+    "created_at": "2023-02-26T21:50:46.461Z",
+    "name": {
+      "ar": "Learning disabilities"
+    },
+    "slug": "none",
+    "updated_at": "2023-02-26T21:50:46.462Z"
+  }
+}
+]

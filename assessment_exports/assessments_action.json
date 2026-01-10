@@ -1,0 +1,134 @@
+[
+{
+  "model": "assessments.action",
+  "pk": 1,
+  "fields": {
+    "title": null,
+    "description": "<p><span dir=\"RTL\">غير مؤهل&nbsp;للتعليم الدمجي </span></p>",
+    "assessment": 2,
+    "upper_limit": 62.0,
+    "lower_limit": 21.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 2,
+  "fields": {
+    "title": null,
+    "description": "<p><span dir=\"RTL\">مؤهلاً للتعليم الدمجي </span></p>",
+    "assessment": 2,
+    "upper_limit": 84.0,
+    "lower_limit": 63.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 4,
+  "fields": {
+    "title": null,
+    "description": "<h5><strong>المستوى المحتمل لاضطراب طيف التوحد</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">لا توجد مشكلة محددة</span></h6>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h5><strong>النسب المئوية للاستجابة على بنود الاستبيان</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">الإخفاق في الاستجابة على أقل من 10% من بنود الاستبيان.</span></h6>",
+    "assessment": 3,
+    "upper_limit": 30.0,
+    "lower_limit": 27.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 5,
+  "fields": {
+    "title": null,
+    "description": "<h5><strong>المستوى المحتمل لاضطراب طيف التوحد</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">بسيط</span></h6>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h5><strong>النسب المئوية للاستجابة على بنود الاستبيان</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">الإخفاق في الاستجابة على&nbsp; 10% - إلى أقل من 30% من بنود الاستبيان.</span></h6>",
+    "assessment": 3,
+    "upper_limit": 36.0,
+    "lower_limit": 31.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 6,
+  "fields": {
+    "title": null,
+    "description": "<h5><strong>المستوى المحتمل لاضطراب طيف التوحد</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">متوسط</span></h6>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h5><strong>النسب المئوية للاستجابة على بنود الاستبيان</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">الإخفاق في الاستجابة على&nbsp; 30% - إلى أقل من 49% من بنود الاستبيان.</span></h6>",
+    "assessment": 3,
+    "upper_limit": 40.0,
+    "lower_limit": 37.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 7,
+  "fields": {
+    "title": null,
+    "description": "<h5><strong>المستوى المحتمل لاضطراب طيف التوحد</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">شديد</span></h6>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<h5><strong>النسب المئوية للاستجابة على بنود الاستبيان</strong></h5>\r\n\r\n<h6><span dir=\"RTL\">الإخفاق في الاستجابة على أكثر من&nbsp; 50% من بنود الاستبيان.</span></h6>",
+    "assessment": 3,
+    "upper_limit": 54.0,
+    "lower_limit": 41.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 8,
+  "fields": {
+    "title": null,
+    "description": "<h5>اذهب الي المدرسة</h5>",
+    "assessment": 16,
+    "upper_limit": 30.0,
+    "lower_limit": 21.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 9,
+  "fields": {
+    "title": null,
+    "description": "<h5>لا توجد مشكلة نمائية محددة&nbsp;</h5>",
+    "assessment": 5,
+    "upper_limit": 49.0,
+    "lower_limit": 40.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 10,
+  "fields": {
+    "title": null,
+    "description": "<h6>إضطراب طيف توحد بسيط</h6>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>تمثل النتيجة الموضحة&nbsp; تشخيص محتمل في ضوء الإستجابة على بنود المقياس ، و يجب ان يتم عرض على أخصائي طب نفسي لتأكيد التشخيص</p>",
+    "assessment": 5,
+    "upper_limit": 70.0,
+    "lower_limit": 50.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 11,
+  "fields": {
+    "title": null,
+    "description": "<h5>إضطراب طيف توحد متوسط</h5>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>تمثل النتيجة الموضحة&nbsp; تشخيص محتمل في ضوء الإستجابة على بنود المقياس ، و يجب ان يتم عرض على أخصائي طب نفسي لتأكيد التشخيص</p>",
+    "assessment": 5,
+    "upper_limit": 100.0,
+    "lower_limit": 71.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 12,
+  "fields": {
+    "title": null,
+    "description": "<h5>إضطراب طيف توحد شديد</h5>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>تمثل النتيجة الموضحة&nbsp; تشخيص محتمل في ضوء الإستجابة على بنود المقياس ، و يجب ان يتم عرض على أخصائي طب نفسي لتأكيد التشخيص</p>",
+    "assessment": 5,
+    "upper_limit": 160.0,
+    "lower_limit": 101.0
+  }
+},
+{
+  "model": "assessments.action",
+  "pk": 13,
+  "fields": {
+    "title": null,
+    "description": "<p style=\"text-align:right\">( 100 &ndash; 120&nbsp; &nbsp; )&nbsp; أنت موظف منضبط وملتزم وظيفيا وذو أخلاق عمل رائعة وقيم عالية .</p>\r\n\r\n<p style=\"text-align:right\">( 80 &ndash; 100 )&nbsp; أنت موظف غالبا ما تنضبط في عملك ولديك بعضا من الأخلاقيات الرائعة في العمل</p>\r\n\r\n<p style=\"text-align:right\">( 60 &ndash; 80 )&nbsp; أنت موظف عادي لديك بعضا من أخلاقيات العمل وبعضا من التفريط في العمل</p>\r\n\r\n<p style=\"text-align:right\">( 40 &ndash; 60 ) أنت موظف تحتاج للكثير من الانضباط ورفع مدى التزامك بأخلاقيات العمل .</p>\r\n\r\n<p style=\"text-align:right\">( أقل من 40 )&nbsp; لا تعليق فأنت من تحكم على هذا المستوى المنخفض من اخلاقيات العمل</p>\r\n\r\n<p>&nbsp;</p>",
+    "assessment": 17,
+    "upper_limit": 120.0,
+    "lower_limit": 40.0
+  }
+}
+]

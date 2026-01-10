@@ -1,0 +1,16 @@
+[
+{
+  "model": "children.child",
+  "pk": 1,
+  "fields": {
+    "name": "Adham Elsha3ehr",
+    "date_of_birth": "2025-04-23",
+    "gender": "male",
+    "image": "children/478/WhatsApp_Image_2025-03-06_at_18.44.48_UeaVysp.jpeg",
+    "parent": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "specialists": []
+  }
+}
+]

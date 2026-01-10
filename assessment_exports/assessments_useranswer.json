@@ -1,0 +1,3460 @@
+[
+{
+  "model": "assessments.useranswer",
+  "pk": 10183,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 79,
+    "question_title": "يفضل اللعب الفردي (فمثلا لا يشارك أقرانه اللعب و قد يجلس بمفرده في ركن الحجرة).",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10184,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 80,
+    "question_title": "يبدى تجاوباً عاطفياً مع الآخرين بما في ذلك الوالدين والأخوة (يستجيب بإيجابية لمحاولة احتضانه أو ضمه).",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10185,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 81,
+    "question_title": "يفتقد إلى مهارات المبادأة ( لا يبدأ بالكلام ، لا يطلب من أقرانه اللعب معه) .",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10186,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 82,
+    "question_title": "يستجيب للتعليمات الموجهة له بعد تكرارها عدة مرات (مثل الاستجابة لاسمه أو الاستجابة للقيام بفعل محدد كالتصفيق)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10187,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 83,
+    "question_title": "يجد صعوبة في تقليد الأفعال الحركية البسيطة كالتصفيق",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10188,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 84,
+    "question_title": "يستطيع المحافظة على استمرار مشاركته للأقران في اللعب والأنشطة المختلفة.",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10189,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 85,
+    "question_title": "يلعب بالأدوات والألعاب بصورة متكررة ونمطية",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10190,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 114,
+    "question_title": "يبدو لعبه غريباً (يهتم بأجزاء الأشياء،لا يستخدم الألعاب والأدوات كما صممت للعب بها، فمثلاً يقلب السيارة  ويلف عجل السيارة)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10191,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 354,
+    "question_title": "يفضل أن يكون برفقة الكبار عن أن يكون مع أقرانه من نفس العمر",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10192,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 321,
+    "question_title": "يتجنب التواصل البصري (النظر في العيون) مع الآخرين، أو ينظر بطريقة غير معتادة للأشخاص أو الأشياء",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10193,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 322,
+    "question_title": "يظهر فهم واستخدام مناسب للتعبيرات الانفعالية في المواقف (مثل الفرح، الحزن.......)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10194,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 323,
+    "question_title": "يصعب عليه فهم واستخدام لغة البدن (مثل الإيماءات والإشارات كإيماءات القبول والرفض)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10195,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 324,
+    "question_title": "لديه تأخر أو غياب في استخدام اللغة المنطوقة للتعبير عن حاجاته",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10196,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 325,
+    "question_title": "يجد صعوبة في مهارات المحادثة (مثل بدء وإنهاء المحادثة وعدم مقاطعة الآخرين أثناء الكلام)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10197,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 326,
+    "question_title": "يقوم بترديد كلما ت أو عبارات سمعها للتو أو منذ فترة",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10198,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 327,
+    "question_title": "طريقة كلام غير معتادة من حيث المعدل (كلام سريع أو بطئ) و النغمة (نغمة الصوت رتيبة أو مفاجئة) و الطبقة (صوت منخفض أو مرتفع )",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10199,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 328,
+    "question_title": "يخلط في استخدام الضمائر المنفصلة أو المتصلة (أنا- أنت- هو...كتابي- كتابك...)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10200,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 329,
+    "question_title": "تتمحور اللغة بشكل أساسي حول اهتماماته الخاصة",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10201,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 330,
+    "question_title": "يسعى لجذب انتباه الآخرين لما يقوم به من أفعال (يظهر أو يعرض عليهم ما يقوم به من أعمال)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10202,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 331,
+    "question_title": "يجد صعوبة في التعبير عن الألم أو التعب و رغبته في الحصول على راحة (فمثلا يتحرك أو يسكن بشكل غير معتاد وقد ينخرط في نوبة غضب)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10203,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 332,
+    "question_title": "يسعى إلى الحفاظ على ثبات البيئة من حوله (ترتيب الأثاث ومواضع الأشياء)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10204,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 333,
+    "question_title": "يحاول التمسك بروتين يومي أو نظام ثابت لا يتغير (الإصرار على الأكل أو المشي بطريقة معينة، الإصرار على نوع محدد من الطعام)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10205,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 335,
+    "question_title": "يظهر تمسكاً شديداً بأشياء غير ذات قيمة أو تافهة (مثل ورقة جرائد أو حبل)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10206,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 336,
+    "question_title": "يظهر سلوك أو أكثر من السلوكيات النمطية (مثل هز الجسم، الرفرفة بالذراعين، أو المشي على أطراف القدمين)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10207,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 337,
+    "question_title": "يتقبل ويتكيف للتغييرات التي تُجرى من حوله دون إعطاء ردود أفعال قوية",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10208,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 338,
+    "question_title": "تتقلب الحالة المزاجية من الحزن إلى الفرح والسعادة أو العكس دون سبب واضح",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 26,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10209,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 339,
+    "question_title": "يظهر قلقاً واضحاً أو مخاوف تجاه بعض المثيرات التي لا تستدعي هذه الاستجابة (مثل الخوف من بعض الألعاب أو الأدوات)",
+    "user_assessment": 394,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 27,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10210,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 340,
+    "question_title": "يتسم بسلامة النية ويفهم المعنى الحرفي للغة (فمثلاً لا يفهم النكات ويأخذ ما يقال على مأخذ الجد)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 28,
+    "selected_options": [
+      1306
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10211,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 341,
+    "question_title": "يظهر تفاوت بين الأداء المرتفع في بعض القدرات والأداء المتواضع في قدرات أخري (قدرة جيدة على التذكر البصري لمواضع الأشياء، وصعوبة واضحة في إتباع التعليمات)",
+    "user_assessment": 394,
+    "answer": "يحدث دائماً",
+    "type": "radio",
+    "score": null,
+    "order": 29,
+    "selected_options": [
+      1312
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10212,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 342,
+    "question_title": "ينصرف اهتمامه عن الإدراك الكلي للموقف أو المثير إلى جزء منه (مثل اللون، الشكل)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 30,
+    "selected_options": [
+      1314
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10213,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 343,
+    "question_title": "يمارس الأنشطة التخيلية أو التظاهرية (مثل إطعام الدمية أو التحدث إليها)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 31,
+    "selected_options": [
+      1318
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10214,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 344,
+    "question_title": "يظهر انشغالا دائماً ببعض الموضوعات المحدودة أو الأشياء (مثل السيارات، الأشياء الحمراء، حالة الطقس)",
+    "user_assessment": 394,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 32,
+    "selected_options": [
+      1323
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10215,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 345,
+    "question_title": "يتعلم بصورة أفضل من خلال الصور والكلمات عن التعليمات الشفوية",
+    "user_assessment": 394,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 33,
+    "selected_options": [
+      1327
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10216,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 346,
+    "question_title": "يفضل الانخراط في أنشطة نمطية ومتكررة عن ممارسة أنشطة جديدة",
+    "user_assessment": 394,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 34,
+    "selected_options": [
+      1331
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10217,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 347,
+    "question_title": "يستجيب بصورة غير معتادة للاقتراب البدني من الآخرين (فمثلاً يرفض احتضان أو ملامسة الآخرين له أو يتقبل ذلك بسلبية)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 35,
+    "selected_options": [
+      1334
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10218,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 348,
+    "question_title": "ينظر بطريقة غير معتادة للأشياء (النظرة الجانبية، وقد يمرر يديه أمام عينيه بصورة غير مألوفة)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 36,
+    "selected_options": [
+      1338
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10219,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 349,
+    "question_title": "يستجيب بشكل مبالغ فيه لبعض الأصوات وخاصة المرتفعة  وقد يضع يديه على أذنيه نتيجة لذلك",
+    "user_assessment": 394,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 37,
+    "selected_options": [
+      1343
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10220,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 350,
+    "question_title": "يجد صعوبة في الأنشطة الحركية الدقيقة (كالكتابة أو إحكام غلق الأزرار)",
+    "user_assessment": 394,
+    "answer": "يحدث دائماً",
+    "type": "radio",
+    "score": null,
+    "order": 38,
+    "selected_options": [
+      1348
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10221,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 351,
+    "question_title": "لديه خلل وظيفي في حاستي الشم والتذوق (فمثلا قد يأكل أشياء غير صالحة للأكل أو يشم أي شئ في متناول يده)",
+    "user_assessment": 394,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 39,
+    "selected_options": [
+      1350
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10222,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 352,
+    "question_title": "يظهر اضطراباً واضحا في الحركة (نشاط زائد، خمول وعدم رغبة في الحركة، المشي بشكل متزن)",
+    "user_assessment": 394,
+    "answer": "لا يحدث مطلقا",
+    "type": "radio",
+    "score": null,
+    "order": 40,
+    "selected_options": [
+      1353
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10223,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 79,
+    "question_title": "يفضل اللعب الفردي (فمثلا لا يشارك أقرانه اللعب و قد يجلس بمفرده في ركن الحجرة).",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10224,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 80,
+    "question_title": "يبدى تجاوباً عاطفياً مع الآخرين بما في ذلك الوالدين والأخوة (يستجيب بإيجابية لمحاولة احتضانه أو ضمه).",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10225,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 81,
+    "question_title": "يفتقد إلى مهارات المبادأة ( لا يبدأ بالكلام ، لا يطلب من أقرانه اللعب معه) .",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10226,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 82,
+    "question_title": "يستجيب للتعليمات الموجهة له بعد تكرارها عدة مرات (مثل الاستجابة لاسمه أو الاستجابة للقيام بفعل محدد كالتصفيق)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10227,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 83,
+    "question_title": "يجد صعوبة في تقليد الأفعال الحركية البسيطة كالتصفيق",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10228,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 84,
+    "question_title": "يستطيع المحافظة على استمرار مشاركته للأقران في اللعب والأنشطة المختلفة.",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10229,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 85,
+    "question_title": "يلعب بالأدوات والألعاب بصورة متكررة ونمطية",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10230,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 114,
+    "question_title": "يبدو لعبه غريباً (يهتم بأجزاء الأشياء،لا يستخدم الألعاب والأدوات كما صممت للعب بها، فمثلاً يقلب السيارة  ويلف عجل السيارة)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10231,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 354,
+    "question_title": "يفضل أن يكون برفقة الكبار عن أن يكون مع أقرانه من نفس العمر",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10232,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 321,
+    "question_title": "يتجنب التواصل البصري (النظر في العيون) مع الآخرين، أو ينظر بطريقة غير معتادة للأشخاص أو الأشياء",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10233,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 322,
+    "question_title": "يظهر فهم واستخدام مناسب للتعبيرات الانفعالية في المواقف (مثل الفرح، الحزن.......)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10234,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 323,
+    "question_title": "يصعب عليه فهم واستخدام لغة البدن (مثل الإيماءات والإشارات كإيماءات القبول والرفض)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10235,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 324,
+    "question_title": "لديه تأخر أو غياب في استخدام اللغة المنطوقة للتعبير عن حاجاته",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10236,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 325,
+    "question_title": "يجد صعوبة في مهارات المحادثة (مثل بدء وإنهاء المحادثة وعدم مقاطعة الآخرين أثناء الكلام)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10237,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 326,
+    "question_title": "يقوم بترديد كلما ت أو عبارات سمعها للتو أو منذ فترة",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10238,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 327,
+    "question_title": "طريقة كلام غير معتادة من حيث المعدل (كلام سريع أو بطئ) و النغمة (نغمة الصوت رتيبة أو مفاجئة) و الطبقة (صوت منخفض أو مرتفع )",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10239,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 328,
+    "question_title": "يخلط في استخدام الضمائر المنفصلة أو المتصلة (أنا- أنت- هو...كتابي- كتابك...)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10240,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 329,
+    "question_title": "تتمحور اللغة بشكل أساسي حول اهتماماته الخاصة",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10241,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 330,
+    "question_title": "يسعى لجذب انتباه الآخرين لما يقوم به من أفعال (يظهر أو يعرض عليهم ما يقوم به من أعمال)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10242,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 331,
+    "question_title": "يجد صعوبة في التعبير عن الألم أو التعب و رغبته في الحصول على راحة (فمثلا يتحرك أو يسكن بشكل غير معتاد وقد ينخرط في نوبة غضب)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10243,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 332,
+    "question_title": "يسعى إلى الحفاظ على ثبات البيئة من حوله (ترتيب الأثاث ومواضع الأشياء)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10244,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 333,
+    "question_title": "يحاول التمسك بروتين يومي أو نظام ثابت لا يتغير (الإصرار على الأكل أو المشي بطريقة معينة، الإصرار على نوع محدد من الطعام)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10245,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 335,
+    "question_title": "يظهر تمسكاً شديداً بأشياء غير ذات قيمة أو تافهة (مثل ورقة جرائد أو حبل)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10246,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 336,
+    "question_title": "يظهر سلوك أو أكثر من السلوكيات النمطية (مثل هز الجسم، الرفرفة بالذراعين، أو المشي على أطراف القدمين)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10247,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 337,
+    "question_title": "يتقبل ويتكيف للتغييرات التي تُجرى من حوله دون إعطاء ردود أفعال قوية",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10248,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 338,
+    "question_title": "تتقلب الحالة المزاجية من الحزن إلى الفرح والسعادة أو العكس دون سبب واضح",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 26,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10249,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 339,
+    "question_title": "يظهر قلقاً واضحاً أو مخاوف تجاه بعض المثيرات التي لا تستدعي هذه الاستجابة (مثل الخوف من بعض الألعاب أو الأدوات)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 27,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10250,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 340,
+    "question_title": "يتسم بسلامة النية ويفهم المعنى الحرفي للغة (فمثلاً لا يفهم النكات ويأخذ ما يقال على مأخذ الجد)",
+    "user_assessment": 395,
+    "answer": "يحدث دائماً",
+    "type": "radio",
+    "score": null,
+    "order": 28,
+    "selected_options": [
+      1308
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10251,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 341,
+    "question_title": "يظهر تفاوت بين الأداء المرتفع في بعض القدرات والأداء المتواضع في قدرات أخري (قدرة جيدة على التذكر البصري لمواضع الأشياء، وصعوبة واضحة في إتباع التعليمات)",
+    "user_assessment": 395,
+    "answer": "لا يحدث مطلقا",
+    "type": "radio",
+    "score": null,
+    "order": 29,
+    "selected_options": [
+      1309
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10252,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 342,
+    "question_title": "ينصرف اهتمامه عن الإدراك الكلي للموقف أو المثير إلى جزء منه (مثل اللون، الشكل)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 30,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10253,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 343,
+    "question_title": "يمارس الأنشطة التخيلية أو التظاهرية (مثل إطعام الدمية أو التحدث إليها)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 31,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10254,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 344,
+    "question_title": "يظهر انشغالا دائماً ببعض الموضوعات المحدودة أو الأشياء (مثل السيارات، الأشياء الحمراء، حالة الطقس)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 32,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10255,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 345,
+    "question_title": "يتعلم بصورة أفضل من خلال الصور والكلمات عن التعليمات الشفوية",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 33,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10256,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 346,
+    "question_title": "يفضل الانخراط في أنشطة نمطية ومتكررة عن ممارسة أنشطة جديدة",
+    "user_assessment": 395,
+    "answer": "يحدث دائماً",
+    "type": "radio",
+    "score": null,
+    "order": 34,
+    "selected_options": [
+      1332
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10257,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 347,
+    "question_title": "يستجيب بصورة غير معتادة للاقتراب البدني من الآخرين (فمثلاً يرفض احتضان أو ملامسة الآخرين له أو يتقبل ذلك بسلبية)",
+    "user_assessment": 395,
+    "answer": "يحدث دائماً",
+    "type": "radio",
+    "score": null,
+    "order": 35,
+    "selected_options": [
+      1336
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10258,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 348,
+    "question_title": "ينظر بطريقة غير معتادة للأشياء (النظرة الجانبية، وقد يمرر يديه أمام عينيه بصورة غير مألوفة)",
+    "user_assessment": 395,
+    "answer": "لا يحدث مطلقا",
+    "type": "radio",
+    "score": null,
+    "order": 36,
+    "selected_options": [
+      1337
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10259,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 349,
+    "question_title": "يستجيب بشكل مبالغ فيه لبعض الأصوات وخاصة المرتفعة  وقد يضع يديه على أذنيه نتيجة لذلك",
+    "user_assessment": 395,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 37,
+    "selected_options": [
+      1343
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10260,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 350,
+    "question_title": "يجد صعوبة في الأنشطة الحركية الدقيقة (كالكتابة أو إحكام غلق الأزرار)",
+    "user_assessment": 395,
+    "answer": "يحدث قليلاً",
+    "type": "radio",
+    "score": null,
+    "order": 38,
+    "selected_options": [
+      1346
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10261,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 351,
+    "question_title": "لديه خلل وظيفي في حاستي الشم والتذوق (فمثلا قد يأكل أشياء غير صالحة للأكل أو يشم أي شئ في متناول يده)",
+    "user_assessment": 395,
+    "answer": "يحدث كثيراً",
+    "type": "radio",
+    "score": null,
+    "order": 39,
+    "selected_options": [
+      1351
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10262,
+  "fields": {
+    "assessment": 5,
+    "user": [
+      "sohype.mop+10@gmail.com"
+    ],
+    "question": 352,
+    "question_title": "يظهر اضطراباً واضحا في الحركة (نشاط زائد، خمول وعدم رغبة في الحركة، المشي بشكل متزن)",
+    "user_assessment": 395,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 40,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10263,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 353,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10264,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 357,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": [
+      1371
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10265,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 358,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": [
+      1374
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10266,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 359,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": [
+      1378
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10267,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 361,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": [
+      1381
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10268,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 362,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": [
+      1384
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10269,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 363,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": [
+      1386
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10270,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 364,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": [
+      1391
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10271,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 365,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": [
+      1393
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10272,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 366,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10273,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 367,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10274,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 368,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10275,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 369,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10276,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 370,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10277,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 371,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10278,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 372,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10279,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 373,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10280,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 374,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10281,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 375,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10282,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 376,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10283,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 377,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10284,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 378,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10285,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 379,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10286,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 380,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10287,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 381,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 396,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": [
+      1441
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10288,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 353,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": [
+      1366
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10289,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 357,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": [
+      1370
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10290,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 358,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": [
+      1374
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10291,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 359,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": [
+      1377
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10292,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 361,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": [
+      1380
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10293,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 362,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": [
+      1385
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10294,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 363,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": [
+      1387
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10295,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 364,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": [
+      1390
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10296,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 365,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": [
+      1392
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10297,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 366,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": [
+      1396
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10298,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 367,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": [
+      1400
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10299,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 368,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": [
+      1401
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10300,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 369,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": [
+      1405
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10301,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 370,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": [
+      1409
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10302,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 371,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": [
+      1411
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10303,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 372,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": [
+      1413
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10304,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 373,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": [
+      1418
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10305,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 374,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": [
+      1420
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10306,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 375,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": [
+      1423
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10307,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 376,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": [
+      1427
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10308,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 377,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": [
+      1428
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10309,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 378,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": [
+      1432
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10310,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 379,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ب",
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": [
+      1435
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10311,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 380,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "ج",
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": [
+      1439
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10312,
+  "fields": {
+    "assessment": 15,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 381,
+    "question_title": "إختر صورة من الصور التالية",
+    "user_assessment": 397,
+    "answer": "أ",
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": [
+      1440
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10313,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 736,
+    "question_title": "أن يحرك الطالب أصبعه إلى الهدف المحدد على الشاشة",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10314,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 737,
+    "question_title": "أن يضغط الطالب على الهدف بأصبعه  مرة واحدة",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10315,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 738,
+    "question_title": "أن يضغط الطالب على الهدف بأصبعه مرتين متتاليتين بسرعة",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10316,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 739,
+    "question_title": "أن يلون الطالب مساحات مختلفة الأحجام من خلال ملء التعبئة بأصبعه.",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10317,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 740,
+    "question_title": "أن يلون الطالب الصور بالضغط المستمر بأصبعه",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10318,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 741,
+    "question_title": "أن يسحب الطالب الصورة ويسقطها باستخدام أصبعه",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10319,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 742,
+    "question_title": "أن يفتح الطالب البرامج المختلفة باستخدام أصبعه",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10320,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 743,
+    "question_title": "أن يحرك الطالب الصورة فى اتجاهات مختلفة بأصبعه",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10321,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 744,
+    "question_title": "أن يفتح الطالب مكان اللعبة على (My Computer)",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10322,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 745,
+    "question_title": "أن يفتح الطالب اللعبة",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10323,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 746,
+    "question_title": "أن يقوم باختيار مستوى اللعبة (Level1,Level2,Level3)",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10324,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 747,
+    "question_title": "أن يمارس اللعبة بالضغط على (Play)",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10325,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 748,
+    "question_title": "أن يوقف اللعبة بالضغط على (Pause)",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10326,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 749,
+    "question_title": "أن يغلق اللعبة بالضغط على (Exit)",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10327,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 750,
+    "question_title": "أن يضع الطالب الأسطوانة داخل مشغل الأسطوانات   CD ROM",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10328,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 751,
+    "question_title": "أن يختار نشاط من بين أنشطة الأسطوانة",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10329,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 752,
+    "question_title": "أن يخرج من النشاط إلى الصفحة الرئيسية",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10330,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 753,
+    "question_title": "أن يفتح الطالب ملفات أغاني",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10331,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 754,
+    "question_title": "أن يشغل الطالب الأغنية",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10332,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 755,
+    "question_title": "أن يوقف الطالب الأغنية",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10333,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 756,
+    "question_title": "أن يغلق الطالب الأغنية",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10334,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 757,
+    "question_title": "أن يفتح الطالب ملفات أفلام",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10335,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 758,
+    "question_title": "أن يشغل الطالب الفيلم",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10336,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 759,
+    "question_title": "أن يوقف الطالب الفيلم",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10337,
+  "fields": {
+    "assessment": 31,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 760,
+    "question_title": "أن يغلق الطالب الفيلم",
+    "user_assessment": 398,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10338,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 673,
+    "question_title": "أن يطابق الطالب  مجسم بمجسم.",
+    "user_assessment": 399,
+    "answer": "مطابقة 10 مجسمات فى عرض من 3 مجسمات.",
+    "type": "radio",
+    "score": null,
+    "order": 1,
+    "selected_options": [
+      2416
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10339,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 675,
+    "question_title": "أن يطابق الطالب  صورة بمجسم بشكل دقيق (يضع صورة كوب مع مجسم الكوب )",
+    "user_assessment": 399,
+    "answer": "مطابقة صورة بمجسم من خلال عرض 3 صور في عرض 3 مجسمات",
+    "type": "radio",
+    "score": null,
+    "order": 2,
+    "selected_options": [
+      2422
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10340,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 676,
+    "question_title": "أن يطابق الطالب  مجسم بصورة بشكل دقيق (مكعب مع صورة المكعب المطابق له)",
+    "user_assessment": 399,
+    "answer": "مطابقة مجسم بصورة من خلال عرض 3 مجسمات و6 صور",
+    "type": "radio",
+    "score": null,
+    "order": 3,
+    "selected_options": [
+      2426
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10341,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 677,
+    "question_title": "أن يستجيب الطفل لمثير بصري محدد من خلال أداء حركات محددة.",
+    "user_assessment": 399,
+    "answer": "الاستجابة إلى 4 مثيرات بصرية بأداء فعل حركي وحد لكل مثير.",
+    "type": "radio",
+    "score": null,
+    "order": 4,
+    "selected_options": [
+      2428
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10342,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 674,
+    "question_title": "أن يطابق الطالب  صورة بصورة",
+    "user_assessment": 399,
+    "answer": ".مطابقة 5 صور فى عرض من صورتين.",
+    "type": "radio",
+    "score": null,
+    "order": 5,
+    "selected_options": [
+      2418
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10343,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 679,
+    "question_title": "أن يفرز مجموعة من الأشياء التي تعطي له مع إعطائه نموذج أو عينه من هذه الأشياء.",
+    "user_assessment": 399,
+    "answer": "يفرز الأشياء وفقاً لصفة واحدة (مثل اللون أو الشكل، أو الحجم).",
+    "type": "radio",
+    "score": null,
+    "order": 6,
+    "selected_options": [
+      2433
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10344,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 680,
+    "question_title": "أن يصنف الطفل العناصر أو الأشياء في الفئات المناسبة (ملاعق-مكعبات)",
+    "user_assessment": 399,
+    "answer": "يصنف 4عناصر ( ل3فئات) في عرض من 3 مجموعات.",
+    "type": "radio",
+    "score": null,
+    "order": 7,
+    "selected_options": [
+      2436
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10345,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 678,
+    "question_title": "أن يشير الطفل إلي شكل محدد \"رمز\" وسط مجموعة أخرى من الأشكال المختلفة (شطب شكل المثلث بين مجموعة أشكاله) .",
+    "user_assessment": 399,
+    "answer": "يستخرج رمزين من الجدول بنسية نجاح 80%.",
+    "type": "radio",
+    "score": null,
+    "order": 8,
+    "selected_options": [
+      2431
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10346,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 681,
+    "question_title": "أن يركب بازل منتظم الشكل(الاشكال الهندسية)",
+    "user_assessment": 399,
+    "answer": "شكلين من خلال المحاولة والخطأ.",
+    "type": "radio",
+    "score": null,
+    "order": 9,
+    "selected_options": [
+      2438
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10347,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 683,
+    "question_title": "أن يركب الطفل بازل غير منتظم متعدد القطع ( الفاكهة- الخضروات)",
+    "user_assessment": 399,
+    "answer": "3 بازل من 3-4 قطع.",
+    "type": "radio",
+    "score": null,
+    "order": 10,
+    "selected_options": [
+      2445
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10348,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 684,
+    "question_title": "أن يركب الطفل بازل متعدد القطع متصل داخل اطار ذو حدود مربعة",
+    "user_assessment": 399,
+    "answer": "3 بازل مكون من 4-6 قطع.",
+    "type": "radio",
+    "score": null,
+    "order": 11,
+    "selected_options": [
+      2448
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10349,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 682,
+    "question_title": "أن يركب بازل غير  منتظم الشكل ذو حدود مربعة.",
+    "user_assessment": 399,
+    "answer": "شكلين من خلال النظر وتحديد الموضع.",
+    "type": "radio",
+    "score": null,
+    "order": 12,
+    "selected_options": [
+      2442
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10350,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 685,
+    "question_title": "أن يطابق الطفل مجموعة من المكعبات علي كارت التصميم الخاص بهذه المكعبات في اماكنها الصحيحة.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 13,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10351,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 687,
+    "question_title": "أن يحاكي الطفل كارت تصميم من خلال وضع الأجزاء المكونة للشكل في الأماكن الصحيحة مقابلة للكارت .",
+    "user_assessment": 399,
+    "answer": "3 أشكال مكون من 6-8 قطع.",
+    "type": "radio",
+    "score": null,
+    "order": 14,
+    "selected_options": [
+      2458
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10352,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 688,
+    "question_title": "أن يكون الطفل نموذج ثلاثي الأبعاد( يبني شكل من المكعبات مماثل لنموذج أمامه).",
+    "user_assessment": 399,
+    "answer": "3 نماذج تصميم مكون من 4 قطع.",
+    "type": "radio",
+    "score": null,
+    "order": 15,
+    "selected_options": [
+      2460
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10353,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 689,
+    "question_title": "أن يطابق الطفل نمط تتابع بصري (نمط مكون من 4 قطع متكررة).",
+    "user_assessment": 399,
+    "answer": "مطابقة نموذج تتابع بصري مكون من عنصرين من خلال الحث البصري.",
+    "type": "radio",
+    "score": null,
+    "order": 16,
+    "selected_options": [
+      2462
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10354,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 690,
+    "question_title": "أن يكمل الطفل نمط تتابع بصري (نمط مكون من 4 قطع متكررة).",
+    "user_assessment": 399,
+    "answer": "مطابقة نموذج تتابع بصري مكون من عنصرين من خلال الحث البصري.",
+    "type": "radio",
+    "score": null,
+    "order": 17,
+    "selected_options": [
+      2465
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10355,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 686,
+    "question_title": "أن يكمل الطفل مجموعة من المكعبات لتطابق كارت التصميم الخاص  بهذه المكعبات.",
+    "user_assessment": 399,
+    "answer": "3 كروت تصميم من 4-5 قطع.",
+    "type": "radio",
+    "score": null,
+    "order": 18,
+    "selected_options": [
+      2454
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10356,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 692,
+    "question_title": "أن يرتب الطفل مجموعة من الأشياء علي متصل وفقاً لصفة محددة (مثل الحجم – الطول-الكمية - تدرج اللون) وذلك لـ 4 مجموعات.",
+    "user_assessment": 399,
+    "answer": ".4مجموعات من العناصر وفقاً لأربع صفات. (كل مجموعة وفقاً لصفة محددة)",
+    "type": "radio",
+    "score": null,
+    "order": 19,
+    "selected_options": [
+      2473
+    ]
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10357,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 691,
+    "question_title": "أن يطابق الطالب التدرج اللوني للون واحد من الغامق للفاتح والعكس.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 20,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10358,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 694,
+    "question_title": "أن يذكر أوجه الاختلاف بين صورتين متشابهتين",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 21,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10359,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 693,
+    "question_title": "أن يرتب مجموعة من الصور وفقاً لتسلسل أحداثها.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 22,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10360,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 696,
+    "question_title": "أن يشير الطفل إلى الأجزاء غير المنطقية في الصور (5 صور على الأقل).",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 23,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10361,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 695,
+    "question_title": "أن يميز أشكال محددة في خلفية متداخلة مع الأشكال",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 24,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10362,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 698,
+    "question_title": "أن يتتبع الطفل مساراً محدداً من بداية متاهة حتى نهايتها من خلال رسم خط ضمن حدود المتاهة.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 25,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10363,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 697,
+    "question_title": "أن يسمي (يتعرف على) الصور والرسومات غير مكتملة التفاصيل",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 26,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10364,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 699,
+    "question_title": "أن ينظم الطفل حركته في الفراغ من خلال تفادي العوائق والحواجز.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 27,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10365,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 700,
+    "question_title": "أن يتذكر / يتعرف الطفل علي شيء سبق أن رآه من قبل وذلك في مجموعة من الأشياء.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 28,
+    "selected_options": []
+  }
+},
+{
+  "model": "assessments.useranswer",
+  "pk": 10366,
+  "fields": {
+    "assessment": 29,
+    "user": [
+      "sohype.mop+100@gmail.com"
+    ],
+    "question": 701,
+    "question_title": "أن يستدعي / يتذكر الطفل تسلسل محدد من الأشياء بالترتيب  الصحيح الذي رآه بعد مرور 5 ثواني.",
+    "user_assessment": 399,
+    "answer": null,
+    "type": "radio",
+    "score": null,
+    "order": 29,
+    "selected_options": []
+  }
+}
+]

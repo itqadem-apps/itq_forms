@@ -1,0 +1,68 @@
+[
+{
+  "model": "sponsors.sponsor",
+  "pk": 1,
+  "fields": {
+    "title": {
+      "ar": "البنك الأهلى المصري",
+      "en": "NATIONAL BANK OF EGYPT"
+    },
+    "role": {
+      "ar": "بشراكة مع",
+      "en": " in partnership with\n"
+    },
+    "description": {
+      "ar": "البنك الأهلى المصري",
+      "en": "NATIONAL BANK OF EGYPT\n"
+    },
+    "cover": "sponsors_pictures/NBE_iqtkEyk.svg",
+    "is_active": true,
+    "deleted_at": null,
+    "inverted_cover": "sponsors_pictures/Wnbe_ujLBwe3.svg"
+  }
+},
+{
+  "model": "sponsors.sponsor",
+  "pk": 2,
+  "fields": {
+    "title": {
+      "ar": "مؤسسة دروسوس",
+      "en": "DROSOS FOUNDATION"
+    },
+    "role": {
+      "ar": "برعاية",
+      "en": "supported by"
+    },
+    "description": {
+      "ar": "مؤسسة دروسوس",
+      "en": "DROSOS FOUNDATION"
+    },
+    "cover": "sponsors_pictures/DrososLogoPrint_sWLeQLh.svg",
+    "is_active": true,
+    "deleted_at": null,
+    "inverted_cover": "sponsors_pictures/Drosos2_U1X4G9s.svg"
+  }
+},
+{
+  "model": "sponsors.sponsor",
+  "pk": 3,
+  "fields": {
+    "title": {
+      "ar": "جمعية التقدم ",
+      "en": "Advance Society"
+    },
+    "role": {
+      "ar": "تحت إدارة ",
+      "en": "Powered by"
+    },
+    "description": {
+      "ar": "...........",
+      "en": ".........."
+    },
+    "cover": "images/sponsors_pictures/logo-text-ar-white-yellow_1.svg",
+    "is_active": true,
+    "deleted_at": null,
+    "inverted_cover": "images/sponsors_pictures/logo-text-ar-white-yellow_1_l5GjwRs.svg"
+  }
+}
+]

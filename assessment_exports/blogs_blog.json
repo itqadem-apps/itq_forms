@@ -1,0 +1,622 @@
+[
+{
+  "model": "blogs.blog",
+  "pk": 1,
+  "fields": {
+    "status": "published",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج المهارات الأساسية للإستعداد للدمج"
+    },
+    "description": {
+      "ar": "<p>منهج المهارات الأساسية للإستعداد للدمج</p>"
+    },
+    "short_description": {
+      "ar": "منهج المهارات الأساسية للإستعداد للدمج"
+    },
+    "slug": "منهج-المهارات-الأساسية-للإستعداد-للدمج",
+    "language": "ar",
+    "created_at": "2023-02-26T15:35:07.762Z",
+    "updated_at": "2023-03-04T14:40:48.706Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 2,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 2,
+  "fields": {
+    "status": "published",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج دعم الدمج للصف الأول الإبتدائي"
+    },
+    "description": {
+      "ar": "<p>منهج دعم الدمج للصف الأول الإبتدائي</p>"
+    },
+    "short_description": {
+      "ar": "منهج دعم الدمج للصف الأول الإبتدائي"
+    },
+    "slug": "منهج-دعم-الدمج-للصف-الأول-الإبتدائي",
+    "language": "ar",
+    "created_at": "2023-02-26T15:36:27.993Z",
+    "updated_at": "2024-05-14T11:58:56.257Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 2,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 3,
+  "fields": {
+    "status": "published",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج دعم الدمج للصف الثاني الابتدائي"
+    },
+    "description": {
+      "ar": "<p>منهج دعم الدمج للصف الثاني الابتدائي</p>"
+    },
+    "short_description": {
+      "ar": "منهج دعم الدمج للصف الثاني الابتدائي"
+    },
+    "slug": "منهج-دعم-الدمج-للصف-الثاني-الابتدائي",
+    "language": "ar",
+    "created_at": "2023-02-26T15:37:53.370Z",
+    "updated_at": "2023-03-04T14:39:58.986Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 2,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 4,
+  "fields": {
+    "status": "published",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج دعم الدمج للصف الثالث الابتدائي"
+    },
+    "description": {
+      "ar": "<p>منهج دعم الدمج للصف الثالث الابتدائي</p>"
+    },
+    "short_description": {
+      "ar": "منهج دعم الدمج للصف الثالث الابتدائي"
+    },
+    "slug": "منهج-دعم-الدمج-للصف-الثالث-الابتدائي",
+    "language": "ar",
+    "created_at": "2023-02-26T15:38:49.979Z",
+    "updated_at": "2023-12-07T12:25:30.889Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 2,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 5,
+  "fields": {
+    "status": "published",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج مهارات تكنولوجيا التعلم"
+    },
+    "description": {
+      "ar": "<p>منهج مهارات تكنولوجيا التعلم</p>"
+    },
+    "short_description": {
+      "ar": "منهج مهارات تكنولوجيا التعلم"
+    },
+    "slug": "منهج-مهارات-تكنولوجيا-التعلم",
+    "language": "ar",
+    "created_at": "2023-02-26T15:39:45.839Z",
+    "updated_at": "2023-03-04T14:39:07.189Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 2,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 6,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التأهيل المهني - فرصتي"
+    },
+    "description": {
+      "ar": "<p>منهج التأهيل المهني - فرصتي</p>"
+    },
+    "short_description": {
+      "ar": "منهج التأهيل المهني - فرصتي"
+    },
+    "slug": "منهج-التأهيل-المهني-فرصتي",
+    "language": "ar",
+    "created_at": "2023-02-26T15:40:49.137Z",
+    "updated_at": "2024-08-27T09:23:19.793Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 1,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 7,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج المهارات الحياتية والمنزلية"
+    },
+    "description": {
+      "ar": "<p>منهج المهارات الحياتية والمنزلية</p>"
+    },
+    "short_description": {
+      "ar": "منهج المهارات الحياتية والمنزلية"
+    },
+    "slug": "منهج-المهارات-الحياتية-والمنزلية",
+    "language": "ar",
+    "created_at": "2023-02-26T15:41:39.288Z",
+    "updated_at": "2024-08-27T09:22:44.221Z",
+    "deleted_at": null,
+    "category": 1,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 1,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 25,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل للتوحد - المهارات الانتقالية"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل للتوحد - المهارات الانتقالية&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل للتوحد - المهارات الانتقالية"
+    },
+    "slug": "منهج-التقدم-المتكامل-للتوحد-المهارات-الانتقالية",
+    "language": "ar",
+    "created_at": "2023-10-04T04:04:13.641Z",
+    "updated_at": "2024-08-27T08:05:56.846Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 27,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التوحد المتكامل - المهارات الحياتية"
+    },
+    "description": {
+      "ar": "<p>منهج التوحد المتكامل - المهارات الحياتية&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التوحد المتكامل - المهارات الحياتية"
+    },
+    "slug": "منهج-التوحد-المتكامل-المهارات-الحياتية",
+    "language": "ar",
+    "created_at": "2023-10-17T18:21:13.192Z",
+    "updated_at": "2024-08-27T08:05:41.107Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 28,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - المهارات المنزلية"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - المهارات المنزلية&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - المهارات المنزلية"
+    },
+    "slug": "منهج-التقدم-المتكامل-المهارات-المنزلية",
+    "language": "ar",
+    "created_at": "2023-10-23T20:18:14.230Z",
+    "updated_at": "2024-08-27T08:05:33.328Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": null,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 29,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات الأداء المعرفي البصري"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - مهارات الأداء المعرفي البصري</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - مهارات الأداء المعرفي البصري"
+    },
+    "slug": "منهج-التقدم-المتكامل-مهارات-الأداء-المعرفي-البصري",
+    "language": "ar",
+    "created_at": "2023-11-06T20:59:30.764Z",
+    "updated_at": "2024-08-27T08:05:21.346Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 44,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - الاستقلال الذاتي"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - الاستقلال الذاتي&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - الاستقلال الذاتي"
+    },
+    "slug": "منهج-التقدم-المتكامل-الاستقلال-الذاتي",
+    "language": "ar",
+    "created_at": "2023-11-15T20:02:02.394Z",
+    "updated_at": "2024-08-27T08:05:13.615Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 45,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات الترويح و شغل وقت الفراغ"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - مهارات الترويح و شغل وقت الفراغ&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - مهارات الترويح و شغل وقت الفراغ"
+    },
+    "slug": "منهج-التقدم-المتكامل-مهارات-الترويح-و-شغل-وقت-الفراغ",
+    "language": "ar",
+    "created_at": "2023-11-19T20:49:28.969Z",
+    "updated_at": "2024-08-27T08:05:03.500Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 46,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات التقليد الحركى"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - مهارات التقليد الحركى&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - مهارات التقليد الحركى"
+    },
+    "slug": "منهج-التقدم-المتكامل-مهارات-التقليد-الحركى",
+    "language": "ar",
+    "created_at": "2023-11-21T21:36:14.839Z",
+    "updated_at": "2024-08-27T08:04:52.045Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 47,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات اللعب"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - مهارات اللعب&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - مهارات اللعب"
+    },
+    "slug": "منهج-التقدم-المتكامل-مهارات-اللعب",
+    "language": "ar",
+    "created_at": "2023-11-24T15:11:53.042Z",
+    "updated_at": "2024-08-27T08:04:38.283Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 48,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات اللغة المرتبطة بالمشاعر والانفعالات"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - مهارات اللغة المرتبطة بالمشاعر والانفعالات&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - مهارات اللغة المرتبطة بالمشاعر والانفعالات"
+    },
+    "slug": "منهج-التقدم-المتكامل-مهارات-اللغة-المرتبطة-بالمشاعر-والانفعالات",
+    "language": "ar",
+    "created_at": "2023-11-24T16:36:01.270Z",
+    "updated_at": "2024-08-27T08:04:19.778Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 49,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - المهارات الاجتماعية"
+    },
+    "description": {
+      "ar": "<p>منهج التقدم المتكامل - المهارات الاجتماعية</p>"
+    },
+    "short_description": {
+      "ar": "منهج التقدم المتكامل - المهارات الاجتماعية"
+    },
+    "slug": "منهج-التقدم-المتكامل-المهارات-الاجتماعية",
+    "language": "ar",
+    "created_at": "2023-11-26T20:26:58.550Z",
+    "updated_at": "2024-08-27T08:04:06.932Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 50,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات التواصل باستخدام الأجهزه الالكترونية - التابلت"
+    },
+    "description": {
+      "ar": "<p>مهارات التواصل باستخدام الأجهزه الالكترونية - التابلت&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "مهارات التواصل باستخدام الأجهزه الالكترونية - التابلت"
+    },
+    "slug": "مهارات-التواصل-باستخدام-الأجهزه-الالكترونية-التابلت",
+    "language": "ar",
+    "created_at": "2023-11-27T15:45:04.265Z",
+    "updated_at": "2024-08-27T08:03:50.403Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 51,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل - مهارات الصداقة"
+    },
+    "description": {
+      "ar": "<p>مهارات الصداقة&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "مهارات الصداقة"
+    },
+    "slug": "مهارات-الصداقة",
+    "language": "ar",
+    "created_at": "2023-11-27T17:35:26.658Z",
+    "updated_at": "2024-08-27T08:03:42.714Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+},
+{
+  "model": "blogs.blog",
+  "pk": 52,
+  "fields": {
+    "status": "suspended",
+    "privacy_status": "public",
+    "title": {
+      "ar": "منهج التقدم المتكامل للتوحد - مهارات التقليد الصوتى"
+    },
+    "description": {
+      "ar": "<p>مهارات التقليد الصوتى&nbsp;</p>"
+    },
+    "short_description": {
+      "ar": "مهارات التقليد الصوتى"
+    },
+    "slug": "منهج-التقدم-المتكامل-للتوحد-مهارات-التقليد-الصوتى",
+    "language": "ar",
+    "created_at": "2023-12-10T13:48:54.002Z",
+    "updated_at": "2024-08-28T06:39:41.282Z",
+    "deleted_at": null,
+    "category": 9,
+    "price": 0.0,
+    "video_list": null,
+    "sponsor": 3,
+    "type": "curriculum",
+    "course": null,
+    "author": null,
+    "subscribers": [],
+    "enrolled_users": []
+  }
+}
+]

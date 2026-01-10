@@ -1,0 +1,164 @@
+[
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 85,
+  "fields": {
+    "user_assessment": 395,
+    "classification": 8,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 86,
+  "fields": {
+    "user_assessment": 395,
+    "classification": 9,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 87,
+  "fields": {
+    "user_assessment": 395,
+    "classification": 10,
+    "count": 3
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 88,
+  "fields": {
+    "user_assessment": 395,
+    "classification": 7,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 89,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 20,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 90,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 21,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 91,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 24,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 92,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 26,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 93,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 27,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 94,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 28,
+    "count": 1
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 95,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 15,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 96,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 16,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 97,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 17,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 98,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 22,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 99,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 23,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 100,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 29,
+    "count": 2
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 101,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 18,
+    "count": 3
+  }
+},
+{
+  "model": "assessments.userassessmentclassification",
+  "pk": 102,
+  "fields": {
+    "user_assessment": 397,
+    "classification": 19,
+    "count": 3
+  }
+}
+]

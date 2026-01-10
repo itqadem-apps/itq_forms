@@ -1,0 +1,578 @@
+[
+{
+  "model": "classifications.modeltag",
+  "pk": 26,
+  "fields": {
+    "tag": 30,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 30
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 70,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 29
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 71,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 29
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 72,
+  "fields": {
+    "tag": 6,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 29
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 79,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 75
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 179,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 180,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 181,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 182,
+  "fields": {
+    "tag": 6,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 2
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 187,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 141
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 194,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 140
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 200,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 114
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 201,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 113
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 202,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 100
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 204,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 99
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 205,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 98
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 207,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 97
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 208,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 96
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 209,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 95
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 210,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 94
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 211,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 92
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 212,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 91
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 215,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 89
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 216,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 86
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 217,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 85
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 218,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 84
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 219,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 83
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 220,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 82
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 222,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 80
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 223,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 79
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 224,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 77
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 237,
+  "fields": {
+    "tag": 30,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 144
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 259,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 81
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 261,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 156
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 262,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 157
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 263,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 157
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 264,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 158
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 265,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 158
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 266,
+  "fields": {
+    "tag": 5,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 158
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 267,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 159
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 268,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 159
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 269,
+  "fields": {
+    "tag": 4,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 159
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 270,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 160
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 271,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 160
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 272,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 161
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 273,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 161
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 274,
+  "fields": {
+    "tag": 1,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 162
+  }
+},
+{
+  "model": "classifications.modeltag",
+  "pk": 275,
+  "fields": {
+    "tag": 3,
+    "content_type": [
+      "assessments",
+      "assessment"
+    ],
+    "object_id": 162
+  }
+}
+]
