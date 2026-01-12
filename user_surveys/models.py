@@ -70,20 +70,3 @@ class UserAnswer(models.Model):
             self.question_title = self.question.title
         super().save(*args, **kwargs)
 
-
-@receiver(post_save, sender=UserAssessment)
-def _create_user_assessment_tree(sender, instance: UserAssessment, created: bool, **kwargs):
-    if not created or not instance.survey_id:
-        return
-
-    survey = instance.survey
-    for idx, question in enumerate(survey.questions.all().order_by("section__order", "order"), start=1):
-        UserAnswer.objects.create(
-            user=instance.user,
-            question=question,
-            question_title=question.title,
-            survey=instance.survey,
-            user_assessment=instance,
-            type=question.type,
-            order=idx,
-        )

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     "strawberry.django",
+    "accounts",
     'surveys',
     "taxonomy",
     "survey_collections",
@@ -123,6 +124,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL = "accounts.User"
 
 SERVICE_NAME = (
     os.environ.get("SERVICE_NAME")

@@ -8,6 +8,7 @@ from strawberry import auto
 
 
 from .models import Question, Section, Survey
+from user_surveys.models import UserAssessment
 
 
 @strawberry_django.type(Survey)
@@ -76,9 +77,10 @@ class QuestionType:
 
     @strawberry.field
     def answer_time(self) -> str | None:
-        if self.answer_time is None:
+        value = self.__dict__.get("answer_time")
+        if value is None:
             return None
-        return str(self.answer_time)
+        return str(value)
 
 
 @strawberry.type
@@ -98,3 +100,19 @@ class SurveyResultsGQL:
     items: List[SurveyType]
     total: int
     facets: List[FacetGQL]
+
+
+@strawberry_django.type(UserAssessment)
+class UserAssessmentType:
+    id: auto
+    is_paid: auto
+    survey_id: auto
+    user_id: auto
+    child_id: auto
+    count_of_ending_options: auto
+    evaluated_at: auto
+    submitted_at: auto
+    score: auto
+    progress: auto
+    last_question_id: auto
+    action_id: auto

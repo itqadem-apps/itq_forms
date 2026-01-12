@@ -1,0 +1,23 @@
+{
+  "channel": "__SLACK_CHANNEL_ID__",
+  "text": "🐳 Docker Image Pushed for __REPO__",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*🐳 Docker Image Built & Pushed for `__REPO__`!*\n• *Tag:* `__TAG__`\n• *Latest Tag Updated:* `__LATEST_TAG__`\n• *Image:* `__IMAGE_NAME__:__TAG__`\n• *Repository:* <https://github.com/__REPO__|__REPO__>\n• *Triggered By:* <https://github.com/__ACTOR__|@__ACTOR__>"
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🚀 Ready to deploy!"
+      }
+    }
+  ]
+}

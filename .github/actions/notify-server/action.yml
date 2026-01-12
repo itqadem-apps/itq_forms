@@ -1,0 +1,23 @@
+name: "Notify Server"
+description: "Call the deployment webhook"
+inputs:
+  service:
+    description: "Service name"
+    required: true
+  tag:
+    description: "Tag name"
+    required: true
+  token:
+    description: "Deployment webhook token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Notify Server
+      shell: bash
+      run: |
+        curl -X POST https://dev.itqadem.com/hooks/ghcr-image-update \
+          -H "X-Hook-Token: ${{ inputs.token }}" \
+          -H "Content-Type: application/json" \
+          -d "{\"service\": \"${{ inputs.service }}\", \"tag\": \"${{ inputs.tag }}\"}"

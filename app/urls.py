@@ -20,9 +20,12 @@ from django.views.decorators.csrf import csrf_exempt
 from strawberry.django.views import AsyncGraphQLView
 
 from app.auth import AuthedGraphQLView
+from app.health import healthz, readyz, startupz
 from surveys import schema
 
 urlpatterns = [
     path("graphql", csrf_exempt(AuthedGraphQLView.as_view(schema=schema.schema))),
-
+    path("healthz/", healthz, name="healthz"),
+    path("readyz/", readyz, name="readyz"),
+    path("startupz/", startupz, name="startupz"),
 ]

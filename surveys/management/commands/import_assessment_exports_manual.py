@@ -378,7 +378,7 @@ class Command(BaseCommand):
             raise CommandError("Unmapped data detected. " + " | ".join(summary_lines))
 
         UserModel = get_user_model()
-        user_by_email: dict[str, int] = {}
+        user_by_email: dict[str, str] = {}
 
         user_file = base_path / "users_user.json"
         if user_file.exists():
@@ -388,6 +388,7 @@ class Command(BaseCommand):
                 fields = item["fields"]
                 username = fields.get("username") or fields.get("email")
                 email = fields.get("email") or username
+                keycloak_sub = fields.get("keycloak_sub") or fields.get("id")
                 defaults = {}
                 if "username" in user_field_names and username:
                     defaults["username"] = username
@@ -411,16 +412,20 @@ class Command(BaseCommand):
                     defaults["date_joined"] = parse_dt(fields.get("date_joined"))
 
                 lookup = {}
-                if "username" in user_field_names and username:
+                if "id" in user_field_names and keycloak_sub:
+                    lookup["id"] = keycloak_sub
+                elif "username" in user_field_names and username:
                     lookup["username"] = username
                 elif "email" in user_field_names and email:
                     lookup["email"] = email
                 else:
-                    raise CommandError("User model has no username/email field to map.")
+                    raise CommandError("User model has no id/username/email field to map.")
 
                 user_obj, _created = UserModel.objects.get_or_create(defaults=defaults, **lookup)
                 if email:
                     user_by_email[email] = user_obj.pk
+                if keycloak_sub:
+                    user_by_email[keycloak_sub] = user_obj.pk
 
         category_map: dict[int, str] = {}
         tree_map: dict[int, str] = {}
@@ -696,11 +701,11 @@ class Command(BaseCommand):
         user_assessments = []
         for item in files["assessments_userassessment.json"]:
             fields = item["fields"]
-            email_list = fields.get("user") or []
-            email = email_list[0] if email_list else None
-            user_id = user_by_email.get(email) if email else None
-            if email and user_id is None:
-                report.add_value("userassessment.user", email)
+            user_ref_list = fields.get("user") or []
+            user_ref = user_ref_list[0] if user_ref_list else None
+            user_id = user_by_email.get(user_ref) if user_ref else None
+            if user_ref and user_id is None:
+                report.add_value("userassessment.user", user_ref)
             user_assessments.append(
                 UserAssessment(
                     id=item["pk"],
@@ -722,11 +727,11 @@ class Command(BaseCommand):
         user_answer_selected = []
         for item in files["assessments_useranswer.json"]:
             fields = item["fields"]
-            email_list = fields.get("user") or []
-            email = email_list[0] if email_list else None
-            user_id = user_by_email.get(email) if email else None
-            if email and user_id is None:
-                report.add_value("useranswer.user", email)
+            user_ref_list = fields.get("user") or []
+            user_ref = user_ref_list[0] if user_ref_list else None
+            user_id = user_by_email.get(user_ref) if user_ref else None
+            if user_ref and user_id is None:
+                report.add_value("useranswer.user", user_ref)
             user_answers.append(
                 UserAnswer(
                     id=item["pk"],

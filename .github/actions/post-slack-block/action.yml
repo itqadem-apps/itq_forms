@@ -1,0 +1,39 @@
+name: Post Slack Block Message
+description: Sends templated Slack messages via block kit
+inputs:
+  token:
+    description: "Slack API token"
+    required: true
+  channel:
+    description: "Slack channel"
+    required: true
+  template:
+    description: "Template filename (inside templates/)"
+    required: true
+  values:
+    description: "JSON string of values to replace in template"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare Slack Payload File
+      shell: bash
+      run: |
+        cp ${{ github.action_path }}/templates/${{ inputs.template }} slack_payload.json
+
+        echo '${{ inputs.values }}' > tmp_values.json
+
+        jq -r 'to_entries[] | "\(.key)=\(.value)"' tmp_values.json > .replacements.env
+
+        while IFS="=" read -r key value; do
+          sed -i "s|__${key}__|${value}|g" slack_payload.json
+        done < .replacements.env
+    
+
+    - name: Send Slack Message
+      uses: slackapi/slack-github-action@v2.0.0
+      with:
+        method: chat.postMessage
+        token: ${{ inputs.token }}
+        payload-file-path: slack_payload.json

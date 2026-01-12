@@ -1,0 +1,23 @@
+{
+  "channel": "__SLACK_CHANNEL_ID__",
+  "text": "🚀 New Release for __REPO__",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*🚀 New Release Created for `__REPO__`!*\n• *Branch:* `__BRANCH__`\n• *Tag:* `__TAG__`\n• *Repository:* <https://github.com/__REPO__|__REPO__>\n• *Release URL:* <https://github.com/__REPO__/releases/tag/__TAG__|View Release>\n• *Triggered By:* <https://github.com/__ACTOR__|@__ACTOR__>"
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "✅ *Deploy on production server:* `__STATUS__`\n🔗 <__COMMIT_URL__|View Commit or PR>"
+      }
+    }
+  ]
+}

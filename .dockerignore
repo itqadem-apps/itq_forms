@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Version Control
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose*.yml
+
+# Documentation & Design
+*.excalidraw
+*.md
+README*
+
+# Exports & Test Data
+assessment_exports/
+
+# Development
+manage.py
