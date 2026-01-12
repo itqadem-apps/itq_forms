@@ -31,6 +31,10 @@ SECRET_KEY = 'django-insecure-^nxt4$0#3gdm)^66&gp1ddrh3+%nf4*9$6w7$8r#-d-@=l+xk4
 DEBUG = True
 
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS.extend(filter(None, os.environ.get('ALLOWED_HOSTS', '').split(',')))
+
+if POD_IP := os.environ.get('POD_IP', False):
+    ALLOWED_HOSTS.append(POD_IP)
 
 
 # Application definition
