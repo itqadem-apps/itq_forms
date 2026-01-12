@@ -92,23 +92,6 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Post blocks to a Slack channel
-        uses: ./.github/actions/post-slack-block
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel: ${{ vars.SLACK_CHANNEL_ID }}
-          template: release_block.json
-          values: >-
-            {
-              "SLACK_CHANNEL_ID": "${{ vars.SLACK_CHANNEL_ID }}",
-              "REPO": "${{ github.repository }}",
-              "BRANCH": "${{ github.ref_name }}",
-              "TAG": "${{ env.new_tag }}",
-              "STATUS": "${{ job.status }}",
-              "ACTOR": "${{ github.actor }}",
-              "COMMIT_URL": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-            }
-
   build-and-push-ghcr:
     needs: tag-and-release
     runs-on: ubuntu-latest
