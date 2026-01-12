@@ -137,36 +137,3 @@ jobs:
             ${{ steps.get_image_name.outputs.IMAGE_NAME }}:${{ needs.tag-and-release.outputs.new_tag }}
             ${{ steps.get_image_name.outputs.IMAGE_NAME }}:${{ needs.tag-and-release.outputs.latest_tag }}
 
-      - name: Post Docker Build Slack Message
-        uses: ./.github/actions/post-slack-block
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel: ${{ vars.SLACK_CHANNEL_ID }}
-          template: docker_block.json
-          values: >-
-            {
-            "SLACK_CHANNEL_ID": "${{ vars.SLACK_CHANNEL_ID }}",
-            "REPO": "${{ github.repository }}",
-            "TAG": "${{ needs.tag-and-release.outputs.new_tag }}",
-            "LATEST_TAG": "${{ needs.tag-and-release.outputs.latest_tag }}",
-            "IMAGE_NAME": "${{ steps.get_image_name.outputs.IMAGE_NAME }}",
-            "ACTOR": "${{ github.actor }}"
-            }
-
-      - name: Post Deployment Slack Message
-        uses: ./.github/actions/post-slack-block
-        with:
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel: ${{ vars.SLACK_CHANNEL_ID }}
-          template: deploy_block.json
-          values: >-
-            {
-              "SLACK_CHANNEL_ID": "${{ vars.SLACK_CHANNEL_ID }}",
-              "REPO": "${{ github.repository }}",
-              "TAG": "${{ needs.tag-and-release.outputs.new_tag }}",
-              "LATEST_TAG": "${{ needs.tag-and-release.outputs.latest_tag }}",
-              "IMAGE_NAME": "${{ steps.get_image_name.outputs.IMAGE_NAME }}",
-              "ACTOR": "${{ github.actor }}",
-              "STATUS": "${{ job.status }}",
-              "COMMIT_URL": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-            }
