@@ -24,7 +24,7 @@ from app.health import healthz, readyz, startupz
 from surveys import schema
 
 urlpatterns = [
-    path("graphql", csrf_exempt(AuthedGraphQLView.as_view(schema=schema.schema))),
+    path("api/v1/forms/graphql", csrf_exempt(AuthedGraphQLView.as_view(schema=schema.schema))),
     path("healthz/", healthz, name="healthz"),
     path("readyz/", readyz, name="readyz"),
     path("startupz/", startupz, name="startupz"),
