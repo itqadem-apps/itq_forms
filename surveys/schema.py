@@ -19,6 +19,10 @@ from .filters import (
     QuestionProjection,
     QuestionSpec,
     questions_pipeline,
+    SurveyCollectionProjection,
+    SurveyCollectionSpec,
+    collections_pipeline,
+    survey_collection_sort_input_to_spec,
 )
 from .inputs import (
     SurveyFilters,
@@ -26,6 +30,9 @@ from .inputs import (
     SurveysListInput,
     QuestionsFiltersInput,
     QuestionsFilters,
+    SurveyCollectionFilters,
+    SurveyCollectionFiltersInput,
+    SurveyCollectionsListInput,
 )
 from .models import AnswerSchemaOption, Question, Survey
 from .types import (
@@ -41,11 +48,14 @@ from .types import (
     UserAssessmentRecommendationType,
     QuestionsResultsGQL,
     QuestionsFiltersGQL,
+    SurveyCollectionType,
+    SurveyCollectionsResultsGQL,
 )
 from user_surveys.models import UserAnswer, UserAssessment
 from user_surveys.services import enroll_user_in_assessment, finish_assessment as finish_assessment_service
 from app.auth_utils import with_django_user
 from strawberry.types import Info
+from survey_collections.models import SurveyCollection
 
 RequireAuth = strawberry_auth.require_authenticated()
 
@@ -112,6 +122,39 @@ class Query:
             facets.append(FacetGQL(name="language", values=language_values))
 
         return SurveyResultsGQL(items=items, total=total, facets=facets)
+
+    @strawberry.field()
+    def collections(
+        self,
+        info: Info,
+        collections_list_input: SurveyCollectionsListInput,
+    ) -> SurveyCollectionsResultsGQL:
+        qs = SurveyCollection.objects.all()
+        filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
+        filters_data = {}
+        for field in dc_fields(SurveyCollectionFilters):
+            name = field.name
+            if name in {"created_at", "updated_at"}:
+                value = getattr(filters_input, name, None)
+                filters_data[name] = value.to_vo() if value else None
+                continue
+            filters_data[name] = getattr(filters_input, name, None)
+
+        spec = SurveyCollectionSpec(
+            limit=collections_list_input.limit,
+            offset=collections_list_input.offset,
+            projection=SurveyCollectionProjection(),
+            filters=SurveyCollectionFilters(**filters_data),
+            sort=survey_collection_sort_input_to_spec(collections_list_input.sort),
+        )
+        base_qs = collections_pipeline.run(DjangoQueryContext(qs, spec)).stmt
+        total = base_qs.count()
+        items = list(
+            base_qs[
+                collections_list_input.offset : collections_list_input.offset + collections_list_input.limit
+            ]
+        )
+        return SurveyCollectionsResultsGQL(items=items, total=total)
 
     @strawberry.field()
     def survey(self, info: Info, id: int) -> SurveyType | None:

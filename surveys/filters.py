@@ -14,6 +14,9 @@ from surveys.inputs import (
     SurveySortField,
     SurveySortInput,
     QuestionsFilters,
+    SurveyCollectionFilters,
+    SurveyCollectionSortField,
+    SurveyCollectionSortInput,
 )
 
 
@@ -63,4 +66,37 @@ questions_pipeline = DjangoPipeline([
     DjangoExactFilterHandler("question_type", lookup="type"),
     DjangoAllExactFiltersHandler(excluded={"question_ids", "answered", "question_type"}),
     DjangoSortHandler(sort_map={"order": "order", "section__order": "section__order"}),
+])
+
+
+@dataclass(frozen=True)
+class SurveyCollectionProjection(BaseProjectionSpec):
+    pass
+
+
+SurveyCollectionSpec = BaseQuerySpec[SurveyCollectionFilters, SurveyCollectionProjection]
+
+
+def survey_collection_sort_input_to_spec(inp: SurveyCollectionSortInput | None) -> SortSpec | None:
+    if inp is None or not inp.fields:
+        return None
+    return SortSpec(
+        fields=[
+            SortField(
+                field=f.field.value,
+                direction=f.direction.value,
+            )
+            for f in inp.fields
+        ]
+    )
+
+
+SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveyCollectionSortField}
+
+collections_pipeline = DjangoPipeline([
+    DjangoRangeFilterHandler("created_at"),
+    DjangoRangeFilterHandler("updated_at"),
+    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q"}),
+    DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
+    DjangoSortHandler(sort_map=SURVEY_COLLECTION_SORT_MAP),
 ])

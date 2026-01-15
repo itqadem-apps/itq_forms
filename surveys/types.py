@@ -10,6 +10,7 @@ from strawberry import auto
 
 
 from .models import AnswerSchema, AnswerSchemaOption, Classification, Question, Recommendation, Section, Survey
+from survey_collections.models import SurveyCollection
 from app.auth_utils import get_django_user
 from user_surveys.models import (
     UserAnswer,
@@ -175,6 +176,34 @@ class QuestionsResultsGQL:
     items: List["QuestionType"]
     total: int
     filters: QuestionsFiltersGQL
+
+
+@strawberry_django.type(SurveyCollection)
+class SurveyCollectionType:
+    id: auto
+    status: auto
+    privacy_status: auto
+    title: auto
+    description: auto
+    short_description: auto
+    slug: auto
+    language: auto
+    created_at: auto
+    updated_at: auto
+    deleted_at: auto
+    category_id: auto
+    price: auto
+    video_list: auto
+    sponsor: auto
+    type: auto
+    author_id: auto
+    assessments: List[SurveyType]
+
+
+@strawberry.type
+class SurveyCollectionsResultsGQL:
+    items: List[SurveyCollectionType]
+    total: int
 
 
 @strawberry.type

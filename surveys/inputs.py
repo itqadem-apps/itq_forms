@@ -128,6 +128,81 @@ class SurveysListInput:
 
 
 @strawberry.input
+class SurveyCollectionFiltersInput:
+    created_at: Optional[DateTimeRangeFilterInput] = None
+    updated_at: Optional[DateTimeRangeFilterInput] = None
+    id: Optional[int] = None
+    status: Optional[str] = None
+    privacy_status: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    short_description: Optional[str] = None
+    slug: Optional[str] = None
+    language: Optional[str] = None
+    category_id: Optional[str] = None
+    sponsor: Optional[int] = None
+    type: Optional[str] = None
+    author_id: Optional[str] = None
+    q: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class SurveyCollectionFilters:
+    created_at: Optional[object]  # RangeFilterVO[datetime]
+    updated_at: Optional[object]  # RangeFilterVO[datetime]
+    id: Optional[int]
+    status: Optional[str]
+    privacy_status: Optional[str]
+    title: Optional[str]
+    description: Optional[str]
+    short_description: Optional[str]
+    slug: Optional[str]
+    language: Optional[str]
+    category_id: Optional[str]
+    sponsor: Optional[int]
+    type: Optional[str]
+    author_id: Optional[str]
+    q: Optional[str]
+
+
+@strawberry.enum
+class SurveyCollectionSortField(str, Enum):
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"
+    ID = "id"
+    STATUS = "status"
+    PRIVACY_STATUS = "privacy_status"
+    TITLE = "title"
+    DESCRIPTION = "description"
+    SHORT_DESCRIPTION = "short_description"
+    SLUG = "slug"
+    LANGUAGE = "language"
+    CATEGORY_ID = "category_id"
+    SPONSOR = "sponsor"
+    TYPE = "type"
+    AUTHOR_ID = "author_id"
+
+
+@strawberry.input
+class SurveyCollectionSortFieldInput:
+    field: SurveyCollectionSortField
+    direction: SortDirection = SortDirection.ASC
+
+
+@strawberry.input
+class SurveyCollectionSortInput:
+    fields: List[SurveyCollectionSortFieldInput]
+
+
+@strawberry.input
+class SurveyCollectionsListInput:
+    limit: int = 20
+    offset: int = 0
+    filters: Optional[SurveyCollectionFiltersInput] = None
+    sort: Optional[SurveyCollectionSortInput] = None
+
+
+@strawberry.input
 class QuestionsFiltersInput:
     question_ids: Optional[List[int]] = None
     section_id: Optional[int] = None
