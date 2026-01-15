@@ -17,6 +17,7 @@ class SurveyFiltersInput:
     title: Optional[str] = None
     description: Optional[str] = None
     short_description: Optional[str] = None
+    slug: Optional[str] = None
     language: Optional[str] = None
     status: Optional[str] = None
     assessment_type: Optional[str] = None
@@ -48,6 +49,7 @@ class SurveyFilters:
     title: Optional[str]
     description: Optional[str]
     short_description: Optional[str]
+    slug: Optional[str]
     language: Optional[str]
     status: Optional[str]
     assessment_type: Optional[str]
@@ -79,6 +81,7 @@ class SurveySortField(str, Enum):
     TITLE = "title"
     DESCRIPTION = "description"
     SHORT_DESCRIPTION = "short_description"
+    SLUG = "slug"
     LANGUAGE = "language"
     STATUS = "status"
     ASSESSMENT_TYPE = "assessment_type"

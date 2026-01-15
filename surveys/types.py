@@ -25,6 +25,7 @@ class SurveyType:
     title: auto
     description: auto
     short_description: auto
+    slug: auto
     language: auto
     status_id: auto
     assessment_type: auto
