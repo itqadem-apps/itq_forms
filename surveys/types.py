@@ -161,6 +161,22 @@ class SurveyResultsGQL:
 
 
 @strawberry.type
+class QuestionsFiltersGQL:
+    question_ids: Optional[List[int]]
+    section_id: Optional[int]
+    is_required: Optional[bool]
+    question_type: Optional[str]
+    answered: Optional[bool]
+
+
+@strawberry.type
+class QuestionsResultsGQL:
+    items: List["QuestionType"]
+    total: int
+    filters: QuestionsFiltersGQL
+
+
+@strawberry.type
 class FinishAssessmentResult:
     status: str
     score: Optional[int]

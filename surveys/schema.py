@@ -11,8 +11,22 @@ from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_f
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from app.auth import strawberry_auth
-from .filters import pipeline, survey_sort_input_to_spec, SurveyProjection, SurveySpec
-from .inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
+from .filters import (
+    pipeline,
+    survey_sort_input_to_spec,
+    SurveyProjection,
+    SurveySpec,
+    QuestionProjection,
+    QuestionSpec,
+    questions_pipeline,
+)
+from .inputs import (
+    SurveyFilters,
+    SurveyFiltersInput,
+    SurveysListInput,
+    QuestionsFiltersInput,
+    QuestionsFilters,
+)
 from .models import AnswerSchemaOption, Question, Survey
 from .types import (
     FacetGQL,
@@ -25,6 +39,8 @@ from .types import (
     FinishAssessmentResult,
     UserAssessmentClassificationType,
     UserAssessmentRecommendationType,
+    QuestionsResultsGQL,
+    QuestionsFiltersGQL,
 )
 from user_surveys.models import UserAnswer, UserAssessment
 from user_surveys.services import enroll_user_in_assessment, finish_assessment as finish_assessment_service
@@ -127,7 +143,6 @@ class Query:
     ) -> QuestionType | None:
         
         user_assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
-        print(django_user.id)
         if not user_assessment:
             return None
 
@@ -181,23 +196,65 @@ class Query:
     def questions(
         self,
         info: Info,
-        question_ids: list[int],
-        user_assessment_id: int | None = None,
+        user_assessment_id: int,
+        limit: int = 20,
+        offset: int = 0,
+        filters: QuestionsFiltersInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> list[QuestionType]:
-        qs = Question.objects.filter(id__in=question_ids, section__isnull=False)
-        if user_assessment_id is not None:
-            user_assessment = UserAssessment.objects.filter(
-                id=user_assessment_id, user=django_user
-            ).first()
-            if not user_assessment:
-                raise ValueError("Assessment not found.")
-            qs = qs.filter(survey_id=user_assessment.survey_id)
-        questions = list(qs.order_by("section__order", "order"))
-        if user_assessment_id is not None:
-            for question in questions:
-                question._user_assessment_id = user_assessment_id
-        return questions
+    ) -> QuestionsResultsGQL:
+        user_assessment = UserAssessment.objects.filter(
+            id=user_assessment_id,
+            user=django_user,
+        ).first()
+        if not user_assessment:
+            raise ValueError("Assessment not found.")
+
+        qs = Question.objects.filter(
+            survey_id=user_assessment.survey_id,
+            section__isnull=False,
+        )
+        filters_input = filters or QuestionsFiltersInput()
+        if filters_input.question_ids:
+            qs = qs.filter(id__in=filters_input.question_ids)
+
+        spec = QuestionSpec(
+            limit=limit,
+            offset=offset,
+            projection=QuestionProjection(),
+            filters=QuestionsFilters(
+                question_ids=filters_input.question_ids,
+                section_id=filters_input.section_id,
+                is_required=filters_input.is_required,
+                question_type=filters_input.question_type,
+                answered=filters_input.answered,
+            ),
+            sort=None,
+        )
+        base_qs = questions_pipeline.run(DjangoQueryContext(qs, spec)).stmt
+
+        if filters_input.answered is not None:
+            answered_ids = set(
+                UserAnswer.objects.filter(user_assessment=user_assessment)
+                .exclude(answer__isnull=True, selected_options__isnull=True)
+                .values_list("question_id", flat=True)
+            )
+            if filters_input.answered:
+                base_qs = base_qs.filter(id__in=answered_ids)
+            else:
+                base_qs = base_qs.exclude(id__in=answered_ids)
+
+        total = base_qs.count()
+        questions = list(base_qs.order_by("section__order", "order")[offset : offset + limit])
+        for question in questions:
+            question._user_assessment_id = user_assessment.id
+        filters_out = QuestionsFiltersGQL(
+            question_ids=filters_input.question_ids,
+            section_id=filters_input.section_id,
+            is_required=filters_input.is_required,
+            question_type=filters_input.question_type,
+            answered=filters_input.answered,
+        )
+        return QuestionsResultsGQL(items=questions, total=total, filters=filters_out)
 
 
 @strawberry.type

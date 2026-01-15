@@ -122,3 +122,21 @@ class SurveysListInput:
     offset: int = 0
     filters: Optional[SurveyFiltersInput] = None
     sort: Optional[SurveySortInput] = None
+
+
+@strawberry.input
+class QuestionsFiltersInput:
+    question_ids: Optional[List[int]] = None
+    section_id: Optional[int] = None
+    is_required: Optional[bool] = None
+    question_type: Optional[str] = None
+    answered: Optional[bool] = None
+
+
+@dataclass(frozen=True)
+class QuestionsFilters:
+    question_ids: Optional[List[int]]
+    section_id: Optional[int]
+    is_required: Optional[bool]
+    question_type: Optional[str]
+    answered: Optional[bool]

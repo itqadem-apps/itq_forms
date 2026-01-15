@@ -9,7 +9,12 @@ from pkg_filters.integrations.django import (
     DjangoAllExactFiltersHandler, DjangoExactFilterHandler,
 )
 
-from surveys.inputs import SurveyFilters, SurveySortField, SurveySortInput
+from surveys.inputs import (
+    SurveyFilters,
+    SurveySortField,
+    SurveySortInput,
+    QuestionsFilters,
+)
 
 
 @dataclass(frozen=True)
@@ -44,4 +49,18 @@ pipeline = DjangoPipeline([
     DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q", "status"}),
     DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
     DjangoSortHandler(sort_map=SURVEY_SORT_MAP),
+])
+
+
+@dataclass(frozen=True)
+class QuestionProjection(BaseProjectionSpec):
+    pass
+
+
+QuestionSpec = BaseQuerySpec[QuestionsFilters, QuestionProjection]
+
+questions_pipeline = DjangoPipeline([
+    DjangoExactFilterHandler("question_type", lookup="type"),
+    DjangoAllExactFiltersHandler(excluded={"question_ids", "answered", "question_type"}),
+    DjangoSortHandler(sort_map={"order": "order", "section__order": "section__order"}),
 ])
