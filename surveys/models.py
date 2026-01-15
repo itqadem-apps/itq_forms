@@ -119,6 +119,7 @@ class Survey(models.Model):
     short_description = models.CharField(
         max_length=300, null=True, blank=True, verbose_name=_("Short Description")
     )
+    slug = models.SlugField(max_length=255, null=True, blank=True)
     language = models.CharField(
         max_length=64,
         choices=settings.LANGUAGES,
