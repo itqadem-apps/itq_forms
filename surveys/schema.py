@@ -56,6 +56,7 @@ from user_surveys.services import enroll_user_in_assessment, finish_assessment a
 from app.auth_utils import with_django_user
 from strawberry.types import Info
 from survey_collections.models import SurveyCollection
+from interface.grpc.children_client import ChildrenClient
 
 RequireAuth = strawberry_auth.require_authenticated()
 
@@ -129,6 +130,7 @@ class Query:
         info: Info,
         collections_list_input: SurveyCollectionsListInput,
     ) -> SurveyCollectionsResultsGQL:
+        paths = get_root_field_paths(info, "collections")
         qs = SurveyCollection.objects.all()
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
         filters_data = {}
@@ -154,7 +156,35 @@ class Query:
                 collections_list_input.offset : collections_list_input.offset + collections_list_input.limit
             ]
         )
-        return SurveyCollectionsResultsGQL(items=items, total=total)
+        facets: List[FacetGQL] = []
+        if has_any_under_prefix(paths, ("facets",)):
+            status_values = [
+                FacetValueGQL(value=row["status"], count=row["count"])
+                for row in base_qs.values("status").annotate(count=Count("id")).order_by("status")
+            ]
+            facets.append(FacetGQL(name="status", values=status_values))
+
+            privacy_values = [
+                FacetValueGQL(value=row["privacy_status"], count=row["count"])
+                for row in base_qs.values("privacy_status")
+                .annotate(count=Count("id"))
+                .order_by("privacy_status")
+            ]
+            facets.append(FacetGQL(name="privacy_status", values=privacy_values))
+
+            language_values = [
+                FacetValueGQL(value=row["language"], count=row["count"])
+                for row in base_qs.values("language").annotate(count=Count("id")).order_by("language")
+            ]
+            facets.append(FacetGQL(name="language", values=language_values))
+
+            type_values = [
+                FacetValueGQL(value=row["type"], count=row["count"])
+                for row in base_qs.values("type").annotate(count=Count("id")).order_by("type")
+            ]
+            facets.append(FacetGQL(name="type", values=type_values))
+
+        return SurveyCollectionsResultsGQL(items=items, total=total, facets=facets)
 
     @strawberry.field()
     def survey(self, info: Info, id: int) -> SurveyType | None:
@@ -315,6 +345,13 @@ class Mutation:
             survey = Survey.objects.get(pk=survey_id)
         except Survey.DoesNotExist:
             raise ValueError(f"Survey not found: {survey_id}")
+
+        if child_id:
+            with ChildrenClient() as client:
+                response = client.get_children_by_parent(parent_id=str(django_user.id), status="active")
+                print('response', response)
+            if not any(child.id == str(child_id) for child in response.items):
+                raise ValueError("Invalid child_id for this user.")
 
         user_assessment, _created = enroll_user_in_assessment(
             request_user=django_user,

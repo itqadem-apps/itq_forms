@@ -204,6 +204,7 @@ class SurveyCollectionType:
 class SurveyCollectionsResultsGQL:
     items: List[SurveyCollectionType]
     total: int
+    facets: List[FacetGQL]
 
 
 @strawberry.type

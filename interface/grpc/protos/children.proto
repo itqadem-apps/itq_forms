@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package itq.users.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message GetChildrenByParentRequest {
+  string parent_id = 1;
+  string status = 2;
+}
+
+message Child {
+  string id = 1;
+  string parent_id = 2;
+  string name = 3;
+  string date_of_birth = 4;
+  string gender = 5;
+  string photo_id = 6;
+  string diagnosis_type = 7;
+  string diagnosis_date = 8;
+  string severity_level = 9;
+  string communication_level = 10;
+  google.protobuf.Struct sensory_sensitivities = 11;
+  google.protobuf.Struct triggers = 12;
+  google.protobuf.Struct calming_strategies = 13;
+  google.protobuf.Struct interests = 14;
+  string notes = 15;
+  string status = 16;
+  google.protobuf.Timestamp created_at = 17;
+  google.protobuf.Timestamp updated_at = 18;
+  google.protobuf.Timestamp archived_at = 19;
+  int32 age_years = 20;
+  int32 age_months = 21;
+  string age_display = 22;
+  bool is_active = 23;
+  bool is_archived = 24;
+}
+
+message GetChildrenByParentResponse {
+  repeated Child items = 1;
+  int32 total = 2;
+}
+
+service ChildService {
+  rpc GetChildrenByParent(GetChildrenByParentRequest) returns (GetChildrenByParentResponse);
+}

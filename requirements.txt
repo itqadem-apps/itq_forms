@@ -1,4 +1,6 @@
 django==6.0
+grpcio==1.76.0
+grpcio-tools==1.76.0
 gunicorn==21.2.0
 psycopg2-binary==2.9.11
 strawberry-graphql-django==0.70.1

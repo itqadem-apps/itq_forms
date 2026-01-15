@@ -147,6 +147,7 @@ else:
 # Compute API client id from service/app name
 KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
 
+USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
 
 STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
