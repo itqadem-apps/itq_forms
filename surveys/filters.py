@@ -17,6 +17,7 @@ from surveys.inputs import (
     SurveyCollectionFilters,
     SurveyCollectionSortField,
     SurveyCollectionSortInput,
+    UserAssessmentFilters,
 )
 
 
@@ -99,4 +100,18 @@ collections_pipeline = DjangoPipeline([
     DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q"}),
     DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
     DjangoSortHandler(sort_map=SURVEY_COLLECTION_SORT_MAP),
+])
+
+
+@dataclass(frozen=True)
+class UserAssessmentProjection(BaseProjectionSpec):
+    pass
+
+
+UserAssessmentSpec = BaseQuerySpec[UserAssessmentFilters, UserAssessmentProjection]
+
+user_assessments_pipeline = DjangoPipeline([
+    DjangoRangeFilterHandler("submitted_at"),
+    DjangoRangeFilterHandler("evaluated_at"),
+    DjangoAllExactFiltersHandler(excluded={"submitted_at", "evaluated_at", "submitted"}),
 ])

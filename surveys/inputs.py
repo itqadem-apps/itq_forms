@@ -203,6 +203,43 @@ class SurveyCollectionsListInput:
 
 
 @strawberry.input
+class UserAssessmentFiltersInput:
+    survey_id: Optional[int] = None
+    child_id: Optional[str] = None
+    is_paid: Optional[bool] = None
+    submitted: Optional[bool] = None
+    submitted_at: Optional[DateTimeRangeFilterInput] = None
+    evaluated_at: Optional[DateTimeRangeFilterInput] = None
+
+
+@dataclass(frozen=True)
+class UserAssessmentFilters:
+    survey_id: Optional[int]
+    child_id: Optional[str]
+    is_paid: Optional[bool]
+    submitted: Optional[bool]
+    submitted_at: Optional[object]  # RangeFilterVO[datetime]
+    evaluated_at: Optional[object]  # RangeFilterVO[datetime]
+
+
+@strawberry.input
+class UserAssessmentsListInput:
+    limit: int = 20
+    offset: int = 0
+    filters: Optional[UserAssessmentFiltersInput] = None
+
+
+@strawberry.input
+class UserAssessmentFiltersInput:
+    survey_id: Optional[int] = None
+    child_id: Optional[str] = None
+    is_paid: Optional[bool] = None
+    submitted: Optional[bool] = None
+    submitted_at: Optional[DateTimeRangeFilterInput] = None
+    evaluated_at: Optional[DateTimeRangeFilterInput] = None
+
+
+@strawberry.input
 class QuestionsFiltersInput:
     question_ids: Optional[List[int]] = None
     section_id: Optional[int] = None

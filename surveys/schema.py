@@ -23,6 +23,9 @@ from .filters import (
     SurveyCollectionSpec,
     collections_pipeline,
     survey_collection_sort_input_to_spec,
+    UserAssessmentProjection,
+    UserAssessmentSpec,
+    user_assessments_pipeline,
 )
 from .inputs import (
     SurveyFilters,
@@ -33,6 +36,9 @@ from .inputs import (
     SurveyCollectionFilters,
     SurveyCollectionFiltersInput,
     SurveyCollectionsListInput,
+    UserAssessmentFilters,
+    UserAssessmentFiltersInput,
+    UserAssessmentsListInput,
 )
 from .models import AnswerSchemaOption, Question, Survey
 from .types import (
@@ -50,6 +56,7 @@ from .types import (
     QuestionsFiltersGQL,
     SurveyCollectionType,
     SurveyCollectionsResultsGQL,
+    UserAssessmentsResultsGQL,
 )
 from user_surveys.models import UserAnswer, UserAssessment
 from user_surveys.services import enroll_user_in_assessment, finish_assessment as finish_assessment_service
@@ -198,12 +205,41 @@ class Query:
     def user_assessments(
         self,
         info: Info,
-        limit: int = 20,
-        offset: int = 0,
+        user_assessments_list_input: UserAssessmentsListInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> list[UserAssessmentType]:
-        qs = UserAssessment.objects.filter(user=django_user).order_by("-submitted_at")
-        return list(qs[offset : offset + limit])
+    ) -> UserAssessmentsResultsGQL:
+        qs = UserAssessment.objects.filter(user=django_user)
+        filters_input = user_assessments_list_input.filters or UserAssessmentFiltersInput()
+        filters_data = {}
+        for field in dc_fields(UserAssessmentFilters):
+            name = field.name
+            if name in {"submitted_at", "evaluated_at"}:
+                value = getattr(filters_input, name, None)
+                filters_data[name] = value.to_vo() if value else None
+                continue
+            filters_data[name] = getattr(filters_input, name, None)
+
+        spec = UserAssessmentSpec(
+            limit=user_assessments_list_input.limit,
+            offset=user_assessments_list_input.offset,
+            projection=UserAssessmentProjection(),
+            filters=UserAssessmentFilters(**filters_data),
+            sort=None,
+        )
+        base_qs = user_assessments_pipeline.run(DjangoQueryContext(qs, spec)).stmt
+        if filters_input.submitted is True:
+            base_qs = base_qs.filter(submitted_at__isnull=False)
+        elif filters_input.submitted is False:
+            base_qs = base_qs.filter(submitted_at__isnull=True)
+
+        total = base_qs.count()
+        items = list(
+            base_qs.order_by("-submitted_at")[
+                user_assessments_list_input.offset : user_assessments_list_input.offset
+                + user_assessments_list_input.limit
+            ]
+        )
+        return UserAssessmentsResultsGQL(items=items, total=total)
 
     @strawberry.field(permission_classes=[RequireAuth])
     @with_django_user

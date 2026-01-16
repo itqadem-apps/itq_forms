@@ -208,6 +208,12 @@ class SurveyCollectionsResultsGQL:
 
 
 @strawberry.type
+class UserAssessmentsResultsGQL:
+    items: List[UserAssessmentType]
+    total: int
+
+
+@strawberry.type
 class FinishAssessmentResult:
     status: str
     score: Optional[int]
