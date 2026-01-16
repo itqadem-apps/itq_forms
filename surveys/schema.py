@@ -348,8 +348,7 @@ class Mutation:
 
         if child_id:
             with ChildrenClient() as client:
-                response = client.get_children_by_parent(parent_id=str(django_user.id), status="active")
-                print('response', response)
+                response = client.get_children_by_guardian(guardian_user_id=str(django_user.id), status="active")
             if not any(child.id == str(child_id) for child in response.items):
                 raise ValueError("Invalid child_id for this user.")
 

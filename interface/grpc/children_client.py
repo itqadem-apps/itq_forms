@@ -30,9 +30,28 @@ class ChildrenClient:
     def __exit__(self, exc_type, exc, tb) -> None:
         self.close()
 
+    def get_children_by_guardian(self, guardian_user_id: str, status: str | None = None):
+        if hasattr(children_pb2, "GetChildrenByGuardianRequest"):
+            request = children_pb2.GetChildrenByGuardianRequest(
+                guardian_user_id=guardian_user_id,
+                status=status or "",
+            )
+            method = getattr(self._stub, "GetChildrenByGuardian", None)
+            if method is None:
+                raise RuntimeError("ChildService.GetChildrenByGuardian is not available in the stub.")
+            return method(request, timeout=self._config.timeout_seconds)
+
+        if hasattr(children_pb2, "GetChildrenByParentRequest"):
+            request = children_pb2.GetChildrenByParentRequest(
+                parent_id=guardian_user_id,
+                status=status or "",
+            )
+            method = getattr(self._stub, "GetChildrenByParent", None)
+            if method is None:
+                raise RuntimeError("ChildService.GetChildrenByParent is not available in the stub.")
+            return method(request, timeout=self._config.timeout_seconds)
+
+        raise RuntimeError("Unsupported children proto version; regenerate stubs.")
+
     def get_children_by_parent(self, parent_id: str, status: str | None = None):
-        request = children_pb2.GetChildrenByParentRequest(
-            parent_id=parent_id,
-            status=status or "",
-        )
-        return self._stub.GetChildrenByParent(request, timeout=self._config.timeout_seconds)
+        return self.get_children_by_guardian(parent_id, status=status)

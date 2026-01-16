@@ -34,17 +34,17 @@ class ChildServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.GetChildrenByParent = channel.unary_unary(
-                '/itq.users.v1.ChildService/GetChildrenByParent',
-                request_serializer=children__pb2.GetChildrenByParentRequest.SerializeToString,
-                response_deserializer=children__pb2.GetChildrenByParentResponse.FromString,
+        self.GetChildrenByGuardian = channel.unary_unary(
+                '/itq.users.v1.ChildService/GetChildrenByGuardian',
+                request_serializer=children__pb2.GetChildrenByGuardianRequest.SerializeToString,
+                response_deserializer=children__pb2.GetChildrenByGuardianResponse.FromString,
                 _registered_method=True)
 
 
 class ChildServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def GetChildrenByParent(self, request, context):
+    def GetChildrenByGuardian(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -53,10 +53,10 @@ class ChildServiceServicer(object):
 
 def add_ChildServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetChildrenByParent': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetChildrenByParent,
-                    request_deserializer=children__pb2.GetChildrenByParentRequest.FromString,
-                    response_serializer=children__pb2.GetChildrenByParentResponse.SerializeToString,
+            'GetChildrenByGuardian': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetChildrenByGuardian,
+                    request_deserializer=children__pb2.GetChildrenByGuardianRequest.FromString,
+                    response_serializer=children__pb2.GetChildrenByGuardianResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -70,7 +70,7 @@ class ChildService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetChildrenByParent(request,
+    def GetChildrenByGuardian(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,9 +83,9 @@ class ChildService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/itq.users.v1.ChildService/GetChildrenByParent',
-            children__pb2.GetChildrenByParentRequest.SerializeToString,
-            children__pb2.GetChildrenByParentResponse.FromString,
+            '/itq.users.v1.ChildService/GetChildrenByGuardian',
+            children__pb2.GetChildrenByGuardianRequest.SerializeToString,
+            children__pb2.GetChildrenByGuardianResponse.FromString,
             options,
             channel_credentials,
             insecure,

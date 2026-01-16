@@ -26,19 +26,19 @@ from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0e\x63hildren.proto\x12\x0citq.users.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"?\n\x1aGetChildrenByParentRequest\x12\x11\n\tparent_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\"\xaa\x05\n\x05\x43hild\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tparent_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x15\n\rdate_of_birth\x18\x04 \x01(\t\x12\x0e\n\x06gender\x18\x05 \x01(\t\x12\x10\n\x08photo_id\x18\x06 \x01(\t\x12\x16\n\x0e\x64iagnosis_type\x18\x07 \x01(\t\x12\x16\n\x0e\x64iagnosis_date\x18\x08 \x01(\t\x12\x16\n\x0eseverity_level\x18\t \x01(\t\x12\x1b\n\x13\x63ommunication_level\x18\n \x01(\t\x12\x36\n\x15sensory_sensitivities\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12)\n\x08triggers\x18\x0c \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x33\n\x12\x63\x61lming_strategies\x18\r \x01(\x0b\x32\x17.google.protobuf.Struct\x12*\n\tinterests\x18\x0e \x01(\x0b\x32\x17.google.protobuf.Struct\x12\r\n\x05notes\x18\x0f \x01(\t\x12\x0e\n\x06status\x18\x10 \x01(\t\x12.\n\ncreated_at\x18\x11 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x12 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0b\x61rchived_at\x18\x13 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x11\n\tage_years\x18\x14 \x01(\x05\x12\x12\n\nage_months\x18\x15 \x01(\x05\x12\x13\n\x0b\x61ge_display\x18\x16 \x01(\t\x12\x11\n\tis_active\x18\x17 \x01(\x08\x12\x13\n\x0bis_archived\x18\x18 \x01(\x08\"P\n\x1bGetChildrenByParentResponse\x12\"\n\x05items\x18\x01 \x03(\x0b\x32\x13.itq.users.v1.Child\x12\r\n\x05total\x18\x02 \x01(\x05\x32z\n\x0c\x43hildService\x12j\n\x13GetChildrenByParent\x12(.itq.users.v1.GetChildrenByParentRequest\x1a).itq.users.v1.GetChildrenByParentResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0e\x63hildren.proto\x12\x0citq.users.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"H\n\x1cGetChildrenByGuardianRequest\x12\x18\n\x10guardian_user_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\"\x97\x05\n\x05\x43hild\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x15\n\rdate_of_birth\x18\x03 \x01(\t\x12\x0e\n\x06gender\x18\x04 \x01(\t\x12\x10\n\x08photo_id\x18\x05 \x01(\t\x12\x16\n\x0e\x64iagnosis_type\x18\x06 \x01(\t\x12\x16\n\x0e\x64iagnosis_date\x18\x07 \x01(\t\x12\x16\n\x0eseverity_level\x18\x08 \x01(\t\x12\x1b\n\x13\x63ommunication_level\x18\t \x01(\t\x12\x36\n\x15sensory_sensitivities\x18\n \x01(\x0b\x32\x17.google.protobuf.Struct\x12)\n\x08triggers\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x33\n\x12\x63\x61lming_strategies\x18\x0c \x01(\x0b\x32\x17.google.protobuf.Struct\x12*\n\tinterests\x18\r \x01(\x0b\x32\x17.google.protobuf.Struct\x12\r\n\x05notes\x18\x0e \x01(\t\x12\x0e\n\x06status\x18\x0f \x01(\t\x12.\n\ncreated_at\x18\x10 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x11 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0b\x61rchived_at\x18\x12 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x11\n\tage_years\x18\x13 \x01(\x05\x12\x12\n\nage_months\x18\x14 \x01(\x05\x12\x13\n\x0b\x61ge_display\x18\x15 \x01(\t\x12\x11\n\tis_active\x18\x16 \x01(\x08\x12\x13\n\x0bis_archived\x18\x17 \x01(\x08\"R\n\x1dGetChildrenByGuardianResponse\x12\"\n\x05items\x18\x01 \x03(\x0b\x32\x13.itq.users.v1.Child\x12\r\n\x05total\x18\x02 \x01(\x05\x32\x80\x01\n\x0c\x43hildService\x12p\n\x15GetChildrenByGuardian\x12*.itq.users.v1.GetChildrenByGuardianRequest\x1a+.itq.users.v1.GetChildrenByGuardianResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'children_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_GETCHILDRENBYPARENTREQUEST']._serialized_start=95
-  _globals['_GETCHILDRENBYPARENTREQUEST']._serialized_end=158
-  _globals['_CHILD']._serialized_start=161
-  _globals['_CHILD']._serialized_end=843
-  _globals['_GETCHILDRENBYPARENTRESPONSE']._serialized_start=845
-  _globals['_GETCHILDRENBYPARENTRESPONSE']._serialized_end=925
-  _globals['_CHILDSERVICE']._serialized_start=927
-  _globals['_CHILDSERVICE']._serialized_end=1049
+  _globals['_GETCHILDRENBYGUARDIANREQUEST']._serialized_start=95
+  _globals['_GETCHILDRENBYGUARDIANREQUEST']._serialized_end=167
+  _globals['_CHILD']._serialized_start=170
+  _globals['_CHILD']._serialized_end=833
+  _globals['_GETCHILDRENBYGUARDIANRESPONSE']._serialized_start=835
+  _globals['_GETCHILDRENBYGUARDIANRESPONSE']._serialized_end=917
+  _globals['_CHILDSERVICE']._serialized_start=920
+  _globals['_CHILDSERVICE']._serialized_end=1048
 # @@protoc_insertion_point(module_scope)
