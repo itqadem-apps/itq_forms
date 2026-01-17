@@ -19,6 +19,7 @@ from .models import (
     Survey,
     SurveyMediaAsset,
 )
+from taxonomy.models import Category, CategoryTranslation
 from survey_collections.models import SurveyCollection
 from app.auth_utils import get_django_user
 from user_surveys.models import (
@@ -55,6 +56,7 @@ class SurveyType:
     allow_update_answer_options_text_based_on_classification: auto
     create_option_for_each_classification: auto
     category_id: auto
+    category: Optional["CategoryType"]
     sponsor: auto
     price: auto
     created_at: auto
@@ -213,6 +215,23 @@ class SurveyCollectionType:
     type: auto
     author_id: auto
     assessments: List[SurveyType]
+
+
+@strawberry_django.type(Category)
+class CategoryType:
+    category_id: auto
+    tree_id: auto
+    name: auto
+    path_text: auto
+    translations: List["CategoryTranslationType"]
+
+
+@strawberry_django.type(CategoryTranslation)
+class CategoryTranslationType:
+    id: auto
+    language: auto
+    name: auto
+    slug: auto
 
 
 @strawberry.type
