@@ -20,7 +20,7 @@ class SurveyFiltersInput:
     slug: Optional[str] = None
     language: Optional[str] = None
     status: Optional[str] = None
-    assessment_type: Optional[str] = None
+    survey_type: Optional[str] = None
     display_option: Optional[str] = None
     is_timed: Optional[bool] = None
     assignable_to_user: Optional[bool] = None
@@ -52,7 +52,7 @@ class SurveyFilters:
     slug: Optional[str]
     language: Optional[str]
     status: Optional[str]
-    assessment_type: Optional[str]
+    survey_type: Optional[str]
     display_option: Optional[str]
     is_timed: Optional[bool]
     assignable_to_user: Optional[bool]
@@ -77,46 +77,16 @@ class SurveyFilters:
 class SurveySortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
-    ID = "id"
     TITLE = "title"
-    DESCRIPTION = "description"
-    SHORT_DESCRIPTION = "short_description"
-    SLUG = "slug"
-    LANGUAGE = "language"
-    STATUS = "status"
-    ASSESSMENT_TYPE = "assessment_type"
-    DISPLAY_OPTION = "display_option"
-    IS_TIMED = "is_timed"
-    ASSIGNABLE_TO_USER = "assignable_to_user"
-    IS_EVALUABLE = "is_evaluable"
-    EVALUATION_TYPE = "evaluation_type"
-    USE_SCORE = "use_score"
-    USE_CLASSIFICATIONS = "use_classifications"
-    USE_RECOMMENDATIONS = "use_recommendations"
-    USE_ACTIONS = "use_actions"
-    ALLOW_END_BASED_ON_ANSWER_REPEAT = "allow_end_based_on_answer_repeat"
-    ANSWERS_COUNT_TO_END = "answers_count_to_end"
-    END_BASED_ON_ANSWER_REPEAT_IN_ROW = "end_based_on_answer_repeat_in_row"
-    ALLOW_UPDATE_ANSWER_OPTIONS_SCORES_BASED_ON_CLASSIFICATION = (
-        "allow_update_answer_options_scores_based_on_classification"
-    )
-    ALLOW_UPDATE_ANSWER_OPTIONS_TEXT_BASED_ON_CLASSIFICATION = (
-        "allow_update_answer_options_text_based_on_classification"
-    )
-    CREATE_OPTION_FOR_EACH_CLASSIFICATION = "create_option_for_each_classification"
-    CONTENT_TYPE_ID = "content_type_id"
-    OBJECT_ID = "object_id"
-
-
-@strawberry.input
-class SurveySortFieldInput:
-    field: SurveySortField
-    direction: SortDirection = SortDirection.ASC
+    PRICE = "price"
 
 
 @strawberry.input
 class SurveySortInput:
-    fields: List[SurveySortFieldInput]
+    created_at: Optional[SortDirection] = None
+    updated_at: Optional[SortDirection] = None
+    title: Optional[SortDirection] = None
+    price: Optional[SortDirection] = None
 
 
 @strawberry.input
@@ -169,29 +139,16 @@ class SurveyCollectionFilters:
 class SurveyCollectionSortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
-    ID = "id"
-    STATUS = "status"
-    PRIVACY_STATUS = "privacy_status"
     TITLE = "title"
-    DESCRIPTION = "description"
-    SHORT_DESCRIPTION = "short_description"
-    SLUG = "slug"
-    LANGUAGE = "language"
-    CATEGORY_ID = "category_id"
-    SPONSOR = "sponsor"
-    TYPE = "type"
-    AUTHOR_ID = "author_id"
-
-
-@strawberry.input
-class SurveyCollectionSortFieldInput:
-    field: SurveyCollectionSortField
-    direction: SortDirection = SortDirection.ASC
+    PRICE = "price"
 
 
 @strawberry.input
 class SurveyCollectionSortInput:
-    fields: List[SurveyCollectionSortFieldInput]
+    created_at: Optional[SortDirection] = None
+    updated_at: Optional[SortDirection] = None
+    title: Optional[SortDirection] = None
+    price: Optional[SortDirection] = None
 
 
 @strawberry.input

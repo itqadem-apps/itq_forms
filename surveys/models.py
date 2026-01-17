@@ -78,13 +78,13 @@ class Status(models.Model):
 
 
 class Survey(models.Model):
-    DISPLAY_OPTION_SINGLE_QUESTION = "single_question"
-    DISPLAY_OPTION_LIST = "list"
-    DISPLAY_OPTION_NORMAL_FORM = "normal_form"
+    DISPLAY_OPTION_BY_QUESTION = "by_question"
+    DISPLAY_OPTION_BY_SECTION = "by_section"
+    DISPLAY_OPTION_FULL_FORM = "full_form"
     DISPLAY_OPTIONS = (
-        (DISPLAY_OPTION_SINGLE_QUESTION, _("Single Question")),
-        (DISPLAY_OPTION_LIST, _("List")),
-        (DISPLAY_OPTION_NORMAL_FORM, _("Normal Form")),
+        (DISPLAY_OPTION_BY_QUESTION, _("By Question")),
+        (DISPLAY_OPTION_BY_SECTION, _("By Section")),
+        (DISPLAY_OPTION_FULL_FORM, _("Full Form")),
     )
 
     ASSESSMENT_TYPE_SURVEY = "survey"
@@ -136,16 +136,16 @@ class Survey(models.Model):
         related_name="current_surveys",
         verbose_name=_("Status"),
     )
-    assessment_type = models.CharField(
+    survey_type = models.CharField(
         max_length=255,
         choices=ASSESSMENT_TYPES,
         default=ASSESSMENT_TYPE_SURVEY,
-        verbose_name=_("Assessment Type"),
+        verbose_name=_("Survey Type"),
     )
     display_option = models.CharField(
         max_length=255,
         choices=DISPLAY_OPTIONS,
-        default=DISPLAY_OPTION_SINGLE_QUESTION,
+        default=DISPLAY_OPTION_BY_QUESTION,
         verbose_name=_("Display Option"),
     )
     is_timed = models.BooleanField(default=False, verbose_name=_("Is Timed"))
@@ -227,12 +227,12 @@ class Survey(models.Model):
         return dict(self.EVALUATION_TYPES).get(self.evaluation_type)
 
     @property
-    def get_assessment_type(self):
-        return dict(self.ASSESSMENT_TYPES).get(self.assessment_type)
+    def get_survey_type(self):
+        return dict(self.ASSESSMENT_TYPES).get(self.survey_type)
 
     @property
     def get_model_name(self):
-        return self.get_assessment_type
+        return self.get_survey_type
 
     @property
     def get_display_option(self):

@@ -30,21 +30,20 @@ SurveySpec = BaseQuerySpec[SurveyFilters, SurveyProjection]
 
 
 def survey_sort_input_to_spec(inp: SurveySortInput | None) -> SortSpec | None:
-    if inp is None or not inp.fields:
+    if inp is None:
         return None
-    return SortSpec(
-        fields=[
-            SortField(
-                field=f.field.value,
-                direction=f.direction.value,
-            )
-            for f in inp.fields
-        ]
-    )
+    fields = []
+    for field in SurveySortField:
+        direction = getattr(inp, field.value, None)
+        if direction is None:
+            continue
+        fields.append(SortField(field=field.value, direction=direction.value))
+    if not fields:
+        return None
+    return SortSpec(fields=fields)
 
 
 SURVEY_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveySortField}
-SURVEY_SORT_MAP["status"] = "status__status"
 
 pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
@@ -79,17 +78,17 @@ SurveyCollectionSpec = BaseQuerySpec[SurveyCollectionFilters, SurveyCollectionPr
 
 
 def survey_collection_sort_input_to_spec(inp: SurveyCollectionSortInput | None) -> SortSpec | None:
-    if inp is None or not inp.fields:
+    if inp is None:
         return None
-    return SortSpec(
-        fields=[
-            SortField(
-                field=f.field.value,
-                direction=f.direction.value,
-            )
-            for f in inp.fields
-        ]
-    )
+    fields = []
+    for field in SurveyCollectionSortField:
+        direction = getattr(inp, field.value, None)
+        if direction is None:
+            continue
+        fields.append(SortField(field=field.value, direction=direction.value))
+    if not fields:
+        return None
+    return SortSpec(fields=fields)
 
 
 SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveyCollectionSortField}

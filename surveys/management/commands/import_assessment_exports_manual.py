@@ -121,7 +121,7 @@ class Command(BaseCommand):
         # children_child.json, classifications_tag.json, classifications_modeltag.json, sponsors_sponsor.json
 
         ignored_fields = {
-            "assessments_assessment.json": {"deleted_at", "content_type", "object_id"},
+            "assessments_assessment.json": {"deleted_at", "content_type", "object_id", "assessment_type"},
             "assessments_section.json": {"deleted_at", "submit_action", "submit_action_target"},
             "assessments_question.json": {"deleted_at"},
             "assessments_userassessment.json": {"price"},
@@ -467,7 +467,7 @@ class Command(BaseCommand):
                     description=fields.get("description"),
                     short_description=fields.get("short_description"),
                     language=fields.get("language"),
-                    assessment_type=fields.get("assessment_type"),
+                    survey_type=fields.get("assessment_type"),
                     display_option=fields.get("display_option"),
                     is_timed=fields.get("is_timed", False),
                     assignable_to_user=fields.get("is_for_child", False),

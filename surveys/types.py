@@ -29,7 +29,7 @@ class SurveyType:
     slug: auto
     language: auto
     status_id: auto
-    assessment_type: auto
+    survey_type: auto
     display_option: auto
     is_timed: auto
     assignable_to_user: auto

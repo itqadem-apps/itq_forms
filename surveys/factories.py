@@ -73,9 +73,9 @@ class SurveyFactory:
             [Status.STATUS_DRAFT, Status.STATUS_PENDING, Status.STATUS_PUBLISHED]
         )
 
-        assessment_type = overrides.pop("assessment_type", None) or Survey.ASSESSMENT_TYPE_SURVEY
+        survey_type = overrides.pop("survey_type", None) or Survey.ASSESSMENT_TYPE_SURVEY
         display_option = overrides.pop("display_option", None) or _pick_choice(
-            Survey.DISPLAY_OPTIONS, default=Survey.DISPLAY_OPTION_SINGLE_QUESTION
+            Survey.DISPLAY_OPTIONS, default=Survey.DISPLAY_OPTION_BY_QUESTION
         )
 
         is_timed = overrides.pop("is_timed", None)
@@ -104,7 +104,7 @@ class SurveyFactory:
             description=description,
             language=language,
             status=status,
-            assessment_type=assessment_type,
+            survey_type=survey_type,
             display_option=display_option,
             is_timed=is_timed,
             assignable_to_user=assignable_to_user,

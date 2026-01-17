@@ -116,12 +116,12 @@ class Query:
             facets.append(FacetGQL(name="status", values=status_values))
 
             assessment_type_values = [
-                FacetValueGQL(value=row["assessment_type"], count=row["count"])
-                for row in base_qs.values("assessment_type")
+                FacetValueGQL(value=row["survey_type"], count=row["count"])
+                for row in base_qs.values("survey_type")
                 .annotate(count=Count("id"))
-                .order_by("assessment_type")
+                .order_by("survey_type")
             ]
-            facets.append(FacetGQL(name="assessment_type", values=assessment_type_values))
+            facets.append(FacetGQL(name="survey_type", values=assessment_type_values))
 
             language_values = [
                 FacetValueGQL(value=row["language"], count=row["count"])
