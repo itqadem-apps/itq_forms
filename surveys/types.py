@@ -159,6 +159,30 @@ class QuestionType:
             return None
         return UserAnswer.objects.filter(user_assessment=assessment, question_id=self.id).first()
 
+    @strawberry.field
+    def progress(self, info, user_assessment_id: Optional[int] = None) -> Optional[int]:
+        django_user = get_django_user(info)
+        if user_assessment_id is None:
+            user_assessment_id = getattr(self, "_user_assessment_id", None)
+        if user_assessment_id is None:
+            return None
+        assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
+        if not assessment or not assessment.survey_id:
+            return None
+        total = Question.objects.filter(
+            survey_id=assessment.survey_id, section__isnull=False
+        ).count()
+        if total == 0:
+            return 0
+        answered = (
+            UserAnswer.objects.filter(user_assessment=assessment)
+            .exclude(answer__isnull=True, selected_options__isnull=True)
+            .values_list("question_id", flat=True)
+            .distinct()
+            .count()
+        )
+        return int((answered / total) * 100)
+
 
 @strawberry.type
 class FacetValueGQL:
