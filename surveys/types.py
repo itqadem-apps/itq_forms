@@ -9,7 +9,16 @@ import strawberry_django
 from strawberry import auto
 
 
-from .models import AnswerSchema, AnswerSchemaOption, Classification, Question, Recommendation, Section, Survey
+from .models import (
+    AnswerSchema,
+    AnswerSchemaOption,
+    Classification,
+    Question,
+    Recommendation,
+    Section,
+    Survey,
+    SurveyMediaAsset,
+)
 from survey_collections.models import SurveyCollection
 from app.auth_utils import get_django_user
 from user_surveys.models import (
@@ -51,6 +60,12 @@ class SurveyType:
     created_at: auto
     updated_at: auto
     sections: List["SectionType"]
+    @strawberry.field
+    def assets(self, asset_type: str | None = None) -> List["SurveyAssetType"]:
+        qs = self.assets.all()
+        if asset_type:
+            qs = qs.filter(asset_type=asset_type)
+        return list(qs)
 
     @strawberry.field
     def status(self) -> str | None:
@@ -308,3 +323,10 @@ class UserAssessmentType:
     progress: auto
     last_question_id: auto
     action_id: auto
+
+
+@strawberry_django.type(SurveyMediaAsset)
+class SurveyAssetType:
+    id: auto
+    asset_id: auto
+    asset_type: auto
