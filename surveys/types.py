@@ -24,9 +24,9 @@ from survey_collections.models import SurveyCollection
 from app.auth_utils import get_django_user
 from user_surveys.models import (
     UserAnswer,
-    UserAssessment,
-    UserAssessmentClassification,
-    UserAssessmentRecommendation,
+    UserSurvey,
+    UserSurveyClassification,
+    UserSurveyRecommendation,
 )
 
 
@@ -42,7 +42,7 @@ class SurveyType:
     survey_type: auto
     display_option: auto
     is_timed: auto
-    assignable_to_user: auto
+    is_for_child: auto
     is_evaluable: auto
     evaluation_type: auto
     use_score: auto
@@ -72,6 +72,19 @@ class SurveyType:
     @strawberry.field
     def status(self) -> str | None:
         return self.status.status if self.status_id else None
+
+    @strawberry.field
+    def user_surveys(self) -> List["UserSurveyType"]:
+        return list(self.usersurvey_set.all())
+
+    @strawberry.field
+    def is_enrolled(self, info) -> bool:
+        django_user = get_django_user(info)
+        return UserSurvey.objects.filter(
+            user=django_user,
+            survey_id=self.id,
+            submitted_at__isnull=True,
+        ).exists()
 
 
 @strawberry_django.type(Section)
@@ -148,25 +161,25 @@ class QuestionType:
         return ids[idx - 1] if idx - 1 >= 0 else None
 
     @strawberry.field
-    def user_answer(self, info, user_assessment_id: Optional[int] = None) -> Optional["UserAnswerType"]:
+    def user_answer(self, info, user_survey_id: Optional[int] = None) -> Optional["UserAnswerType"]:
         django_user = get_django_user(info)
-        if user_assessment_id is None:
-            user_assessment_id = getattr(self, "_user_assessment_id", None)
-        if user_assessment_id is None:
+        if user_survey_id is None:
+            user_survey_id = getattr(self, "_user_survey_id", None)
+        if user_survey_id is None:
             return None
-        assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
+        assessment = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not assessment:
             return None
-        return UserAnswer.objects.filter(user_assessment=assessment, question_id=self.id).first()
+        return UserAnswer.objects.filter(user_survey=assessment, question_id=self.id).first()
 
     @strawberry.field
-    def progress(self, info, user_assessment_id: Optional[int] = None) -> Optional[int]:
+    def progress(self, info, user_survey_id: Optional[int] = None) -> Optional[int]:
         django_user = get_django_user(info)
-        if user_assessment_id is None:
-            user_assessment_id = getattr(self, "_user_assessment_id", None)
-        if user_assessment_id is None:
+        if user_survey_id is None:
+            user_survey_id = getattr(self, "_user_survey_id", None)
+        if user_survey_id is None:
             return None
-        assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
+        assessment = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not assessment or not assessment.survey_id:
             return None
         total = Question.objects.filter(
@@ -175,7 +188,7 @@ class QuestionType:
         if total == 0:
             return 0
         answered = (
-            UserAnswer.objects.filter(user_assessment=assessment)
+            UserAnswer.objects.filter(user_survey=assessment)
             .exclude(answer__isnull=True, selected_options__isnull=True)
             .values_list("question_id", flat=True)
             .distinct()
@@ -266,8 +279,8 @@ class SurveyCollectionsResultsGQL:
 
 
 @strawberry.type
-class UserAssessmentsResultsGQL:
-    items: List[UserAssessmentType]
+class UserSurveysResultsGQL:
+    items: List["UserSurveyType"]
     total: int
 
 
@@ -276,8 +289,8 @@ class FinishAssessmentResult:
     status: str
     score: Optional[int]
     evaluated_at: Optional[str]
-    classifications: List["UserAssessmentClassificationType"]
-    recommendations: List["UserAssessmentRecommendationType"]
+    classifications: List["UserSurveyClassificationType"]
+    recommendations: List["UserSurveyRecommendationType"]
 
 
 @strawberry_django.type(Classification)
@@ -323,18 +336,18 @@ class AnswerSchemaOptionType:
     order: auto
 
 
-@strawberry_django.type(UserAssessmentClassification)
-class UserAssessmentClassificationType:
+@strawberry_django.type(UserSurveyClassification)
+class UserSurveyClassificationType:
     id: auto
-    user_assessment_id: auto
+    user_survey_id: auto
     classification: ClassificationType
     count: auto
 
 
-@strawberry_django.type(UserAssessmentRecommendation)
-class UserAssessmentRecommendationType:
+@strawberry_django.type(UserSurveyRecommendation)
+class UserSurveyRecommendationType:
     id: auto
-    user_assessment_id: auto
+    user_survey_id: auto
     recommendation: RecommendationType
     count: auto
 
@@ -345,15 +358,15 @@ class UserAnswerType:
     survey_id: auto
     user_id: auto
     question_id: auto
-    user_assessment_id: auto
+    user_survey_id: auto
     answer: auto
     type: auto
     score: auto
     order: auto
 
 
-@strawberry_django.type(UserAssessment)
-class UserAssessmentType:
+@strawberry_django.type(UserSurvey)
+class UserSurveyType:
     id: int
     is_paid: auto
     survey_id: auto

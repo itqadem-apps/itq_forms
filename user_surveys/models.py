@@ -15,7 +15,7 @@ from surveys.models import (
 UserModel = get_user_model()
 
 
-class UserAssessment(models.Model):
+class UserSurvey(models.Model):
     class Meta:
         ordering = ["submitted_at"]
 
@@ -29,19 +29,19 @@ class UserAssessment(models.Model):
     score = models.IntegerField(null=True, blank=True)
     progress = models.IntegerField(null=True, blank=True, default=0)
     last_question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True, blank=True)
-    classifications = models.ManyToManyField(Classification, through="UserAssessmentClassification")
-    recommendations = models.ManyToManyField(Recommendation, through="UserAssessmentRecommendation")
+    classifications = models.ManyToManyField(Classification, through="UserSurveyClassification")
+    recommendations = models.ManyToManyField(Recommendation, through="UserSurveyRecommendation")
     action = models.ForeignKey(Action, on_delete=models.SET_NULL, null=True, blank=True)
 
 
-class UserAssessmentClassification(models.Model):
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE)
+class UserSurveyClassification(models.Model):
+    user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE)
     classification = models.ForeignKey(Classification, on_delete=models.CASCADE)
     count = models.IntegerField(default=0)
 
 
-class UserAssessmentRecommendation(models.Model):
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE)
+class UserSurveyRecommendation(models.Model):
+    user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE)
     recommendation = models.ForeignKey(Recommendation, on_delete=models.CASCADE)
     count = models.IntegerField(default=0)
 
@@ -54,7 +54,7 @@ class UserAnswer(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
     question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True, blank=True)
     question_title = models.CharField(max_length=255, null=True)
-    user_assessment = models.ForeignKey(UserAssessment, on_delete=models.CASCADE, null=True, blank=True)
+    user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE, null=True, blank=True)
     answer = models.TextField(default=None, blank=True, null=True)
     type = models.CharField(
         max_length=50,
@@ -69,4 +69,3 @@ class UserAnswer(models.Model):
         if self.question_id:
             self.question_title = self.question.title
         super().save(*args, **kwargs)
-

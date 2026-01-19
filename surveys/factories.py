@@ -82,9 +82,9 @@ class SurveyFactory:
         if is_timed is None:
             is_timed = random.random() < 0.25
 
-        assignable_to_user = overrides.pop("assignable_to_user", None)
-        if assignable_to_user is None:
-            assignable_to_user = random.random() < 0.35
+        is_for_child = overrides.pop("is_for_child", None)
+        if is_for_child is None:
+            is_for_child = random.random() < 0.35
 
         is_evaluable = overrides.pop("is_evaluable", None)
         if is_evaluable is None:
@@ -107,7 +107,7 @@ class SurveyFactory:
             survey_type=survey_type,
             display_option=display_option,
             is_timed=is_timed,
-            assignable_to_user=assignable_to_user,
+            is_for_child=is_for_child,
             is_evaluable=is_evaluable,
             evaluation_type=evaluation_type,
             **overrides,

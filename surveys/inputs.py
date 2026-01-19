@@ -23,7 +23,7 @@ class SurveyFiltersInput:
     survey_type: Optional[str] = None
     display_option: Optional[str] = None
     is_timed: Optional[bool] = None
-    assignable_to_user: Optional[bool] = None
+    is_for_child: Optional[bool] = None
     is_evaluable: Optional[bool] = None
     evaluation_type: Optional[str] = None
     use_score: Optional[bool] = None
@@ -55,7 +55,7 @@ class SurveyFilters:
     survey_type: Optional[str]
     display_option: Optional[str]
     is_timed: Optional[bool]
-    assignable_to_user: Optional[bool]
+    is_for_child: Optional[bool]
     is_evaluable: Optional[bool]
     evaluation_type: Optional[str]
     use_score: Optional[bool]
@@ -160,7 +160,7 @@ class SurveyCollectionsListInput:
 
 
 @strawberry.input
-class UserAssessmentFiltersInput:
+class UserSurveyFiltersInput:
     survey_id: Optional[int] = None
     child_id: Optional[str] = None
     is_paid: Optional[bool] = None
@@ -170,7 +170,7 @@ class UserAssessmentFiltersInput:
 
 
 @dataclass(frozen=True)
-class UserAssessmentFilters:
+class UserSurveyFilters:
     survey_id: Optional[int]
     child_id: Optional[str]
     is_paid: Optional[bool]
@@ -180,20 +180,10 @@ class UserAssessmentFilters:
 
 
 @strawberry.input
-class UserAssessmentsListInput:
+class UserSurveysListInput:
     limit: int = 20
     offset: int = 0
-    filters: Optional[UserAssessmentFiltersInput] = None
-
-
-@strawberry.input
-class UserAssessmentFiltersInput:
-    survey_id: Optional[int] = None
-    child_id: Optional[str] = None
-    is_paid: Optional[bool] = None
-    submitted: Optional[bool] = None
-    submitted_at: Optional[DateTimeRangeFilterInput] = None
-    evaluated_at: Optional[DateTimeRangeFilterInput] = None
+    filters: Optional[UserSurveyFiltersInput] = None
 
 
 @strawberry.input

@@ -27,8 +27,8 @@ from survey_collections.models import SurveyCollection
 from taxonomy.models import Category, CategoryTranslation
 from user_surveys.models import (
     UserAnswer,
-    UserAssessment,
-    UserAssessmentClassification,
+    UserSurvey,
+    UserSurveyClassification,
 )
 
 
@@ -470,7 +470,7 @@ class Command(BaseCommand):
                     survey_type=fields.get("assessment_type"),
                     display_option=fields.get("display_option"),
                     is_timed=fields.get("is_timed", False),
-                    assignable_to_user=fields.get("is_for_child", False),
+                    is_for_child=fields.get("is_for_child", False),
                     is_evaluable=fields.get("is_evaluable", False),
                     evaluation_type=fields.get("evaluation_type"),
                     use_score=fields.get("use_score", False),
@@ -707,7 +707,7 @@ class Command(BaseCommand):
             if user_ref and user_id is None:
                 report.add_value("userassessment.user", user_ref)
             user_assessments.append(
-                UserAssessment(
+                UserSurvey(
                     id=item["pk"],
                     is_paid=fields.get("is_paid", False),
                     survey_id=fields.get("assessment"),
@@ -739,7 +739,7 @@ class Command(BaseCommand):
                     user_id=user_id,
                     question_id=fields.get("question"),
                     question_title=fields.get("question_title"),
-                    user_assessment_id=fields.get("user_assessment"),
+                    user_survey_id=fields.get("user_assessment"),
                     answer=fields.get("answer"),
                     type=fields.get("type"),
                     score=fields.get("score"),
@@ -753,9 +753,9 @@ class Command(BaseCommand):
         for item in files["assessments_userassessmentclassification.json"]:
             fields = item["fields"]
             user_assessment_classifications.append(
-                UserAssessmentClassification(
+                UserSurveyClassification(
                     id=item["pk"],
-                    user_assessment_id=fields.get("user_assessment"),
+                    user_survey_id=fields.get("user_assessment"),
                     classification_id=fields.get("classification"),
                     count=fields.get("count", 0),
                 )
@@ -884,11 +884,11 @@ class Command(BaseCommand):
                     enrolled_through.objects.bulk_create(enrolled_rows, batch_size=500)
 
             if user_assessments:
-                UserAssessment.objects.bulk_create(user_assessments, batch_size=500)
+                UserSurvey.objects.bulk_create(user_assessments, batch_size=500)
             if user_answers:
                 UserAnswer.objects.bulk_create(user_answers, batch_size=500)
             if user_assessment_classifications:
-                UserAssessmentClassification.objects.bulk_create(
+                UserSurveyClassification.objects.bulk_create(
                     user_assessment_classifications, batch_size=500
                 )
 

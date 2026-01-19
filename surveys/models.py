@@ -149,7 +149,7 @@ class Survey(models.Model):
         verbose_name=_("Display Option"),
     )
     is_timed = models.BooleanField(default=False, verbose_name=_("Is Timed"))
-    assignable_to_user = models.BooleanField(default=False, verbose_name=_("Assignable to User"))
+    is_for_child = models.BooleanField(default=False, verbose_name=_("Is For "))
 
     # evaluation settings
     is_evaluable = models.BooleanField(default=False, verbose_name=_("Is Evaluable"))

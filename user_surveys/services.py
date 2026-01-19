@@ -5,9 +5,9 @@ from django.utils.timezone import now
 
 from .models import (
     UserAnswer,
-    UserAssessment,
-    UserAssessmentClassification,
-    UserAssessmentRecommendation,
+    UserSurvey,
+    UserSurveyClassification,
+    UserSurveyRecommendation,
 )
 from surveys.models import Question, Survey
 
@@ -19,14 +19,14 @@ def enroll_user_in_assessment(request_user, survey_id, child_id=None):
     """
     survey = get_object_or_404(Survey, id=survey_id)
 
-    if getattr(survey, "assignable_to_user", False):
+    if getattr(survey, "is_for_child", False):
         if not child_id:
             raise ValueError("child_id is required for this survey.")
         child = str(child_id)
     else:
         child = None
 
-    existing = UserAssessment.objects.filter(
+    existing = UserSurvey.objects.filter(
         user=request_user,
         survey=survey,
         child_id=child,
@@ -35,7 +35,7 @@ def enroll_user_in_assessment(request_user, survey_id, child_id=None):
     if existing:
         return existing, False
 
-    user_assessment = UserAssessment.objects.create(
+    user_assessment = UserSurvey.objects.create(
         user=request_user,
         survey=survey,
         child_id=child,
@@ -80,7 +80,7 @@ def _evaluate_answer(assessment: Survey, answer: UserAnswer) -> tuple[int, list,
     return score, classifications, recommendations
 
 
-def evaluate_assessment(user_assessment: UserAssessment) -> None:
+def evaluate_assessment(user_assessment: UserSurvey) -> None:
     assessment = user_assessment.survey
     if not assessment:
         return
@@ -105,10 +105,10 @@ def evaluate_assessment(user_assessment: UserAssessment) -> None:
         if filtered:
             counts = Counter(c.id for c in filtered)
             sorted_classifications = sorted(set(filtered), key=lambda c: counts[c.id])
-            user_assessment.userassessmentclassification_set.all().delete()
+            user_assessment.usersurveyclassification_set.all().delete()
             for classification in sorted_classifications:
-                UserAssessmentClassification.objects.create(
-                    user_assessment=user_assessment,
+                UserSurveyClassification.objects.create(
+                    user_survey=user_assessment,
                     classification=classification,
                     count=counts[classification.id],
                 )
@@ -118,16 +118,16 @@ def evaluate_assessment(user_assessment: UserAssessment) -> None:
         if filtered:
             counts = Counter(r.id for r in filtered)
             sorted_recommendations = sorted(set(filtered), key=lambda r: counts[r.id])
-            user_assessment.userassessmentrecommendation_set.all().delete()
+            user_assessment.usersurveyrecommendation_set.all().delete()
             for recommendation in sorted_recommendations:
-                UserAssessmentRecommendation.objects.create(
-                    user_assessment=user_assessment,
+                UserSurveyRecommendation.objects.create(
+                    user_survey=user_assessment,
                     recommendation=recommendation,
                     count=counts[recommendation.id],
                 )
 
 
-def finish_assessment(user_assessment: UserAssessment) -> None:
+def finish_assessment(user_assessment: UserSurvey) -> None:
     assessment = user_assessment.survey
     if not assessment:
         raise ValueError("Assessment not found.")

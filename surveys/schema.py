@@ -23,9 +23,9 @@ from .filters import (
     SurveyCollectionSpec,
     collections_pipeline,
     survey_collection_sort_input_to_spec,
-    UserAssessmentProjection,
-    UserAssessmentSpec,
-    user_assessments_pipeline,
+    UserSurveyProjection,
+    UserSurveySpec,
+    user_surveys_pipeline,
 )
 from .inputs import (
     SurveyFilters,
@@ -36,9 +36,9 @@ from .inputs import (
     SurveyCollectionFilters,
     SurveyCollectionFiltersInput,
     SurveyCollectionsListInput,
-    UserAssessmentFilters,
-    UserAssessmentFiltersInput,
-    UserAssessmentsListInput,
+    UserSurveyFilters,
+    UserSurveyFiltersInput,
+    UserSurveysListInput,
 )
 from .models import AnswerSchemaOption, Question, Survey
 from .types import (
@@ -46,19 +46,19 @@ from .types import (
     FacetValueGQL,
     SurveyResultsGQL,
     SurveyType,
-    UserAssessmentType,
+    UserSurveyType,
     QuestionType,
     UserAnswerType,
     FinishAssessmentResult,
-    UserAssessmentClassificationType,
-    UserAssessmentRecommendationType,
+    UserSurveyClassificationType,
+    UserSurveyRecommendationType,
     QuestionsResultsGQL,
     QuestionsFiltersGQL,
     SurveyCollectionType,
     SurveyCollectionsResultsGQL,
-    UserAssessmentsResultsGQL,
+    UserSurveysResultsGQL,
 )
-from user_surveys.models import UserAnswer, UserAssessment
+from user_surveys.models import UserAnswer, UserSurvey
 from user_surveys.services import enroll_user_in_assessment, finish_assessment as finish_assessment_service
 from app.auth_utils import with_django_user
 from strawberry.types import Info
@@ -202,16 +202,16 @@ class Query:
 
     @strawberry.field(permission_classes=[RequireAuth])
     @with_django_user
-    def user_assessments(
+    def user_surveys(
         self,
         info: Info,
-        user_assessments_list_input: UserAssessmentsListInput,
+        user_surveys_list_input: UserSurveysListInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> UserAssessmentsResultsGQL:
-        qs = UserAssessment.objects.filter(user=django_user)
-        filters_input = user_assessments_list_input.filters or UserAssessmentFiltersInput()
+    ) -> UserSurveysResultsGQL:
+        qs = UserSurvey.objects.filter(user=django_user)
+        filters_input = user_surveys_list_input.filters or UserSurveyFiltersInput()
         filters_data = {}
-        for field in dc_fields(UserAssessmentFilters):
+        for field in dc_fields(UserSurveyFilters):
             name = field.name
             if name in {"submitted_at", "evaluated_at"}:
                 value = getattr(filters_input, name, None)
@@ -219,14 +219,14 @@ class Query:
                 continue
             filters_data[name] = getattr(filters_input, name, None)
 
-        spec = UserAssessmentSpec(
-            limit=user_assessments_list_input.limit,
-            offset=user_assessments_list_input.offset,
-            projection=UserAssessmentProjection(),
-            filters=UserAssessmentFilters(**filters_data),
+        spec = UserSurveySpec(
+            limit=user_surveys_list_input.limit,
+            offset=user_surveys_list_input.offset,
+            projection=UserSurveyProjection(),
+            filters=UserSurveyFilters(**filters_data),
             sort=None,
         )
-        base_qs = user_assessments_pipeline.run(DjangoQueryContext(qs, spec)).stmt
+        base_qs = user_surveys_pipeline.run(DjangoQueryContext(qs, spec)).stmt
         if filters_input.submitted is True:
             base_qs = base_qs.filter(submitted_at__isnull=False)
         elif filters_input.submitted is False:
@@ -235,30 +235,30 @@ class Query:
         total = base_qs.count()
         items = list(
             base_qs.order_by("-submitted_at")[
-                user_assessments_list_input.offset : user_assessments_list_input.offset
-                + user_assessments_list_input.limit
+                user_surveys_list_input.offset : user_surveys_list_input.offset
+                + user_surveys_list_input.limit
             ]
         )
-        return UserAssessmentsResultsGQL(items=items, total=total)
+        return UserSurveysResultsGQL(items=items, total=total)
 
     @strawberry.field(permission_classes=[RequireAuth])
     @with_django_user
     def question(
         self,
         info: Info,
-        user_assessment_id: int,
+        user_survey_id: int,
         question_id: int | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType | None:
         
-        user_assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
-        if not user_assessment:
+        user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+        if not user_survey:
             return None
 
-        if user_assessment.submitted_at:
+        if user_survey.submitted_at:
             raise ValueError("This assessment is already submitted.")
 
-        survey = user_assessment.survey
+        survey = user_survey.survey
         if not survey:
             return None
 
@@ -269,10 +269,10 @@ class Query:
                 .first()
             )
             if question:
-                question._user_assessment_id = user_assessment.id
+                question._user_survey_id = user_survey.id
             return question
 
-        if user_assessment.last_question_id:
+        if user_survey.last_question_id:
             ids = list(
                 survey.questions.exclude(section__isnull=True)
                 .order_by("section__order", "order")
@@ -280,14 +280,14 @@ class Query:
             )
             if ids:
                 try:
-                    idx = ids.index(user_assessment.last_question_id)
+                    idx = ids.index(user_survey.last_question_id)
                     next_id = ids[idx + 1] if idx + 1 < len(ids) else None
                 except ValueError:
                     next_id = None
                 if next_id is not None:
                     question = survey.questions.filter(id=next_id).first()
                     if question:
-                        question._user_assessment_id = user_assessment.id
+                        question._user_survey_id = user_survey.id
                     return question
             return None
 
@@ -297,7 +297,7 @@ class Query:
             .first()
         )
         if question:
-            question._user_assessment_id = user_assessment.id
+            question._user_survey_id = user_survey.id
         return question
 
     @strawberry.field(permission_classes=[RequireAuth])
@@ -305,21 +305,21 @@ class Query:
     def questions(
         self,
         info: Info,
-        user_assessment_id: int,
+        user_survey_id: int,
         limit: int = 20,
         offset: int = 0,
         filters: QuestionsFiltersInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionsResultsGQL:
-        user_assessment = UserAssessment.objects.filter(
-            id=user_assessment_id,
+        user_survey = UserSurvey.objects.filter(
+            id=user_survey_id,
             user=django_user,
         ).first()
-        if not user_assessment:
+        if not user_survey:
             raise ValueError("Assessment not found.")
 
         qs = Question.objects.filter(
-            survey_id=user_assessment.survey_id,
+            survey_id=user_survey.survey_id,
             section__isnull=False,
         )
         filters_input = filters or QuestionsFiltersInput()
@@ -343,7 +343,7 @@ class Query:
 
         if filters_input.answered is not None:
             answered_ids = set(
-                UserAnswer.objects.filter(user_assessment=user_assessment)
+                UserAnswer.objects.filter(user_survey=user_survey)
                 .exclude(answer__isnull=True, selected_options__isnull=True)
                 .values_list("question_id", flat=True)
             )
@@ -355,7 +355,7 @@ class Query:
         total = base_qs.count()
         questions = list(base_qs.order_by("section__order", "order")[offset : offset + limit])
         for question in questions:
-            question._user_assessment_id = user_assessment.id
+            question._user_survey_id = user_survey.id
         filters_out = QuestionsFiltersGQL(
             question_ids=filters_input.question_ids,
             section_id=filters_input.section_id,
@@ -376,7 +376,7 @@ class Mutation:
         survey_id: int,
         child_id: str | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> UserAssessmentType:
+    ) -> UserSurveyType:
         try:
             survey = Survey.objects.get(pk=survey_id)
         except Survey.DoesNotExist:
@@ -400,28 +400,28 @@ class Mutation:
     def answer_question(
         self,
         info: Info,
-        user_assessment_id: int,
+        user_survey_id: int,
         question_id: int,
         answer: list[str],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserAnswerType:
         with transaction.atomic():
-            user_assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
-            if not user_assessment:
+            user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+            if not user_survey:
                 raise ValueError("Assessment not found.")
-            if user_assessment.submitted_at:
+            if user_survey.submitted_at:
                 raise ValueError("This assessment is already submitted.")
 
-            question = Question.objects.filter(id=question_id, survey_id=user_assessment.survey_id).first()
+            question = Question.objects.filter(id=question_id, survey_id=user_survey.survey_id).first()
             if not question:
                 raise ValueError("Question not found.")
 
             user_answer, _created = UserAnswer.objects.get_or_create(
-                user_assessment=user_assessment,
+                user_survey=user_survey,
                 question_id=question.id,
                 defaults={
                     "user": django_user,
-                    "survey_id": user_assessment.survey_id,
+                    "survey_id": user_survey.survey_id,
                     "type": question.type,
                     "order": question.order,
                 },
@@ -454,9 +454,9 @@ class Mutation:
                 options = require_options(option_ids)
                 ending_count = sum(1 for opt in options if opt.ending_option)
                 if ending_count:
-                    user_assessment.count_of_ending_options += ending_count
-                elif user_assessment.survey and user_assessment.survey.end_based_on_answer_repeat_in_row:
-                    user_assessment.count_of_ending_options = 0
+                    user_survey.count_of_ending_options += ending_count
+                elif user_survey.survey and user_survey.survey.end_based_on_answer_repeat_in_row:
+                    user_survey.count_of_ending_options = 0
                 user_answer.selected_options.set(options)
                 user_answer.answer = ", ".join([opt.text for opt in options if opt.text])
             elif question.type in [Question.QUESTION_TYPE_RADIO_MCQ, Question.QUESTION_TYPE_DROPDOWN_MCQ]:
@@ -465,9 +465,9 @@ class Mutation:
                 options = require_options(option_ids)
                 option = options[0]
                 if option.ending_option:
-                    user_assessment.count_of_ending_options += 1
-                elif user_assessment.survey and user_assessment.survey.end_based_on_answer_repeat_in_row:
-                    user_assessment.count_of_ending_options = 0
+                    user_survey.count_of_ending_options += 1
+                elif user_survey.survey and user_survey.survey.end_based_on_answer_repeat_in_row:
+                    user_survey.count_of_ending_options = 0
                 user_answer.selected_options.set([option])
                 user_answer.answer = option.text
             elif question.type in [
@@ -493,8 +493,8 @@ class Mutation:
             else:
                 raise ValueError("Unsupported question type.")
 
-            user_assessment.last_question_id = question.id
-            user_assessment.save(update_fields=["last_question", "count_of_ending_options"])
+            user_survey.last_question_id = question.id
+            user_survey.save(update_fields=["last_question", "count_of_ending_options"])
             user_answer.save()
             return user_answer
 
@@ -503,26 +503,26 @@ class Mutation:
     def finish_assessment(
         self,
         info: Info,
-        user_assessment_id: int,
+        user_survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> FinishAssessmentResult:
-        user_assessment = UserAssessment.objects.filter(id=user_assessment_id, user=django_user).first()
-        if not user_assessment:
+        user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+        if not user_survey:
             raise ValueError("Assessment not found.")
-        if user_assessment.submitted_at:
+        if user_survey.submitted_at:
             raise ValueError("This assessment is already submitted.")
 
         with transaction.atomic():
-            finish_assessment_service(user_assessment)
+            finish_assessment_service(user_survey)
 
-        user_assessment.refresh_from_db()
-        classifications = list(user_assessment.userassessmentclassification_set.all())
-        recommendations = list(user_assessment.userassessmentrecommendation_set.all())
+        user_survey.refresh_from_db()
+        classifications = list(user_survey.usersurveyclassification_set.all())
+        recommendations = list(user_survey.usersurveyrecommendation_set.all())
 
-        evaluated_at = user_assessment.evaluated_at.isoformat() if user_assessment.evaluated_at else None
+        evaluated_at = user_survey.evaluated_at.isoformat() if user_survey.evaluated_at else None
         return FinishAssessmentResult(
             status="finished",
-            score=user_assessment.score,
+            score=user_survey.score,
             evaluated_at=evaluated_at,
             classifications=classifications,
             recommendations=recommendations,
