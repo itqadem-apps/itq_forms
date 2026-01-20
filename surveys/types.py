@@ -74,8 +74,12 @@ class SurveyType:
         return self.status.status if self.status_id else None
 
     @strawberry.field
-    def user_surveys(self) -> List["UserSurveyType"]:
-        return list(self.usersurvey_set.all())
+    def user_surveys(self, info) -> List["UserSurveyType"]:
+        try:
+            django_user = get_django_user(info)
+            return list(self.usersurvey_set.filter(user=django_user))
+        except ValueError:
+            return []
 
     @strawberry.field
     def is_enrolled(self, info) -> bool:
