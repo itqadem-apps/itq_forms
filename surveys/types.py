@@ -79,12 +79,15 @@ class SurveyType:
 
     @strawberry.field
     def is_enrolled(self, info) -> bool:
-        django_user = get_django_user(info)
-        return UserSurvey.objects.filter(
-            user=django_user,
-            survey_id=self.id,
-            submitted_at__isnull=True,
-        ).exists()
+        try:
+            django_user = get_django_user(info)
+            return UserSurvey.objects.filter(
+                user=django_user,
+                survey_id=self.id,
+                submitted_at__isnull=True,
+            ).exists()
+        except ValueError:
+            return False
 
 
 @strawberry_django.type(Section)
