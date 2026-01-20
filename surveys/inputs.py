@@ -36,8 +36,6 @@ class SurveyFiltersInput:
     allow_update_answer_options_scores_based_on_classification: Optional[bool] = None
     allow_update_answer_options_text_based_on_classification: Optional[bool] = None
     create_option_for_each_classification: Optional[bool] = None
-    content_type_id: Optional[int] = None
-    object_id: Optional[int] = None
     q: Optional[str] = None
 
 
@@ -68,8 +66,6 @@ class SurveyFilters:
     allow_update_answer_options_scores_based_on_classification: Optional[bool]
     allow_update_answer_options_text_based_on_classification: Optional[bool]
     create_option_for_each_classification: Optional[bool]
-    content_type_id: Optional[int]
-    object_id: Optional[int]
     q: Optional[str]
 
 
@@ -131,7 +127,6 @@ class SurveyCollectionFilters:
     category_id: Optional[str]
     sponsor: Optional[int]
     type: Optional[str]
-    author_id: Optional[str]
     q: Optional[str]
 
 

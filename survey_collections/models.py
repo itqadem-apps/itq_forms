@@ -35,7 +35,6 @@ class SurveyCollection(models.Model):
     )
 
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_DRAFT)
-    privacy_status = models.CharField(max_length=32, choices=PRIVACY_CHOICES, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     short_description = models.CharField(max_length=300, null=True, blank=True)
@@ -46,20 +45,8 @@ class SurveyCollection(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.FloatField(default=0)
-    video_list = models.JSONField(null=True, blank=True)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
-    author = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
-    subscribers = models.ManyToManyField(
-        UserModel,
-        related_name="subscribed_collections",
-        blank=True,
-    )
-    enrolled_users = models.ManyToManyField(
-        UserModel,
-        related_name="enrolled_collections",
-        blank=True,
-    )
     assessments = models.ManyToManyField(
         Survey,
         related_name="collections",

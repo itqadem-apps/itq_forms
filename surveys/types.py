@@ -18,6 +18,7 @@ from .models import (
     Section,
     Survey,
     SurveyMediaAsset,
+    Usage,
 )
 from taxonomy.models import Category, CategoryTranslation
 from survey_collections.models import SurveyCollection
@@ -92,6 +93,28 @@ class SurveyType:
             ).exists()
         except ValueError:
             return False
+
+    @strawberry.field
+    def usage_used(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 0
+
+        usage = self.usage_set.filter(user=django_user).first()
+        return usage.used_count if usage else 0
+
+    @strawberry.field
+    def usage_limit(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 1
+
+        usage = self.usage_set.filter(user=django_user).first()
+        if not usage:
+            return 1
+        return usage.usage_limit or 1
 
 
 @strawberry_django.type(Section)
@@ -243,7 +266,6 @@ class QuestionsResultsGQL:
 class SurveyCollectionType:
     id: auto
     status: auto
-    privacy_status: auto
     title: auto
     description: auto
     short_description: auto
@@ -254,10 +276,8 @@ class SurveyCollectionType:
     deleted_at: auto
     category_id: auto
     price: auto
-    video_list: auto
     sponsor: auto
     type: auto
-    author_id: auto
     assessments: List[SurveyType]
 
 

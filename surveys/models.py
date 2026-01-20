@@ -92,14 +92,12 @@ class Survey(models.Model):
     ASSESSMENT_TYPE_CURRICULUM = "curriculum"
     ASSESSMENT_TYPE_EXAM = "exam"
     ASSESSMENT_TYPE_SMART_FORM = "smart_form"
-    ASSESSMENT_TYPE_COLLECTION = "collection"
     ASSESSMENT_TYPES = (
         (ASSESSMENT_TYPE_SURVEY, _("Survey")),
         (ASSESSMENT_TYPE_QUESTIONNAIRE, _("Questionnaire")),
         (ASSESSMENT_TYPE_CURRICULUM, _("Curriculum")),
         (ASSESSMENT_TYPE_EXAM, _("Exam")),
         (ASSESSMENT_TYPE_SMART_FORM, _("Smart Form")),
-        (ASSESSMENT_TYPE_COLLECTION, _("Collection")),
     )
 
     EVALUATION_TYPE_AUTOMATIC_EVALUATION = "automatic_evaluation"
@@ -492,6 +490,21 @@ class Recommendation(HasSoftDelete):
     def __str__(self):
         return self.description
 
+
+class Usage(models.Model):
+    user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
+    survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
+    order_id = models.UUIDField()
+    usage_limit = models.PositiveBigIntegerField(default=0)
+    used_count = models.PositiveBigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    collection = models.ForeignKey(
+        "survey_collections.SurveyCollection",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
 @receiver(post_save, sender=Section)
 def _create_section_first_question(sender, instance: Section, created: bool, **kwargs):
