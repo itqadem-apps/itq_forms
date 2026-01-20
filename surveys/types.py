@@ -19,6 +19,7 @@ from .models import (
     Survey,
     SurveyMediaAsset,
     Usage,
+    Price,
 )
 from taxonomy.models import Category, CategoryTranslation
 from survey_collections.models import SurveyCollection
@@ -115,6 +116,10 @@ class SurveyType:
         if not usage:
             return 1
         return usage.usage_limit or 1
+
+    @strawberry.field
+    def prices(self) -> List["PriceType"]:
+        return list(self.prices.all())
 
 
 @strawberry_django.type(Section)
@@ -413,3 +418,12 @@ class SurveyAssetType:
     id: auto
     asset_id: auto
     asset_type: auto
+
+
+@strawberry_django.type(Price)
+class PriceType:
+    id: auto
+    survey_id: auto
+    currency: auto
+    amount_cents: auto
+    compare_at_amount_cents: auto

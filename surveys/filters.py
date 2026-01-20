@@ -49,7 +49,18 @@ pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
     DjangoExactFilterHandler("status", lookup="status__status"),
-    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q", "status"}),
+    DjangoAllExactFiltersHandler(
+        excluded={
+            "created_at",
+            "updated_at",
+            "q",
+            "status",
+            "price_min_cents",
+            "price_max_cents",
+            "has_discount",
+            "is_free",
+        }
+    ),
     DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
     DjangoSortHandler(sort_map=SURVEY_SORT_MAP),
 ])

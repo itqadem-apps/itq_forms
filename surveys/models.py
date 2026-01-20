@@ -200,6 +200,7 @@ class Survey(models.Model):
         verbose_name=_("Sponsor"),
     )
     price = models.FloatField(default=0)
+    
 
     def __str__(self):
         return str(self.title)
@@ -235,6 +236,17 @@ class Survey(models.Model):
     @property
     def get_display_option(self):
         return dict(self.DISPLAY_OPTIONS).get(self.display_option)
+
+
+class Price(models.Model):
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="prices")
+    currency = models.CharField(max_length=3)
+    amount_cents = models.IntegerField()
+    compare_at_amount_cents = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.currency} {self.amount_cents}"
+
 
 class SurveyMediaAsset(models.Model):
     class Meta:
