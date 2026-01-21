@@ -103,6 +103,10 @@ class SurveyType:
             return 0
 
         usage = self.usage_set.filter(user=django_user).first()
+        user_survey = self.user_surveys(user=django_user)
+        if not usage:
+            if user_survey: return 1
+            else: return 0
         return usage.used_count if usage else 0
 
     @strawberry.field
@@ -110,7 +114,7 @@ class SurveyType:
         try:
             django_user = get_django_user(info)
         except ValueError:
-            return 1
+            return 0
 
         usage = self.usage_set.filter(user=django_user).first()
         if not usage:
