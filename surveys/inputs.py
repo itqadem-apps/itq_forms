@@ -40,6 +40,7 @@ class SurveyFiltersInput:
     price_max_cents: Optional[int] = None
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
+    currency: Optional[str] = None
     q: Optional[str] = None
 
 
@@ -74,6 +75,7 @@ class SurveyFilters:
     price_max_cents: Optional[int]
     has_discount: Optional[bool]
     is_free: Optional[bool]
+    currency: Optional[str]
     q: Optional[str]
 
 

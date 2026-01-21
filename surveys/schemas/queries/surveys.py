@@ -38,6 +38,8 @@ class SurveysQuery:
                         prices__compare_at_amount_cents__isnull=False,
                         prices__compare_at_amount_cents__gt=F("prices__amount_cents"),
                     )
+            if filters_input.currency is not None:
+                qs = qs.filter(prices__currency=filters_input.currency)
             if filters_input.is_free is not None:
                 free_filter = Q(prices__amount_cents=0) | Q(prices__isnull=True)
                 if filters_input.is_free:
@@ -48,6 +50,7 @@ class SurveysQuery:
                 filters_input.price_min_cents is not None
                 or filters_input.price_max_cents is not None
                 or filters_input.has_discount is not None
+                or filters_input.currency is not None
                 or filters_input.is_free is not None
             ):
                 qs = qs.distinct()

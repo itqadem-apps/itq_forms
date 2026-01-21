@@ -79,7 +79,7 @@ class SurveyType:
     def user_surveys(self, info) -> List["UserSurveyType"]:
         try:
             django_user = get_django_user(info)
-            return list(self.usersurvey_set.filter(user=django_user))
+            return list(self.usersurvey_set.filter(user=django_user, submitted_at__isnull=True))
         except ValueError:
             return []
 

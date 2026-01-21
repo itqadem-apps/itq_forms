@@ -59,6 +59,7 @@ pipeline = DjangoPipeline([
             "price_max_cents",
             "has_discount",
             "is_free",
+            "currency",
         }
     ),
     DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
