@@ -37,7 +37,7 @@ class EnrollAssessmentMutation:
             if usage.usage_limit and usage.used_count >= usage.usage_limit:
                 raise ValueError("Usage limit reached for this survey.")
         elif UserSurvey.objects.filter(user=django_user, survey=survey).exists():
-            raise ValueError("You are already enrolled in this survey.")
+            raise ValueError("Usage limit reached. You are already enrolled in this survey.")
 
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,
