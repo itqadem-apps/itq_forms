@@ -103,10 +103,9 @@ class SurveyType:
             return 0
 
         usage = self.usage_set.filter(user=django_user).first()
-        user_survey = self.user_survey_set(user=django_user)
+        user_survey = self.usersurvey_set.filter(user=django_user).exists()
         if not usage:
-            if user_survey: return 1
-            else: return 0
+            return 1 if user_survey else 0
         return usage.used_count if usage else 0
 
     @strawberry.field
@@ -412,9 +411,52 @@ class UserSurveyType:
     evaluated_at: auto
     submitted_at: auto
     score: auto
-    progress: auto
     last_question_id: auto
     action_id: auto
+
+    @strawberry.field
+    def progress(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 0
+        if not self.survey_id or django_user.id != self.user_id:
+            return 0
+        total = Question.objects.filter(survey_id=self.survey_id, section__isnull=False).count()
+        if total == 0:
+            return 0
+        answered = (
+            UserAnswer.objects.filter(user_survey_id=self.id)
+            .exclude(answer__isnull=True, selected_options__isnull=True)
+            .values_list("question_id", flat=True)
+            .distinct()
+            .count()
+        )
+        return int((answered / total) * 100)
+
+    @strawberry.field
+    def usage_used(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 0
+        if django_user.id != self.user_id or not self.survey_id:
+            return 0
+        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
+        return usage.used_count if usage else 0
+
+    @strawberry.field
+    def usage_limit(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 1
+        if django_user.id != self.user_id or not self.survey_id:
+            return 1
+        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
+        return usage.usage_limit or 1 if usage else 1
+
+    
 
 
 @strawberry_django.type(SurveyMediaAsset)
