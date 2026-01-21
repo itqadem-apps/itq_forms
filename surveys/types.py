@@ -103,7 +103,7 @@ class SurveyType:
             return 0
 
         usage = self.usage_set.filter(user=django_user).first()
-        user_survey = self.user_surveys(user=django_user)
+        user_survey = self.user_survey_set(user=django_user)
         if not usage:
             if user_survey: return 1
             else: return 0
