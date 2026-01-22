@@ -53,3 +53,21 @@ class SurveyCollection(models.Model):
         blank=True,
         help_text=_("Assessments included in this collection."),
     )
+
+
+class SurveyCollectionTranslation(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=["collection", "language"], name="ix_survey_col_tr_lang"),
+        ]
+
+    collection = models.ForeignKey(
+        SurveyCollection,
+        on_delete=models.CASCADE,
+        related_name="translations",
+    )
+    language = models.CharField(max_length=64, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    short_description = models.CharField(max_length=300, null=True, blank=True)
+    slug = models.CharField(max_length=255, null=True, blank=True)

@@ -30,7 +30,7 @@ from .translations import (
     RecommendationTranslationType,
     ClassificationTranslationType,
 )
-from .common import SurveyCollectionType
+from .common import SurveyCollectionType, SurveyCollectionTranslationType
 
 __all__ = [
     "ActionTranslationType",
@@ -57,6 +57,7 @@ __all__ = [
     "SectionType",
     "SurveyAssetType",
     "SurveyCollectionType",
+    "SurveyCollectionTranslationType",
     "SurveyCollectionsResultsGQL",
     "SurveyResultsGQL",
     "SurveyTranslationType",

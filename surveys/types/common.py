@@ -6,7 +6,7 @@ import strawberry
 import strawberry_django
 from strawberry import auto
 
-from survey_collections.models import SurveyCollection
+from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
 from .survey import UserSurveyClassificationType, UserSurveyRecommendationType
 
 
@@ -26,6 +26,17 @@ class SurveyCollectionType:
     price: auto
     sponsor: auto
     type: auto
+    translations: List["SurveyCollectionTranslationType"]
+
+
+@strawberry_django.type(SurveyCollectionTranslation)
+class SurveyCollectionTranslationType:
+    id: auto
+    language: auto
+    title: auto
+    description: auto
+    short_description: auto
+    slug: auto
 
 
 @strawberry.type
