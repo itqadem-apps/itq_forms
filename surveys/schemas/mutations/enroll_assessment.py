@@ -19,6 +19,7 @@ class EnrollAssessmentMutation:
         info,
         survey_id: int,
         child_id: str | None = None,
+        collection_id: int | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveyType:
         try:
@@ -43,5 +44,6 @@ class EnrollAssessmentMutation:
             request_user=django_user,
             survey_id=survey.id,
             child_id=child_id,
+            collection_id=collection_id,
         )
         return user_survey

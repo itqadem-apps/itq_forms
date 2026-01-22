@@ -11,6 +11,7 @@ from surveys.models import (
     Recommendation,
     Survey,
 )
+from survey_collections.models import SurveyCollection
 
 UserModel = get_user_model()
 
@@ -21,6 +22,7 @@ class UserSurvey(models.Model):
 
     is_paid = models.BooleanField(default=False)
     survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
+    collection = models.ForeignKey(SurveyCollection, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
     child_id = models.CharField(max_length=255, null=True, blank=True)
     count_of_ending_options = models.IntegerField(default=0)

@@ -10,9 +10,10 @@ from .models import (
     UserSurveyRecommendation,
 )
 from surveys.models import Question, Survey
+from survey_collections.models import SurveyCollection
 
 
-def enroll_user_in_assessment(request_user, survey_id, child_id=None):
+def enroll_user_in_assessment(request_user, survey_id, child_id=None, collection_id=None):
     """
     Enroll the given user into a survey (assessment).
     Returns (user_assessment, created) where created is False if an open enrollment already exists.
@@ -35,10 +36,15 @@ def enroll_user_in_assessment(request_user, survey_id, child_id=None):
     if existing:
         return existing, False
 
+    collection = None
+    if collection_id:
+        collection = SurveyCollection.objects.filter(id=collection_id).first()
+
     user_assessment = UserSurvey.objects.create(
         user=request_user,
         survey=survey,
         child_id=child,
+        collection=collection,
     )
     return user_assessment, True
 

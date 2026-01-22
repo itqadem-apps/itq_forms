@@ -409,6 +409,8 @@ class UserSurveyType:
     id: int
     is_paid: auto
     survey_id: auto
+    collection_id: auto
+    survey: Optional["SurveyType"]
     user_id: auto
     child_id: auto
     count_of_ending_options: auto
@@ -437,6 +439,10 @@ class UserSurveyType:
             .count()
         )
         return int((answered / total) * 100)
+
+    @strawberry.field
+    def survey_type(self) -> str | None:
+        return self.survey.survey_type if self.survey_id and self.survey else None
 
     @strawberry.field
     def usage_used(self, info) -> int:
