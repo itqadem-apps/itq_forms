@@ -5,7 +5,12 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from pkg_filters.integrations.django import DjangoQueryContext
 
 from app.auth_utils import with_django_user
-from surveys.filters import UserSurveyProjection, UserSurveySpec, user_surveys_pipeline
+from surveys.filters import (
+    UserSurveyProjection,
+    UserSurveySpec,
+    user_surveys_pipeline,
+    user_survey_sort_input_to_spec,
+)
 from surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserSurveysListInput
 from surveys.types import UserSurveysResultsGQL
 from user_surveys.models import UserSurvey
@@ -38,17 +43,19 @@ class UserSurveysQuery:
             offset=user_surveys_list_input.offset,
             projection=UserSurveyProjection(),
             filters=UserSurveyFilters(**filters_data),
-            sort=None,
+            sort=user_survey_sort_input_to_spec(user_surveys_list_input.sort),
         )
         base_qs = user_surveys_pipeline.run(DjangoQueryContext(qs, spec)).stmt
         if filters_input.submitted is True:
             base_qs = base_qs.filter(submitted_at__isnull=False)
         elif filters_input.submitted is False:
             base_qs = base_qs.filter(submitted_at__isnull=True)
+        if user_surveys_list_input.sort is None:
+            base_qs = base_qs.order_by("-submitted_at")
 
         total = base_qs.count()
         items = list(
-            base_qs.order_by("-submitted_at")[
+            base_qs[
                 user_surveys_list_input.offset : user_surveys_list_input.offset
                 + user_surveys_list_input.limit
             ]

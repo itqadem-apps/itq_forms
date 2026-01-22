@@ -29,7 +29,6 @@ class UserSurvey(models.Model):
     evaluated_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(null=True, blank=True)
-    progress = models.IntegerField(null=True, blank=True, default=0)
     last_question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True, blank=True)
     classifications = models.ManyToManyField(Classification, through="UserSurveyClassification")
     recommendations = models.ManyToManyField(Recommendation, through="UserSurveyRecommendation")

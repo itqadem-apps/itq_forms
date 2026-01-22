@@ -717,7 +717,6 @@ class Command(BaseCommand):
                     evaluated_at=parse_dt(fields.get("evaluated_at")),
                     submitted_at=parse_dt(fields.get("submitted_at")),
                     score=fields.get("score"),
-                    progress=fields.get("progress"),
                     last_question_id=fields.get("last_question"),
                     action_id=fields.get("action"),
                 )

@@ -421,26 +421,6 @@ class UserSurveyType:
     action_id: auto
 
     @strawberry.field
-    def progress(self, info) -> int:
-        try:
-            django_user = get_django_user(info)
-        except ValueError:
-            return 0
-        if not self.survey_id or django_user.id != self.user_id:
-            return 0
-        total = Question.objects.filter(survey_id=self.survey_id, section__isnull=False).count()
-        if total == 0:
-            return 0
-        answered = (
-            UserAnswer.objects.filter(user_survey_id=self.id)
-            .exclude(answer__isnull=True, selected_options__isnull=True)
-            .values_list("question_id", flat=True)
-            .distinct()
-            .count()
-        )
-        return int((answered / total) * 100)
-
-    @strawberry.field
     def survey_type(self) -> str | None:
         return self.survey.survey_type if self.survey_id and self.survey else None
 
@@ -465,6 +445,26 @@ class UserSurveyType:
             return 1
         usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
         return usage.usage_limit or 1 if usage else 1
+
+    @strawberry.field
+    def progress(self, info) -> int:
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return 0
+        if not self.survey_id or django_user.id != self.user_id:
+            return 0
+        total = Question.objects.filter(survey_id=self.survey_id, section__isnull=False).count()
+        if total == 0:
+            return 0
+        answered = (
+            UserAnswer.objects.filter(user_survey_id=self.id)
+            .exclude(answer__isnull=True, selected_options__isnull=True)
+            .values_list("question_id", flat=True)
+            .distinct()
+            .count()
+        )
+        return int((answered / total) * 100)
 
     
 

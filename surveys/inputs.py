@@ -195,6 +195,23 @@ class UserSurveysListInput:
     limit: int = 20
     offset: int = 0
     filters: Optional[UserSurveyFiltersInput] = None
+    sort: Optional["UserSurveySortInput"] = None
+
+
+@strawberry.enum
+class UserSurveySortField(str, Enum):
+    ID = "id"
+    SUBMITTED_AT = "submitted_at"
+    EVALUATED_AT = "evaluated_at"
+    SCORE = "score"
+
+
+@strawberry.input
+class UserSurveySortInput:
+    id: Optional[SortDirection] = None
+    submitted_at: Optional[SortDirection] = None
+    evaluated_at: Optional[SortDirection] = None
+    score: Optional[SortDirection] = None
 
 
 @strawberry.input
