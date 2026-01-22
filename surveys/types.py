@@ -65,6 +65,10 @@ class SurveyType:
     updated_at: auto
     sections: List["SectionType"]
     @strawberry.field
+    def collection_id(self) -> Optional[int]:
+        collection = self.collections.first()
+        return collection.id if collection else None
+    @strawberry.field
     def assets(self, asset_type: str | None = None) -> List["SurveyAssetType"]:
         qs = self.assets.all()
         if asset_type:

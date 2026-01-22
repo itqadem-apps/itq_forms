@@ -167,6 +167,9 @@ class SurveyCollectionsListInput:
 @strawberry.input
 class UserSurveyFiltersInput:
     survey_id: Optional[int] = None
+    survey_type: Optional[str] = None
+    collection_id: Optional[int] = None
+    collection_type: Optional[str] = None
     child_id: Optional[str] = None
     is_paid: Optional[bool] = None
     submitted: Optional[bool] = None
@@ -177,6 +180,9 @@ class UserSurveyFiltersInput:
 @dataclass(frozen=True)
 class UserSurveyFilters:
     survey_id: Optional[int]
+    survey_type: Optional[str]
+    collection_id: Optional[int]
+    collection_type: Optional[str]
     child_id: Optional[str]
     is_paid: Optional[bool]
     submitted: Optional[bool]

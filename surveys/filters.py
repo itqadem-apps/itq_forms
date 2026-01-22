@@ -124,5 +124,8 @@ UserSurveySpec = BaseQuerySpec[UserSurveyFilters, UserSurveyProjection]
 user_surveys_pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("submitted_at"),
     DjangoRangeFilterHandler("evaluated_at"),
-    DjangoAllExactFiltersHandler(excluded={"submitted_at", "evaluated_at", "submitted"}),
+    DjangoExactFilterHandler("survey_type", lookup="survey__survey_type"),
+    DjangoExactFilterHandler("collection_id", lookup="survey__collections__id"),
+    DjangoExactFilterHandler("collection_type", lookup="survey__collections__type"),
+    DjangoAllExactFiltersHandler(excluded={"submitted_at", "evaluated_at", "submitted", "survey_type", "collection_id", "collection_type"}),
 ])
