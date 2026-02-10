@@ -16,6 +16,12 @@ from survey_collections.models import SurveyCollection
 UserModel = get_user_model()
 
 
+class Child(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    photo_id = models.CharField(max_length=255, null=True, blank=True)
+
+
 class UserSurvey(models.Model):
     class Meta:
         ordering = ["submitted_at"]
@@ -24,7 +30,7 @@ class UserSurvey(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
     collection = models.ForeignKey(SurveyCollection, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
-    child_id = models.CharField(max_length=255, null=True, blank=True)
+    child = models.ForeignKey(Child, on_delete=models.SET_NULL, null=True, blank=True)
     count_of_ending_options = models.IntegerField(default=0)
     evaluated_at = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)

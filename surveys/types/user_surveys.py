@@ -1,4 +1,5 @@
 from .survey import (
+    ChildType,
     UserSurveyType,
     UserAnswerType,
     UserSurveyClassificationType,
@@ -6,6 +7,7 @@ from .survey import (
 )
 
 __all__ = [
+    "ChildType",
     "UserSurveyType",
     "UserAnswerType",
     "UserSurveyClassificationType",

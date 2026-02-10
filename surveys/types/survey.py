@@ -12,6 +12,7 @@ from .types_category import CategoryType
 
 from app.auth_utils import get_django_user
 from user_surveys.models import (
+    Child,
     UserAnswer,
     UserSurvey,
     UserSurveyClassification,
@@ -138,6 +139,13 @@ class PriceType:
     compare_at_amount_cents: auto
 
 
+@strawberry_django.type(Child)
+class ChildType:
+    id: auto
+    name: auto
+    photo_id: auto
+
+
 @strawberry_django.type(UserSurvey)
 class UserSurveyType:
     id: int
@@ -146,7 +154,7 @@ class UserSurveyType:
     collection_id: auto
     survey: Optional[SurveyType]
     user_id: auto
-    child_id: auto
+    child: Optional[ChildType]
     count_of_ending_options: auto
     evaluated_at: auto
     submitted_at: auto

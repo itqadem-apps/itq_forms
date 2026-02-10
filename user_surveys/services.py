@@ -13,7 +13,7 @@ from surveys.models import Question, Survey
 from survey_collections.models import SurveyCollection
 
 
-def enroll_user_in_assessment(request_user, survey_id, child_id=None, collection_id=None):
+def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id=None):
     """
     Enroll the given user into a survey (assessment).
     Returns (user_assessment, created) where created is False if an open enrollment already exists.
@@ -21,16 +21,15 @@ def enroll_user_in_assessment(request_user, survey_id, child_id=None, collection
     survey = get_object_or_404(Survey, id=survey_id)
 
     if getattr(survey, "is_for_child", False):
-        if not child_id:
-            raise ValueError("child_id is required for this survey.")
-        child = str(child_id)
+        if not child:
+            raise ValueError("child is required for this survey.")
     else:
         child = None
 
     existing = UserSurvey.objects.filter(
         user=request_user,
         survey=survey,
-        child_id=child,
+        child=child,
         submitted_at__isnull=True,
     ).first()
     if existing:
@@ -43,7 +42,7 @@ def enroll_user_in_assessment(request_user, survey_id, child_id=None, collection
     user_assessment = UserSurvey.objects.create(
         user=request_user,
         survey=survey,
-        child_id=child,
+        child=child,
         collection=collection,
     )
     return user_assessment, True

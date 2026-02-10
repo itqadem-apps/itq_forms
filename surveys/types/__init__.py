@@ -14,6 +14,7 @@ from .classification import ClassificationType
 from .recommendation import RecommendationType
 from .action import ActionType
 from .user_surveys import (
+    ChildType,
     UserSurveyType,
     UserAnswerType,
     UserSurveyClassificationType,
@@ -35,6 +36,7 @@ from .common import SurveyCollectionType, SurveyCollectionTranslationType
 __all__ = [
     "ActionTranslationType",
     "ActionType",
+    "ChildType",
     "AnswerSchemaOptionTranslationType",
     "AnswerSchemaOptionType",
     "AnswerSchemaTranslationType",

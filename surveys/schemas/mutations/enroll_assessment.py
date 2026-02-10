@@ -5,7 +5,7 @@ from app.auth_utils import with_django_user
 from interface.grpc.children_client import ChildrenClient
 from surveys.models import Survey, Usage
 from surveys.types import UserSurveyType
-from user_surveys.models import UserSurvey
+from user_surveys.models import Child, UserSurvey
 from user_surveys.services import enroll_user_in_assessment
 from ..common import RequireAuth
 
@@ -27,11 +27,17 @@ class EnrollAssessmentMutation:
         except Survey.DoesNotExist:
             raise ValueError(f"Survey not found: {survey_id}")
 
+        child = None
         if child_id:
             with ChildrenClient() as client:
                 response = client.get_children_by_guardian(guardian_user_id=str(django_user.id), status="active")
-            if not any(child.id == str(child_id) for child in response.items):
+            grpc_child = next((c for c in response.items if c.id == str(child_id)), None)
+            if not grpc_child:
                 raise ValueError("Invalid child_id for this user.")
+            child, _ = Child.objects.update_or_create(
+                id=grpc_child.id,
+                defaults={"name": grpc_child.name, "photo_id": grpc_child.photo_id or None},
+            )
 
         usage = Usage.objects.filter(user=django_user, survey=survey).first()
         if usage:
@@ -43,7 +49,7 @@ class EnrollAssessmentMutation:
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,
             survey_id=survey.id,
-            child_id=child_id,
+            child=child,
             collection_id=collection_id,
         )
         return user_survey
