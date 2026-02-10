@@ -26,7 +26,6 @@ class UserSurvey(models.Model):
     class Meta:
         ordering = ["submitted_at"]
 
-    is_paid = models.BooleanField(default=False)
     survey = models.ForeignKey(Survey, on_delete=models.SET_NULL, null=True, blank=True)
     collection = models.ForeignKey(SurveyCollection, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)

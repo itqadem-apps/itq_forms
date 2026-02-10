@@ -149,7 +149,6 @@ class ChildType:
 @strawberry_django.type(UserSurvey)
 class UserSurveyType:
     id: int
-    is_paid: auto
     survey_id: auto
     collection_id: auto
     survey: Optional[SurveyType]

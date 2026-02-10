@@ -171,7 +171,6 @@ class UserSurveyFiltersInput:
     collection_id: Optional[int] = None
     collection_type: Optional[str] = None
     child_id: Optional[str] = None
-    is_paid: Optional[bool] = None
     submitted: Optional[bool] = None
     submitted_at: Optional[DateTimeRangeFilterInput] = None
     evaluated_at: Optional[DateTimeRangeFilterInput] = None
@@ -184,7 +183,6 @@ class UserSurveyFilters:
     collection_id: Optional[int]
     collection_type: Optional[str]
     child_id: Optional[str]
-    is_paid: Optional[bool]
     submitted: Optional[bool]
     submitted_at: Optional[object]  # RangeFilterVO[datetime]
     evaluated_at: Optional[object]  # RangeFilterVO[datetime]

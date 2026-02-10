@@ -279,7 +279,6 @@ class Command(BaseCommand):
         }
         user_assessment_fields = {
             "price",
-            "is_paid",
             "assessment",
             "user",
             "child",
@@ -709,7 +708,6 @@ class Command(BaseCommand):
             user_assessments.append(
                 UserSurvey(
                     id=item["pk"],
-                    is_paid=fields.get("is_paid", False),
                     survey_id=fields.get("assessment"),
                     user_id=user_id,
                     child_id=str(fields.get("child")) if fields.get("child") is not None else None,
