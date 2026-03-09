@@ -1,5 +1,7 @@
 import strawberry
+import strawberry_django
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from app.auth_utils import with_django_user
@@ -12,7 +14,7 @@ from ..common import RequireAuth
 
 @strawberry.type
 class FinishAssessmentMutation:
-    @strawberry.mutation(permission_classes=[RequireAuth])
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     def finish_assessment(
         self,
@@ -22,9 +24,9 @@ class FinishAssessmentMutation:
     ) -> FinishAssessmentResult:
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
-            raise ValueError("Assessment not found.")
+            raise ValidationError("Assessment not found.")
         if user_survey.submitted_at:
-            raise ValueError("This assessment is already submitted.")
+            raise ValidationError("This assessment is already submitted.")
 
         with transaction.atomic():
             finish_assessment_service(user_survey)

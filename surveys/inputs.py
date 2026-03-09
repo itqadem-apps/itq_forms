@@ -3,6 +3,8 @@ from enum import Enum
 from typing import List, Optional
 
 import strawberry
+import strawberry_django
+from strawberry import UNSET
 from pkg_filters.integrations.strawberry import (
     DateTimeRangeFilterInput,
     SortDirection,
@@ -228,3 +230,225 @@ class QuestionsFilters:
     is_required: Optional[bool]
     question_type: Optional[str]
     answered: Optional[bool]
+
+
+# ==================== CRUD INPUT TYPES ====================
+
+# Translation Inputs
+@strawberry.input
+class TranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+@strawberry.input
+class SurveyCollectionTranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    short_description: Optional[str] = None
+    slug: Optional[str] = None
+
+
+@strawberry.input
+class SurveyTranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    short_description: Optional[str] = None
+    slug: Optional[str] = None
+
+
+@strawberry.input
+class SectionTranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+@strawberry.input
+class QuestionTranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+@strawberry.input
+class AnswerSchemaOptionTranslationInput:
+    language: str
+    text: Optional[str] = None
+
+
+@strawberry.input
+class ClassificationTranslationInput:
+    language: str
+    name: Optional[str] = None
+
+
+@strawberry.input
+class RecommendationTranslationInput:
+    language: str
+    description: Optional[str] = None
+
+
+@strawberry.input
+class ActionTranslationInput:
+    language: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+# Survey Collection Inputs
+@strawberry.input
+class SurveyCollectionInput:
+    status: Optional[str] = UNSET
+    title: Optional[str] = UNSET
+    description: Optional[str] = UNSET
+    short_description: Optional[str] = UNSET
+    slug: Optional[str] = UNSET
+    language: Optional[str] = UNSET
+    category_id: Optional[str] = UNSET
+    price: Optional[float] = UNSET
+    sponsor: Optional[int] = UNSET
+    type: Optional[str] = UNSET
+    translations: Optional[List[SurveyCollectionTranslationInput]] = UNSET
+
+
+# Survey Inputs
+from surveys.models import Survey, SurveyTranslation
+
+
+@strawberry_django.input(SurveyTranslation, exclude=["id", "survey"])
+class SurveyTranslationCreateInput:
+    pass  # auto: language (required), title, description, short_description, slug
+
+
+@strawberry_django.partial(SurveyTranslation, exclude=["survey"])
+class SurveyTranslationUpdateInput:
+    pass  # auto (all optional): id, language, title, description, short_description, slug
+
+
+@strawberry_django.input(Survey, exclude=["status", "category", "created_at", "updated_at"])
+class SurveyCreateInput:
+    # Manual fields that cannot use auto:
+    category_id: Optional[str] = UNSET
+    translations: Optional[List[SurveyTranslationCreateInput]] = UNSET
+
+
+@strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at"])
+class SurveyUpdateInput:
+    # id is required for update (overrides auto-optional behavior)
+    id: int
+    # Manual fields that cannot use auto:
+    category_id: Optional[str] = UNSET
+    translations: Optional[List[SurveyTranslationUpdateInput]] = UNSET
+
+
+# Section Inputs
+@strawberry.input
+class SectionInput:
+    title: Optional[str] = UNSET
+    description: Optional[str] = UNSET
+    order: Optional[int] = UNSET
+    is_hidden: Optional[bool] = UNSET
+    cover_asset_id: Optional[str] = UNSET
+    submit_action: Optional[str] = UNSET
+    submit_action_target_id: Optional[int] = UNSET
+    translations: Optional[List[SectionTranslationInput]] = UNSET
+
+
+# Question Inputs
+@strawberry.input
+class QuestionInput:
+    title: Optional[str] = UNSET
+    description: Optional[str] = UNSET
+    answer_time: Optional[str] = UNSET
+    order: Optional[int] = UNSET
+    is_required: Optional[bool] = UNSET
+    type: Optional[str] = UNSET
+    cover_asset_id: Optional[str] = UNSET
+    translations: Optional[List[QuestionTranslationInput]] = UNSET
+
+
+# Answer Schema Inputs
+@strawberry.input
+class AnswerSchemaOptionInput:
+    text: Optional[str] = UNSET
+    score: Optional[int] = UNSET
+    classification_id: Optional[int] = UNSET
+    image_asset_id: Optional[str] = UNSET
+    is_row: Optional[bool] = UNSET
+    is_column: Optional[bool] = UNSET
+    ending_option: Optional[bool] = UNSET
+    order: Optional[int] = UNSET
+    translations: Optional[List[AnswerSchemaOptionTranslationInput]] = UNSET
+
+
+@strawberry.input
+class AnswerSchemaInput:
+    type: Optional[str] = UNSET
+    with_file: Optional[bool] = UNSET
+    is_mcq: Optional[bool] = UNSET
+    is_grid: Optional[bool] = UNSET
+
+
+# Classification Inputs
+@strawberry.input
+class ClassificationInput:
+    name: Optional[str] = UNSET
+    score: Optional[int] = UNSET
+    translations: Optional[List[ClassificationTranslationInput]] = UNSET
+
+
+# Recommendation Inputs
+@strawberry.input
+class RecommendationInput:
+    description: str
+    option_id: Optional[int] = UNSET
+    translations: Optional[List[RecommendationTranslationInput]] = UNSET
+
+
+# Action Inputs
+@strawberry.input
+class ActionInput:
+    title: Optional[str] = UNSET
+    description: Optional[str] = UNSET
+    upper_limit: Optional[float] = UNSET
+    lower_limit: Optional[float] = UNSET
+    translations: Optional[List[ActionTranslationInput]] = UNSET
+
+
+# Nested/Bulk Inputs
+@strawberry.input
+class AnswerSchemaOptionNestedInput:
+    text: Optional[str] = None
+    score: Optional[int] = None
+    classification_id: Optional[int] = None
+    image_asset_id: Optional[str] = None
+    is_row: Optional[bool] = None
+    is_column: Optional[bool] = None
+    ending_option: Optional[bool] = None
+    order: Optional[int] = None
+
+
+@strawberry.input
+class QuestionNestedInput:
+    title: Optional[str] = None
+    description: Optional[str] = None
+    answer_time: Optional[str] = None
+    order: Optional[int] = None
+    is_required: Optional[bool] = None
+    type: Optional[str] = None
+    cover_asset_id: Optional[str] = None
+    options: Optional[List[AnswerSchemaOptionNestedInput]] = None
+
+
+@strawberry.input
+class SectionNestedInput:
+    title: Optional[str] = None
+    description: Optional[str] = None
+    order: Optional[int] = None
+    is_hidden: Optional[bool] = None
+    cover_asset_id: Optional[str] = None
+    questions: Optional[List[QuestionNestedInput]] = None

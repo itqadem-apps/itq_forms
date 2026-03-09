@@ -123,6 +123,13 @@ class SurveyType:
         return list(self.prices.all())
 
 
+@strawberry.type
+class SurveyPayload:
+    success: bool
+    message: Optional[str]
+    survey: Optional[SurveyType]
+
+
 @strawberry_django.type(SurveyMediaAsset)
 class SurveyAssetType:
     id: auto

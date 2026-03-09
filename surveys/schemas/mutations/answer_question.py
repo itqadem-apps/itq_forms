@@ -1,5 +1,7 @@
 import strawberry
+import strawberry_django
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from app.auth_utils import with_django_user
@@ -11,7 +13,7 @@ from ..common import RequireAuth
 
 @strawberry.type
 class AnswerQuestionMutation:
-    @strawberry.mutation(permission_classes=[RequireAuth])
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     def answer_question(
         self,
@@ -24,13 +26,13 @@ class AnswerQuestionMutation:
         with transaction.atomic():
             user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
             if not user_survey:
-                raise ValueError("Assessment not found.")
+                raise ValidationError("Assessment not found.")
             if user_survey.submitted_at:
-                raise ValueError("This assessment is already submitted.")
+                raise ValidationError("This assessment is already submitted.")
 
             question = Question.objects.filter(id=question_id, survey_id=user_survey.survey_id).first()
             if not question:
-                raise ValueError("Question not found.")
+                raise ValidationError("Question not found.")
 
             user_answer, _created = UserAnswer.objects.get_or_create(
                 user_survey=user_survey,
@@ -54,14 +56,14 @@ class AnswerQuestionMutation:
 
             def require_schema():
                 if not hasattr(question, "answer_schema"):
-                    raise ValueError("Answer schema not found.")
+                    raise ValidationError("Answer schema not found.")
 
             def require_options(option_ids: list[int]) -> list[AnswerSchemaOption]:
                 if not option_ids:
-                    raise ValueError("No options provided.")
+                    raise ValidationError("No options provided.")
                 options = list(question.answer_schema.options.filter(id__in=option_ids))
                 if len(options) != len(set(option_ids)):
-                    raise ValueError("One or more option IDs are invalid.")
+                    raise ValidationError("One or more option IDs are invalid.")
                 return options
 
             if question.type == Question.QUESTION_TYPE_CHECKBOX_MCQ:
@@ -107,7 +109,7 @@ class AnswerQuestionMutation:
                 user_answer.selected_options.set(options)
                 user_answer.answer = ",".join(answer)
             else:
-                raise ValueError("Unsupported question type.")
+                raise ValidationError("Unsupported question type.")
 
             user_survey.last_question_id = question.id
             user_survey.save(update_fields=["last_question", "count_of_ending_options"])

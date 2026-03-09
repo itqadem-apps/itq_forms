@@ -1,5 +1,7 @@
 import strawberry
+import strawberry_django
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.exceptions import ValidationError
 
 from app.auth_utils import with_django_user
 from interface.grpc.children_client import ChildrenClient
@@ -12,7 +14,7 @@ from ..common import RequireAuth
 
 @strawberry.type
 class EnrollAssessmentMutation:
-    @strawberry.mutation(permission_classes=[RequireAuth])
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     def enroll_assessment(
         self,
@@ -22,10 +24,7 @@ class EnrollAssessmentMutation:
         collection_id: int | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveyType:
-        try:
-            survey = Survey.objects.get(pk=survey_id)
-        except Survey.DoesNotExist:
-            raise ValueError(f"Survey not found: {survey_id}")
+        survey = Survey.objects.get(pk=survey_id)
 
         child = None
         if child_id:
@@ -33,7 +32,7 @@ class EnrollAssessmentMutation:
                 response = client.get_children_by_guardian(guardian_user_id=str(django_user.id), status="active")
             grpc_child = next((c for c in response.items if c.id == str(child_id)), None)
             if not grpc_child:
-                raise ValueError("Invalid child_id for this user.")
+                raise ValidationError("Invalid child_id for this user.")
             child, _ = Child.objects.update_or_create(
                 id=grpc_child.id,
                 defaults={"name": grpc_child.name, "photo_id": grpc_child.photo_id or None},
@@ -42,9 +41,9 @@ class EnrollAssessmentMutation:
         usage = Usage.objects.filter(user=django_user, survey=survey).first()
         if usage:
             if usage.usage_limit and usage.used_count >= usage.usage_limit:
-                raise ValueError("Usage limit reached for this survey.")
+                raise ValidationError("Usage limit reached for this survey.")
         elif UserSurvey.objects.filter(user=django_user, survey=survey).exists():
-            raise ValueError("Usage limit reached. You are already enrolled in this survey.")
+            raise ValidationError("Usage limit reached. You are already enrolled in this survey.")
 
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,

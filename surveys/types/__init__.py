@@ -6,7 +6,7 @@ from .common import (
     QuestionsFiltersGQL,
 )
 from .results import SurveyResultsGQL, QuestionsResultsGQL, UserSurveysResultsGQL
-from .survey import SurveyType, SurveyAssetType, PriceType
+from .survey import SurveyType, SurveyAssetType, PriceType, SurveyPayload
 from .types_category import CategoryType
 from .content import SectionType, QuestionType
 from .answer_schema import AnswerSchemaType, AnswerSchemaOptionType
@@ -58,6 +58,7 @@ __all__ = [
     "SectionTranslationType",
     "SectionType",
     "SurveyAssetType",
+    "SurveyPayload",
     "SurveyCollectionType",
     "SurveyCollectionTranslationType",
     "SurveyCollectionsResultsGQL",

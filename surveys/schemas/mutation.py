@@ -5,6 +5,13 @@ from .mutations import (
     EnrollAssessmentMutation,
     FinishAssessmentMutation,
     MeQuery,
+    SurveyMutations,
+    SectionMutations,
+    QuestionMutations,
+    AnswerSchemaMutations,
+    SurveyCollectionMutations,
+    EvaluationMutations,
+    TranslationMutations,
 )
 
 Mutation = merge_types(
@@ -14,5 +21,12 @@ Mutation = merge_types(
         AnswerQuestionMutation,
         FinishAssessmentMutation,
         MeQuery,
+        SurveyMutations,
+        SectionMutations,
+        QuestionMutations,
+        AnswerSchemaMutations,
+        SurveyCollectionMutations,
+        EvaluationMutations,
+        TranslationMutations,
     ),
 )
