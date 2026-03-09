@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from typing import List
@@ -28,7 +29,7 @@ class SectionMutations:
     @check_permission(_type_from_survey_id, 'update')
     def create_section(
         self,
-        info,
+        info: Info,
         survey_id: int,
         input: SectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -60,7 +61,7 @@ class SectionMutations:
     @check_permission(_type_from_section_id, 'update')
     def update_section(
         self,
-        info,
+        info: Info,
         id: int,
         input: SectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -94,7 +95,7 @@ class SectionMutations:
     @check_permission(_type_from_section_id, 'update')
     def delete_section(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -108,7 +109,7 @@ class SectionMutations:
     @check_permission(_type_from_survey_id, 'update')
     def reorder_sections(
         self,
-        info,
+        info: Info,
         survey_id: int,
         section_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,

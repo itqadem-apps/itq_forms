@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -17,7 +18,7 @@ class AnswerQuestionMutation:
     @with_django_user
     def answer_question(
         self,
-        info,
+        info: Info,
         user_survey_id: int,
         question_id: int,
         answer: list[str],

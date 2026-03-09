@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -38,7 +39,7 @@ class QuestionMutations:
     @check_permission(_type_from_section_id, 'update')
     def create_question(
         self,
-        info,
+        info: Info,
         section_id: int,
         input: QuestionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -80,7 +81,7 @@ class QuestionMutations:
     @check_permission(_type_from_question_id, 'update')
     def update_question(
         self,
-        info,
+        info: Info,
         id: int,
         input: QuestionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -123,7 +124,7 @@ class QuestionMutations:
     @check_permission(_type_from_question_id, 'update')
     def delete_question(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -138,7 +139,7 @@ class QuestionMutations:
     @transaction.atomic
     def duplicate_question(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
@@ -198,7 +199,7 @@ class QuestionMutations:
     @check_permission(_type_from_section_id, 'update')
     def reorder_questions(
         self,
-        info,
+        info: Info,
         section_id: int,
         question_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,

@@ -1,6 +1,7 @@
 from dataclasses import fields as dc_fields
 
 import strawberry
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from pkg_filters.integrations.django import DjangoQueryContext
 
@@ -23,7 +24,7 @@ class UserSurveysQuery:
     @with_django_user
     def user_surveys(
         self,
-        info,
+        info: Info,
         user_surveys_list_input: UserSurveysListInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveysResultsGQL:

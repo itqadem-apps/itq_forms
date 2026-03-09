@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from typing import List
 
@@ -34,7 +35,7 @@ class AnswerSchemaMutations:
     @check_permission(_type_from_schema_id, 'update')
     def update_answer_schema(
         self,
-        info,
+        info: Info,
         id: int,
         input: AnswerSchemaInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -53,7 +54,7 @@ class AnswerSchemaMutations:
     @check_permission(_type_from_schema_id, 'update')
     def create_answer_schema_option(
         self,
-        info,
+        info: Info,
         schema_id: int,
         input: AnswerSchemaOptionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -84,7 +85,7 @@ class AnswerSchemaMutations:
     @check_permission(_type_from_option_id, 'update')
     def update_answer_schema_option(
         self,
-        info,
+        info: Info,
         id: int,
         input: AnswerSchemaOptionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -117,7 +118,7 @@ class AnswerSchemaMutations:
     @check_permission(_type_from_option_id, 'update')
     def delete_answer_schema_option(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -131,7 +132,7 @@ class AnswerSchemaMutations:
     @check_permission(_type_from_schema_id, 'update')
     def reorder_answer_schema_options(
         self,
-        info,
+        info: Info,
         schema_id: int,
         option_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,

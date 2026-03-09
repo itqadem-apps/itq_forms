@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 
@@ -18,7 +19,7 @@ class EnrollAssessmentMutation:
     @with_django_user
     def enroll_assessment(
         self,
-        info,
+        info: Info,
         survey_id: int,
         child_id: str | None = None,
         collection_id: int | None = None,

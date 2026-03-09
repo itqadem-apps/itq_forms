@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -18,7 +19,7 @@ class FinishAssessmentMutation:
     @with_django_user
     def finish_assessment(
         self,
-        info,
+        info: Info,
         user_survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> FinishAssessmentResult:

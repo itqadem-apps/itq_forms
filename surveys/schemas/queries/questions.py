@@ -1,4 +1,5 @@
 import strawberry
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from pkg_filters.integrations.django import DjangoQueryContext
 
@@ -17,7 +18,7 @@ class QuestionsQuery:
     @with_django_user
     def questions(
         self,
-        info,
+        info: Info,
         user_survey_id: int,
         limit: int = 20,
         offset: int = 0,

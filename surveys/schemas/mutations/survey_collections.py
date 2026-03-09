@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.timezone import now
 
@@ -24,7 +25,7 @@ class SurveyCollectionMutations:
     @with_django_user
     def create_survey_collection(
         self,
-        info,
+        info: Info,
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
@@ -53,7 +54,7 @@ class SurveyCollectionMutations:
     @with_django_user
     def update_survey_collection(
         self,
-        info,
+        info: Info,
         id: int,
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -88,7 +89,7 @@ class SurveyCollectionMutations:
     @with_django_user
     def delete_survey_collection(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -103,7 +104,7 @@ class SurveyCollectionMutations:
     @check_permission(_type_from_survey_id, 'update')
     def add_survey_to_collection(
         self,
-        info,
+        info: Info,
         collection_id: int,
         survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -119,7 +120,7 @@ class SurveyCollectionMutations:
     @check_permission(_type_from_survey_id, 'update')
     def remove_survey_from_collection(
         self,
-        info,
+        info: Info,
         collection_id: int,
         survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,

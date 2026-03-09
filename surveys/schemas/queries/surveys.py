@@ -2,6 +2,7 @@ from dataclasses import fields as dc_fields
 from typing import List
 
 import strawberry
+from strawberry.types import Info
 from django.db.models import Count, F, Q
 from pkg_filters.integrations.django import DjangoQueryContext
 from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_field_paths
@@ -15,7 +16,7 @@ from surveys.types import FacetGQL, FacetValueGQL, SurveyResultsGQL
 @strawberry.type
 class SurveysQuery:
     @strawberry.field()
-    def surveys(self, info, surveys_list_input: SurveysListInput) -> SurveyResultsGQL:
+    def surveys(self, info: Info, surveys_list_input: SurveysListInput) -> SurveyResultsGQL:
         paths = get_root_field_paths(info, "surveys")
         qs = Survey.objects.all()
         if has_any_under_prefix(paths, ("items", "contentType")):

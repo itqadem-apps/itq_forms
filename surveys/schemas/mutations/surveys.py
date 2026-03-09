@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from strawberry import UNSET
+from strawberry.types import Info
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
@@ -50,7 +51,7 @@ class SurveyMutations:
     @transaction.atomic
     def create_survey(
         self,
-        info,
+        info: Info,
         input: SurveyCreateInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
@@ -76,7 +77,7 @@ class SurveyMutations:
     @transaction.atomic
     def update_survey(
         self,
-        info,
+        info: Info,
         input: SurveyUpdateInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
@@ -113,7 +114,7 @@ class SurveyMutations:
     @check_permission(_type_from_survey_id, 'delete')
     def delete_survey(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -126,7 +127,7 @@ class SurveyMutations:
     @transaction.atomic
     def duplicate_survey(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
@@ -204,7 +205,7 @@ class SurveyMutations:
     @check_permission(_type_from_survey_id, 'update')
     def update_survey_status(
         self,
-        info,
+        info: Info,
         id: int,
         status: str,
         django_user: strawberry.Private[AbstractBaseUser] = None,

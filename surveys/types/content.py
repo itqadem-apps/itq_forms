@@ -5,6 +5,7 @@ from typing import List, Optional
 import strawberry
 import strawberry_django
 from strawberry import auto
+from strawberry.types import Info
 
 from app.auth_utils import get_django_user
 from user_surveys.models import UserAnswer, UserSurvey
@@ -90,7 +91,7 @@ class QuestionType:
         return ids[idx - 1] if idx - 1 >= 0 else None
 
     @strawberry.field
-    def user_answer(self, info, user_survey_id: Optional[int] = None) -> Optional[UserAnswerType]:
+    def user_answer(self, info: Info, user_survey_id: Optional[int] = None) -> Optional[UserAnswerType]:
         django_user = get_django_user(info)
         if user_survey_id is None:
             user_survey_id = getattr(self, "_user_survey_id", None)
@@ -102,7 +103,7 @@ class QuestionType:
         return UserAnswer.objects.filter(user_survey=assessment, question_id=self.id).first()
 
     @strawberry.field
-    def progress(self, info, user_survey_id: Optional[int] = None) -> Optional[int]:
+    def progress(self, info: Info, user_survey_id: Optional[int] = None) -> Optional[int]:
         django_user = get_django_user(info)
         if user_survey_id is None:
             user_survey_id = getattr(self, "_user_survey_id", None)

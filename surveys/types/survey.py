@@ -5,6 +5,7 @@ from typing import List, Optional, Annotated
 import strawberry
 import strawberry_django
 from strawberry import auto
+from strawberry.types import Info
 
 from surveys.models import Survey, SurveyMediaAsset, Usage, Price
 from .translations import SurveyTranslationType
@@ -74,7 +75,7 @@ class SurveyType:
         return self.status.status if self.status_id else None
 
     @strawberry.field
-    def user_surveys(self, info) -> List[UserSurveyType]:
+    def user_surveys(self, info: Info) -> List[UserSurveyType]:
         try:
             django_user = get_django_user(info)
             return list(self.usersurvey_set.filter(user=django_user, submitted_at__isnull=True))
@@ -82,7 +83,7 @@ class SurveyType:
             return []
 
     @strawberry.field
-    def is_enrolled(self, info) -> bool:
+    def is_enrolled(self, info: Info) -> bool:
         try:
             django_user = get_django_user(info)
             return UserSurvey.objects.filter(
@@ -94,7 +95,7 @@ class SurveyType:
             return False
 
     @strawberry.field
-    def usage_used(self, info) -> int:
+    def usage_used(self, info: Info) -> int:
         try:
             django_user = get_django_user(info)
         except ValueError:
@@ -107,7 +108,7 @@ class SurveyType:
         return usage.used_count if usage else 0
 
     @strawberry.field
-    def usage_limit(self, info) -> int:
+    def usage_limit(self, info: Info) -> int:
         try:
             django_user = get_django_user(info)
         except ValueError:
@@ -173,7 +174,7 @@ class UserSurveyType:
         return self.survey.survey_type if self.survey_id and self.survey else None
 
     @strawberry.field
-    def usage_used(self, info) -> int:
+    def usage_used(self, info: Info) -> int:
         try:
             django_user = get_django_user(info)
         except ValueError:
@@ -184,7 +185,7 @@ class UserSurveyType:
         return usage.used_count if usage else 0
 
     @strawberry.field
-    def usage_limit(self, info) -> int:
+    def usage_limit(self, info: Info) -> int:
         try:
             django_user = get_django_user(info)
         except ValueError:
@@ -195,7 +196,7 @@ class UserSurveyType:
         return usage.usage_limit or 1 if usage else 1
 
     @strawberry.field
-    def progress(self, info) -> int:
+    def progress(self, info: Info) -> int:
         try:
             django_user = get_django_user(info)
         except ValueError:

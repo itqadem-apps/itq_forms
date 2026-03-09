@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.timezone import now
 from typing import List
@@ -47,7 +48,7 @@ class EvaluationMutations:
     @check_permission(_type_from_survey_id, 'update')
     def create_classification(
         self,
-        info,
+        info: Info,
         survey_id: int,
         input: ClassificationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -75,7 +76,7 @@ class EvaluationMutations:
     @check_permission(_type_from_classification_id, 'update')
     def update_classification(
         self,
-        info,
+        info: Info,
         id: int,
         input: ClassificationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -103,7 +104,7 @@ class EvaluationMutations:
     @check_permission(_type_from_classification_id, 'update')
     def delete_classification(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -120,7 +121,7 @@ class EvaluationMutations:
     @check_permission(_type_from_survey_id, 'update')
     def create_recommendation(
         self,
-        info,
+        info: Info,
         survey_id: int,
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -149,7 +150,7 @@ class EvaluationMutations:
     @check_permission(_type_from_recommendation_id, 'update')
     def update_recommendation(
         self,
-        info,
+        info: Info,
         id: int,
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -178,7 +179,7 @@ class EvaluationMutations:
     @check_permission(_type_from_recommendation_id, 'update')
     def delete_recommendation(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -195,7 +196,7 @@ class EvaluationMutations:
     @check_permission(_type_from_survey_id, 'update')
     def create_action(
         self,
-        info,
+        info: Info,
         survey_id: int,
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -224,7 +225,7 @@ class EvaluationMutations:
     @check_permission(_type_from_action_id, 'update')
     def update_action(
         self,
-        info,
+        info: Info,
         id: int,
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -255,7 +256,7 @@ class EvaluationMutations:
     @check_permission(_type_from_action_id, 'update')
     def delete_action(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:

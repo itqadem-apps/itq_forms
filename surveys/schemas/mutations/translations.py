@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from uuid import UUID
 
@@ -112,7 +113,7 @@ class TranslationMutations:
     @check_permission(_type_from_survey_id, 'update')
     def create_survey_translation(
         self,
-        info,
+        info: Info,
         survey_id: int,
         input: SurveyTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -134,7 +135,7 @@ class TranslationMutations:
     @check_permission(_type_from_survey_translation_id, 'update')
     def update_survey_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: SurveyTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -161,7 +162,7 @@ class TranslationMutations:
     @check_permission(_type_from_survey_translation_id, 'update')
     def delete_survey_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -177,7 +178,7 @@ class TranslationMutations:
     @check_permission(_type_from_section_id, 'update')
     def create_section_translation(
         self,
-        info,
+        info: Info,
         section_id: int,
         input: SectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -197,7 +198,7 @@ class TranslationMutations:
     @check_permission(_type_from_section_translation_id, 'update')
     def update_section_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: SectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -220,7 +221,7 @@ class TranslationMutations:
     @check_permission(_type_from_section_translation_id, 'update')
     def delete_section_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -236,7 +237,7 @@ class TranslationMutations:
     @check_permission(_type_from_question_id, 'update')
     def create_question_translation(
         self,
-        info,
+        info: Info,
         question_id: int,
         input: QuestionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -256,7 +257,7 @@ class TranslationMutations:
     @check_permission(_type_from_question_translation_id, 'update')
     def update_question_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: QuestionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -279,7 +280,7 @@ class TranslationMutations:
     @check_permission(_type_from_question_translation_id, 'update')
     def delete_question_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -295,7 +296,7 @@ class TranslationMutations:
     @check_permission(_type_from_option_id, 'update')
     def create_answer_schema_option_translation(
         self,
-        info,
+        info: Info,
         option_id: int,
         input: AnswerSchemaOptionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -314,7 +315,7 @@ class TranslationMutations:
     @check_permission(_type_from_option_translation_id, 'update')
     def update_answer_schema_option_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: AnswerSchemaOptionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -335,7 +336,7 @@ class TranslationMutations:
     @check_permission(_type_from_option_translation_id, 'update')
     def delete_answer_schema_option_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -351,7 +352,7 @@ class TranslationMutations:
     @check_permission(_type_from_classification_id, 'update')
     def create_classification_translation(
         self,
-        info,
+        info: Info,
         classification_id: int,
         input: ClassificationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -370,7 +371,7 @@ class TranslationMutations:
     @check_permission(_type_from_classification_translation_id, 'update')
     def update_classification_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: ClassificationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -391,7 +392,7 @@ class TranslationMutations:
     @check_permission(_type_from_classification_translation_id, 'update')
     def delete_classification_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -407,7 +408,7 @@ class TranslationMutations:
     @check_permission(_type_from_recommendation_id, 'update')
     def create_recommendation_translation(
         self,
-        info,
+        info: Info,
         recommendation_id: int,
         input: RecommendationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -426,7 +427,7 @@ class TranslationMutations:
     @check_permission(_type_from_recommendation_translation_id, 'update')
     def update_recommendation_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: RecommendationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -447,7 +448,7 @@ class TranslationMutations:
     @check_permission(_type_from_recommendation_translation_id, 'update')
     def delete_recommendation_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -463,7 +464,7 @@ class TranslationMutations:
     @check_permission(_type_from_action_id, 'update')
     def create_action_translation(
         self,
-        info,
+        info: Info,
         action_id: int,
         input: ActionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -483,7 +484,7 @@ class TranslationMutations:
     @check_permission(_type_from_action_translation_id, 'update')
     def update_action_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         input: ActionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -506,7 +507,7 @@ class TranslationMutations:
     @check_permission(_type_from_action_translation_id, 'update')
     def delete_action_translation(
         self,
-        info,
+        info: Info,
         id: UUID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
@@ -521,7 +522,7 @@ class TranslationMutations:
     @with_django_user
     def create_survey_collection_translation(
         self,
-        info,
+        info: Info,
         collection_id: int,
         input: SurveyCollectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -542,7 +543,7 @@ class TranslationMutations:
     @with_django_user
     def update_survey_collection_translation(
         self,
-        info,
+        info: Info,
         id: int,
         input: SurveyCollectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -568,7 +569,7 @@ class TranslationMutations:
     @with_django_user
     def delete_survey_collection_translation(
         self,
-        info,
+        info: Info,
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:

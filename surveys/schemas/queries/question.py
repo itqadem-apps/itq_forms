@@ -1,4 +1,5 @@
 import strawberry
+from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 
 from app.auth_utils import with_django_user
@@ -13,7 +14,7 @@ class QuestionQuery:
     @with_django_user
     def question(
         self,
-        info,
+        info: Info,
         user_survey_id: int,
         question_id: int | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
