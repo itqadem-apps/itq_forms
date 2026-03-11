@@ -11,6 +11,12 @@ from app.permissions import check_permission
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
+from surveys.messaging import (
+    publish_assessment_created,
+    publish_assessment_deleted,
+    publish_assessment_status_event,
+    publish_assessment_updated,
+)
 from surveys.models import (
     Survey,
     SurveyTranslation,
@@ -69,6 +75,8 @@ class SurveyMutations:
             for t in input.translations:
                 SurveyTranslation.objects.create(survey=survey, **input_to_dict(t))
 
+        publish_assessment_created(survey)
+
         return SurveyPayload(success=True, message=None, survey=survey)
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -107,6 +115,8 @@ class SurveyMutations:
                         survey=survey, language=language, defaults=t_data
                     )
 
+        publish_assessment_updated(survey)
+
         return SurveyPayload(success=True, message=None, survey=survey)
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -118,7 +128,9 @@ class SurveyMutations:
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        Survey.objects.get(pk=id).delete()
+        survey = Survey.objects.get(pk=id)
+        publish_assessment_deleted(survey)
+        survey.delete()
         return OperationResult(success=True)
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -212,4 +224,6 @@ class SurveyMutations:
     ) -> SurveyType:
         survey = Survey.objects.get(pk=id)
         survey.update_status(status, django_user)
+        survey.refresh_from_db()
+        publish_assessment_status_event(survey)
         return survey

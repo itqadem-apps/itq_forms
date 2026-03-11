@@ -80,16 +80,23 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
-        'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
-        'USER': os.environ.get('DATABASE_USER', 'default'),
-        'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
-        "PORT": os.environ.get("DATABASE_PORT", "5432"),
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    normalized_database_url = DATABASE_URL.replace("postgresql+asyncpg://", "postgres://")
+    DATABASES = {
+        "default": env.db_url_config(normalized_database_url),
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
+            'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
+            'USER': os.environ.get('DATABASE_USER', 'default'),
+            'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
+            "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+            "PORT": os.environ.get("DATABASE_PORT", "5432"),
+        }
+    }
 
 
 
@@ -152,3 +159,23 @@ STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
 }
+
+NATS_URL = os.environ.get("NATS_URL", "nats://localhost:4222")
+MESSAGE_BROKER_SUBJECTS = [
+    subject.strip()
+    for subject in os.environ.get("MESSAGE_BROKER_SUBJECTS", "").split(",")
+    if subject.strip()
+]
+JETSTREAM_ENABLED = os.environ.get("JETSTREAM_ENABLED", "true").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+JETSTREAM_STREAM_NAME = os.environ.get("JETSTREAM_STREAM_NAME", "FORMS")
+JETSTREAM_STREAM_SUBJECTS = [
+    subject.strip()
+    for subject in os.environ.get("JETSTREAM_STREAM_SUBJECTS", "forms.>").split(",")
+    if subject.strip()
+]
+OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
