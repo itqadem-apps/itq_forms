@@ -14,7 +14,7 @@ from ..common import RequireAuth
 
 @strawberry.type
 class AnswerQuestionMutation:
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
+    @strawberry_django.mutation(permission_classes=[RequireAuth])
     @with_django_user
     def answer_question(
         self,
