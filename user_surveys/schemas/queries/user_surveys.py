@@ -6,29 +6,31 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from pkg_filters.integrations.django import DjangoQueryContext
 
 from app.auth_utils import with_django_user
-from surveys.filters import (
+from user_surveys.filters import (
     UserSurveyProjection,
     UserSurveySpec,
     user_surveys_pipeline,
     user_survey_sort_input_to_spec,
 )
-from surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserSurveysListInput
-from surveys.types import UserSurveysResultsGQL
+from user_surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserSurveysListInput
+from user_surveys.types import UserSurveysResultsGQL
 from user_surveys.models import UserSurvey
 from ..common import RequireAuth
 
 
 @strawberry.type
-class UserSurveysQuery:
+class UserSurveyQuery:
     @strawberry.field(permission_classes=[RequireAuth])
     @with_django_user
-    def user_surveys(
+    def user_survey(
         self,
         info: Info,
-        user_surveys_list_input: UserSurveysListInput,
+        user_surveys_list_input: UserSurveysListInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveysResultsGQL:
         qs = UserSurvey.objects.filter(user=django_user)
+        if user_surveys_list_input is None:
+            user_surveys_list_input = UserSurveysListInput()
         filters_input = user_surveys_list_input.filters or UserSurveyFiltersInput()
         filters_data = {}
         for field in dc_fields(UserSurveyFilters):

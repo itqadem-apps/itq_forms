@@ -81,6 +81,7 @@ class Survey(models.Model):
         verbose_name=_("Display Option"),
     )
     is_timed = models.BooleanField(default=False, verbose_name=_("Is Timed"))
+    time_limit = models.DurationField(null=True, blank=True, verbose_name=_("Time Limit"))
     is_for_child = models.BooleanField(default=False, verbose_name=_("Is For "))
 
     # evaluation settings
@@ -104,6 +105,12 @@ class Survey(models.Model):
     end_based_on_answer_repeat_in_row = models.BooleanField(
         default=False, verbose_name=_("End Based on Repeating Answer in Row")
     )
+    # anti-cheating config
+    enable_anti_cheat = models.BooleanField(default=False, verbose_name=_("Enable Anti-Cheat"))
+    lock_answers = models.BooleanField(default=False, verbose_name=_("Lock Answers"))
+    randomize_questions = models.BooleanField(default=False, verbose_name=_("Randomize Questions"))
+    randomize_options = models.BooleanField(default=False, verbose_name=_("Randomize Options"))
+
     allow_update_answer_options_scores_based_on_classification = models.BooleanField(
         default=False,
         verbose_name=_("Allow Update Answer Options Scores Based on Classification"),

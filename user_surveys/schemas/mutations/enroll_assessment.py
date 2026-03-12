@@ -7,8 +7,9 @@ from django.core.exceptions import ValidationError
 from app.auth_utils import with_django_user
 from interface.grpc.children_client import ChildrenClient
 from surveys.models import Survey, Usage
-from surveys.types import UserSurveyType
-from user_surveys.models import Child, UserSurvey
+from user_surveys.types import UserSurveyType
+from accounts.models import Child
+from user_surveys.models import UserSurvey
 from user_surveys.services import enroll_user_in_assessment
 from ..common import RequireAuth
 

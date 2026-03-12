@@ -8,11 +8,11 @@ from strawberry import auto
 from strawberry.types import Info
 
 from app.auth_utils import get_django_user
-from user_surveys.models import UserAnswer, UserSurvey
+from user_surveys.models import UserAnswer, UserQuestion, UserSection, UserSurvey
 from surveys.models import Question, Section
 from .translations import QuestionTranslationType, SectionTranslationType
 from .answer_schema import AnswerSchemaType
-from .survey import UserAnswerType
+from user_surveys.types import UserAnswerType
 
 
 @strawberry_django.type(Section)
@@ -97,10 +97,16 @@ class QuestionType:
             user_survey_id = getattr(self, "_user_survey_id", None)
         if user_survey_id is None:
             return None
-        assessment = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
-        if not assessment:
+        user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+        if not user_survey:
             return None
-        return UserAnswer.objects.filter(user_survey=assessment, question_id=self.id).first()
+        # find the UserQuestion that corresponds to this Question via origin_id
+        user_question = UserQuestion.objects.filter(
+            user_survey=user_survey, origin_id=self.id
+        ).first()
+        if not user_question:
+            return None
+        return UserAnswer.objects.filter(user_survey=user_survey, question=user_question).first()
 
     @strawberry.field
     def progress(self, info: Info, user_survey_id: Optional[int] = None) -> Optional[int]:
@@ -109,14 +115,16 @@ class QuestionType:
             user_survey_id = getattr(self, "_user_survey_id", None)
         if user_survey_id is None:
             return None
-        assessment = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
-        if not assessment:
+        user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+        if not user_survey:
             return None
-        total = Question.objects.filter(survey_id=assessment.survey_id, section__isnull=False).count()
+        total = UserQuestion.objects.filter(
+            user_survey=user_survey, section__isnull=False
+        ).count()
         if total == 0:
             return 0
         answered = (
-            UserAnswer.objects.filter(user_survey=assessment)
+            UserAnswer.objects.filter(user_survey=user_survey)
             .exclude(answer__isnull=True, selected_options__isnull=True)
             .values_list("question_id", flat=True)
             .distinct()

@@ -7,7 +7,6 @@ import strawberry_django
 from strawberry import auto
 
 from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
-from .survey import UserSurveyClassificationType, UserSurveyRecommendationType
 
 
 @strawberry_django.type(SurveyCollection)
@@ -57,14 +56,6 @@ class SurveyCollectionsResultsGQL:
     total: int
     facets: List[FacetGQL]
 
-
-@strawberry.type
-class FinishAssessmentResult:
-    status: str
-    score: Optional[int]
-    evaluated_at: Optional[str]
-    classifications: List[UserSurveyClassificationType]
-    recommendations: List[UserSurveyRecommendationType]
 
 @strawberry.type
 class QuestionsFiltersGQL:

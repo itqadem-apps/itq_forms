@@ -7,7 +7,7 @@ from django.db import transaction
 
 from app.auth_utils import with_django_user
 from surveys.models import Usage
-from surveys.types import FinishAssessmentResult
+from user_surveys.types import FinishAssessmentResult
 from user_surveys.models import UserSurvey
 from user_surveys.services import finish_assessment as finish_assessment_service
 from ..common import RequireAuth

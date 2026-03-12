@@ -25,11 +25,14 @@ from surveys.models import (
 )
 from survey_collections.models import SurveyCollection
 from taxonomy.models import Category, CategoryTranslation
-from user_surveys.models import (
-    UserAnswer,
-    UserSurvey,
-    UserSurveyClassification,
-)
+# TODO: update for new snapshot model structure
+# from user_surveys.models import (
+#     UserAnswer,
+#     UserClassification,
+#     UserQuestion,
+#     UserSurvey,
+#     UserSurveyClassification,
+# )
 
 
 @dataclass
@@ -107,11 +110,12 @@ class Command(BaseCommand):
             "assessments_answerschemaoption.json": load_fixture(base_path / "assessments_answerschemaoption.json"),
             "assessments_action.json": load_fixture(base_path / "assessments_action.json"),
             "assessments_recommendation.json": load_fixture(base_path / "assessments_recommendation.json"),
-            "assessments_userassessment.json": load_fixture(base_path / "assessments_userassessment.json"),
-            "assessments_useranswer.json": load_fixture(base_path / "assessments_useranswer.json"),
-            "assessments_userassessmentclassification.json": load_fixture(
-                base_path / "assessments_userassessmentclassification.json"
-            ),
+            # TODO: update for new snapshot model structure
+            # "assessments_userassessment.json": load_fixture(base_path / "assessments_userassessment.json"),
+            # "assessments_useranswer.json": load_fixture(base_path / "assessments_useranswer.json"),
+            # "assessments_userassessmentclassification.json": load_fixture(
+            #     base_path / "assessments_userassessmentclassification.json"
+            # ),
             "blogs_blog.json": load_fixture(base_path / "blogs_blog.json"),
             "classifications_category.json": load_fixture(base_path / "classifications_category.json"),
             "media_library_medialibrary.json": load_fixture(base_path / "media_library_medialibrary.json"),
@@ -348,18 +352,19 @@ class Command(BaseCommand):
             extra = set(item["fields"]) - media_fields
             if extra:
                 report.add_fields("media_library_medialibrary.json", item["pk"], extra)
-        for item in files["assessments_userassessment.json"]:
-            extra = set(item["fields"]) - user_assessment_fields
-            if extra:
-                report.add_fields("assessments_userassessment.json", item["pk"], extra)
-        for item in files["assessments_useranswer.json"]:
-            extra = set(item["fields"]) - user_answer_fields
-            if extra:
-                report.add_fields("assessments_useranswer.json", item["pk"], extra)
-        for item in files["assessments_userassessmentclassification.json"]:
-            extra = set(item["fields"]) - user_assessment_class_fields
-            if extra:
-                report.add_fields("assessments_userassessmentclassification.json", item["pk"], extra)
+        # TODO: update for new snapshot model structure
+        # for item in files["assessments_userassessment.json"]:
+        #     extra = set(item["fields"]) - user_assessment_fields
+        #     if extra:
+        #         report.add_fields("assessments_userassessment.json", item["pk"], extra)
+        # for item in files["assessments_useranswer.json"]:
+        #     extra = set(item["fields"]) - user_answer_fields
+        #     if extra:
+        #         report.add_fields("assessments_useranswer.json", item["pk"], extra)
+        # for item in files["assessments_userassessmentclassification.json"]:
+        #     extra = set(item["fields"]) - user_assessment_class_fields
+        #     if extra:
+        #         report.add_fields("assessments_userassessmentclassification.json", item["pk"], extra)
 
         if report.has_issues() and not options["allow_unmapped"] and not options["dry_run"]:
             summary_lines = []
@@ -619,8 +624,6 @@ class Command(BaseCommand):
             )
 
         collection_surveys = []
-        collection_subscribers: list[tuple[SurveyCollection, list[Any]]] = []
-        collection_enrolled: list[tuple[SurveyCollection, list[Any]]] = []
         for item in files["blogs_blog.json"]:
             fields = item["fields"]
             title_map = fields.get("title") or {}
@@ -646,18 +649,8 @@ class Command(BaseCommand):
             if short_description is None and short_map:
                 short_description = next(iter(short_map.values()))
 
-            author_value = fields.get("author")
-            author_id = None
-            if isinstance(author_value, list):
-                author_value = author_value[0] if author_value else None
-            if isinstance(author_value, str) and author_value in user_by_email:
-                author_id = user_by_email[author_value]
-            elif author_value is not None:
-                report.add_value("blogs.author", author_value)
-
             collection = SurveyCollection(
                 status=fields.get("status"),
-                privacy_status=fields.get("privacy_status"),
                 title=title,
                 description=description,
                 short_description=short_description,
@@ -668,14 +661,10 @@ class Command(BaseCommand):
                 deleted_at=parse_dt(fields.get("deleted_at")),
                 category_id=category_map.get(fields.get("category")),
                 price=fields.get("price", 0),
-                video_list=fields.get("video_list"),
                 sponsor=fields.get("sponsor"),
                 type=fields.get("type"),
-                author_id=author_id,
             )
             collection_surveys.append(collection)
-            collection_subscribers.append((collection, fields.get("subscribers") or []))
-            collection_enrolled.append((collection, fields.get("enrolled_users") or []))
 
         assets = []
         asset_type_map = {"thumb": "thumbnail", "cover": "cover"}
@@ -697,66 +686,67 @@ class Command(BaseCommand):
                 )
             )
 
-        user_assessments = []
-        for item in files["assessments_userassessment.json"]:
-            fields = item["fields"]
-            user_ref_list = fields.get("user") or []
-            user_ref = user_ref_list[0] if user_ref_list else None
-            user_id = user_by_email.get(user_ref) if user_ref else None
-            if user_ref and user_id is None:
-                report.add_value("userassessment.user", user_ref)
-            user_assessments.append(
-                UserSurvey(
-                    id=item["pk"],
-                    survey_id=fields.get("assessment"),
-                    user_id=user_id,
-                    child_id=str(fields.get("child")) if fields.get("child") is not None else None,
-                    count_of_ending_options=fields.get("count_of_ending_options", 0),
-                    evaluated_at=parse_dt(fields.get("evaluated_at")),
-                    submitted_at=parse_dt(fields.get("submitted_at")),
-                    score=fields.get("score"),
-                    last_question_id=fields.get("last_question"),
-                    action_id=fields.get("action"),
-                )
-            )
-
-        user_answers = []
-        user_answer_selected = []
-        for item in files["assessments_useranswer.json"]:
-            fields = item["fields"]
-            user_ref_list = fields.get("user") or []
-            user_ref = user_ref_list[0] if user_ref_list else None
-            user_id = user_by_email.get(user_ref) if user_ref else None
-            if user_ref and user_id is None:
-                report.add_value("useranswer.user", user_ref)
-            user_answers.append(
-                UserAnswer(
-                    id=item["pk"],
-                    survey_id=fields.get("assessment"),
-                    user_id=user_id,
-                    question_id=fields.get("question"),
-                    question_title=fields.get("question_title"),
-                    user_survey_id=fields.get("user_assessment"),
-                    answer=fields.get("answer"),
-                    type=fields.get("type"),
-                    score=fields.get("score"),
-                    order=fields.get("order"),
-                )
-            )
-            for option_id in fields.get("selected_options") or []:
-                user_answer_selected.append((item["pk"], option_id))
-
-        user_assessment_classifications = []
-        for item in files["assessments_userassessmentclassification.json"]:
-            fields = item["fields"]
-            user_assessment_classifications.append(
-                UserSurveyClassification(
-                    id=item["pk"],
-                    user_survey_id=fields.get("user_assessment"),
-                    classification_id=fields.get("classification"),
-                    count=fields.get("count", 0),
-                )
-            )
+        # TODO: update for new snapshot model structure
+        # user_assessments = []
+        # for item in files["assessments_userassessment.json"]:
+        #     fields = item["fields"]
+        #     user_ref_list = fields.get("user") or []
+        #     user_ref = user_ref_list[0] if user_ref_list else None
+        #     user_id = user_by_email.get(user_ref) if user_ref else None
+        #     if user_ref and user_id is None:
+        #         report.add_value("userassessment.user", user_ref)
+        #     user_assessments.append(
+        #         UserSurvey(
+        #             id=item["pk"],
+        #             survey_id=fields.get("assessment"),
+        #             user_id=user_id,
+        #             child_id=str(fields.get("child")) if fields.get("child") is not None else None,
+        #             count_of_ending_options=fields.get("count_of_ending_options", 0),
+        #             evaluated_at=parse_dt(fields.get("evaluated_at")),
+        #             submitted_at=parse_dt(fields.get("submitted_at")),
+        #             score=fields.get("score"),
+        #             last_question_id=fields.get("last_question"),
+        #             action_id=fields.get("action"),
+        #         )
+        #     )
+        #
+        # user_answers = []
+        # user_answer_selected = []
+        # for item in files["assessments_useranswer.json"]:
+        #     fields = item["fields"]
+        #     user_ref_list = fields.get("user") or []
+        #     user_ref = user_ref_list[0] if user_ref_list else None
+        #     user_id = user_by_email.get(user_ref) if user_ref else None
+        #     if user_ref and user_id is None:
+        #         report.add_value("useranswer.user", user_ref)
+        #     user_answers.append(
+        #         UserAnswer(
+        #             id=item["pk"],
+        #             survey_id=fields.get("assessment"),
+        #             user_id=user_id,
+        #             question_id=fields.get("question"),
+        #             question_title=fields.get("question_title"),
+        #             user_survey_id=fields.get("user_assessment"),
+        #             answer=fields.get("answer"),
+        #             type=fields.get("type"),
+        #             score=fields.get("score"),
+        #             order=fields.get("order"),
+        #         )
+        #     )
+        #     for option_id in fields.get("selected_options") or []:
+        #         user_answer_selected.append((item["pk"], option_id))
+        #
+        # user_assessment_classifications = []
+        # for item in files["assessments_userassessmentclassification.json"]:
+        #     fields = item["fields"]
+        #     user_assessment_classifications.append(
+        #         UserSurveyClassification(
+        #             id=item["pk"],
+        #             user_survey_id=fields.get("user_assessment"),
+        #             classification_id=fields.get("classification"),
+        #             count=fields.get("count", 0),
+        #         )
+        #     )
 
         if report.has_issues() and not options["allow_unmapped"] and not options["dry_run"]:
             summary_lines = []
@@ -781,10 +771,11 @@ class Command(BaseCommand):
                 ("recommendations", len(recommendations)),
                 ("survey_media_assets", len(assets)),
                 ("survey_collections", len(collection_surveys)),
-                ("user_assessments", len(user_assessments)),
-                ("user_answers", len(user_answers)),
-                ("user_assessment_classifications", len(user_assessment_classifications)),
-                ("user_answer_selected", len(user_answer_selected)),
+                # TODO: update for new snapshot model structure
+                # ("user_assessments", len(user_assessments)),
+                # ("user_answers", len(user_answers)),
+                # ("user_assessment_classifications", len(user_assessment_classifications)),
+                # ("user_answer_selected", len(user_answer_selected)),
             ]
             for label, count in counts:
                 self.stdout.write(self.style.SUCCESS(f"OK {label}: {count}"))
@@ -826,10 +817,6 @@ class Command(BaseCommand):
                 SurveyMediaAsset.objects.bulk_create(assets, batch_size=500)
 
             if collection_surveys:
-                subscribers_through = SurveyCollection.subscribers.through
-                enrolled_through = SurveyCollection.enrolled_users.through
-                subscriber_rows = []
-                enrolled_rows = []
                 for collection in collection_surveys:
                     desired_updated_at = collection.updated_at
                     collection.save()
@@ -837,65 +824,24 @@ class Command(BaseCommand):
                         SurveyCollection.objects.filter(id=collection.id).update(
                             updated_at=desired_updated_at
                         )
-                for collection, subscribers in collection_subscribers:
-                    for value in subscribers:
-                        user_id = None
-                        if isinstance(value, list):
-                            value = value[0] if value else None
-                        if isinstance(value, str) and value in user_by_email:
-                            user_id = user_by_email[value]
-                        elif isinstance(value, int):
-                            user_id = value if UserModel.objects.filter(id=value).exists() else None
-                        if user_id is None and value is not None:
-                            report.add_value("blogs.subscribers", value)
-                            continue
-                        if user_id is not None:
-                            subscriber_rows.append(
-                                subscribers_through(
-                                    surveycollection_id=collection.id,
-                                    user_id=user_id,
-                                )
-                            )
-                for collection, enrolled in collection_enrolled:
-                    for value in enrolled:
-                        user_id = None
-                        if isinstance(value, list):
-                            value = value[0] if value else None
-                        if isinstance(value, str) and value in user_by_email:
-                            user_id = user_by_email[value]
-                        elif isinstance(value, int):
-                            user_id = value if UserModel.objects.filter(id=value).exists() else None
-                        if user_id is None and value is not None:
-                            report.add_value("blogs.enrolled_users", value)
-                            continue
-                        if user_id is not None:
-                            enrolled_rows.append(
-                                enrolled_through(
-                                    surveycollection_id=collection.id,
-                                    user_id=user_id,
-                                )
-                            )
-                if subscriber_rows:
-                    subscribers_through.objects.bulk_create(subscriber_rows, batch_size=500)
-                if enrolled_rows:
-                    enrolled_through.objects.bulk_create(enrolled_rows, batch_size=500)
 
-            if user_assessments:
-                UserSurvey.objects.bulk_create(user_assessments, batch_size=500)
-            if user_answers:
-                UserAnswer.objects.bulk_create(user_answers, batch_size=500)
-            if user_assessment_classifications:
-                UserSurveyClassification.objects.bulk_create(
-                    user_assessment_classifications, batch_size=500
-                )
-
-            if user_answer_selected:
-                through = UserAnswer.selected_options.through
-                through_rows = [
-                    through(useranswer_id=ua_id, answerschemaoption_id=opt_id)
-                    for ua_id, opt_id in user_answer_selected
-                ]
-                through.objects.bulk_create(through_rows, batch_size=1000)
+            # TODO: update for new snapshot model structure
+            # if user_assessments:
+            #     UserSurvey.objects.bulk_create(user_assessments, batch_size=500)
+            # if user_answers:
+            #     UserAnswer.objects.bulk_create(user_answers, batch_size=500)
+            # if user_assessment_classifications:
+            #     UserSurveyClassification.objects.bulk_create(
+            #         user_assessment_classifications, batch_size=500
+            #     )
+            #
+            # if user_answer_selected:
+            #     through = UserAnswer.selected_options.through
+            #     through_rows = [
+            #         through(useranswer_id=ua_id, answerschemaoption_id=opt_id)
+            #         for ua_id, opt_id in user_answer_selected
+            #     ]
+            #     through.objects.bulk_create(through_rows, batch_size=1000)
 
             for survey in surveys:
                 status_value = survey_status_map.get(survey.id)

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default:'en' }}" dir="{{ dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assessment Report - {{ survey_title }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    background-color: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding: 32px;
+  }
+  .progress-ring-circle {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+
+  /* ── Report Container ── */
+  .report {
+    max-width: 896px;
+    margin: 0 auto;
+    border: 1px solid #e2e8f0;
+    padding: 40px;
+    background: #fff;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+  }
+  .header-left { flex: 1; }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #475569;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: #475569;
+    max-width: 480px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .student-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f8fafc;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  .student-info img,
+  .student-info .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+  }
+  .avatar {
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #475569;
+    font-size: 18px;
+  }
+  .student-info .name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+  }
+  .student-info .meta {
+    font-size: 13px;
+    color: #94a3b8;
+  }
+
+  /* ── Top Summary Grid ── */
+  .summary-grid {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 40px;
+  }
+  .summary-grid > * { flex: 1; }
+
+  /* Score Circle Card */
+  .score-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 250, 252, 0.3);
+  }
+  .score-ring-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .score-ring-wrap svg {
+    width: 128px;
+    height: 128px;
+  }
+  .score-ring-wrap .ring-bg {
+    fill: transparent;
+    stroke: #e2e8f0;
+    stroke-width: 8;
+  }
+  .score-ring-wrap .ring-fg {
+    fill: transparent;
+    stroke: #4f46e5;
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+  .score-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-label .pct {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .score-label .lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+  }
+  .score-summary { text-align: center; }
+  .score-summary .action-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #4f46e5;
+  }
+  .score-summary .points {
+    color: #94a3b8;
+    font-size: 13px;
+  }
+
+  /* Classifications Card */
+  .classifications-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .classifications-card h3 {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 8px;
+    font-size: 14px;
+  }
+  .clf-item { margin-bottom: 20px; }
+  .clf-item:last-child { margin-bottom: 0; }
+  .clf-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .clf-row .clf-name { font-weight: 600; color: #334155; }
+  .clf-row .clf-pct { font-weight: 700; }
+  .clf-bar {
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 8px;
+  }
+  .clf-bar-fill {
+    height: 8px;
+    border-radius: 999px;
+  }
+
+  /* ── Recommendations ── */
+  .recommendations { margin-bottom: 40px; }
+  .recommendations h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+  .rec-grid {
+    display: flex;
+    gap: 16px;
+  }
+  .rec-card {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    padding: 16px;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .rec-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .rec-icon.amber { background: #fffbeb; border: 1px solid #fde68a; }
+  .rec-icon.blue { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .rec-icon.emerald { background: #ecfdf5; border: 1px solid #a7f3d0; }
+  .rec-icon svg { width: 20px; height: 20px; }
+  .rec-icon.amber svg { color: #d97706; }
+  .rec-icon.blue svg { color: #2563eb; }
+  .rec-icon.emerald svg { color: #059669; }
+  .rec-card .rec-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+  }
+  .rec-card .rec-desc {
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  /* ── Answer Review ── */
+  .answer-review { margin-bottom: 40px; }
+  .answer-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #0f172a;
+  }
+  .answer-review-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+  }
+  .answer-review-header span {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+  .questions-list > * { margin-bottom: 24px; }
+  .questions-list > *:last-child { margin-bottom: 0; }
+
+  /* Question article */
+  .question-article {
+    border: 1px solid #cbd5e1;
+    border-radius: 0 8px 8px 0;
+    padding: 20px;
+    page-break-inside: avoid;
+  }
+  .question-article.border-emerald { border-left: 6px solid #10b981; }
+  .question-article.border-amber { border-left: 6px solid #f59e0b; }
+  .question-article.border-rose { border-left: 6px solid #ef4444; }
+  .question-article.border-indigo { border-left: 6px solid #6366f1; }
+  .question-article.border-slate { border-left: 6px solid #94a3b8; }
+
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .q-num {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+  }
+  .q-score {
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .q-score.emerald { color: #059669; }
+  .q-score.amber { color: #d97706; }
+  .q-score.rose { color: #ef4444; }
+  .q-score.indigo { color: #4f46e5; }
+  .q-title {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  /* Options (MCQ) */
+  .options-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .opt {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .opt.unselected {
+    border: 1px solid #e2e8f0;
+    color: #94a3b8;
+  }
+  .opt.selected-correct {
+    border: 2px solid #10b981;
+    background: #ecfdf5;
+    color: #065f46;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .opt.selected-correct svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+  .opt.selected-incorrect {
+    border: 1px solid #ef4444;
+    color: #be123c;
+    background: #fff1f2;
+    font-weight: 700;
+    text-decoration: line-through;
+  }
+  .opt.selected-neutral {
+    border: 1px solid #10b981;
+    color: #047857;
+    background: #fff;
+    font-weight: 600;
+  }
+
+  /* Open text answer */
+  .free-answer {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    border-radius: 6px;
+    font-style: italic;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* Grid/Matrix table */
+  .grid-table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+  }
+  .grid-table thead tr {
+    background: #f1f5f9;
+  }
+  .grid-table th {
+    color: #475569;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    text-align: center;
+  }
+  .grid-table th:first-child { text-align: left; }
+  .grid-table td {
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    text-align: center;
+  }
+  .grid-table td:first-child {
+    font-weight: 500;
+    text-align: left;
+  }
+  .grid-table .empty-cell { color: #cbd5e1; }
+  .grid-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #4f46e5;
+    border-radius: 50%;
+  }
+
+  /* ── Summary Statistics ── */
+  .bottom-stats {
+    display: flex;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 32px;
+    margin-top: 48px;
+    margin-bottom: 32px;
+  }
+  .stat {
+    flex: 1;
+    padding: 16px;
+    border-right: 1px solid #f1f5f9;
+  }
+  .stat:last-child { border-right: none; }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+  }
+  .stat-value.warning { color: #d97706; }
+
+  /* ── Footer ── */
+  .footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #94a3b8;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<!-- BEGIN: Report Container -->
+<main class="report">
+
+<!-- BEGIN: Header -->
+<header class="header" data-purpose="header">
+  <div class="header-left">
+    <div class="badge">{{ survey_type_label }}</div>
+    <h1>{{ survey_title }}</h1>
+    <p class="subtitle">{{ survey_description|default:"" }}{% if submitted_at %} Submitted on {{ submitted_at }}.{% endif %}</p>
+  </div>
+  {% if user_name %}
+  <div class="student-info" data-purpose="student-info">
+    <div class="avatar">{{ user_initials }}</div>
+    <div>
+      <p class="name">{% if child_name %}{{ child_name }}{% else %}{{ user_name }}{% endif %}</p>
+      <p class="meta">Student ID: #{{ user_id }}</p>
+    </div>
+  </div>
+  {% endif %}
+</header>
+<!-- END: Header -->
+
+<!-- BEGIN: Top Summary Grid -->
+{% if show_score or show_classifications %}
+<div class="summary-grid" data-purpose="score-summary">
+  {% if show_score %}
+  <!-- Score Circle Card -->
+  <section class="score-card">
+    <div class="score-ring-wrap">
+      <!-- SVG Progress Ring -->
+      <svg viewBox="0 0 128 128">
+        <circle class="ring-bg" cx="64" cy="64" r="58"></circle>
+        <circle class="ring-fg progress-ring-circle" cx="64" cy="64" r="58"
+                stroke-dasharray="{{ circumference }}"
+                stroke-dashoffset="{{ dash_offset }}"></circle>
+      </svg>
+      <div class="score-label">
+        <span class="pct">{{ score_pct }}%</span>
+        <span class="lbl">Score</span>
+      </div>
+    </div>
+    <div class="score-summary">
+      {% if action_title %}<h3 class="action-title">{{ action_title }}</h3>{% endif %}
+      <p class="points">{{ score }} out of {{ max_score }} points earned</p>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if show_classifications and classifications %}
+  <!-- Classifications Card -->
+  <section class="classifications-card">
+    <h3>Classifications (Your Profile)</h3>
+    {% for clf in classifications %}
+    <div class="clf-item">
+      <div class="clf-row">
+        <span class="clf-name">{{ clf.name }}</span>
+        <span class="clf-pct" style="color: {{ clf.color }};">{{ clf.pct }}%</span>
+      </div>
+      <div class="clf-bar">
+        <div class="clf-bar-fill" style="width: {{ clf.pct }}%; background: {{ clf.color }};"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+</div>
+{% endif %}
+<!-- END: Top Summary Grid -->
+
+<!-- BEGIN: Recommendations -->
+{% if show_recommendations and recommendations %}
+<section class="recommendations" data-purpose="recommendations">
+  <h3>Key Recommendations</h3>
+  <div class="rec-grid">
+    {% for rec in recommendations %}
+    <div class="rec-card">
+      <div class="rec-icon {% cycle 'amber' 'blue' 'emerald' %}">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {% cycle '<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>' '<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>' '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>' %}
+        </svg>
+      </div>
+      <p class="rec-title">{{ rec.description }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+<!-- END: Recommendations -->
+
+<!-- BEGIN: Answers Review -->
+{% if answers %}
+<section class="answer-review" data-purpose="answer-review">
+  <div class="answer-review-header">
+    <h3>Detailed Answer Review</h3>
+    <span>{{ answers|length }} Question{{ answers|length|pluralize }}</span>
+  </div>
+  <div class="questions-list">
+    {% for item in answers %}
+    <!-- Question {{ item.number }} -->
+    <article class="question-article {{ item.border_class }}">
+      <div class="q-meta">
+        <span class="q-num">Question {{ item.number }}</span>
+        {% if item.score_display %}<span class="q-score {{ item.score_class }}">{{ item.score_display }}</span>{% endif %}
+      </div>
+      <h4 class="q-title">{{ item.question_title }}</h4>
+
+      {% if item.display_type == "options" %}
+      <div class="options-wrap">
+        {% for opt in item.options %}
+        {% if opt.css_class == "selected-correct" %}
+        <div class="opt selected-correct">
+          <svg viewBox="0 0 20 20"><path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"/></svg>
+          {{ opt.text }}
+        </div>
+        {% elif opt.css_class == "selected-incorrect" %}
+        <div class="opt selected-incorrect">{{ opt.text }}</div>
+        {% elif opt.css_class == "selected-neutral" %}
+        <div class="opt selected-neutral">{{ opt.text }}</div>
+        {% else %}
+        <div class="opt unselected">{{ opt.text }}</div>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      {% elif item.display_type == "grid" %}
+      <table class="grid-table">
+        <thead>
+          <tr>
+            <th>Factor</th>
+            {% for col in item.columns %}
+            <th>{{ col.text }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in item.rows %}
+          <tr>
+            <td>{{ row.text }}</td>
+            {% for col in item.columns %}
+            <td>{% if col.id in row.selected_col_ids %}<span class="grid-dot"></span>{% else %}<span class="empty-cell">-</span>{% endif %}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% elif item.display_type == "text" %}
+      <div class="free-answer">"{{ item.answer_text|default:"No answer provided" }}"</div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+<!-- END: Answers Review -->
+
+<!-- BEGIN: Summary Statistics -->
+<section class="bottom-stats" data-purpose="bottom-stats">
+  <div class="stat">
+    <p class="stat-label">Submitted Date</p>
+    <p class="stat-value">{{ submitted_at|default:"N/A" }}</p>
+  </div>
+  <div class="stat">
+    <p class="stat-label">Total Questions</p>
+    <p class="stat-value">{{ total_questions }} Total</p>
+  </div>
+  {% if show_tab_switches %}
+  <div class="stat">
+    <p class="stat-label">Tab Switches</p>
+    <p class="stat-value{% if tab_switch_count > 0 %} warning{% endif %}">{{ tab_switch_count }} Warning{{ tab_switch_count|pluralize }}</p>
+  </div>
+  {% endif %}
+  {% if termination_reason_label %}
+  <div class="stat">
+    <p class="stat-label">Termination</p>
+    <p class="stat-value">{{ termination_reason_label }}</p>
+  </div>
+  {% endif %}
+</section>
+<!-- END: Summary Statistics -->
+
+<!-- BEGIN: Footer -->
+<footer class="footer" data-purpose="footer">
+  <div>Official Assessment Report</div>
+  <div>Generated on {{ generated_at }}</div>
+</footer>
+<!-- END: Footer -->
+
+</main>
+<!-- END: Report Container -->
+</body>
+</html>

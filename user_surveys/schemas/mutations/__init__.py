@@ -1,0 +1,7 @@
+from .answer_question import AnswerQuestionMutation
+from .enroll_assessment import EnrollAssessmentMutation
+from .finish_assessment import FinishAssessmentMutation
+from .generate_report import GenerateReportMutation
+from .heartbeat import HeartbeatMutation
+from .manual_evaluation import ManualEvaluationMutation
+from .report_tab_switch import ReportTabSwitchMutation

@@ -6,8 +6,8 @@ from .queries import (
     QuestionsQuery,
     SurveyQuery,
     SurveysQuery,
-    UserSurveysQuery,
 )
+from user_surveys.schemas.queries import UserSurveyQuery, ShouldTerminateQuery
 
 Query = merge_types(
     "Query",
@@ -15,7 +15,8 @@ Query = merge_types(
         SurveysQuery,
         CollectionsQuery,
         SurveyQuery,
-        UserSurveysQuery,
+        UserSurveyQuery,
+        ShouldTerminateQuery,
         QuestionQuery,
         QuestionsQuery,
     ),

@@ -1,9 +1,6 @@
 from strawberry.tools import merge_types
 
 from .mutations import (
-    AnswerQuestionMutation,
-    EnrollAssessmentMutation,
-    FinishAssessmentMutation,
     MeQuery,
     SurveyMutations,
     SectionMutations,
@@ -13,6 +10,15 @@ from .mutations import (
     EvaluationMutations,
     TranslationMutations,
 )
+from user_surveys.schemas.mutations import (
+    EnrollAssessmentMutation,
+    AnswerQuestionMutation,
+    FinishAssessmentMutation,
+    GenerateReportMutation,
+    HeartbeatMutation,
+    ManualEvaluationMutation,
+    ReportTabSwitchMutation,
+)
 
 Mutation = merge_types(
     "Mutation",
@@ -20,6 +26,10 @@ Mutation = merge_types(
         EnrollAssessmentMutation,
         AnswerQuestionMutation,
         FinishAssessmentMutation,
+        GenerateReportMutation,
+        HeartbeatMutation,
+        ManualEvaluationMutation,
+        ReportTabSwitchMutation,
         MeQuery,
         SurveyMutations,
         SectionMutations,

@@ -32,6 +32,10 @@ from taxonomy.models import Category, CategoryTranslation
 from user_surveys.models import (
     Child,
     UserAnswer,
+    UserAnswerOption,
+    UserClassification,
+    UserQuestion,
+    UserRecommendation,
     UserSurvey,
     UserSurveyClassification,
     UserSurveyRecommendation,
@@ -313,38 +317,48 @@ class TestChildModel:
 
 # ── UserSurvey model ───────────────────────────────────────────
 class TestUserSurveyModel:
-    def test_create_user_survey(self, user, survey):
-        us = UserSurvey.objects.create(user=user, survey=survey)
+    def test_create_user_survey_via_enrollment(self, user, survey):
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id)
         assert us.pk is not None
         assert us.submitted_at is None
         assert us.score is None
+        # title lives in translations JSONB now
+        primary_lang = survey.language or "default"
+        assert us.translations[primary_lang]["title"] == survey.title
 
-    def test_user_survey_with_child(self, user, survey):
+    def test_user_survey_with_child(self, user):
+        survey = Survey.objects.create(title="Child Survey", is_for_child=True)
         child = Child.objects.create(id="child-x", name="Child")
-        us = UserSurvey.objects.create(user=user, survey=survey, child=child)
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id, child=child)
         assert us.child == child
 
     def test_user_survey_with_collection(self, user, survey, collection):
-        us = UserSurvey.objects.create(user=user, survey=survey, collection=collection)
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id, collection_id=collection.id)
         assert us.collection == collection
 
 
 # ── UserAnswer model ────────────────────────────────────────────
 class TestUserAnswerModel:
-    def test_create_user_answer(self, user, survey, question, enrolled_survey):
+    def test_create_user_answer(self, user, enrolled_survey, question, options):
+        uq = UserQuestion.objects.get(user_survey=enrolled_survey, origin_id=question.id)
+        uopt = UserAnswerOption.objects.get(user_survey=enrolled_survey, origin_id=options[0].id)
         ua = UserAnswer.objects.create(
-            user=user, survey=survey, question=question,
-            user_survey=enrolled_survey, answer="Red", type=question.type,
+            user=user, question=uq,
+            user_survey=enrolled_survey, answer="Red", type=uq.type,
         )
         assert ua.answer == "Red"
-        assert ua.question_title == question.title
 
-    def test_user_answer_with_options(self, user, survey, question, enrolled_survey, options):
+    def test_user_answer_with_options(self, user, enrolled_survey, question, options):
+        uq = UserQuestion.objects.get(user_survey=enrolled_survey, origin_id=question.id)
+        uopt = UserAnswerOption.objects.get(user_survey=enrolled_survey, origin_id=options[0].id)
         ua = UserAnswer.objects.create(
-            user=user, survey=survey, question=question,
-            user_survey=enrolled_survey, type=question.type,
+            user=user, question=uq,
+            user_survey=enrolled_survey, type=uq.type,
         )
-        ua.selected_options.set([options[0]])
+        ua.selected_options.set([uopt])
         assert ua.selected_options.count() == 1
 
 
@@ -352,8 +366,12 @@ class TestUserAnswerModel:
 class TestUserSurveyClassificationModel:
     def test_create_classification_link(self, enrolled_survey, survey):
         c = Classification.objects.create(survey=survey, name="Class A")
+        # Need to create a UserClassification for the through model
+        uc = UserClassification.objects.create(
+            user_survey=enrolled_survey, origin_id=c.id, name=c.name,
+        )
         usc = UserSurveyClassification.objects.create(
-            user_survey=enrolled_survey, classification=c, count=3,
+            user_survey=enrolled_survey, classification=uc, count=3,
         )
         assert usc.count == 3
 
@@ -362,8 +380,11 @@ class TestUserSurveyClassificationModel:
 class TestUserSurveyRecommendationModel:
     def test_create_recommendation_link(self, enrolled_survey, survey, options):
         r = Recommendation.objects.create(survey=survey, option=options[0], description="R")
+        ur = UserRecommendation.objects.create(
+            user_survey=enrolled_survey, origin_id=r.id, description=r.description,
+        )
         usr = UserSurveyRecommendation.objects.create(
-            user_survey=enrolled_survey, recommendation=r, count=2,
+            user_survey=enrolled_survey, recommendation=ur, count=2,
         )
         assert usr.count == 2
 
