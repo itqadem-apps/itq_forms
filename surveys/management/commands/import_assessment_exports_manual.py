@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand, CommandError
-from django.db import transaction
+from django.db import connection, transaction
 from django.utils.dateparse import parse_datetime, parse_duration
 
 from surveys.models import (
@@ -910,4 +910,27 @@ class Command(BaseCommand):
                         summary_lines.append(f"Unmapped values for {key}: {sample_vals}")
                 raise CommandError("Unmapped reference values detected. " + " | ".join(summary_lines))
 
+        if not options.get("dry_run"):
+            self._reset_sequences()
         self.stdout.write(self.style.SUCCESS("Import completed."))
+
+    def _reset_sequences(self):
+        tables = [
+            "surveys_survey",
+            "surveys_section",
+            "surveys_question",
+            "surveys_answerschema",
+            "surveys_answerschemaoption",
+            "surveys_classification",
+            "surveys_action",
+            "surveys_recommendation",
+            "surveys_usersurvey",
+            "surveys_useranswer",
+        ]
+        with connection.cursor() as cursor:
+            for table in tables:
+                cursor.execute(
+                    f"SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE(MAX(id), 1)) FROM {table};",
+                    [table],
+                )
+        self.stdout.write(self.style.SUCCESS("Sequences reset."))

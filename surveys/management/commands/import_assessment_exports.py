@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.core.management import BaseCommand, CommandError, call_command
+from django.db import connection
 
 
 class Command(BaseCommand):
@@ -57,3 +58,27 @@ class Command(BaseCommand):
                 continue
             self.stdout.write(f"Loading {fixture_path}...")
             call_command("loaddata", str(fixture_path))
+
+        if not options["dry_run"]:
+            self._reset_sequences()
+
+    def _reset_sequences(self):
+        tables = [
+            "surveys_survey",
+            "surveys_section",
+            "surveys_question",
+            "surveys_answerschema",
+            "surveys_answerschemaoption",
+            "surveys_classification",
+            "surveys_action",
+            "surveys_recommendation",
+            "surveys_usersurvey",
+            "surveys_useranswer",
+        ]
+        with connection.cursor() as cursor:
+            for table in tables:
+                cursor.execute(
+                    f"SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE(MAX(id), 1)) FROM {table};",
+                    [table],
+                )
+        self.stdout.write(self.style.SUCCESS("Sequences reset."))
