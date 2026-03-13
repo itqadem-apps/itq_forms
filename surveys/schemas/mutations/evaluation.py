@@ -7,12 +7,10 @@ from typing import List
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.inputs import ClassificationInput, RecommendationInput, ActionInput
-from surveys.types import ClassificationType, RecommendationType, ActionType
+from surveys.inputs import RecommendationInput, ActionInput
+from surveys.types import RecommendationType, ActionType
 from surveys.models import (
     Survey,
-    Classification,
-    ClassificationTranslation,
     Recommendation,
     RecommendationTranslation,
     Action,
@@ -27,10 +25,6 @@ def _type_from_survey_id(info, survey_id, **kw):
     return Survey.objects.values_list('survey_type', flat=True).get(pk=survey_id)
 
 
-def _type_from_classification_id(info, id, **kw):
-    return Classification.objects.select_related('survey').get(pk=id).survey.survey_type
-
-
 def _type_from_recommendation_id(info, id, **kw):
     return Recommendation.objects.select_related('survey').get(pk=id).survey.survey_type
 
@@ -41,79 +35,6 @@ def _type_from_action_id(info, id, **kw):
 
 @strawberry.type
 class EvaluationMutations:
-    # ==================== Classification Mutations ====================
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_survey_id, 'update')
-    def create_classification(
-        self,
-        info: Info,
-        survey_id: int,
-        input: ClassificationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> ClassificationType:
-        """Create a new classification for a survey"""
-        survey = Survey.objects.get(pk=survey_id)
-
-        data = input_to_dict(input, exclude=['translations'])
-        data['survey'] = survey
-
-        classification = Classification.objects.create(**data)
-
-        if input.translations:
-            for trans_input in input.translations:
-                ClassificationTranslation.objects.create(
-                    classification=classification,
-                    language=trans_input.language,
-                    name=trans_input.name,
-                )
-
-        return classification
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_classification_id, 'update')
-    def update_classification(
-        self,
-        info: Info,
-        id: int,
-        input: ClassificationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> ClassificationType:
-        """Update an existing classification"""
-        classification = Classification.objects.select_related('survey').get(pk=id)
-
-        for field, value in input_to_dict(input, exclude=['translations']).items():
-            setattr(classification, field, value)
-
-        classification.save()
-
-        if input.translations:
-            for trans_input in input.translations:
-                ClassificationTranslation.objects.update_or_create(
-                    classification=classification,
-                    language=trans_input.language,
-                    defaults={'name': trans_input.name},
-                )
-
-        return classification
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_classification_id, 'update')
-    def delete_classification(
-        self,
-        info: Info,
-        id: int,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> OperationResult:
-        """Soft delete a classification"""
-        classification = Classification.objects.get(pk=id)
-        classification.deleted_at = now()
-        classification.save()
-        return OperationResult(success=True)
-
     # ==================== Recommendation Mutations ====================
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)

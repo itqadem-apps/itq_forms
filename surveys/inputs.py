@@ -232,10 +232,7 @@ class AnswerSchemaOptionTranslationInput:
     text: Optional[str] = None
 
 
-@strawberry.input
-class ClassificationTranslationInput:
-    language: str
-    name: Optional[str] = None
+from classifications.inputs import ClassificationTranslationInput, ClassificationInput  # noqa: F401
 
 
 @strawberry.input
@@ -345,14 +342,6 @@ class AnswerSchemaInput:
     with_file: Optional[bool] = UNSET
     is_mcq: Optional[bool] = UNSET
     is_grid: Optional[bool] = UNSET
-
-
-# Classification Inputs
-@strawberry.input
-class ClassificationInput:
-    name: Optional[str] = UNSET
-    score: Optional[int] = UNSET
-    translations: Optional[List[ClassificationTranslationInput]] = UNSET
 
 
 # Recommendation Inputs

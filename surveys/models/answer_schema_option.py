@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .answer_schema import AnswerSchema
-from .classification import Classification
+from classifications.models import Classification
 from .question import Question
 from .section import Section
 from .survey import Survey

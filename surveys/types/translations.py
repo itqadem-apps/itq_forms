@@ -7,7 +7,6 @@ from surveys.models import (
     ActionTranslation,
     AnswerSchemaOptionTranslation,
     AnswerSchemaTranslation,
-    ClassificationTranslation,
     QuestionTranslation,
     RecommendationTranslation,
     SectionTranslation,
@@ -78,8 +77,4 @@ class RecommendationTranslationType:
     description: auto
 
 
-@strawberry_django.type(ClassificationTranslation)
-class ClassificationTranslationType:
-    id: auto
-    language: auto
-    name: auto
+from classifications.types import ClassificationTranslationType  # noqa: F401

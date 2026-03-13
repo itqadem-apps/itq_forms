@@ -9,7 +9,7 @@ from .survey import SurveyType, SurveyAssetType, PriceType, SurveyPayload
 from .types_category import CategoryType
 from .content import SectionType, QuestionType
 from .answer_schema import AnswerSchemaType, AnswerSchemaOptionType
-from .classification import ClassificationType
+from classifications.types import ClassificationType
 from .recommendation import RecommendationType
 from .action import ActionType
 from .translations import (
@@ -21,8 +21,8 @@ from .translations import (
     AnswerSchemaOptionTranslationType,
     ActionTranslationType,
     RecommendationTranslationType,
-    ClassificationTranslationType,
 )
+from classifications.types import ClassificationTranslationType
 from .common import SurveyCollectionType, SurveyCollectionTranslationType
 
 # Re-exported from user_surveys app

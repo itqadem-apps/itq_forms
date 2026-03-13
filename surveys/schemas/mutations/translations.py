@@ -11,7 +11,6 @@ from surveys.inputs import (
     SectionTranslationInput,
     QuestionTranslationInput,
     AnswerSchemaOptionTranslationInput,
-    ClassificationTranslationInput,
     RecommendationTranslationInput,
     ActionTranslationInput,
     SurveyCollectionTranslationInput,
@@ -21,7 +20,6 @@ from surveys.types import (
     SectionTranslationType,
     QuestionTranslationType,
     AnswerSchemaOptionTranslationType,
-    ClassificationTranslationType,
     RecommendationTranslationType,
     ActionTranslationType,
     SurveyCollectionTranslationType,
@@ -35,8 +33,6 @@ from surveys.models import (
     QuestionTranslation,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
-    Classification,
-    ClassificationTranslation,
     Recommendation,
     RecommendationTranslation,
     Action,
@@ -78,14 +74,6 @@ def _type_from_option_id(info, option_id, **kw):
 
 def _type_from_option_translation_id(info, id, **kw):
     return AnswerSchemaOptionTranslation.objects.select_related('option__survey').get(pk=id).option.survey.survey_type
-
-
-def _type_from_classification_id(info, classification_id, **kw):
-    return Classification.objects.select_related('survey').get(pk=classification_id).survey.survey_type
-
-
-def _type_from_classification_translation_id(info, id, **kw):
-    return ClassificationTranslation.objects.select_related('classification__survey').get(pk=id).classification.survey.survey_type
 
 
 def _type_from_recommendation_id(info, recommendation_id, **kw):
@@ -342,62 +330,6 @@ class TranslationMutations:
     ) -> OperationResult:
         """Delete an answer schema option translation"""
         translation = AnswerSchemaOptionTranslation.objects.get(pk=id)
-        translation.delete()
-        return OperationResult(success=True)
-
-    # ==================== Classification Translations ====================
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_classification_id, 'update')
-    def create_classification_translation(
-        self,
-        info: Info,
-        classification_id: int,
-        input: ClassificationTranslationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> ClassificationTranslationType:
-        """Create a translation for a classification"""
-        classification = Classification.objects.get(pk=classification_id)
-        translation = ClassificationTranslation.objects.create(
-            classification=classification,
-            language=input.language,
-            name=input.name,
-        )
-        return translation
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_classification_translation_id, 'update')
-    def update_classification_translation(
-        self,
-        info: Info,
-        id: UUID,
-        input: ClassificationTranslationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> ClassificationTranslationType:
-        """Update a classification translation"""
-        translation = ClassificationTranslation.objects.select_related('classification__survey').get(pk=id)
-
-        if input.language:
-            translation.language = input.language
-        if input.name is not None:
-            translation.name = input.name
-
-        translation.save()
-        return translation
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    @check_permission(_type_from_classification_translation_id, 'update')
-    def delete_classification_translation(
-        self,
-        info: Info,
-        id: UUID,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> OperationResult:
-        """Delete a classification translation"""
-        translation = ClassificationTranslation.objects.get(pk=id)
         translation.delete()
         return OperationResult(success=True)
 

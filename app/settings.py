@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'surveys',
     "taxonomy",
     "survey_collections",
+    "classifications",
     "user_surveys",
 ]
 

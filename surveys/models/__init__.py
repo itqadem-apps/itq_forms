@@ -7,8 +7,7 @@ from .has_soft_delete import HasSoftDelete
 from .action import Action
 from .action_translation import ActionTranslation
 from .recommended_material import RecommendedMaterial
-from .classification import Classification
-from .classification_translation import ClassificationTranslation
+from classifications.models import Classification, ClassificationTranslation
 from .section import Section
 from .section_translation import SectionTranslation
 from .question import Question

@@ -17,6 +17,7 @@ from surveys.messaging import (
     publish_assessment_status_event,
     publish_assessment_updated,
 )
+from classifications.models import Classification, ClassificationTranslation
 from surveys.models import (
     Survey,
     SurveyTranslation,
@@ -25,8 +26,6 @@ from surveys.models import (
     QuestionTranslation,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
-    Classification,
-    ClassificationTranslation,
     Recommendation,
     RecommendationTranslation,
     Action,
