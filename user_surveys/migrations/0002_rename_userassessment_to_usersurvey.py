@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
             model_name="usersurvey",
             name="classifications",
             field=models.ManyToManyField(
-                through="user_surveys.UserSurveyClassification", to="surveys.classification"
+                through="user_surveys.UserSurveyClassification", to="classifications.classification"
             ),
         ),
         migrations.AlterField(
