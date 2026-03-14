@@ -2,7 +2,6 @@ from .status import Status
 from .survey import Survey
 from .survey_translation import SurveyTranslation
 from .price import Price
-from .survey_media_asset import AssetType, SurveyMediaAsset
 from .has_soft_delete import HasSoftDelete
 from classifications.models import Classification, ClassificationTranslation
 from recommendations.models import Action, ActionTranslation, Recommendation, RecommendationTranslation, RecommendedMaterial
@@ -25,7 +24,6 @@ __all__ = [
     "AnswerSchemaTranslation",
     "AnswerSchemaOption",
     "AnswerSchemaOptionTranslation",
-    "AssetType",
     "Classification",
     "ClassificationTranslation",
     "HasSoftDelete",
@@ -40,7 +38,6 @@ __all__ = [
     "Status",
     "Survey",
     "SurveyTranslation",
-    "SurveyMediaAsset",
     "Usage",
     "LEGACY_MODELS_SOURCE",
 ]

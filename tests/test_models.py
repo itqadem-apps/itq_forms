@@ -23,7 +23,6 @@ from surveys.models import (
     SectionTranslation,
     Status,
     Survey,
-    SurveyMediaAsset,
     SurveyTranslation,
     Usage,
 )

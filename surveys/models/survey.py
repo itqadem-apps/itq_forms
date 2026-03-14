@@ -139,6 +139,8 @@ class Survey(models.Model):
         verbose_name=_("Sponsor"),
     )
     price = models.FloatField(default=0)
+    cover_id = models.CharField(max_length=255, null=True, blank=True)
+    thumb_id = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return str(self.title)

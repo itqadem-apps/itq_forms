@@ -7,7 +7,7 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Survey, SurveyMediaAsset, Usage, Price
+from surveys.models import Survey, Usage, Price
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
 
@@ -51,6 +51,8 @@ class SurveyType:
     category: Optional[CategoryType]
     sponsor: auto
     price: auto
+    cover_id: auto
+    thumb_id: auto
     created_at: auto
     updated_at: auto
     sections: List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]
@@ -60,13 +62,6 @@ class SurveyType:
     def collection_id(self) -> Optional[int]:
         collection = self.collections.first()
         return collection.id if collection else None
-
-    @strawberry.field
-    def assets(self, asset_type: str | None = None) -> List["SurveyAssetType"]:
-        qs = self.assets.all()
-        if asset_type:
-            qs = qs.filter(asset_type=asset_type)
-        return list(qs)
 
     @strawberry.field
     def status(self) -> str | None:
@@ -127,13 +122,6 @@ class SurveyPayload:
     success: bool
     message: Optional[str]
     survey: Optional[SurveyType]
-
-
-@strawberry_django.type(SurveyMediaAsset)
-class SurveyAssetType:
-    id: auto
-    asset_id: auto
-    asset_type: auto
 
 
 @strawberry_django.type(Price)

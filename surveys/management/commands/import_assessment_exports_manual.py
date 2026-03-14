@@ -21,7 +21,6 @@ from surveys.models import (
     Section,
     Status,
     Survey,
-    SurveyMediaAsset,
 )
 from survey_collections.models import SurveyCollection
 from taxonomy.models import Category, CategoryTranslation
@@ -666,7 +665,8 @@ class Command(BaseCommand):
             )
             collection_surveys.append(collection)
 
-        assets = []
+        # Build survey_id -> cover/thumb mapping from media library
+        survey_assets = {}  # {survey_id: {"cover": asset_id, "thumbnail": asset_id}}
         asset_type_map = {"thumb": "thumbnail", "cover": "cover"}
         for item in files["media_library_medialibrary.json"]:
             fields = item["fields"]
@@ -678,13 +678,9 @@ class Command(BaseCommand):
             if not asset_type:
                 report.add_value("media_library.collection_name", fields.get("collection_name"))
                 continue
-            assets.append(
-                SurveyMediaAsset(
-                    survey_id=fields.get("object_id"),
-                    asset_id=fields.get("uuid"),
-                    asset_type=asset_type,
-                )
-            )
+            survey_id = fields.get("object_id")
+            survey_assets.setdefault(survey_id, {})
+            survey_assets[survey_id][asset_type] = fields.get("uuid")
 
         # TODO: update for new snapshot model structure
         # user_assessments = []
@@ -769,7 +765,7 @@ class Command(BaseCommand):
                 ("answer_schema_options", len(schema_options)),
                 ("actions", len(actions)),
                 ("recommendations", len(recommendations)),
-                ("survey_media_assets", len(assets)),
+                ("survey_media_assets", len(survey_assets)),
                 ("survey_collections", len(collection_surveys)),
                 # TODO: update for new snapshot model structure
                 # ("user_assessments", len(user_assessments)),
@@ -813,8 +809,11 @@ class Command(BaseCommand):
             AnswerSchemaOption.objects.bulk_create(schema_options, batch_size=500)
             Action.objects.bulk_create(actions, batch_size=500)
             Recommendation.objects.bulk_create(recommendations, batch_size=500)
-            if assets:
-                SurveyMediaAsset.objects.bulk_create(assets, batch_size=500)
+            for sid, asset_map in survey_assets.items():
+                Survey.objects.filter(pk=sid).update(
+                    cover_id=asset_map.get("cover"),
+                    thumb_id=asset_map.get("thumbnail"),
+                )
 
             if collection_surveys:
                 for collection in collection_surveys:
