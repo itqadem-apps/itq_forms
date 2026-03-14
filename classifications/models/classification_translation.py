@@ -7,7 +7,6 @@ from .classification import Classification
 
 class ClassificationTranslation(models.Model):
     class Meta:
-        db_table = "surveys_classificationtranslation"
         constraints = [
             models.UniqueConstraint(fields=["classification", "language"], name="uq_classification_language"),
         ]

@@ -10,7 +10,6 @@ class Classification(HasSoftDelete):
         ordering = ["created_at"]
         verbose_name = _("Classification")
         verbose_name_plural = _("Classifications")
-        db_table = "surveys_classification"
 
     name = models.CharField(max_length=255, null=True, blank=True)
     survey = models.ForeignKey("surveys.Survey", on_delete=models.CASCADE, related_name="classifications", null=True, blank=True)
