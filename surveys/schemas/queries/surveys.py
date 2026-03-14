@@ -94,10 +94,4 @@ class SurveysQuery:
             ]
             facets.append(FacetGQL(name="survey_type", values=survey_type_values))
 
-            language_values = [
-                FacetValueGQL(value=row["language"], count=row["count"])
-                for row in base_qs.values("language").annotate(count=Count("id")).order_by("language")
-            ]
-            facets.append(FacetGQL(name="language", values=language_values))
-
         return SurveyResultsGQL(items=items, total=total, facets=facets)

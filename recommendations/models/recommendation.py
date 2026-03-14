@@ -11,7 +11,6 @@ class Recommendation(HasSoftDelete):
         verbose_name = _("Recommendation")
         verbose_name_plural = _("Recommendations")
 
-    description = models.TextField()
     survey = models.ForeignKey("surveys.Survey", on_delete=models.CASCADE, related_name="recommendations", null=True, blank=True)
     option = models.ForeignKey(
         "surveys.AnswerSchemaOption",
@@ -23,5 +22,10 @@ class Recommendation(HasSoftDelete):
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
+    @property
+    def description(self):
+        t = self.translations.first()
+        return t.description if t else None
+
     def __str__(self):
-        return self.description
+        return self.description or str(self.pk)

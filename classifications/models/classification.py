@@ -11,11 +11,16 @@ class Classification(HasSoftDelete):
         verbose_name = _("Classification")
         verbose_name_plural = _("Classifications")
 
-    name = models.CharField(max_length=255, null=True, blank=True)
     survey = models.ForeignKey("surveys.Survey", on_delete=models.CASCADE, related_name="classifications", null=True, blank=True)
     score = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
+    @property
+    def name(self):
+        """Convenience accessor: returns the name from the first translation."""
+        t = self.translations.first()
+        return t.name if t else None
+
     def __str__(self):
-        return self.name or ""
+        return self.name or str(self.pk)

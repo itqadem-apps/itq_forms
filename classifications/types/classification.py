@@ -12,6 +12,8 @@ from .translations import ClassificationTranslationType
 @strawberry_django.type(Classification)
 class ClassificationType:
     id: auto
-    name: auto
+    survey_id: auto
     score: auto
+    created_at: auto
+    updated_at: auto
     translations: List[ClassificationTranslationType]

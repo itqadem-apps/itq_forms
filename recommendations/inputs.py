@@ -2,6 +2,7 @@ from typing import Optional, List
 
 import strawberry
 from strawberry import UNSET
+from strawberry.scalars import JSON
 
 
 @strawberry.input
@@ -19,15 +20,26 @@ class ActionTranslationInput:
 
 @strawberry.input
 class RecommendationInput:
-    description: str
     option_id: Optional[int] = UNSET
     translations: Optional[List[RecommendationTranslationInput]] = UNSET
 
 
 @strawberry.input
 class ActionInput:
-    title: Optional[str] = UNSET
-    description: Optional[str] = UNSET
     upper_limit: Optional[float] = UNSET
     lower_limit: Optional[float] = UNSET
     translations: Optional[List[ActionTranslationInput]] = UNSET
+
+
+@strawberry.input
+class RecommendableInput:
+    source_service: Optional[str] = UNSET
+    source_model: Optional[str] = UNSET
+    source_id: Optional[str] = UNSET
+    data: Optional[JSON] = UNSET
+
+
+@strawberry.input
+class MaterialInput:
+    action_id: int
+    recommendable_id: int

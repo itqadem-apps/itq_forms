@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.timezone import now
@@ -41,25 +40,9 @@ class Survey(models.Model):
         (EVALUATION_TYPE_MANUAL_EVALUATION, _("Manual Evaluation")),
     )
 
-    SEARCH_INDEX = ("title", "description", "short_description")
-
     class Meta:
         ordering = ["-created_at"]
 
-    title = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Title"))
-    description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
-    short_description = models.CharField(
-        max_length=300, null=True, blank=True, verbose_name=_("Short Description")
-    )
-    slug = models.SlugField(max_length=255, null=True, blank=True)
-    language = models.CharField(
-        max_length=64,
-        choices=settings.LANGUAGES,
-        default=settings.LANGUAGE_CODE,
-        null=True,
-        blank=True,
-        verbose_name=_("Language"),
-    )
     status = models.ForeignKey(
         Status,
         on_delete=models.SET_NULL,
@@ -138,22 +121,29 @@ class Survey(models.Model):
         blank=True,
         verbose_name=_("Sponsor"),
     )
-    price = models.FloatField(default=0)
     cover_id = models.CharField(max_length=255, null=True, blank=True)
     thumb_id = models.CharField(max_length=255, null=True, blank=True)
 
+    @property
+    def title(self):
+        """Convenience accessor: returns the title from the first translation."""
+        t = self.translations.first()
+        return t.title if t else None
+
+    @property
+    def language(self):
+        """Convenience accessor: returns the language from the first translation."""
+        t = self.translations.first()
+        return t.language if t else None
+
     def __str__(self):
-        return str(self.title)
+        return str(self.title or self.pk)
 
     def update_status(self, status: str, user: UserModel | None = None) -> Status:
         entry = Status.objects.create(survey=self, user=user, status=status)
         self.status = entry
         self.save(update_fields=["status"])
         return entry
-
-    @property
-    def get_language(self):
-        return dict(settings.LANGUAGES).get(self.language)
 
     @property
     def get_status(self):

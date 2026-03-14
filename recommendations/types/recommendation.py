@@ -12,5 +12,8 @@ from .translations import RecommendationTranslationType
 @strawberry_django.type(Recommendation)
 class RecommendationType:
     id: auto
-    description: auto
+    survey_id: auto
+    option_id: auto
+    created_at: auto
+    updated_at: auto
     translations: List[RecommendationTranslationType]

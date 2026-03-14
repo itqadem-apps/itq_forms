@@ -39,12 +39,8 @@ def user2(db):
 
 @pytest.fixture
 def survey(db):
-    from surveys.models import Survey
-    return Survey.objects.create(
-        title="Test Survey",
-        description="A test survey",
-        short_description="Short desc",
-        language="en",
+    from surveys.models import Survey, SurveyTranslation
+    s = Survey.objects.create(
         survey_type=Survey.ASSESSMENT_TYPE_SURVEY,
         display_option=Survey.DISPLAY_OPTION_BY_QUESTION,
         evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
@@ -53,6 +49,14 @@ def survey(db):
         use_recommendations=False,
         use_actions=False,
     )
+    SurveyTranslation.objects.create(
+        survey=s,
+        language="en",
+        title="Test Survey",
+        description="A test survey",
+        short_description="Short desc",
+    )
+    return s
 
 
 @pytest.fixture
@@ -106,7 +110,7 @@ def options(survey, section, question, answer_schema):
 
 
 @pytest.fixture
-def enrolled_survey(user, survey):
+def enrolled_survey(user, survey, section, question, options):
     from user_surveys.services import enroll_user_in_assessment
     user_survey, _ = enroll_user_in_assessment(user, survey.id)
     return user_survey

@@ -18,6 +18,8 @@ from recommendations.schemas.mutations import (
     ActionMutations,
     RecommendationTranslationMutations,
     ActionTranslationMutations,
+    RecommendableMutations,
+    MaterialMutations,
 )
 from user_surveys.schemas.mutations import (
     EnrollAssessmentMutation,
@@ -52,5 +54,7 @@ Mutation = merge_types(
         ActionMutations,
         RecommendationTranslationMutations,
         ActionTranslationMutations,
+        RecommendableMutations,
+        MaterialMutations,
     ),
 )

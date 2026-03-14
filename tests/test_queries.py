@@ -39,7 +39,7 @@ class TestSurveysQuery:
             query {
                 surveys(surveysListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title }
+                    items { id }
                 }
             }
         """)
@@ -53,26 +53,26 @@ class TestSurveysQuery:
             query {
                 surveys(surveysListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title surveyType }
+                    items { id surveyType translations { title } }
                 }
             }
         """)
         assert status == 200
         result = data["data"]["surveys"]
         assert result["total"] >= 1
-        titles = [item["title"] for item in result["items"]]
+        titles = [item["translations"][0]["title"] if item["translations"] else None for item in result["items"]]
         assert "Test Survey" in titles
 
     def test_surveys_pagination(self):
         for i in range(5):
-            Survey.objects.create(title=f"Survey {i}")
+            Survey.objects.create()
 
         client = Client()
         status, data = _gql(client, """
             query {
                 surveys(surveysListInput: { limit: 2, offset: 0 }) {
                     total
-                    items { id title }
+                    items { id }
                 }
             }
         """)
@@ -83,7 +83,7 @@ class TestSurveysQuery:
 
     def test_surveys_offset(self):
         for i in range(5):
-            Survey.objects.create(title=f"Survey {i}")
+            Survey.objects.create()
 
         client = Client()
         status, data = _gql(client, """
@@ -99,7 +99,7 @@ class TestSurveysQuery:
 
     def test_surveys_with_facets(self):
         from surveys.models import Status as StatusModel
-        s = Survey.objects.create(title="With Status", survey_type="survey", language="en")
+        s = Survey.objects.create(survey_type="survey")
         status_entry = StatusModel.objects.create(survey=s, status=StatusModel.STATUS_PUBLISHED)
         s.status = status_entry
         s.save()
@@ -117,12 +117,11 @@ class TestSurveysQuery:
         facets = data["data"]["surveys"]["facets"]
         facet_names = [f["name"] for f in facets]
         assert "survey_type" in facet_names
-        assert "language" in facet_names
         assert "status" in facet_names
 
     def test_surveys_filter_by_type(self):
-        Survey.objects.create(title="S1", survey_type="survey")
-        Survey.objects.create(title="S2", survey_type="exam")
+        Survey.objects.create(survey_type="survey")
+        Survey.objects.create(survey_type="exam")
         client = Client()
         status, data = _gql(client, """
             query {
@@ -131,7 +130,7 @@ class TestSurveysQuery:
                     filters: { surveyType: "exam" }
                 }) {
                     total
-                    items { title surveyType }
+                    items { surveyType }
                 }
             }
         """)
@@ -148,22 +147,21 @@ class TestSurveyQuery:
             query($id: Int!) {
                 survey(id: $id) {
                     id
-                    title
-                    description
                     surveyType
                     displayOption
+                    translations { title description }
                 }
             }
         """, {"id": survey.pk})
         assert status == 200
         result = data["data"]["survey"]
-        assert result["title"] == "Test Survey"
+        assert result["translations"][0]["title"] == "Test Survey"
         assert result["surveyType"] == "survey"
 
     def test_survey_not_found(self):
         client = Client()
         status, data = _gql(client, """
-            query { survey(id: 999999) { id title } }
+            query { survey(id: 999999) { id } }
         """)
         assert status == 200
         assert data["data"]["survey"] is None
@@ -311,5 +309,5 @@ class TestSchemaIntrospection:
         survey_type = data["data"]["__type"]
         assert survey_type is not None
         field_names = [f["name"] for f in survey_type["fields"]]
-        assert "title" in field_names
+        assert "translations" in field_names
         assert "surveyType" in field_names

@@ -24,6 +24,8 @@ class SectionType:
     order: auto
     is_hidden: auto
     cover_asset_id: auto
+    submit_action: auto
+    submit_action_target_id: auto
     created_at: auto
     updated_at: auto
     questions: List["QuestionType"]

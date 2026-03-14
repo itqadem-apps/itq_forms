@@ -7,14 +7,14 @@ from strawberry import auto
 
 from recommendations.models import Action
 from .translations import ActionTranslationType
+from .material import MaterialType
 
 
 @strawberry_django.type(Action)
 class ActionType:
     id: auto
-    title: auto
-    description: auto
     survey_id: auto
     upper_limit: auto
     lower_limit: auto
     translations: List[ActionTranslationType]
+    materials: List[MaterialType]

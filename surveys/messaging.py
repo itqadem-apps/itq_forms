@@ -50,7 +50,6 @@ def serialize_assessment(survey: Survey) -> dict:
             for translation in survey.translations.all()
         ],
         "metadata": {
-            "language": survey.language,
             "use_score": survey.use_score,
             "use_classifications": survey.use_classifications,
             "use_recommendations": survey.use_recommendations,

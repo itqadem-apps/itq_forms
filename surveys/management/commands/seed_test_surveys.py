@@ -30,6 +30,27 @@ from surveys.models import (
     SurveyTranslation,
 )
 
+def _classification(survey, name, score=None):
+    """Create a Classification and its primary translation."""
+    c = Classification.objects.create(survey=survey, score=score)
+    ClassificationTranslation.objects.create(classification=c, language="en", name=name)
+    return c
+
+
+def _recommendation(survey, option, description):
+    """Create a Recommendation and its primary translation."""
+    r = Recommendation.objects.create(survey=survey, option=option)
+    RecommendationTranslation.objects.create(recommendation=r, language="en", description=description)
+    return r
+
+
+def _action(survey, title, description=None, lower_limit=0, upper_limit=0):
+    """Create an Action and its primary translation."""
+    a = Action.objects.create(survey=survey, lower_limit=lower_limit, upper_limit=upper_limit)
+    ActionTranslation.objects.create(action=a, language="en", title=title, description=description)
+    return a
+
+
 # Prefix to identify test surveys for easy cleanup
 TAG = "[TEST] "
 
@@ -39,6 +60,18 @@ def _status(survey, status_str):
     survey.status = s
     survey.save(update_fields=["status"])
     return s
+
+
+def _create_survey(title, description=None, **kwargs):
+    """Create a Survey and its primary translation."""
+    survey = Survey.objects.create(**kwargs)
+    SurveyTranslation.objects.create(
+        survey=survey,
+        language="en",
+        title=title,
+        description=description,
+    )
+    return survey
 
 
 def _section(survey, title, order, **kwargs):
@@ -109,7 +142,7 @@ def _survey_translation(survey, lang, title, description=None, short_description
 # Survey 1: Basic Scored Exam — full anti-cheat, timed, auto-eval
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_1():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Basic Scored Exam",
         description="Timed exam with full anti-cheat, scoring, and locked answers.",
         survey_type="exam",
@@ -152,7 +185,7 @@ def create_survey_1():
 # Survey 2: Classification + Recommendation Personality Assessment
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_2():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Personality Assessment",
         description="Classification-based questionnaire with recommendations.",
         survey_type="questionnaire",
@@ -165,9 +198,9 @@ def create_survey_2():
     )
     _status(survey, "published")
 
-    cl_a = Classification.objects.create(name="Analytical", survey=survey, score=1)
-    cl_b = Classification.objects.create(name="Creative", survey=survey, score=2)
-    cl_c = Classification.objects.create(name="Social", survey=survey, score=3)
+    cl_a = _classification(survey, "Analytical", score=1)
+    cl_b = _classification(survey, "Creative", score=2)
+    cl_c = _classification(survey, "Social", score=3)
 
     # Section 1 — Work Style
     s1 = _section(survey, "Work Style", 1)
@@ -177,9 +210,9 @@ def create_survey_2():
     o1b = _option(q1, "Brainstorming", 2, classification=cl_b)
     o1c = _option(q1, "Ask colleagues", 3, classification=cl_c)
 
-    Recommendation.objects.create(survey=survey, option=o1a, description="Consider data science courses")
-    Recommendation.objects.create(survey=survey, option=o1b, description="Try creative workshops")
-    Recommendation.objects.create(survey=survey, option=o1c, description="Explore team leadership training")
+    _recommendation(survey, o1a, "Consider data science courses")
+    _recommendation(survey, o1b, "Try creative workshops")
+    _recommendation(survey, o1c, "Explore team leadership training")
 
     q2 = _question(s1, "Preferred work activity?", "radio", 2)
     _option(q2, "Spreadsheets", 1, classification=cl_a)
@@ -206,7 +239,7 @@ def create_survey_2():
 # Survey 3: Score-Range Actions (Smart Form, Full Form)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_3():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Score-Range Actions",
         description="Smart form with score-based actions and mixed question types.",
         survey_type="smart_form",
@@ -218,9 +251,9 @@ def create_survey_3():
     )
     _status(survey, "published")
 
-    Action.objects.create(survey=survey, title="Needs Improvement", description="Score is below expectations.", lower_limit=0, upper_limit=10)
-    Action.objects.create(survey=survey, title="Satisfactory", description="Score meets expectations.", lower_limit=11, upper_limit=20)
-    Action.objects.create(survey=survey, title="Excellent", description="Score exceeds expectations.", lower_limit=21, upper_limit=30)
+    _action(survey, "Needs Improvement", "Score is below expectations.", lower_limit=0, upper_limit=10)
+    _action(survey, "Satisfactory", "Score meets expectations.", lower_limit=11, upper_limit=20)
+    _action(survey, "Excellent", "Score exceeds expectations.", lower_limit=21, upper_limit=30)
 
     s1 = _section(survey, "Assessment", 1)
 
@@ -244,7 +277,7 @@ def create_survey_3():
 # Survey 4: Grid Questions Exam
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_4():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Grid Questions Exam",
         description="Exam with radio grid and checkbox grid questions.",
         survey_type="exam",
@@ -287,7 +320,7 @@ def create_survey_4():
 # Survey 5: Ending Option Early Termination
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_5():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Ending Option Termination",
         description="Questionnaire with ending option early termination (in-row).",
         survey_type="questionnaire",
@@ -316,7 +349,7 @@ def create_survey_5():
 # Survey 6: Manual Evaluation (Essay + File + Date types)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_6():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Manual Evaluation Portfolio",
         description="Curriculum with manual evaluation and file/text/date questions.",
         survey_type="curriculum",
@@ -344,7 +377,7 @@ def create_survey_6():
 # Survey 7: Child Assessment (is_for_child + classifications)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_7():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Child Developmental Milestones",
         description="Child assessment with classifications.",
         survey_type="survey",
@@ -357,9 +390,9 @@ def create_survey_7():
     )
     _status(survey, "published")
 
-    cl_on_track = Classification.objects.create(name="On Track", survey=survey, score=1)
-    cl_needs = Classification.objects.create(name="Needs Support", survey=survey, score=2)
-    cl_advanced = Classification.objects.create(name="Advanced", survey=survey, score=3)
+    cl_on_track = _classification(survey, "On Track", score=1)
+    cl_needs = _classification(survey, "Needs Support", score=2)
+    cl_advanced = _classification(survey, "Advanced", score=3)
 
     s1 = _section(survey, "Developmental Milestones", 1)
 
@@ -385,7 +418,7 @@ def create_survey_7():
 # Survey 8: Section Navigation with Jump
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_8():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Section Jump Navigation",
         description="Smart form demonstrating section jump navigation.",
         survey_type="smart_form",
@@ -416,7 +449,7 @@ def create_survey_8():
 # Survey 9: Anti-Cheat OFF Contrast Test (timed, but no anti-cheat)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_9():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Anti-Cheat OFF Contrast",
         description="Timed exam with anti-cheat disabled — contrast test for Survey 1.",
         survey_type="exam",
@@ -457,10 +490,9 @@ def create_survey_9():
 # Survey 10: Multi-Language Survey (English + Arabic)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_10():
-    survey = Survey.objects.create(
+    survey = _create_survey(
         title=f"{TAG}Multi-Language Survey",
         description="Survey with English and Arabic translations.",
-        language="en",
         survey_type="survey",
         display_option="by_section",
         is_evaluable=True,
@@ -469,7 +501,11 @@ def create_survey_10():
     )
     _status(survey, "published")
 
-    _survey_translation(survey, "en", "Demographics Survey", "A short demographics questionnaire.")
+    # The _create_survey already created an "en" translation; update it and add Arabic
+    en_translation = survey.translations.first()
+    en_translation.title = "Demographics Survey"
+    en_translation.description = "A short demographics questionnaire."
+    en_translation.save()
     _survey_translation(survey, "ar", "استبيان البيانات الديموغرافية", "استبيان قصير للبيانات الديموغرافية.")
 
     s1 = _section(survey, "Demographics", 1)
@@ -538,13 +574,16 @@ class Command(BaseCommand):
         parser.add_argument(
             "--truncate",
             action="store_true",
-            help=f'Delete existing test surveys (title starts with "{TAG}") before seeding.',
+            help=f'Delete existing test surveys (translation title starts with "{TAG}") before seeding.',
         )
 
     def handle(self, *args, **options):
         with transaction.atomic():
             if options["truncate"]:
-                deleted, _ = Survey.objects.filter(title__startswith=TAG).delete()
+                survey_ids = SurveyTranslation.objects.filter(
+                    title__startswith=TAG
+                ).values_list("survey_id", flat=True)
+                deleted, _ = Survey.objects.filter(id__in=survey_ids).delete()
                 self.stdout.write(self.style.WARNING(f"Deleted {deleted} existing test survey objects."))
 
             for label, creator_fn in CREATORS:

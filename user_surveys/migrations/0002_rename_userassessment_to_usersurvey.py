@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             model_name="usersurvey",
             name="recommendations",
             field=models.ManyToManyField(
-                through="user_surveys.UserSurveyRecommendation", to="surveys.recommendation"
+                through="user_surveys.UserSurveyRecommendation", to="recommendations.recommendation"
             ),
         ),
     ]

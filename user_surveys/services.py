@@ -55,7 +55,8 @@ def check_time_expired(user_survey: UserSurvey) -> bool:
 
 def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     """Deep-copy the full survey tree into user_surveys models."""
-    primary_lang = survey.language or "default"
+    first_translation = survey.translations.first()
+    primary_lang = first_translation.language if first_translation else "default"
 
     # ── 1. Classifications ───────────────────────────────────────────
     classification_map = {}  # original_id -> UserClassification
@@ -236,15 +237,6 @@ def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id
             survey.translations.all(),
             ["title", "description", "short_description", "slug"],
         )
-        # Include the primary language content in translations
-        primary_lang = survey.language or "default"
-        survey_translations.setdefault(primary_lang, {})
-        survey_translations[primary_lang].update({
-            "title": survey.title,
-            "description": survey.description,
-            "short_description": survey.short_description,
-            "slug": survey.slug,
-        })
 
         user_survey = UserSurvey.objects.create(
             # source reference

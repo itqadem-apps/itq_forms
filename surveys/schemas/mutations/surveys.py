@@ -141,11 +141,7 @@ class SurveyMutations:
     ) -> SurveyPayload:
         original = Survey.objects.get(pk=id)
 
-        new_survey = clone_instance(
-            original,
-            title=f"{original.title} (Copy)",
-            slug=f"{original.slug}-copy" if original.slug else None,
-        )
+        new_survey = clone_instance(original)
 
         # Duplicate survey translations
         for t in original.translations.all():

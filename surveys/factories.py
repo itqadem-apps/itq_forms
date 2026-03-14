@@ -4,7 +4,7 @@ import string
 from django.conf import settings
 from django.db import transaction
 
-from .models import Status, Survey
+from .models import Status, Survey, SurveyTranslation
 
 
 def _pick_choice(choices, default=None):
@@ -98,11 +98,8 @@ class SurveyFactory:
                 else Survey.EVALUATION_TYPE_MANUAL_EVALUATION
             )
 
-        return Survey(
-            title=title,
-            short_description=short_description,
-            description=description,
-            language=language,
+        # Store translation data for create()
+        instance = Survey(
             status=status,
             survey_type=survey_type,
             display_option=display_option,
@@ -112,12 +109,25 @@ class SurveyFactory:
             evaluation_type=evaluation_type,
             **overrides,
         )
+        instance._factory_translation = {
+            "language": language,
+            "title": title,
+            "short_description": short_description,
+            "description": description,
+        }
+        return instance
 
     @classmethod
     def create(cls, **overrides):
         instance = cls.build(**overrides)
+        translation_data = instance._factory_translation
+        del instance._factory_translation
         instance.full_clean()
         instance.save()
+        SurveyTranslation.objects.create(
+            survey=instance,
+            **translation_data,
+        )
         return instance
 
     @classmethod

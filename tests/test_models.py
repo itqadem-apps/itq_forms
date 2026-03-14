@@ -66,7 +66,7 @@ class TestSurveyModel:
         assert survey.survey_type == Survey.ASSESSMENT_TYPE_SURVEY
 
     def test_survey_defaults(self):
-        s = Survey.objects.create(title="Defaults")
+        s = Survey.objects.create()
         assert s.display_option == Survey.DISPLAY_OPTION_BY_QUESTION
         assert s.evaluation_type == Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION
         assert s.use_score is True
@@ -77,8 +77,8 @@ class TestSurveyModel:
         assert str(survey) == "Test Survey"
 
     def test_survey_ordering(self):
-        s1 = Survey.objects.create(title="First")
-        s2 = Survey.objects.create(title="Second")
+        s1 = Survey.objects.create()
+        s2 = Survey.objects.create()
         surveys = list(Survey.objects.all())
         assert surveys[0].pk == s2.pk  # -created_at ordering
 
@@ -90,12 +90,12 @@ class TestSurveyModel:
 
     def test_survey_all_types(self):
         for type_val, _ in Survey.ASSESSMENT_TYPES:
-            s = Survey.objects.create(title=f"Type {type_val}", survey_type=type_val)
+            s = Survey.objects.create(survey_type=type_val)
             assert s.survey_type == type_val
 
     def test_survey_all_display_options(self):
         for opt_val, _ in Survey.DISPLAY_OPTIONS:
-            s = Survey.objects.create(title=f"Display {opt_val}", display_option=opt_val)
+            s = Survey.objects.create(display_option=opt_val)
             assert s.display_option == opt_val
 
     def test_survey_properties(self, survey):
@@ -212,7 +212,8 @@ class TestAnswerSchemaOptionModel:
         assert answer_schema.options.count() == 3
 
     def test_option_with_classification(self, survey, section, question, answer_schema):
-        classification = Classification.objects.create(survey=survey, name="Cat A", score=10)
+        classification = Classification.objects.create(survey=survey, score=10)
+        ClassificationTranslation.objects.create(classification=classification, language="en", name="Cat A")
         opt = AnswerSchemaOption.objects.create(
             survey=survey, section=section, question=question,
             schema=answer_schema, text="Opt", classification=classification,
@@ -230,29 +231,31 @@ class TestAnswerSchemaOptionModel:
 # ── Classification model ────────────────────────────────────────
 class TestClassificationModel:
     def test_create_classification(self, survey):
-        c = Classification.objects.create(survey=survey, name="High", score=100)
+        c = Classification.objects.create(survey=survey, score=100)
+        ClassificationTranslation.objects.create(classification=c, language="en", name="High")
         assert c.name == "High"
         assert c.score == 100
         assert str(c) == "High"
 
     def test_classification_survey_relationship(self, survey):
-        Classification.objects.create(survey=survey, name="A")
-        Classification.objects.create(survey=survey, name="B")
+        Classification.objects.create(survey=survey)
+        Classification.objects.create(survey=survey)
         assert survey.classifications.count() == 2
 
 
 # ── Recommendation model ───────────────────────────────────────
 class TestRecommendationModel:
     def test_create_recommendation(self, survey, options):
-        r = Recommendation.objects.create(
-            survey=survey, option=options[0], description="Try red things"
+        r = Recommendation.objects.create(survey=survey, option=options[0])
+        RecommendationTranslation.objects.create(
+            recommendation=r, language="en", description="Try red things",
         )
         assert r.description == "Try red things"
         assert str(r) == "Try red things"
 
     def test_recommendation_option_relationship(self, survey, options):
-        Recommendation.objects.create(survey=survey, option=options[0], description="R1")
-        Recommendation.objects.create(survey=survey, option=options[0], description="R2")
+        Recommendation.objects.create(survey=survey, option=options[0])
+        Recommendation.objects.create(survey=survey, option=options[0])
         assert options[0].option_recommendations.count() == 2
 
 
@@ -260,16 +263,18 @@ class TestRecommendationModel:
 class TestActionModel:
     def test_create_action(self, survey):
         a = Action.objects.create(
-            survey=survey, title="Review", description="Review answers",
-            upper_limit=100, lower_limit=50,
+            survey=survey, upper_limit=100, lower_limit=50,
+        )
+        ActionTranslation.objects.create(
+            action=a, language="en", title="Review", description="Review answers",
         )
         assert a.title == "Review"
         assert a.upper_limit == 100.0
         assert a.lower_limit == 50.0
 
     def test_action_survey_relationship(self, survey):
-        Action.objects.create(survey=survey, title="A1")
-        Action.objects.create(survey=survey, title="A2")
+        Action.objects.create(survey=survey)
+        Action.objects.create(survey=survey)
         assert survey.actions.count() == 2
 
 
@@ -323,11 +328,10 @@ class TestUserSurveyModel:
         assert us.submitted_at is None
         assert us.score is None
         # title lives in translations JSONB now
-        primary_lang = survey.language or "default"
-        assert us.translations[primary_lang]["title"] == survey.title
+        assert us.translations["en"]["title"] == "Test Survey"
 
     def test_user_survey_with_child(self, user):
-        survey = Survey.objects.create(title="Child Survey", is_for_child=True)
+        survey = Survey.objects.create(is_for_child=True)
         child = Child.objects.create(id="child-x", name="Child")
         from user_surveys.services import enroll_user_in_assessment
         us, _ = enroll_user_in_assessment(user, survey.id, child=child)
@@ -364,10 +368,11 @@ class TestUserAnswerModel:
 # ── UserSurveyClassification model ─────────────────────────────
 class TestUserSurveyClassificationModel:
     def test_create_classification_link(self, enrolled_survey, survey):
-        c = Classification.objects.create(survey=survey, name="Class A")
+        c = Classification.objects.create(survey=survey)
         # Need to create a UserClassification for the through model
         uc = UserClassification.objects.create(
-            user_survey=enrolled_survey, origin_id=c.id, name=c.name,
+            user_survey=enrolled_survey, origin_id=c.id,
+            translations={"en": {"name": "Class A"}},
         )
         usc = UserSurveyClassification.objects.create(
             user_survey=enrolled_survey, classification=uc, count=3,
@@ -378,9 +383,10 @@ class TestUserSurveyClassificationModel:
 # ── UserSurveyRecommendation model ─────────────────────────────
 class TestUserSurveyRecommendationModel:
     def test_create_recommendation_link(self, enrolled_survey, survey, options):
-        r = Recommendation.objects.create(survey=survey, option=options[0], description="R")
+        r = Recommendation.objects.create(survey=survey, option=options[0])
         ur = UserRecommendation.objects.create(
-            user_survey=enrolled_survey, origin_id=r.id, description=r.description,
+            user_survey=enrolled_survey, origin_id=r.id,
+            translations={"en": {"description": r.description}},
         )
         usr = UserSurveyRecommendation.objects.create(
             user_survey=enrolled_survey, recommendation=ur, count=2,
@@ -439,21 +445,21 @@ class TestTranslationModels:
         assert t.text == "أحمر"
 
     def test_classification_translation(self, survey):
-        c = Classification.objects.create(survey=survey, name="High")
+        c = Classification.objects.create(survey=survey)
         t = ClassificationTranslation.objects.create(
             classification=c, language="ar", name="عالي",
         )
         assert t.name == "عالي"
 
     def test_recommendation_translation(self, survey, options):
-        r = Recommendation.objects.create(survey=survey, option=options[0], description="R")
+        r = Recommendation.objects.create(survey=survey, option=options[0])
         t = RecommendationTranslation.objects.create(
             recommendation=r, language="ar", description="توصية",
         )
         assert t.description == "توصية"
 
     def test_action_translation(self, survey):
-        a = Action.objects.create(survey=survey, title="Act")
+        a = Action.objects.create(survey=survey)
         t = ActionTranslation.objects.create(
             action=a, language="ar", title="إجراء",
         )

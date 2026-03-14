@@ -48,12 +48,14 @@ pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
     DjangoExactFilterHandler("status", lookup="status__status"),
+    DjangoExactFilterHandler("slug", lookup="translations__slug"),
     DjangoAllExactFiltersHandler(
         excluded={
             "created_at",
             "updated_at",
             "q",
             "status",
+            "slug",
             "price_min_cents",
             "price_max_cents",
             "has_discount",
@@ -61,7 +63,7 @@ pipeline = DjangoPipeline([
             "currency",
         }
     ),
-    DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
+    DjangoSearchFilterHandler("q", fields=("translations__title", "translations__description", "translations__short_description")),
     DjangoSortHandler(sort_map=SURVEY_SORT_MAP),
 ])
 

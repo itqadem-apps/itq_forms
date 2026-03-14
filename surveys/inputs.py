@@ -16,11 +16,6 @@ class SurveyFiltersInput:
     created_at: Optional[DateTimeRangeFilterInput] = None
     updated_at: Optional[DateTimeRangeFilterInput] = None
     id: Optional[int] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    short_description: Optional[str] = None
-    slug: Optional[str] = None
-    language: Optional[str] = None
     status: Optional[str] = None
     survey_type: Optional[str] = None
     display_option: Optional[str] = None
@@ -38,6 +33,7 @@ class SurveyFiltersInput:
     allow_update_answer_options_scores_based_on_classification: Optional[bool] = None
     allow_update_answer_options_text_based_on_classification: Optional[bool] = None
     create_option_for_each_classification: Optional[bool] = None
+    slug: Optional[str] = None
     price_min_cents: Optional[int] = None
     price_max_cents: Optional[int] = None
     has_discount: Optional[bool] = None
@@ -51,11 +47,6 @@ class SurveyFilters:
     created_at: Optional[object]  # RangeFilterVO[datetime]
     updated_at: Optional[object]  # RangeFilterVO[datetime]
     id: Optional[int]
-    title: Optional[str]
-    description: Optional[str]
-    short_description: Optional[str]
-    slug: Optional[str]
-    language: Optional[str]
     status: Optional[str]
     survey_type: Optional[str]
     display_option: Optional[str]
@@ -73,6 +64,7 @@ class SurveyFilters:
     allow_update_answer_options_scores_based_on_classification: Optional[bool]
     allow_update_answer_options_text_based_on_classification: Optional[bool]
     create_option_for_each_classification: Optional[bool]
+    slug: Optional[str]
     price_min_cents: Optional[int]
     price_max_cents: Optional[int]
     has_discount: Optional[bool]
@@ -85,16 +77,12 @@ class SurveyFilters:
 class SurveySortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
-    TITLE = "title"
-    PRICE = "price"
 
 
 @strawberry.input
 class SurveySortInput:
     created_at: Optional[SortDirection] = None
     updated_at: Optional[SortDirection] = None
-    title: Optional[SortDirection] = None
-    price: Optional[SortDirection] = None
 
 
 @strawberry.input

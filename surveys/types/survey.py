@@ -18,11 +18,6 @@ from user_surveys.models import UserSurvey
 @strawberry_django.type(Survey)
 class SurveyType:
     id: auto
-    title: auto
-    description: auto
-    short_description: auto
-    slug: auto
-    language: auto
     status_id: auto
     survey_type: auto
     display_option: auto
@@ -47,16 +42,22 @@ class SurveyType:
     allow_update_answer_options_scores_based_on_classification: auto
     allow_update_answer_options_text_based_on_classification: auto
     create_option_for_each_classification: auto
+    enable_anti_cheat: auto
+    lock_answers: auto
+    randomize_questions: auto
+    randomize_options: auto
     category_id: auto
     category: Optional[CategoryType]
     sponsor: auto
-    price: auto
     cover_id: auto
     thumb_id: auto
     created_at: auto
     updated_at: auto
     sections: List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]
     translations: List[SurveyTranslationType]
+    classifications: List[Annotated["ClassificationType", strawberry.lazy("classifications.types.classification")]]
+    recommendations: List[Annotated["RecommendationType", strawberry.lazy("recommendations.types.recommendation")]]
+    actions: List[Annotated["ActionType", strawberry.lazy("recommendations.types.action")]]
 
     @strawberry.field
     def collection_id(self) -> Optional[int]:

@@ -12,6 +12,5 @@ class ClassificationTranslationInput:
 
 @strawberry.input
 class ClassificationInput:
-    name: Optional[str] = UNSET
     score: Optional[int] = UNSET
     translations: Optional[List[ClassificationTranslationInput]] = UNSET

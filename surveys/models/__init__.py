@@ -4,7 +4,7 @@ from .survey_translation import SurveyTranslation
 from .price import Price
 from .has_soft_delete import HasSoftDelete
 from classifications.models import Classification, ClassificationTranslation
-from recommendations.models import Action, ActionTranslation, Recommendation, RecommendationTranslation, RecommendedMaterial
+from recommendations.models import Action, ActionTranslation, Material, Recommendable, Recommendation, RecommendationTranslation
 from .section import Section
 from .section_translation import SectionTranslation
 from .question import Question
@@ -30,7 +30,8 @@ __all__ = [
     "Price",
     "Question",
     "QuestionTranslation",
-    "RecommendedMaterial",
+    "Material",
+    "Recommendable",
     "Recommendation",
     "RecommendationTranslation",
     "Section",

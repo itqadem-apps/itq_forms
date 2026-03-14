@@ -12,6 +12,7 @@ from surveys.models import (
     Classification,
     Question,
     Recommendation,
+    RecommendationTranslation,
     Section,
     Survey,
     Usage,
@@ -69,8 +70,7 @@ class TestEnrollment:
         # Snapshot fields
         assert us.survey_type == survey.survey_type
         # title lives in translations JSONB now
-        primary_lang = survey.language or "default"
-        assert us.translations[primary_lang]["title"] == survey.title
+        assert us.translations["en"]["title"] == "Test Survey"
 
     def test_enroll_returns_existing_open(self, user, survey):
         us1, _ = enroll_user_in_assessment(user, survey.id)
@@ -91,12 +91,12 @@ class TestEnrollment:
         assert us.collection == collection
 
     def test_enroll_child_required(self, user):
-        survey = Survey.objects.create(title="Child Survey", is_for_child=True)
+        survey = Survey.objects.create(is_for_child=True)
         with pytest.raises(ValueError, match="child is required"):
             enroll_user_in_assessment(user, survey.id)
 
     def test_enroll_child_survey_with_child(self, user):
-        survey = Survey.objects.create(title="Child Survey", is_for_child=True)
+        survey = Survey.objects.create(is_for_child=True)
         child = Child.objects.create(id="child-abc", name="Alice")
         us, created = enroll_user_in_assessment(user, survey.id, child=child)
         assert created is True
@@ -131,7 +131,6 @@ class TestEvaluation:
     def scored_survey(self):
         """Survey with score, classifications, and recommendations enabled."""
         return Survey.objects.create(
-            title="Scored Survey",
             evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
             use_score=True,
             use_classifications=True,
@@ -144,8 +143,8 @@ class TestEvaluation:
         """Complete survey with questions, options, classifications, recommendations."""
         section = Section.objects.create(survey=scored_survey, title="S1")
 
-        cls_high = Classification.objects.create(survey=scored_survey, name="High", score=80)
-        cls_low = Classification.objects.create(survey=scored_survey, name="Low", score=20)
+        cls_high = Classification.objects.create(survey=scored_survey, score=80)
+        cls_low = Classification.objects.create(survey=scored_survey, score=20)
 
         # Q1: radio MCQ (signal auto-creates schema + default option)
         q1, schema1 = _make_mcq_question(scored_survey, section, "Q1",
@@ -159,7 +158,10 @@ class TestEvaluation:
             schema=schema1, text="No", score=5, classification=cls_low,
         )
         rec1 = Recommendation.objects.create(
-            survey=scored_survey, option=opt1a, description="Great choice!",
+            survey=scored_survey, option=opt1a,
+        )
+        RecommendationTranslation.objects.create(
+            recommendation=rec1, language="en", description="Great choice!",
         )
 
         # Q2: checkbox MCQ
@@ -266,7 +268,7 @@ class TestEvaluation:
         assert recs.first().recommendation == urec1
 
     def test_evaluate_no_score_when_disabled(self, user):
-        survey = Survey.objects.create(title="No Score", use_score=False)
+        survey = Survey.objects.create(use_score=False)
         section = Section.objects.create(survey=survey, title="S")
         q, schema = _make_mcq_question(survey, section, "Q")
         opt = AnswerSchemaOption.objects.create(
@@ -314,7 +316,7 @@ class TestFinishAssessment:
 
     def test_finish_auto_evaluate(self, user):
         survey = Survey.objects.create(
-            title="Auto", use_score=True,
+            use_score=True,
             evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
         )
         section = Section.objects.create(survey=survey, title="S")
@@ -339,7 +341,7 @@ class TestFinishAssessment:
 
     def test_finish_manual_no_auto_evaluate(self, user):
         survey = Survey.objects.create(
-            title="Manual", use_score=True,
+            use_score=True,
             evaluation_type=Survey.EVALUATION_TYPE_MANUAL_EVALUATION,
         )
         Section.objects.create(survey=survey, title="S")
@@ -434,10 +436,9 @@ class TestSurveyStatus:
 class TestCloneInstance:
     def test_clone_survey(self, survey):
         from surveys.schemas.utils import clone_instance
-        cloned = clone_instance(survey, title="Cloned Survey")
+        cloned = clone_instance(survey)
         assert cloned.pk != survey.pk
-        assert cloned.title == "Cloned Survey"
-        assert cloned.description == survey.description
+        assert cloned.survey_type == survey.survey_type
 
     def test_clone_section(self, survey, section):
         from surveys.schemas.utils import clone_instance
@@ -484,14 +485,13 @@ class TestSurveyFactory:
     @pytest.fixture
     def _status_instance(self):
         from surveys.models import Status
-        s = Survey.objects.create(title="placeholder")
+        s = Survey.objects.create()
         return Status.objects.create(survey=s, status=Status.STATUS_DRAFT)
 
     def test_factory_build(self, _status_instance):
         from surveys.factories import SurveyFactory
         s = SurveyFactory.build(status=_status_instance)
         assert s.pk is None
-        assert s.title is not None
 
     def test_factory_create(self, _status_instance):
         from surveys.factories import SurveyFactory
@@ -507,5 +507,5 @@ class TestSurveyFactory:
     def test_factory_with_overrides(self, _status_instance):
         from surveys.factories import SurveyFactory
         s = SurveyFactory.create(title="Custom Title", is_timed=True, status=_status_instance)
-        assert s.title == "Custom Title"
+        assert s.title == "Custom Title"  # via translation property
         assert s.is_timed is True

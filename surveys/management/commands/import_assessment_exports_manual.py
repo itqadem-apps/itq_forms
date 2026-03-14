@@ -21,6 +21,7 @@ from surveys.models import (
     Section,
     Status,
     Survey,
+    SurveyTranslation,
 )
 from survey_collections.models import SurveyCollection
 from taxonomy.models import Category, CategoryTranslation
@@ -148,7 +149,6 @@ class Command(BaseCommand):
             "created_at",
             "deleted_at",
             "category",
-            "price",
             "sponsor",
             "title",
             "description",
@@ -459,17 +459,24 @@ class Command(BaseCommand):
 
         survey_status_map: dict[int, str] = {}
         surveys = []
+        survey_translations_to_create = []
         for item in files["assessments_assessment.json"]:
             fields = item["fields"]
             survey_status_map[item["pk"]] = fields.get("status")
             category_uuid = category_map.get(fields.get("category"))
+            # Store translation data for later bulk_create
+            survey_lang = fields.get("language") or "default"
+            survey_translations_to_create.append({
+                "survey_id": item["pk"],
+                "language": survey_lang,
+                "title": fields.get("title"),
+                "description": fields.get("description"),
+                "short_description": fields.get("short_description"),
+                "slug": fields.get("slug"),
+            })
             surveys.append(
                 Survey(
                     id=item["pk"],
-                    title=fields.get("title"),
-                    description=fields.get("description"),
-                    short_description=fields.get("short_description"),
-                    language=fields.get("language"),
                     survey_type=fields.get("assessment_type"),
                     display_option=fields.get("display_option"),
                     is_timed=fields.get("is_timed", False),
@@ -500,7 +507,6 @@ class Command(BaseCommand):
                     updated_at=parse_dt(fields.get("updated_at")),
                     category_id=category_uuid,
                     sponsor=fields.get("sponsor"),
-                    price=fields.get("price", 0),
                 )
             )
 
@@ -558,12 +564,12 @@ class Command(BaseCommand):
             )
 
         classifications = []
+        classification_translations_to_create = []
         for item in files["assessments_classification.json"]:
             fields = item["fields"]
             classifications.append(
                 Classification(
                     id=item["pk"],
-                    name=fields.get("name"),
                     survey_id=fields.get("assessment"),
                     score=fields.get("score"),
                     created_at=parse_dt(fields.get("created_at")),
@@ -571,6 +577,12 @@ class Command(BaseCommand):
                     deleted_at=parse_dt(fields.get("deleted_at")),
                 )
             )
+            if fields.get("name"):
+                classification_translations_to_create.append({
+                    "classification_id": item["pk"],
+                    "language": "default",
+                    "name": fields.get("name"),
+                })
 
         schema_options = []
         for item in files["assessments_answerschemaoption.json"]:
@@ -594,26 +606,32 @@ class Command(BaseCommand):
             )
 
         actions = []
+        action_translations_to_create = []
         for item in files["assessments_action.json"]:
             fields = item["fields"]
             actions.append(
                 Action(
                     id=item["pk"],
-                    title=fields.get("title"),
-                    description=fields.get("description"),
                     survey_id=fields.get("assessment"),
                     upper_limit=fields.get("upper_limit", 0),
                     lower_limit=fields.get("lower_limit", 0),
                 )
             )
+            if fields.get("title") or fields.get("description"):
+                action_translations_to_create.append({
+                    "action_id": item["pk"],
+                    "language": "default",
+                    "title": fields.get("title"),
+                    "description": fields.get("description"),
+                })
 
         recommendations = []
+        recommendation_translations_to_create = []
         for item in files["assessments_recommendation.json"]:
             fields = item["fields"]
             recommendations.append(
                 Recommendation(
                     id=item["pk"],
-                    description=fields.get("description"),
                     survey_id=fields.get("assessment"),
                     option_id=fields.get("option"),
                     created_at=parse_dt(fields.get("created_at")),
@@ -621,6 +639,12 @@ class Command(BaseCommand):
                     deleted_at=parse_dt(fields.get("deleted_at")),
                 )
             )
+            if fields.get("description"):
+                recommendation_translations_to_create.append({
+                    "recommendation_id": item["pk"],
+                    "language": "default",
+                    "description": fields.get("description"),
+                })
 
         collection_surveys = []
         for item in files["blogs_blog.json"]:
@@ -802,13 +826,28 @@ class Command(BaseCommand):
                 CategoryTranslation.objects.bulk_create(translations, batch_size=500)
 
             Survey.objects.bulk_create(surveys, batch_size=500)
+            SurveyTranslation.objects.bulk_create([
+                SurveyTranslation(**t_data) for t_data in survey_translations_to_create
+            ], batch_size=500)
             Section.objects.bulk_create(sections, batch_size=500)
             Question.objects.bulk_create(questions, batch_size=500)
             AnswerSchema.objects.bulk_create(schemas, batch_size=500)
             Classification.objects.bulk_create(classifications, batch_size=500)
+            from classifications.models import ClassificationTranslation as CTranslation
+            CTranslation.objects.bulk_create([
+                CTranslation(**t_data) for t_data in classification_translations_to_create
+            ], batch_size=500)
             AnswerSchemaOption.objects.bulk_create(schema_options, batch_size=500)
             Action.objects.bulk_create(actions, batch_size=500)
+            from recommendations.models import ActionTranslation as ATranslation
+            ATranslation.objects.bulk_create([
+                ATranslation(**t_data) for t_data in action_translations_to_create
+            ], batch_size=500)
             Recommendation.objects.bulk_create(recommendations, batch_size=500)
+            from recommendations.models import RecommendationTranslation as RTranslation
+            RTranslation.objects.bulk_create([
+                RTranslation(**t_data) for t_data in recommendation_translations_to_create
+            ], batch_size=500)
             for sid, asset_map in survey_assets.items():
                 Survey.objects.filter(pk=sid).update(
                     cover_id=asset_map.get("cover"),

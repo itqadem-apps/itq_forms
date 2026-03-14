@@ -46,7 +46,7 @@ class RecommendationMutations:
     ) -> RecommendationType:
         survey = Survey.objects.get(pk=survey_id)
 
-        data = {'survey': survey, 'description': input.description}
+        data = {'survey': survey}
         if input.option_id is not strawberry.UNSET:
             data['option'] = AnswerSchemaOption.objects.get(pk=input.option_id, survey=survey)
 
@@ -74,11 +74,9 @@ class RecommendationMutations:
     ) -> RecommendationType:
         recommendation = Recommendation.objects.select_related('survey').get(pk=id)
 
-        recommendation.description = input.description
         if input.option_id is not strawberry.UNSET:
             recommendation.option = AnswerSchemaOption.objects.get(pk=input.option_id, survey=recommendation.survey)
-
-        recommendation.save()
+            recommendation.save()
 
         if input.translations:
             for trans_input in input.translations:
