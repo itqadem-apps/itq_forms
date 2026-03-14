@@ -5,7 +5,7 @@ from typing import List
 import strawberry_django
 from strawberry import auto
 
-from surveys.models import Recommendation
+from recommendations.models import Recommendation
 from .translations import RecommendationTranslationType
 
 
