@@ -5,7 +5,6 @@ from django.db import models
 
 class Category(models.Model):
     class Meta:
-        db_table = "surveys_category"
         constraints = [
             models.UniqueConstraint(
                 fields=["tree_id", "category_id"],
@@ -27,7 +26,6 @@ class Category(models.Model):
 
 class CategoryTranslation(models.Model):
     class Meta:
-        db_table = "surveys_categorytranslation"
         constraints = [
             models.UniqueConstraint(fields=["category", "language"], name="uq_category_language"),
         ]
