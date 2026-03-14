@@ -233,19 +233,7 @@ class AnswerSchemaOptionTranslationInput:
 
 
 from classifications.inputs import ClassificationTranslationInput, ClassificationInput  # noqa: F401
-
-
-@strawberry.input
-class RecommendationTranslationInput:
-    language: str
-    description: Optional[str] = None
-
-
-@strawberry.input
-class ActionTranslationInput:
-    language: str
-    title: Optional[str] = None
-    description: Optional[str] = None
+from recommendations.inputs import RecommendationTranslationInput, ActionTranslationInput, RecommendationInput, ActionInput  # noqa: F401
 
 
 # Survey Collection Inputs
@@ -342,24 +330,6 @@ class AnswerSchemaInput:
     with_file: Optional[bool] = UNSET
     is_mcq: Optional[bool] = UNSET
     is_grid: Optional[bool] = UNSET
-
-
-# Recommendation Inputs
-@strawberry.input
-class RecommendationInput:
-    description: str
-    option_id: Optional[int] = UNSET
-    translations: Optional[List[RecommendationTranslationInput]] = UNSET
-
-
-# Action Inputs
-@strawberry.input
-class ActionInput:
-    title: Optional[str] = UNSET
-    description: Optional[str] = UNSET
-    upper_limit: Optional[float] = UNSET
-    lower_limit: Optional[float] = UNSET
-    translations: Optional[List[ActionTranslationInput]] = UNSET
 
 
 # Nested/Bulk Inputs

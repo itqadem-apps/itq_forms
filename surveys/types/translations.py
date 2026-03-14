@@ -4,11 +4,9 @@ import strawberry_django
 from strawberry import auto
 
 from surveys.models import (
-    ActionTranslation,
     AnswerSchemaOptionTranslation,
     AnswerSchemaTranslation,
     QuestionTranslation,
-    RecommendationTranslation,
     SectionTranslation,
     SurveyTranslation,
 )
@@ -62,19 +60,5 @@ class AnswerSchemaOptionTranslationType:
     text: auto
 
 
-@strawberry_django.type(ActionTranslation)
-class ActionTranslationType:
-    id: auto
-    language: auto
-    title: auto
-    description: auto
-
-
-@strawberry_django.type(RecommendationTranslation)
-class RecommendationTranslationType:
-    id: auto
-    language: auto
-    description: auto
-
-
 from classifications.types import ClassificationTranslationType  # noqa: F401
+from recommendations.types import ActionTranslationType, RecommendationTranslationType  # noqa: F401

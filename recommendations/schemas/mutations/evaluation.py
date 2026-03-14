@@ -3,22 +3,20 @@ import strawberry_django
 from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.timezone import now
-from typing import List
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.inputs import RecommendationInput, ActionInput
-from surveys.types import RecommendationType, ActionType
-from surveys.models import (
-    Survey,
+from recommendations.inputs import RecommendationInput, ActionInput
+from recommendations.types import RecommendationType, ActionType
+from recommendations.models import (
     Recommendation,
     RecommendationTranslation,
     Action,
     ActionTranslation,
-    AnswerSchemaOption,
 )
-from ..common import RequireAuth, OperationResult
-from ..utils import input_to_dict
+from surveys.models import Survey, AnswerSchemaOption
+from app.schema_common import RequireAuth, OperationResult
+from surveys.schemas.utils import input_to_dict
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -34,8 +32,7 @@ def _type_from_action_id(info, id, **kw):
 
 
 @strawberry.type
-class EvaluationMutations:
-    # ==================== Recommendation Mutations ====================
+class RecommendationMutations:
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
@@ -47,7 +44,6 @@ class EvaluationMutations:
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendationType:
-        """Create a new recommendation for a survey"""
         survey = Survey.objects.get(pk=survey_id)
 
         data = {'survey': survey, 'description': input.description}
@@ -76,7 +72,6 @@ class EvaluationMutations:
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendationType:
-        """Update an existing recommendation"""
         recommendation = Recommendation.objects.select_related('survey').get(pk=id)
 
         recommendation.description = input.description
@@ -104,13 +99,14 @@ class EvaluationMutations:
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Soft delete a recommendation"""
         recommendation = Recommendation.objects.get(pk=id)
         recommendation.deleted_at = now()
         recommendation.save()
         return OperationResult(success=True)
 
-    # ==================== Action Mutations ====================
+
+@strawberry.type
+class ActionMutations:
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
@@ -122,7 +118,6 @@ class EvaluationMutations:
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ActionType:
-        """Create a new action for a survey"""
         survey = Survey.objects.get(pk=survey_id)
 
         data = input_to_dict(input, exclude=['translations'])
@@ -151,7 +146,6 @@ class EvaluationMutations:
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ActionType:
-        """Update an existing action"""
         action = Action.objects.select_related('survey').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['translations']).items():
@@ -181,7 +175,6 @@ class EvaluationMutations:
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Delete an action"""
         action = Action.objects.get(pk=id)
         action.delete()
         return OperationResult(success=True)

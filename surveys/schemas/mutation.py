@@ -7,12 +7,17 @@ from .mutations import (
     QuestionMutations,
     AnswerSchemaMutations,
     SurveyCollectionMutations,
-    EvaluationMutations,
     TranslationMutations,
 )
 from classifications.schemas.mutations import (
     ClassificationMutations,
     ClassificationTranslationMutations,
+)
+from recommendations.schemas.mutations import (
+    RecommendationMutations,
+    ActionMutations,
+    RecommendationTranslationMutations,
+    ActionTranslationMutations,
 )
 from user_surveys.schemas.mutations import (
     EnrollAssessmentMutation,
@@ -40,9 +45,12 @@ Mutation = merge_types(
         QuestionMutations,
         AnswerSchemaMutations,
         SurveyCollectionMutations,
-        EvaluationMutations,
         TranslationMutations,
         ClassificationMutations,
         ClassificationTranslationMutations,
+        RecommendationMutations,
+        ActionMutations,
+        RecommendationTranslationMutations,
+        ActionTranslationMutations,
     ),
 )

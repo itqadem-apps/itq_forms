@@ -4,5 +4,4 @@ from .sections import SectionMutations
 from .questions import QuestionMutations
 from .answer_schemas import AnswerSchemaMutations
 from .survey_collections import SurveyCollectionMutations
-from .evaluation import EvaluationMutations
 from .translations import TranslationMutations

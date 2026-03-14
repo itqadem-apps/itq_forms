@@ -18,6 +18,7 @@ from surveys.messaging import (
     publish_assessment_updated,
 )
 from classifications.models import Classification, ClassificationTranslation
+from recommendations.models import Recommendation, RecommendationTranslation, Action, ActionTranslation
 from surveys.models import (
     Survey,
     SurveyTranslation,
@@ -26,10 +27,6 @@ from surveys.models import (
     QuestionTranslation,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
-    Recommendation,
-    RecommendationTranslation,
-    Action,
-    ActionTranslation,
 )
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
