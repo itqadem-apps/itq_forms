@@ -17,6 +17,8 @@ from surveys.messaging import (
     publish_assessment_status_event,
     publish_assessment_updated,
 )
+from classifications.models import Classification, ClassificationTranslation
+from recommendations.models import Recommendation, RecommendationTranslation, Action, ActionTranslation
 from surveys.models import (
     Survey,
     SurveyTranslation,
@@ -25,12 +27,6 @@ from surveys.models import (
     QuestionTranslation,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
-    Classification,
-    ClassificationTranslation,
-    Recommendation,
-    RecommendationTranslation,
-    Action,
-    ActionTranslation,
 )
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
@@ -145,11 +141,7 @@ class SurveyMutations:
     ) -> SurveyPayload:
         original = Survey.objects.get(pk=id)
 
-        new_survey = clone_instance(
-            original,
-            title=f"{original.title} (Copy)",
-            slug=f"{original.slug}-copy" if original.slug else None,
-        )
+        new_survey = clone_instance(original)
 
         # Duplicate survey translations
         for t in original.translations.all():
@@ -223,7 +215,7 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyType:
         survey = Survey.objects.get(pk=id)
-        survey.update_status(status, django_user)
-        survey.refresh_from_db()
+        survey.status = status
+        survey.save(update_fields=["status"])
         publish_assessment_status_event(survey)
         return survey

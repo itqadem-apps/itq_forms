@@ -5,7 +5,7 @@ from typing import List
 import strawberry
 
 from .common import FacetGQL
-from .survey import SurveyType, UserSurveyType
+from .survey import SurveyType
 from .content import QuestionType
 
 
@@ -19,10 +19,4 @@ class SurveyResultsGQL:
 @strawberry.type
 class QuestionsResultsGQL:
     items: List[QuestionType]
-    total: int
-
-
-@strawberry.type
-class UserSurveysResultsGQL:
-    items: List[UserSurveyType]
     total: int

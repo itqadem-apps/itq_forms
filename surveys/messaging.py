@@ -12,7 +12,6 @@ from surveys.events import (
     AssessmentUpdated,
 )
 from surveys.models import Survey
-from surveys.models.status import Status
 
 
 event_bus = DjangoOutboxEventBus(DjangoOutboxRepository())
@@ -21,7 +20,7 @@ event_bus = DjangoOutboxEventBus(DjangoOutboxRepository())
 def serialize_assessment(survey: Survey) -> dict:
     return {
         "id": str(survey.pk),
-        "status": survey.status.status if survey.status_id else None,
+        "status": survey.status,
         "survey_type": survey.survey_type,
         "category_id": str(survey.category_id) if survey.category_id else None,
         "organization_id": None,
@@ -50,7 +49,6 @@ def serialize_assessment(survey: Survey) -> dict:
             for translation in survey.translations.all()
         ],
         "metadata": {
-            "language": survey.language,
             "use_score": survey.use_score,
             "use_classifications": survey.use_classifications,
             "use_recommendations": survey.use_recommendations,
@@ -87,9 +85,8 @@ def publish_assessment_deleted(survey: Survey) -> None:
 
 
 def publish_assessment_status_event(survey: Survey) -> None:
-    status = survey.status.status if survey.status_id else None
     payload = serialize_assessment(survey)
-    if status == Status.STATUS_PUBLISHED:
+    if survey.status == Survey.STATUS_PUBLISHED:
         event_bus.publish(
             AssessmentPublished(
                 aggregate_id=survey.pk,
@@ -98,7 +95,7 @@ def publish_assessment_status_event(survey: Survey) -> None:
         )
         return
 
-    if status in {Status.STATUS_DRAFT, Status.STATUS_ARCHIVED, Status.STATUS_SUSPENDED}:
+    if survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:
         event_bus.publish(
             AssessmentUnpublished(
                 aggregate_id=survey.pk,

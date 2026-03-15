@@ -17,9 +17,6 @@ from surveys.inputs import (
     SurveyCollectionFilters,
     SurveyCollectionSortField,
     SurveyCollectionSortInput,
-    UserSurveyFilters,
-    UserSurveySortField,
-    UserSurveySortInput,
 )
 
 
@@ -50,13 +47,15 @@ SURVEY_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveySortField}
 pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
-    DjangoExactFilterHandler("status", lookup="status__status"),
+    DjangoExactFilterHandler("status"),
+    DjangoExactFilterHandler("slug", lookup="translations__slug"),
     DjangoAllExactFiltersHandler(
         excluded={
             "created_at",
             "updated_at",
             "q",
             "status",
+            "slug",
             "price_min_cents",
             "price_max_cents",
             "has_discount",
@@ -64,7 +63,7 @@ pipeline = DjangoPipeline([
             "currency",
         }
     ),
-    DjangoSearchFilterHandler("q", fields=("title", "description", "short_description")),
+    DjangoSearchFilterHandler("q", fields=("translations__title", "translations__description", "translations__short_description")),
     DjangoSortHandler(sort_map=SURVEY_SORT_MAP),
 ])
 
@@ -116,35 +115,3 @@ collections_pipeline = DjangoPipeline([
 ])
 
 
-@dataclass(frozen=True)
-class UserSurveyProjection(BaseProjectionSpec):
-    pass
-
-
-UserSurveySpec = BaseQuerySpec[UserSurveyFilters, UserSurveyProjection]
-
-def user_survey_sort_input_to_spec(inp: UserSurveySortInput | None) -> SortSpec | None:
-    if inp is None:
-        return None
-    fields = []
-    for field in UserSurveySortField:
-        direction = getattr(inp, field.value, None)
-        if direction is None:
-            continue
-        fields.append(SortField(field=field.value, direction=direction.value))
-    if not fields:
-        return None
-    return SortSpec(fields=fields)
-
-
-USER_SURVEY_SORT_MAP: dict[str, str] = {f.value: f.value for f in UserSurveySortField}
-
-user_surveys_pipeline = DjangoPipeline([
-    DjangoRangeFilterHandler("submitted_at"),
-    DjangoRangeFilterHandler("evaluated_at"),
-    DjangoExactFilterHandler("survey_type", lookup="survey__survey_type"),
-    DjangoExactFilterHandler("collection_id", lookup="survey__collections__id"),
-    DjangoExactFilterHandler("collection_type", lookup="survey__collections__type"),
-    DjangoAllExactFiltersHandler(excluded={"submitted_at", "evaluated_at", "submitted", "survey_type", "collection_id", "collection_type"}),
-    DjangoSortHandler(sort_map=USER_SURVEY_SORT_MAP),
-])

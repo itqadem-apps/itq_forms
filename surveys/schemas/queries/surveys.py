@@ -79,10 +79,10 @@ class SurveysQuery:
         facets: List[FacetGQL] = []
         if has_any_under_prefix(paths, ("facets",)):
             status_values = [
-                FacetValueGQL(value=row["status__status"], count=row["count"])
-                for row in base_qs.values("status__status")
+                FacetValueGQL(value=row["status"], count=row["count"])
+                for row in base_qs.values("status")
                 .annotate(count=Count("id"))
-                .order_by("status__status")
+                .order_by("status")
             ]
             facets.append(FacetGQL(name="status", values=status_values))
 
@@ -93,11 +93,5 @@ class SurveysQuery:
                 .order_by("survey_type")
             ]
             facets.append(FacetGQL(name="survey_type", values=survey_type_values))
-
-            language_values = [
-                FacetValueGQL(value=row["language"], count=row["count"])
-                for row in base_qs.values("language").annotate(count=Count("id")).order_by("language")
-            ]
-            facets.append(FacetGQL(name="language", values=language_values))
 
         return SurveyResultsGQL(items=items, total=total, facets=facets)

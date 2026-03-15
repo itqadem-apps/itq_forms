@@ -6,9 +6,8 @@ from pkg_filters.integrations.django import DjangoQueryContext
 from app.auth_utils import with_django_user
 from surveys.filters import QuestionProjection, QuestionSpec, questions_pipeline
 from surveys.inputs import QuestionsFilters, QuestionsFiltersInput
-from surveys.models import Question
 from surveys.types import QuestionsFiltersGQL, QuestionsResultsGQL
-from user_surveys.models import UserAnswer, UserSurvey
+from user_surveys.models import UserAnswer, UserQuestion, UserSurvey
 from ..common import RequireAuth
 
 
@@ -32,8 +31,8 @@ class QuestionsQuery:
         if not user_survey:
             raise ValueError("Assessment not found.")
 
-        qs = Question.objects.filter(
-            survey_id=user_survey.survey_id,
+        qs = UserQuestion.objects.filter(
+            user_survey=user_survey,
             section__isnull=False,
         )
         filters_input = filters or QuestionsFiltersInput()

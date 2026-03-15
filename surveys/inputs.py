@@ -16,11 +16,6 @@ class SurveyFiltersInput:
     created_at: Optional[DateTimeRangeFilterInput] = None
     updated_at: Optional[DateTimeRangeFilterInput] = None
     id: Optional[int] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    short_description: Optional[str] = None
-    slug: Optional[str] = None
-    language: Optional[str] = None
     status: Optional[str] = None
     survey_type: Optional[str] = None
     display_option: Optional[str] = None
@@ -38,6 +33,7 @@ class SurveyFiltersInput:
     allow_update_answer_options_scores_based_on_classification: Optional[bool] = None
     allow_update_answer_options_text_based_on_classification: Optional[bool] = None
     create_option_for_each_classification: Optional[bool] = None
+    slug: Optional[str] = None
     price_min_cents: Optional[int] = None
     price_max_cents: Optional[int] = None
     has_discount: Optional[bool] = None
@@ -51,11 +47,6 @@ class SurveyFilters:
     created_at: Optional[object]  # RangeFilterVO[datetime]
     updated_at: Optional[object]  # RangeFilterVO[datetime]
     id: Optional[int]
-    title: Optional[str]
-    description: Optional[str]
-    short_description: Optional[str]
-    slug: Optional[str]
-    language: Optional[str]
     status: Optional[str]
     survey_type: Optional[str]
     display_option: Optional[str]
@@ -73,6 +64,7 @@ class SurveyFilters:
     allow_update_answer_options_scores_based_on_classification: Optional[bool]
     allow_update_answer_options_text_based_on_classification: Optional[bool]
     create_option_for_each_classification: Optional[bool]
+    slug: Optional[str]
     price_min_cents: Optional[int]
     price_max_cents: Optional[int]
     has_discount: Optional[bool]
@@ -85,16 +77,12 @@ class SurveyFilters:
 class SurveySortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
-    TITLE = "title"
-    PRICE = "price"
 
 
 @strawberry.input
 class SurveySortInput:
     created_at: Optional[SortDirection] = None
     updated_at: Optional[SortDirection] = None
-    title: Optional[SortDirection] = None
-    price: Optional[SortDirection] = None
 
 
 @strawberry.input
@@ -167,54 +155,6 @@ class SurveyCollectionsListInput:
 
 
 @strawberry.input
-class UserSurveyFiltersInput:
-    survey_id: Optional[int] = None
-    survey_type: Optional[str] = None
-    collection_id: Optional[int] = None
-    collection_type: Optional[str] = None
-    child_id: Optional[str] = None
-    submitted: Optional[bool] = None
-    submitted_at: Optional[DateTimeRangeFilterInput] = None
-    evaluated_at: Optional[DateTimeRangeFilterInput] = None
-
-
-@dataclass(frozen=True)
-class UserSurveyFilters:
-    survey_id: Optional[int]
-    survey_type: Optional[str]
-    collection_id: Optional[int]
-    collection_type: Optional[str]
-    child_id: Optional[str]
-    submitted: Optional[bool]
-    submitted_at: Optional[object]  # RangeFilterVO[datetime]
-    evaluated_at: Optional[object]  # RangeFilterVO[datetime]
-
-
-@strawberry.input
-class UserSurveysListInput:
-    limit: int = 20
-    offset: int = 0
-    filters: Optional[UserSurveyFiltersInput] = None
-    sort: Optional["UserSurveySortInput"] = None
-
-
-@strawberry.enum
-class UserSurveySortField(str, Enum):
-    ID = "id"
-    SUBMITTED_AT = "submitted_at"
-    EVALUATED_AT = "evaluated_at"
-    SCORE = "score"
-
-
-@strawberry.input
-class UserSurveySortInput:
-    id: Optional[SortDirection] = None
-    submitted_at: Optional[SortDirection] = None
-    evaluated_at: Optional[SortDirection] = None
-    score: Optional[SortDirection] = None
-
-
-@strawberry.input
 class QuestionsFiltersInput:
     question_ids: Optional[List[int]] = None
     section_id: Optional[int] = None
@@ -280,23 +220,8 @@ class AnswerSchemaOptionTranslationInput:
     text: Optional[str] = None
 
 
-@strawberry.input
-class ClassificationTranslationInput:
-    language: str
-    name: Optional[str] = None
-
-
-@strawberry.input
-class RecommendationTranslationInput:
-    language: str
-    description: Optional[str] = None
-
-
-@strawberry.input
-class ActionTranslationInput:
-    language: str
-    title: Optional[str] = None
-    description: Optional[str] = None
+from classifications.inputs import ClassificationTranslationInput, ClassificationInput  # noqa: F401
+from recommendations.inputs import RecommendationTranslationInput, ActionTranslationInput, RecommendationInput, ActionInput  # noqa: F401
 
 
 # Survey Collection Inputs
@@ -329,19 +254,21 @@ class SurveyTranslationUpdateInput:
     pass  # auto (all optional): id, language, title, description, short_description, slug
 
 
-@strawberry_django.input(Survey, exclude=["status", "category", "created_at", "updated_at"])
+@strawberry_django.input(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit"])
 class SurveyCreateInput:
     # Manual fields that cannot use auto:
     category_id: Optional[str] = UNSET
+    time_limit: Optional[str] = UNSET
     translations: Optional[List[SurveyTranslationCreateInput]] = UNSET
 
 
-@strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at"])
+@strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit"])
 class SurveyUpdateInput:
     # id is required for update (overrides auto-optional behavior)
     id: int
     # Manual fields that cannot use auto:
     category_id: Optional[str] = UNSET
+    time_limit: Optional[str] = UNSET
     translations: Optional[List[SurveyTranslationUpdateInput]] = UNSET
 
 
@@ -391,32 +318,6 @@ class AnswerSchemaInput:
     with_file: Optional[bool] = UNSET
     is_mcq: Optional[bool] = UNSET
     is_grid: Optional[bool] = UNSET
-
-
-# Classification Inputs
-@strawberry.input
-class ClassificationInput:
-    name: Optional[str] = UNSET
-    score: Optional[int] = UNSET
-    translations: Optional[List[ClassificationTranslationInput]] = UNSET
-
-
-# Recommendation Inputs
-@strawberry.input
-class RecommendationInput:
-    description: str
-    option_id: Optional[int] = UNSET
-    translations: Optional[List[RecommendationTranslationInput]] = UNSET
-
-
-# Action Inputs
-@strawberry.input
-class ActionInput:
-    title: Optional[str] = UNSET
-    description: Optional[str] = UNSET
-    upper_limit: Optional[float] = UNSET
-    lower_limit: Optional[float] = UNSET
-    translations: Optional[List[ActionTranslationInput]] = UNSET
 
 
 # Nested/Bulk Inputs

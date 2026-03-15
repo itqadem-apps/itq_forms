@@ -45,7 +45,7 @@ def _create_answer_schema_first_option(sender, instance: AnswerSchema, created: 
         if survey.use_classifications and survey.create_option_for_each_classification:
             for classification in survey.classifications.all():
                 instance.options.create(
-                    text=classification.name,
+                    text=classification.name or "",
                     score=classification.score if survey.use_score else None,
                     classification=classification,
                     survey_id=instance.survey_id,

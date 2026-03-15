@@ -6,7 +6,14 @@ from .queries import (
     QuestionsQuery,
     SurveyQuery,
     SurveysQuery,
-    UserSurveysQuery,
+)
+from user_surveys.schemas.queries import UserSurveyQuery, ShouldTerminateQuery
+from classifications.schemas.queries import ClassificationsQuery
+from recommendations.schemas.queries import (
+    RecommendationsQuery,
+    ActionsQuery,
+    RecommendablesQuery,
+    MaterialsQuery,
 )
 
 Query = merge_types(
@@ -15,8 +22,14 @@ Query = merge_types(
         SurveysQuery,
         CollectionsQuery,
         SurveyQuery,
-        UserSurveysQuery,
+        UserSurveyQuery,
+        ShouldTerminateQuery,
         QuestionQuery,
         QuestionsQuery,
+        ClassificationsQuery,
+        RecommendationsQuery,
+        ActionsQuery,
+        RecommendablesQuery,
+        MaterialsQuery,
     ),
 )

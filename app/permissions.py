@@ -12,11 +12,11 @@ class Permission(enum.Enum):
     SURVEY_UPDATE = 'surveys:update'
     SURVEY_DELETE = 'surveys:delete'
 
-    # Questionnaire permissions
-    QUESTIONNAIRE_CREATE = 'questionnaires:create'
-    QUESTIONNAIRE_READ = 'questionnaires:read'
-    QUESTIONNAIRE_UPDATE = 'questionnaires:update'
-    QUESTIONNAIRE_DELETE = 'questionnaires:delete'
+    # Assessment permissions
+    ASSESSMENT_CREATE = 'assessments:create'
+    ASSESSMENT_READ = 'assessments:read'
+    ASSESSMENT_UPDATE = 'assessments:update'
+    ASSESSMENT_DELETE = 'assessments:delete'
 
     # Curriculum permissions
     CURRICULUM_CREATE = 'curriculums:create'
@@ -30,15 +30,15 @@ class Permission(enum.Enum):
     EXAM_UPDATE = 'exams:update'
     EXAM_DELETE = 'exams:delete'
 
-    # Smart Form permissions
-    SMART_FORM_CREATE = 'smart_forms:create'
-    SMART_FORM_READ = 'smart_forms:read'
-    SMART_FORM_UPDATE = 'smart_forms:update'
-    SMART_FORM_DELETE = 'smart_forms:delete'
+    # Form permissions
+    FORM_CREATE = 'forms:create'
+    FORM_READ = 'forms:read'
+    FORM_UPDATE = 'forms:update'
+    FORM_DELETE = 'forms:delete'
 
 
 # Assessment type constants (matching Survey.ASSESSMENT_TYPES)
-AssessmentType = Literal['survey', 'questionnaire', 'curriculum', 'exam', 'smart_form']
+AssessmentType = Literal['survey', 'assessment', 'curriculum', 'exam', 'form']
 ActionType = Literal['create', 'read', 'update', 'delete']
 
 # Map assessment types to their permissions
@@ -49,11 +49,11 @@ PERMISSION_MAP: dict[AssessmentType, dict[ActionType, Permission]] = {
         'update': Permission.SURVEY_UPDATE,
         'delete': Permission.SURVEY_DELETE,
     },
-    'questionnaire': {
-        'create': Permission.QUESTIONNAIRE_CREATE,
-        'read': Permission.QUESTIONNAIRE_READ,
-        'update': Permission.QUESTIONNAIRE_UPDATE,
-        'delete': Permission.QUESTIONNAIRE_DELETE,
+    'assessment': {
+        'create': Permission.ASSESSMENT_CREATE,
+        'read': Permission.ASSESSMENT_READ,
+        'update': Permission.ASSESSMENT_UPDATE,
+        'delete': Permission.ASSESSMENT_DELETE,
     },
     'curriculum': {
         'create': Permission.CURRICULUM_CREATE,
@@ -67,11 +67,11 @@ PERMISSION_MAP: dict[AssessmentType, dict[ActionType, Permission]] = {
         'update': Permission.EXAM_UPDATE,
         'delete': Permission.EXAM_DELETE,
     },
-    'smart_form': {
-        'create': Permission.SMART_FORM_CREATE,
-        'read': Permission.SMART_FORM_READ,
-        'update': Permission.SMART_FORM_UPDATE,
-        'delete': Permission.SMART_FORM_DELETE,
+    'form': {
+        'create': Permission.FORM_CREATE,
+        'read': Permission.FORM_READ,
+        'update': Permission.FORM_UPDATE,
+        'delete': Permission.FORM_DELETE,
     },
 }
 

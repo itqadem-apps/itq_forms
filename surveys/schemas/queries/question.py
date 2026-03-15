@@ -4,7 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 from app.auth_utils import with_django_user
 from surveys.types import QuestionType
-from user_surveys.models import UserSurvey
+from user_surveys.models import UserQuestion, UserSurvey
 from ..common import RequireAuth
 
 
@@ -26,24 +26,20 @@ class QuestionQuery:
         if user_survey.submitted_at:
             raise ValueError("This assessment is already submitted.")
 
-        survey = user_survey.survey
-        if not survey:
-            return None
+        qs = UserQuestion.objects.filter(
+            user_survey=user_survey,
+            section__isnull=False,
+        )
 
         if question_id is not None:
-            question = (
-                survey.questions.exclude(section__isnull=True)
-                .filter(id=question_id)
-                .first()
-            )
+            question = qs.filter(id=question_id).first()
             if question:
                 question._user_survey_id = user_survey.id
             return question
 
         if user_survey.last_question_id:
             ids = list(
-                survey.questions.exclude(section__isnull=True)
-                .order_by("section__order", "order")
+                qs.order_by("section__order", "order")
                 .values_list("id", flat=True)
             )
             if ids:
@@ -53,17 +49,13 @@ class QuestionQuery:
                 except ValueError:
                     next_id = None
                 if next_id is not None:
-                    question = survey.questions.filter(id=next_id).first()
+                    question = UserQuestion.objects.filter(id=next_id).first()
                     if question:
                         question._user_survey_id = user_survey.id
                     return question
             return None
 
-        question = (
-            survey.questions.exclude(section__isnull=True)
-            .order_by("section__order", "order")
-            .first()
-        )
+        question = qs.order_by("section__order", "order").first()
         if question:
             question._user_survey_id = user_survey.id
         return question

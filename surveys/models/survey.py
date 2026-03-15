@@ -1,14 +1,8 @@
-from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from taxonomy.models import Category
-
-from .status import Status
-
-UserModel = get_user_model()
 
 
 class Survey(models.Model):
@@ -22,16 +16,16 @@ class Survey(models.Model):
     )
 
     ASSESSMENT_TYPE_SURVEY = "survey"
-    ASSESSMENT_TYPE_QUESTIONNAIRE = "questionnaire"
+    ASSESSMENT_TYPE_ASSESSMENT = "assessment"
     ASSESSMENT_TYPE_CURRICULUM = "curriculum"
     ASSESSMENT_TYPE_EXAM = "exam"
-    ASSESSMENT_TYPE_SMART_FORM = "smart_form"
+    ASSESSMENT_TYPE_FORM = "form"
     ASSESSMENT_TYPES = (
         (ASSESSMENT_TYPE_SURVEY, _("Survey")),
-        (ASSESSMENT_TYPE_QUESTIONNAIRE, _("Questionnaire")),
+        (ASSESSMENT_TYPE_ASSESSMENT, _("Assessment")),
         (ASSESSMENT_TYPE_CURRICULUM, _("Curriculum")),
         (ASSESSMENT_TYPE_EXAM, _("Exam")),
-        (ASSESSMENT_TYPE_SMART_FORM, _("Smart Form")),
+        (ASSESSMENT_TYPE_FORM, _("Form")),
     )
 
     EVALUATION_TYPE_AUTOMATIC_EVALUATION = "automatic_evaluation"
@@ -41,31 +35,36 @@ class Survey(models.Model):
         (EVALUATION_TYPE_MANUAL_EVALUATION, _("Manual Evaluation")),
     )
 
-    SEARCH_INDEX = ("title", "description", "short_description")
+    STATUS_DRAFT = "draft"
+    STATUS_PENDING = "pending"
+    STATUS_PUBLISHED = "published"
+    STATUS_ARCHIVED = "archived"
+    STATUS_SUSPENDED = "suspended"
+    STATUS_CANCELED = "canceled"
+    STATUS_REJECTED = "rejected"
+    STATUS_APPROVED = "approved"
+    STATUS_STARTED = "started"
+    STATUS_ENDED = "ended"
+    STATUS_CHOICES = (
+        (STATUS_DRAFT, _("Draft")),
+        (STATUS_PENDING, _("Pending")),
+        (STATUS_PUBLISHED, _("Published")),
+        (STATUS_ARCHIVED, _("Archived")),
+        (STATUS_SUSPENDED, _("Suspended")),
+        (STATUS_CANCELED, _("Canceled")),
+        (STATUS_REJECTED, _("Rejected")),
+        (STATUS_APPROVED, _("Approved")),
+        (STATUS_STARTED, _("Started")),
+        (STATUS_ENDED, _("Ended")),
+    )
 
     class Meta:
         ordering = ["-created_at"]
 
-    title = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("Title"))
-    description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
-    short_description = models.CharField(
-        max_length=300, null=True, blank=True, verbose_name=_("Short Description")
-    )
-    slug = models.SlugField(max_length=255, null=True, blank=True)
-    language = models.CharField(
-        max_length=64,
-        choices=settings.LANGUAGES,
-        default=settings.LANGUAGE_CODE,
-        null=True,
-        blank=True,
-        verbose_name=_("Language"),
-    )
-    status = models.ForeignKey(
-        Status,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="current_surveys",
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_DRAFT,
         verbose_name=_("Status"),
     )
     survey_type = models.CharField(
@@ -81,6 +80,7 @@ class Survey(models.Model):
         verbose_name=_("Display Option"),
     )
     is_timed = models.BooleanField(default=False, verbose_name=_("Is Timed"))
+    time_limit = models.DurationField(null=True, blank=True, verbose_name=_("Time Limit"))
     is_for_child = models.BooleanField(default=False, verbose_name=_("Is For "))
 
     # evaluation settings
@@ -104,6 +104,12 @@ class Survey(models.Model):
     end_based_on_answer_repeat_in_row = models.BooleanField(
         default=False, verbose_name=_("End Based on Repeating Answer in Row")
     )
+    # anti-cheating config
+    enable_anti_cheat = models.BooleanField(default=False, verbose_name=_("Enable Anti-Cheat"))
+    lock_answers = models.BooleanField(default=False, verbose_name=_("Lock Answers"))
+    randomize_questions = models.BooleanField(default=False, verbose_name=_("Randomize Questions"))
+    randomize_options = models.BooleanField(default=False, verbose_name=_("Randomize Options"))
+
     allow_update_answer_options_scores_based_on_classification = models.BooleanField(
         default=False,
         verbose_name=_("Allow Update Answer Options Scores Based on Classification"),
@@ -131,26 +137,27 @@ class Survey(models.Model):
         blank=True,
         verbose_name=_("Sponsor"),
     )
-    price = models.FloatField(default=0)
-
-    def __str__(self):
-        return str(self.title)
-
-    def update_status(self, status: str, user: UserModel | None = None) -> Status:
-        entry = Status.objects.create(survey=self, user=user, status=status)
-        self.status = entry
-        self.save(update_fields=["status"])
-        return entry
+    cover_id = models.CharField(max_length=255, null=True, blank=True)
+    thumb_id = models.CharField(max_length=255, null=True, blank=True)
 
     @property
-    def get_language(self):
-        return dict(settings.LANGUAGES).get(self.language)
+    def title(self):
+        """Convenience accessor: returns the title from the first translation."""
+        t = self.translations.first()
+        return t.title if t else None
+
+    @property
+    def language(self):
+        """Convenience accessor: returns the language from the first translation."""
+        t = self.translations.first()
+        return t.language if t else None
+
+    def __str__(self):
+        return str(self.title or self.pk)
 
     @property
     def get_status(self):
-        if self.status_id is None:
-            return None
-        return self.status.get_status
+        return dict(self.STATUS_CHOICES).get(self.status)
 
     @property
     def get_evaluation_type(self):

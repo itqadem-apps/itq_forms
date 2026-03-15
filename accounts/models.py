@@ -24,3 +24,9 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username or self.id
+
+
+class Child(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    photo_id = models.CharField(max_length=255, null=True, blank=True)

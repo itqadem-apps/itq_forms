@@ -7,36 +7,29 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Survey, SurveyMediaAsset, Usage, Price
+from surveys.models import Survey, Usage, Price
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
 
 from app.auth_utils import get_django_user
-from user_surveys.models import (
-    Child,
-    UserAnswer,
-    UserSurvey,
-    UserSurveyClassification,
-    UserSurveyRecommendation,
-)
-from surveys.models import Question
-from .classification import ClassificationType
-from .recommendation import RecommendationType
+from user_surveys.models import UserSurvey
 
 
 @strawberry_django.type(Survey)
 class SurveyType:
     id: auto
-    title: auto
-    description: auto
-    short_description: auto
-    slug: auto
-    language: auto
-    status_id: auto
+    status: auto
     survey_type: auto
     display_option: auto
     is_timed: auto
     is_for_child: auto
+
+    @strawberry.field
+    def time_limit(self) -> Optional[str]:
+        value = getattr(self, "time_limit", None)
+        if value is None:
+            return None
+        return str(value)
     is_evaluable: auto
     evaluation_type: auto
     use_score: auto
@@ -49,14 +42,22 @@ class SurveyType:
     allow_update_answer_options_scores_based_on_classification: auto
     allow_update_answer_options_text_based_on_classification: auto
     create_option_for_each_classification: auto
+    enable_anti_cheat: auto
+    lock_answers: auto
+    randomize_questions: auto
+    randomize_options: auto
     category_id: auto
     category: Optional[CategoryType]
     sponsor: auto
-    price: auto
+    cover_id: auto
+    thumb_id: auto
     created_at: auto
     updated_at: auto
     sections: List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]
     translations: List[SurveyTranslationType]
+    classifications: List[Annotated["ClassificationType", strawberry.lazy("classifications.types.classification")]]
+    recommendations: List[Annotated["RecommendationType", strawberry.lazy("recommendations.types.recommendation")]]
+    actions: List[Annotated["ActionType", strawberry.lazy("recommendations.types.action")]]
 
     @strawberry.field
     def classifications(self) -> List[ClassificationType]:
@@ -68,18 +69,7 @@ class SurveyType:
         return collection.id if collection else None
 
     @strawberry.field
-    def assets(self, asset_type: str | None = None) -> List["SurveyAssetType"]:
-        qs = self.assets.all()
-        if asset_type:
-            qs = qs.filter(asset_type=asset_type)
-        return list(qs)
-
-    @strawberry.field
-    def status(self) -> str | None:
-        return self.status.status if self.status_id else None
-
-    @strawberry.field
-    def user_surveys(self, info: Info) -> List[UserSurveyType]:
+    def user_surveys(self, info: Info) -> List[Annotated["UserSurveyType", strawberry.lazy("user_surveys.types.user_survey")]]:
         try:
             django_user = get_django_user(info)
             return list(self.usersurvey_set.filter(user=django_user, submitted_at__isnull=True))
@@ -135,13 +125,6 @@ class SurveyPayload:
     survey: Optional[SurveyType]
 
 
-@strawberry_django.type(SurveyMediaAsset)
-class SurveyAssetType:
-    id: auto
-    asset_id: auto
-    asset_type: auto
-
-
 @strawberry_django.type(Price)
 class PriceType:
     id: auto
@@ -149,101 +132,3 @@ class PriceType:
     currency: auto
     amount_cents: auto
     compare_at_amount_cents: auto
-
-
-@strawberry_django.type(Child)
-class ChildType:
-    id: auto
-    name: auto
-    photo_id: auto
-
-
-@strawberry_django.type(UserSurvey)
-class UserSurveyType:
-    id: int
-    survey_id: auto
-    collection_id: auto
-    survey: Optional[SurveyType]
-    user_id: auto
-    child: Optional[ChildType]
-    count_of_ending_options: auto
-    evaluated_at: auto
-    submitted_at: auto
-    score: auto
-    last_question_id: auto
-    action_id: auto
-
-    @strawberry.field
-    def survey_type(self) -> str | None:
-        return self.survey.survey_type if self.survey_id and self.survey else None
-
-    @strawberry.field
-    def usage_used(self, info: Info) -> int:
-        try:
-            django_user = get_django_user(info)
-        except ValueError:
-            return 0
-        if django_user.id != self.user_id or not self.survey_id:
-            return 0
-        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
-        return usage.used_count if usage else 0
-
-    @strawberry.field
-    def usage_limit(self, info: Info) -> int:
-        try:
-            django_user = get_django_user(info)
-        except ValueError:
-            return 1
-        if django_user.id != self.user_id or not self.survey_id:
-            return 1
-        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
-        return usage.usage_limit or 1 if usage else 1
-
-    @strawberry.field
-    def progress(self, info: Info) -> int:
-        try:
-            django_user = get_django_user(info)
-        except ValueError:
-            return 0
-        if not self.survey_id or django_user.id != self.user_id:
-            return 0
-        total = Question.objects.filter(survey_id=self.survey_id, section__isnull=False).count()
-        if total == 0:
-            return 0
-        answered = (
-            UserAnswer.objects.filter(user_survey_id=self.id)
-            .exclude(answer__isnull=True, selected_options__isnull=True)
-            .values_list("question_id", flat=True)
-            .distinct()
-            .count()
-        )
-        return int((answered / total) * 100)
-
-
-@strawberry_django.type(UserAnswer)
-class UserAnswerType:
-    id: auto
-    survey_id: auto
-    user_id: auto
-    question_id: auto
-    user_survey_id: auto
-    answer: auto
-    type: auto
-    score: auto
-    order: auto
-
-
-@strawberry_django.type(UserSurveyClassification)
-class UserSurveyClassificationType:
-    id: auto
-    user_survey_id: auto
-    classification: ClassificationType
-    count: auto
-
-
-@strawberry_django.type(UserSurveyRecommendation)
-class UserSurveyRecommendationType:
-    id: auto
-    user_survey_id: auto
-    recommendation: RecommendationType
-    count: auto
