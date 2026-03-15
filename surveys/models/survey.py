@@ -1,13 +1,8 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from taxonomy.models import Category
-
-from .status import Status
-
-UserModel = get_user_model()
 
 
 class Survey(models.Model):
@@ -40,15 +35,36 @@ class Survey(models.Model):
         (EVALUATION_TYPE_MANUAL_EVALUATION, _("Manual Evaluation")),
     )
 
+    STATUS_DRAFT = "draft"
+    STATUS_PENDING = "pending"
+    STATUS_PUBLISHED = "published"
+    STATUS_ARCHIVED = "archived"
+    STATUS_SUSPENDED = "suspended"
+    STATUS_CANCELED = "canceled"
+    STATUS_REJECTED = "rejected"
+    STATUS_APPROVED = "approved"
+    STATUS_STARTED = "started"
+    STATUS_ENDED = "ended"
+    STATUS_CHOICES = (
+        (STATUS_DRAFT, _("Draft")),
+        (STATUS_PENDING, _("Pending")),
+        (STATUS_PUBLISHED, _("Published")),
+        (STATUS_ARCHIVED, _("Archived")),
+        (STATUS_SUSPENDED, _("Suspended")),
+        (STATUS_CANCELED, _("Canceled")),
+        (STATUS_REJECTED, _("Rejected")),
+        (STATUS_APPROVED, _("Approved")),
+        (STATUS_STARTED, _("Started")),
+        (STATUS_ENDED, _("Ended")),
+    )
+
     class Meta:
         ordering = ["-created_at"]
 
-    status = models.ForeignKey(
-        Status,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="current_surveys",
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_DRAFT,
         verbose_name=_("Status"),
     )
     survey_type = models.CharField(
@@ -139,17 +155,9 @@ class Survey(models.Model):
     def __str__(self):
         return str(self.title or self.pk)
 
-    def update_status(self, status: str, user: UserModel | None = None) -> Status:
-        entry = Status.objects.create(survey=self, user=user, status=status)
-        self.status = entry
-        self.save(update_fields=["status"])
-        return entry
-
     @property
     def get_status(self):
-        if self.status_id is None:
-            return None
-        return self.status.get_status
+        return dict(self.STATUS_CHOICES).get(self.status)
 
     @property
     def get_evaluation_type(self):

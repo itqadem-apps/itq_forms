@@ -19,7 +19,6 @@ from surveys.models import (
     Question,
     Recommendation,
     Section,
-    Status,
     Survey,
     SurveyTranslation,
 )
@@ -884,8 +883,7 @@ class Command(BaseCommand):
             for survey in surveys:
                 status_value = survey_status_map.get(survey.id)
                 if status_value:
-                    status = Status.objects.create(survey_id=survey.id, status=status_value)
-                    Survey.objects.filter(id=survey.id).update(status_id=status.id)
+                    Survey.objects.filter(id=survey.id).update(status=status_value)
             if report.has_issues() and not options["allow_unmapped"]:
                 summary_lines = []
                 if report.values:

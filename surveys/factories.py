@@ -4,7 +4,7 @@ import string
 from django.conf import settings
 from django.db import transaction
 
-from .models import Status, Survey, SurveyTranslation
+from .models import Survey, SurveyTranslation
 
 
 def _pick_choice(choices, default=None):
@@ -70,7 +70,7 @@ class SurveyFactory:
             description = "\n".join([_sentence(10, 18) for _ in range(random.randint(2, 4))])
 
         status = overrides.pop("status", None) or random.choice(
-            [Status.STATUS_DRAFT, Status.STATUS_PENDING, Status.STATUS_PUBLISHED]
+            [Survey.STATUS_DRAFT, Survey.STATUS_PENDING, Survey.STATUS_PUBLISHED]
         )
 
         survey_type = overrides.pop("survey_type", None) or Survey.ASSESSMENT_TYPE_SURVEY

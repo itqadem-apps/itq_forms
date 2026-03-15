@@ -21,7 +21,6 @@ from surveys.models import (
     RecommendationTranslation,
     Section,
     SectionTranslation,
-    Status,
     Survey,
     SurveyTranslation,
     Usage,
@@ -82,11 +81,11 @@ class TestSurveyModel:
         surveys = list(Survey.objects.all())
         assert surveys[0].pk == s2.pk  # -created_at ordering
 
-    def test_update_status(self, survey, user):
-        status_entry = survey.update_status(Status.STATUS_PUBLISHED, user)
-        assert status_entry.status == Status.STATUS_PUBLISHED
+    def test_update_status(self, survey):
+        survey.status = Survey.STATUS_PUBLISHED
+        survey.save(update_fields=["status"])
         survey.refresh_from_db()
-        assert survey.status_id == status_entry.id
+        assert survey.status == Survey.STATUS_PUBLISHED
 
     def test_survey_all_types(self):
         for type_val, _ in Survey.ASSESSMENT_TYPES:
@@ -102,6 +101,7 @@ class TestSurveyModel:
         assert survey.get_survey_type == "Survey"
         assert survey.get_evaluation_type == "Automatic Evaluation"
         assert survey.get_display_option == "By Question"
+        assert survey.get_status == "Draft"
 
     def test_survey_category_fk(self, survey, category):
         survey.category = category
@@ -110,16 +110,15 @@ class TestSurveyModel:
         assert survey.category_id == category.pk
 
 
-# ── Status model ────────────────────────────────────────────────
-class TestStatusModel:
-    def test_create_status(self, survey):
-        status = Status.objects.create(survey=survey, status=Status.STATUS_DRAFT)
-        assert status.status == Status.STATUS_DRAFT
-        assert status.get_status == "Draft"
+# ── Survey status ──────────────────────────────────────────────
+class TestSurveyStatus:
+    def test_status_default(self, survey):
+        assert survey.status == Survey.STATUS_DRAFT
 
-    def test_status_all_choices(self, survey):
-        for status_val, label in Status.STATUS_CHOICES:
-            s = Status.objects.create(survey=survey, status=status_val)
+    def test_status_all_choices(self):
+        for status_val, label in Survey.STATUS_CHOICES:
+            s = Survey.objects.create(status=status_val)
+            assert s.status == status_val
             assert s.get_status == str(label)
 
 

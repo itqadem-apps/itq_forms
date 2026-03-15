@@ -98,11 +98,7 @@ class TestSurveysQuery:
         assert len(data["data"]["surveys"]["items"]) == 2
 
     def test_surveys_with_facets(self):
-        from surveys.models import Status as StatusModel
-        s = Survey.objects.create(survey_type="survey")
-        status_entry = StatusModel.objects.create(survey=s, status=StatusModel.STATUS_PUBLISHED)
-        s.status = status_entry
-        s.save()
+        s = Survey.objects.create(survey_type="survey", status="published")
 
         client = Client()
         status, data = _gql(client, """

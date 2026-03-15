@@ -417,19 +417,21 @@ class TestQuestionAnswerSchemaUpdate:
         assert schema.options.count() >= 1
 
 
-# ── Survey.update_status ────────────────────────────────────────
+# ── Survey status ────────────────────────────────────────────────
 class TestSurveyStatus:
-    def test_status_log_created(self, survey, user):
-        survey.update_status("published", user)
-        assert survey.status_log.count() == 1
-        assert survey.status_log.first().status == "published"
-
-    def test_multiple_status_updates(self, survey, user):
-        survey.update_status("pending", user)
-        survey.update_status("published", user)
-        assert survey.status_log.count() == 2
+    def test_status_update(self, survey):
+        survey.status = "published"
+        survey.save(update_fields=["status"])
         survey.refresh_from_db()
-        assert survey.status.status == "published"
+        assert survey.status == "published"
+
+    def test_multiple_status_updates(self, survey):
+        survey.status = "pending"
+        survey.save(update_fields=["status"])
+        survey.status = "published"
+        survey.save(update_fields=["status"])
+        survey.refresh_from_db()
+        assert survey.status == "published"
 
 
 # ── clone_instance utility ──────────────────────────────────────
@@ -479,33 +481,24 @@ class TestInputToDict:
 
 # ── Factory tests ──────────────────────────────────────────────
 class TestSurveyFactory:
-    """Note: SurveyFactory has a known issue - it assigns Status string constants
-    to Survey.status which is now a ForeignKey. Tests use a real Status instance."""
-
-    @pytest.fixture
-    def _status_instance(self):
-        from surveys.models import Status
-        s = Survey.objects.create()
-        return Status.objects.create(survey=s, status=Status.STATUS_DRAFT)
-
-    def test_factory_build(self, _status_instance):
+    def test_factory_build(self):
         from surveys.factories import SurveyFactory
-        s = SurveyFactory.build(status=_status_instance)
+        s = SurveyFactory.build()
         assert s.pk is None
 
-    def test_factory_create(self, _status_instance):
+    def test_factory_create(self):
         from surveys.factories import SurveyFactory
-        s = SurveyFactory.create(status=_status_instance)
+        s = SurveyFactory.create()
         assert s.pk is not None
 
-    def test_factory_create_batch(self, _status_instance):
+    def test_factory_create_batch(self):
         from surveys.factories import SurveyFactory
-        batch = SurveyFactory.create_batch(3, status=_status_instance)
+        batch = SurveyFactory.create_batch(3)
         assert len(batch) == 3
         assert all(s.pk is not None for s in batch)
 
-    def test_factory_with_overrides(self, _status_instance):
+    def test_factory_with_overrides(self):
         from surveys.factories import SurveyFactory
-        s = SurveyFactory.create(title="Custom Title", is_timed=True, status=_status_instance)
+        s = SurveyFactory.create(title="Custom Title", is_timed=True)
         assert s.title == "Custom Title"  # via translation property
         assert s.is_timed is True

@@ -1,4 +1,3 @@
-from .status import Status
 from .survey import Survey
 from .survey_translation import SurveyTranslation
 from .price import Price
@@ -36,7 +35,6 @@ __all__ = [
     "RecommendationTranslation",
     "Section",
     "SectionTranslation",
-    "Status",
     "Survey",
     "SurveyTranslation",
     "Usage",

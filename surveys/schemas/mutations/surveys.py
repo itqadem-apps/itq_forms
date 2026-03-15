@@ -215,7 +215,7 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyType:
         survey = Survey.objects.get(pk=id)
-        survey.update_status(status, django_user)
-        survey.refresh_from_db()
+        survey.status = status
+        survey.save(update_fields=["status"])
         publish_assessment_status_event(survey)
         return survey

@@ -18,7 +18,7 @@ from user_surveys.models import UserSurvey
 @strawberry_django.type(Survey)
 class SurveyType:
     id: auto
-    status_id: auto
+    status: auto
     survey_type: auto
     display_option: auto
     is_timed: auto
@@ -63,10 +63,6 @@ class SurveyType:
     def collection_id(self) -> Optional[int]:
         collection = self.collections.first()
         return collection.id if collection else None
-
-    @strawberry.field
-    def status(self) -> str | None:
-        return self.status.status if self.status_id else None
 
     @strawberry.field
     def user_surveys(self, info: Info) -> List[Annotated["UserSurveyType", strawberry.lazy("user_surveys.types.user_survey")]]:

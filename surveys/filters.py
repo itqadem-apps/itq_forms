@@ -47,7 +47,7 @@ SURVEY_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveySortField}
 pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
-    DjangoExactFilterHandler("status", lookup="status__status"),
+    DjangoExactFilterHandler("status"),
     DjangoExactFilterHandler("slug", lookup="translations__slug"),
     DjangoAllExactFiltersHandler(
         excluded={

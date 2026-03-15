@@ -246,7 +246,7 @@ def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id
             child=child,
             collection=collection,
             # snapshot fields
-            status=survey.status.status if survey.status_id else None,
+            status=survey.status,
             survey_type=survey.survey_type,
             display_option=survey.display_option,
             is_timed=survey.is_timed,

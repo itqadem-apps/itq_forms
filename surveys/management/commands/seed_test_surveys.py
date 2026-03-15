@@ -25,7 +25,6 @@ from surveys.models import (
     RecommendationTranslation,
     Section,
     SectionTranslation,
-    Status,
     Survey,
     SurveyTranslation,
 )
@@ -56,10 +55,8 @@ TAG = "[TEST] "
 
 
 def _status(survey, status_str):
-    s = Status.objects.create(survey=survey, status=status_str)
-    survey.status = s
+    survey.status = status_str
     survey.save(update_fields=["status"])
-    return s
 
 
 def _create_survey(title, description=None, **kwargs):
