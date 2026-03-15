@@ -59,6 +59,10 @@ class SurveyType:
     translations: List[SurveyTranslationType]
 
     @strawberry.field
+    def classifications(self) -> List[ClassificationType]:
+        return list(self.classifications.filter(deleted_at__isnull=True))
+
+    @strawberry.field
     def collection_id(self) -> Optional[int]:
         collection = self.collections.first()
         return collection.id if collection else None
