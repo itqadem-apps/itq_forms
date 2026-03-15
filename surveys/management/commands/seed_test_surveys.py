@@ -187,8 +187,8 @@ def create_survey_1():
 def create_survey_2():
     survey = _create_survey(
         title=f"{TAG}Personality Assessment",
-        description="Classification-based questionnaire with recommendations.",
-        survey_type="questionnaire",
+        description="Classification-based assessment with recommendations.",
+        survey_type="assessment",
         display_option="by_section",
         is_evaluable=True,
         evaluation_type="automatic_evaluation",
@@ -236,13 +236,13 @@ def create_survey_2():
 
 
 # ─────────────────────────────────────────────────────────────────────
-# Survey 3: Score-Range Actions (Smart Form, Full Form)
+# Survey 3: Score-Range Actions (Form, Full Form)
 # ─────────────────────────────────────────────────────────────────────
 def create_survey_3():
     survey = _create_survey(
         title=f"{TAG}Score-Range Actions",
-        description="Smart form with score-based actions and mixed question types.",
-        survey_type="smart_form",
+        description="Form with score-based actions and mixed question types.",
+        survey_type="form",
         display_option="full_form",
         is_evaluable=True,
         evaluation_type="automatic_evaluation",
@@ -322,8 +322,8 @@ def create_survey_4():
 def create_survey_5():
     survey = _create_survey(
         title=f"{TAG}Ending Option Termination",
-        description="Questionnaire with ending option early termination (in-row).",
-        survey_type="questionnaire",
+        description="Assessment with ending option early termination (in-row).",
+        survey_type="assessment",
         display_option="by_question",
         is_evaluable=True,
         evaluation_type="automatic_evaluation",
@@ -420,8 +420,8 @@ def create_survey_7():
 def create_survey_8():
     survey = _create_survey(
         title=f"{TAG}Section Jump Navigation",
-        description="Smart form demonstrating section jump navigation.",
-        survey_type="smart_form",
+        description="Form demonstrating section jump navigation.",
+        survey_type="form",
         display_option="by_section",
         is_evaluable=False,
     )
@@ -504,7 +504,7 @@ def create_survey_10():
     # The _create_survey already created an "en" translation; update it and add Arabic
     en_translation = survey.translations.first()
     en_translation.title = "Demographics Survey"
-    en_translation.description = "A short demographics questionnaire."
+    en_translation.description = "A short demographics survey."
     en_translation.save()
     _survey_translation(survey, "ar", "استبيان البيانات الديموغرافية", "استبيان قصير للبيانات الديموغرافية.")
 

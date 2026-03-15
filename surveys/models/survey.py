@@ -21,16 +21,16 @@ class Survey(models.Model):
     )
 
     ASSESSMENT_TYPE_SURVEY = "survey"
-    ASSESSMENT_TYPE_QUESTIONNAIRE = "questionnaire"
+    ASSESSMENT_TYPE_ASSESSMENT = "assessment"
     ASSESSMENT_TYPE_CURRICULUM = "curriculum"
     ASSESSMENT_TYPE_EXAM = "exam"
-    ASSESSMENT_TYPE_SMART_FORM = "smart_form"
+    ASSESSMENT_TYPE_FORM = "form"
     ASSESSMENT_TYPES = (
         (ASSESSMENT_TYPE_SURVEY, _("Survey")),
-        (ASSESSMENT_TYPE_QUESTIONNAIRE, _("Questionnaire")),
+        (ASSESSMENT_TYPE_ASSESSMENT, _("Assessment")),
         (ASSESSMENT_TYPE_CURRICULUM, _("Curriculum")),
         (ASSESSMENT_TYPE_EXAM, _("Exam")),
-        (ASSESSMENT_TYPE_SMART_FORM, _("Smart Form")),
+        (ASSESSMENT_TYPE_FORM, _("Form")),
     )
 
     EVALUATION_TYPE_AUTOMATIC_EVALUATION = "automatic_evaluation"
