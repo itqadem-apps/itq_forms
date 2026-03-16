@@ -172,6 +172,15 @@ MESSAGE_BROKER_SUBJECTS = [
     for subject in os.environ.get("MESSAGE_BROKER_SUBJECTS", "").split(",")
     if subject.strip()
 ]
+
+RECOMMENDABLE_CONSUMER_SUBJECTS = [
+    subject.strip()
+    for subject in os.environ.get(
+        "RECOMMENDABLE_CONSUMER_SUBJECTS",
+        "courses.>,videos.>,articles.>",
+    ).split(",")
+    if subject.strip()
+]
 JETSTREAM_ENABLED = os.environ.get("JETSTREAM_ENABLED", "true").strip().lower() in {
     "1",
     "true",
