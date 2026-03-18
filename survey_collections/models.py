@@ -44,7 +44,6 @@ class SurveyCollection(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    price = models.FloatField(default=0)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     assessments = models.ManyToManyField(

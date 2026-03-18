@@ -33,6 +33,16 @@ def serialize_assessment(survey: Survey) -> dict:
                 "currency": price.currency,
                 "amount_cents": price.amount_cents,
                 "compare_at_amount_cents": price.compare_at_amount_cents,
+                "discounts": [
+                    {
+                        "type": discount.type,
+                        "value": discount.value,
+                        "code": discount.code,
+                        "starts_at": discount.starts_at.isoformat() if discount.starts_at else None,
+                        "ends_at": discount.ends_at.isoformat() if discount.ends_at else None,
+                    }
+                    for discount in price.discounts.all()
+                ],
             }
             for price in survey.prices.all()
         ],

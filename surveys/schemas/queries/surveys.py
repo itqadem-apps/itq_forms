@@ -10,7 +10,8 @@ from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_f
 from surveys.filters import SurveyProjection, SurveySpec, pipeline, survey_sort_input_to_spec
 from surveys.inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
 from surveys.models import Survey
-from surveys.types import FacetGQL, FacetValueGQL, SurveyResultsGQL
+from app.schema_common import FacetGQL, FacetValueGQL
+from surveys.types import SurveyResultsGQL
 
 
 @strawberry.type

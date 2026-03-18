@@ -682,7 +682,6 @@ class Command(BaseCommand):
                 updated_at=parse_dt(fields.get("updated_at")),
                 deleted_at=parse_dt(fields.get("deleted_at")),
                 category_id=category_map.get(fields.get("category")),
-                price=fields.get("price", 0),
                 sponsor=fields.get("sponsor"),
                 type=fields.get("type"),
             )

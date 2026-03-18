@@ -1,6 +1,6 @@
 from .survey import Survey
 from .survey_translation import SurveyTranslation
-from .price import Price
+from pricing.models import Price
 from .has_soft_delete import HasSoftDelete
 from classifications.models import Classification, ClassificationTranslation
 from recommendations.models import Action, ActionTranslation, Material, Recommendable, Recommendation, RecommendationTranslation

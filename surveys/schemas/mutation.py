@@ -6,7 +6,6 @@ from .mutations import (
     SectionMutations,
     QuestionMutations,
     AnswerSchemaMutations,
-    SurveyCollectionMutations,
     TranslationMutations,
 )
 from classifications.schemas.mutations import (
@@ -21,6 +20,10 @@ from recommendations.schemas.mutations import (
     RecommendableMutations,
     MaterialMutations,
 )
+from survey_collections.schemas.mutations import (
+    SurveyCollectionMutations,
+    SurveyCollectionTranslationMutations,
+)
 from user_surveys.schemas.mutations import (
     EnrollAssessmentMutation,
     AnswerQuestionMutation,
@@ -30,6 +33,7 @@ from user_surveys.schemas.mutations import (
     ManualEvaluationMutation,
     ReportTabSwitchMutation,
 )
+from pricing.schemas.mutations import PriceMutations, DiscountMutations
 
 Mutation = merge_types(
     "Mutation",
@@ -46,7 +50,6 @@ Mutation = merge_types(
         SectionMutations,
         QuestionMutations,
         AnswerSchemaMutations,
-        SurveyCollectionMutations,
         TranslationMutations,
         ClassificationMutations,
         ClassificationTranslationMutations,
@@ -56,5 +59,9 @@ Mutation = merge_types(
         ActionTranslationMutations,
         RecommendableMutations,
         MaterialMutations,
+        SurveyCollectionMutations,
+        SurveyCollectionTranslationMutations,
+        PriceMutations,
+        DiscountMutations,
     ),
 )

@@ -1,7 +1,6 @@
 from strawberry.tools import merge_types
 
 from .queries import (
-    CollectionsQuery,
     QuestionQuery,
     QuestionsQuery,
     SurveyQuery,
@@ -15,6 +14,8 @@ from recommendations.schemas.queries import (
     RecommendablesQuery,
     MaterialsQuery,
 )
+from survey_collections.schemas.queries import CollectionsQuery
+from pricing.schemas.queries import PricesQuery, DiscountsQuery
 
 Query = merge_types(
     "Query",
@@ -31,5 +32,7 @@ Query = merge_types(
         ActionsQuery,
         RecommendablesQuery,
         MaterialsQuery,
+        PricesQuery,
+        DiscountsQuery,
     ),
 )

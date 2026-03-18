@@ -5,17 +5,18 @@ import strawberry
 from django.db.models import Count
 from pkg_filters.integrations.django import DjangoQueryContext
 from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_field_paths
+from strawberry.types import Info
 
-from surveys.filters import (
+from survey_collections.filters import (
     SurveyCollectionProjection,
     SurveyCollectionSpec,
     collections_pipeline,
     survey_collection_sort_input_to_spec,
 )
-from surveys.inputs import SurveyCollectionFilters, SurveyCollectionFiltersInput, SurveyCollectionsListInput
-from surveys.types import FacetGQL, FacetValueGQL, SurveyCollectionsResultsGQL
+from survey_collections.inputs import SurveyCollectionFilters, SurveyCollectionFiltersInput, SurveyCollectionsListInput
+from survey_collections.types import SurveyCollectionsResultsGQL
+from app.schema_common import FacetGQL, FacetValueGQL
 from survey_collections.models import SurveyCollection
-from strawberry.types import Info
 
 
 @strawberry.type
@@ -55,14 +56,6 @@ class CollectionsQuery:
                 for row in base_qs.values("status").annotate(count=Count("id")).order_by("status")
             ]
             facets.append(FacetGQL(name="status", values=status_values))
-
-            privacy_values = [
-                FacetValueGQL(value=row["privacy_status"], count=row["count"])
-                for row in base_qs.values("privacy_status")
-                .annotate(count=Count("id"))
-                .order_by("privacy_status")
-            ]
-            facets.append(FacetGQL(name="privacy_status", values=privacy_values))
 
             language_values = [
                 FacetValueGQL(value=row["language"], count=row["count"])

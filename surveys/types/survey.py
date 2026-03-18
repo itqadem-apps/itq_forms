@@ -7,7 +7,7 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Survey, Usage, Price
+from surveys.models import Survey, Usage
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
 
@@ -121,10 +121,4 @@ class SurveyPayload:
     survey: Optional[SurveyType]
 
 
-@strawberry_django.type(Price)
-class PriceType:
-    id: auto
-    survey_id: auto
-    currency: auto
-    amount_cents: auto
-    compare_at_amount_cents: auto
+from pricing.types import PriceType  # noqa: E402 — re-export for backward compat

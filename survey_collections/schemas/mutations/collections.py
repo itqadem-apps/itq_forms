@@ -6,13 +6,13 @@ from django.utils.timezone import now
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.inputs import SurveyCollectionInput
-from surveys.types import SurveyCollectionType
+from app.schema_common import RequireAuth, OperationResult
+from survey_collections.inputs import SurveyCollectionInput
+from survey_collections.types import SurveyCollectionType
 from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
 from surveys.models import Survey
+from surveys.schemas.utils import input_to_dict
 from taxonomy.models import Category
-from ..common import RequireAuth, OperationResult
-from ..utils import input_to_dict
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -29,14 +29,12 @@ class SurveyCollectionMutations:
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
-        """Create a new survey collection"""
         data = input_to_dict(input, exclude=['category_id', 'translations'])
         if input.category_id is not strawberry.UNSET:
             data['category'] = Category.objects.get(category_id=input.category_id)
 
         collection = SurveyCollection.objects.create(**data)
 
-        # Create translations
         if input.translations:
             for trans_input in input.translations:
                 SurveyCollectionTranslation.objects.create(
@@ -59,7 +57,6 @@ class SurveyCollectionMutations:
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
-        """Update an existing survey collection"""
         collection = SurveyCollection.objects.get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['category_id', 'translations']).items():
@@ -69,7 +66,6 @@ class SurveyCollectionMutations:
 
         collection.save()
 
-        # Update translations if provided
         if input.translations:
             for trans_input in input.translations:
                 SurveyCollectionTranslation.objects.update_or_create(
@@ -93,7 +89,6 @@ class SurveyCollectionMutations:
         id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Soft delete a survey collection"""
         collection = SurveyCollection.objects.get(pk=id)
         collection.deleted_at = now()
         collection.save()
@@ -109,7 +104,6 @@ class SurveyCollectionMutations:
         survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
-        """Add a survey to a collection"""
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
         collection.assessments.add(survey)
@@ -125,7 +119,6 @@ class SurveyCollectionMutations:
         survey_id: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
-        """Remove a survey from a collection"""
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
         collection.assessments.remove(survey)

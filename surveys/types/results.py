@@ -4,7 +4,7 @@ from typing import List
 
 import strawberry
 
-from .common import FacetGQL
+from app.schema_common import FacetGQL
 from .survey import SurveyType
 from .content import QuestionType
 
