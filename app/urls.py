@@ -14,16 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
-from strawberry.django.views import AsyncGraphQLView
 
 from app.auth import AuthedGraphQLView
 from app.health import healthz, readyz, startupz
 from surveys import schema
 
 urlpatterns = [
+    path("", include("django_prometheus.urls")),
     path("api/v1/forms/graphql", csrf_exempt(AuthedGraphQLView.as_view(schema=schema.schema))),
     path("healthz/", healthz, name="healthz"),
     path("readyz/", readyz, name="readyz"),

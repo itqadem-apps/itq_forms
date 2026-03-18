@@ -40,6 +40,7 @@ if POD_IP := os.environ.get('POD_IP', False):
 # Application definition
 
 INSTALLED_APPS = [
+    "django_prometheus",
     "django.contrib.auth",
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -54,8 +55,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "pkg_auth.integrations.django.PkgAuthMiddleware",
     'django.middleware.common.CommonMiddleware',
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -88,10 +91,11 @@ if DATABASE_URL:
     DATABASES = {
         "default": env.db_url_config(normalized_database_url),
     }
+    DATABASES["default"]["ENGINE"] = "django_prometheus.db.backends.postgresql"
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
+            'ENGINE': os.environ.get("DATABASE_ENGINE", "django_prometheus.db.backends.sqlite3"),
             'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
             'USER': os.environ.get('DATABASE_USER', 'default'),
             'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
@@ -168,6 +172,15 @@ MESSAGE_BROKER_SUBJECTS = [
     for subject in os.environ.get("MESSAGE_BROKER_SUBJECTS", "").split(",")
     if subject.strip()
 ]
+
+RECOMMENDABLE_CONSUMER_SUBJECTS = [
+    subject.strip()
+    for subject in os.environ.get(
+        "RECOMMENDABLE_CONSUMER_SUBJECTS",
+        "courses.>,videos.>,articles.>",
+    ).split(",")
+    if subject.strip()
+]
 JETSTREAM_ENABLED = os.environ.get("JETSTREAM_ENABLED", "true").strip().lower() in {
     "1",
     "true",
@@ -181,3 +194,25 @@ JETSTREAM_STREAM_SUBJECTS = [
     if subject.strip()
 ]
 OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
+
+# Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.json.JsonFormatter",
+            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
