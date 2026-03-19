@@ -10,8 +10,9 @@ from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_f
 from surveys.filters import SurveyProjection, SurveySpec, pipeline, survey_sort_input_to_spec
 from surveys.inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
 from surveys.models import Survey
-from app.schema_common import FacetGQL, FacetValueGQL
-from surveys.types import SurveyResultsGQL
+from app.schema_common import FacetValueGQL
+from app.facets import build_category_tree_facet
+from surveys.types.results import SurveyResultsGQL, SurveysFacetsGQL
 
 
 @strawberry.type
@@ -77,7 +78,7 @@ class SurveysQuery:
         total = base_qs.count()
         items = base_qs[surveys_list_input.offset : surveys_list_input.offset + surveys_list_input.limit]
 
-        facets: List[FacetGQL] = []
+        facets = None
         if has_any_under_prefix(paths, ("facets",)):
             status_values = [
                 FacetValueGQL(value=row["status"], count=row["count"])
@@ -85,14 +86,17 @@ class SurveysQuery:
                 .annotate(count=Count("id"))
                 .order_by("status")
             ]
-            facets.append(FacetGQL(name="status", values=status_values))
-
             survey_type_values = [
                 FacetValueGQL(value=row["survey_type"], count=row["count"])
                 for row in base_qs.values("survey_type")
                 .annotate(count=Count("id"))
                 .order_by("survey_type")
             ]
-            facets.append(FacetGQL(name="survey_type", values=survey_type_values))
+            categories = build_category_tree_facet(base_qs)
+            facets = SurveysFacetsGQL(
+                status=status_values,
+                survey_type=survey_type_values,
+                categories=categories,
+            )
 
         return SurveyResultsGQL(items=items, total=total, facets=facets)

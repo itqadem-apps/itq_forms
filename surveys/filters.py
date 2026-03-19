@@ -5,10 +5,11 @@ from pkg_filters.core.specs.sort import SortSpec, SortField
 from pkg_filters.integrations.django import (
     DjangoPipeline, DjangoQueryContext,
     DjangoRangeFilterHandler,
-    DjangoSearchFilterHandler, DjangoSortHandler,
+    DjangoSortHandler,
     DjangoAllExactFiltersHandler, DjangoExactFilterHandler,
 )
 
+from app.search import PostgresSearchHandler
 from surveys.inputs import (
     SurveyFilters,
     SurveySortField,
@@ -60,7 +61,12 @@ pipeline = DjangoPipeline([
             "currency",
         }
     ),
-    DjangoSearchFilterHandler("q", fields=("translations__title", "translations__description", "translations__short_description")),
+    PostgresSearchHandler(
+        "q",
+        fields=("translations__title", "translations__description", "translations__short_description"),
+        weights=("A", "B", "C"),
+        trigram_field="translations__title",
+    ),
     DjangoSortHandler(sort_map=SURVEY_SORT_MAP),
 ])
 

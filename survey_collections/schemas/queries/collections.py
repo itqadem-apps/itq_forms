@@ -14,8 +14,9 @@ from survey_collections.filters import (
     survey_collection_sort_input_to_spec,
 )
 from survey_collections.inputs import SurveyCollectionFilters, SurveyCollectionFiltersInput, SurveyCollectionsListInput
-from survey_collections.types import SurveyCollectionsResultsGQL
-from app.schema_common import FacetGQL, FacetValueGQL
+from survey_collections.types.results import SurveyCollectionsResultsGQL, CollectionsFacetsGQL
+from app.schema_common import FacetValueGQL
+from app.facets import build_category_tree_facet
 from survey_collections.models import SurveyCollection
 
 
@@ -49,24 +50,27 @@ class CollectionsQuery:
                 collections_list_input.offset : collections_list_input.offset + collections_list_input.limit
             ]
         )
-        facets: List[FacetGQL] = []
+
+        facets = None
         if has_any_under_prefix(paths, ("facets",)):
             status_values = [
                 FacetValueGQL(value=row["status"], count=row["count"])
                 for row in base_qs.values("status").annotate(count=Count("id")).order_by("status")
             ]
-            facets.append(FacetGQL(name="status", values=status_values))
-
             language_values = [
                 FacetValueGQL(value=row["language"], count=row["count"])
                 for row in base_qs.values("language").annotate(count=Count("id")).order_by("language")
             ]
-            facets.append(FacetGQL(name="language", values=language_values))
-
             type_values = [
                 FacetValueGQL(value=row["type"], count=row["count"])
                 for row in base_qs.values("type").annotate(count=Count("id")).order_by("type")
             ]
-            facets.append(FacetGQL(name="type", values=type_values))
+            categories = build_category_tree_facet(base_qs)
+            facets = CollectionsFacetsGQL(
+                status=status_values,
+                language=language_values,
+                type=type_values,
+                categories=categories,
+            )
 
         return SurveyCollectionsResultsGQL(items=items, total=total, facets=facets)

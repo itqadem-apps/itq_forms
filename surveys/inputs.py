@@ -34,6 +34,7 @@ class SurveyFiltersInput:
     allow_update_answer_options_text_based_on_classification: Optional[bool] = None
     create_option_for_each_classification: Optional[bool] = None
     slug: Optional[str] = None
+    category_id: Optional[str] = None
     price_min_cents: Optional[int] = None
     price_max_cents: Optional[int] = None
     has_discount: Optional[bool] = None
@@ -65,6 +66,7 @@ class SurveyFilters:
     allow_update_answer_options_text_based_on_classification: Optional[bool]
     create_option_for_each_classification: Optional[bool]
     slug: Optional[str]
+    category_id: Optional[str]
     price_min_cents: Optional[int]
     price_max_cents: Optional[int]
     has_discount: Optional[bool]
