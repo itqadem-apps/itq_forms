@@ -127,10 +127,14 @@ def category(db):
 
 @pytest.fixture
 def collection(db):
-    from survey_collections.models import SurveyCollection
-    return SurveyCollection.objects.create(
+    from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
+    c = SurveyCollection.objects.create(
+        status=SurveyCollection.STATUS_PUBLISHED,
+    )
+    SurveyCollectionTranslation.objects.create(
+        collection=c,
+        language="en",
         title="Test Collection",
         description="A collection",
-        status=SurveyCollection.STATUS_PUBLISHED,
-        language="en",
     )
+    return c

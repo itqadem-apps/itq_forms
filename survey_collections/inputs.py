@@ -18,8 +18,6 @@ class SurveyCollectionFiltersInput:
     id: Optional[int] = None
     status: Optional[str] = None
     title: Optional[str] = None
-    description: Optional[str] = None
-    short_description: Optional[str] = None
     slug: Optional[str] = None
     language: Optional[str] = None
     category_id: Optional[str] = None
@@ -35,8 +33,6 @@ class SurveyCollectionFilters:
     id: Optional[int]
     status: Optional[str]
     title: Optional[str]
-    description: Optional[str]
-    short_description: Optional[str]
     slug: Optional[str]
     language: Optional[str]
     category_id: Optional[str]
@@ -79,11 +75,6 @@ class SurveyCollectionTranslationInput:
 @strawberry.input
 class SurveyCollectionInput:
     status: Optional[str] = UNSET
-    title: Optional[str] = UNSET
-    description: Optional[str] = UNSET
-    short_description: Optional[str] = UNSET
-    slug: Optional[str] = UNSET
-    language: Optional[str] = UNSET
     category_id: Optional[str] = UNSET
     sponsor: Optional[int] = UNSET
     type: Optional[str] = UNSET

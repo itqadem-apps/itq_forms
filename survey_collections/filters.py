@@ -7,6 +7,7 @@ from pkg_filters.integrations.django import (
     DjangoRangeFilterHandler,
     DjangoSortHandler,
     DjangoAllExactFiltersHandler,
+    DjangoExactFilterHandler,
 )
 
 from app.search import PostgresSearchHandler
@@ -39,17 +40,24 @@ def survey_collection_sort_input_to_spec(inp: SurveyCollectionSortInput | None) 
     return SortSpec(fields=fields)
 
 
-SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveyCollectionSortField}
+SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {
+    "created_at": "created_at",
+    "updated_at": "updated_at",
+    "title": "translations__title",
+}
 
 collections_pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
-    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q"}),
+    DjangoExactFilterHandler("title", lookup="translations__title"),
+    DjangoExactFilterHandler("slug", lookup="translations__slug"),
+    DjangoExactFilterHandler("language", lookup="translations__language"),
+    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q", "title", "slug", "language"}),
     PostgresSearchHandler(
         "q",
-        fields=("title", "description", "short_description"),
+        fields=("translations__title", "translations__description", "translations__short_description"),
         weights=("A", "B", "C"),
-        trigram_field="title",
+        trigram_field="translations__title",
     ),
     DjangoSortHandler(sort_map=SURVEY_COLLECTION_SORT_MAP),
 ])

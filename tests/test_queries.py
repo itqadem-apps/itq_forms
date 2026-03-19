@@ -308,8 +308,12 @@ class TestCollectionsQuery:
         assert result["total"] >= 1
 
     def test_collections_pagination(self):
+        from survey_collections.models import SurveyCollectionTranslation
         for i in range(5):
-            SurveyCollection.objects.create(title=f"Collection {i}")
+            c = SurveyCollection.objects.create()
+            SurveyCollectionTranslation.objects.create(
+                collection=c, language="en", title=f"Collection {i}",
+            )
         client = Client()
         status, data = _gql(client, """
             query {

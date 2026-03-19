@@ -65,6 +65,10 @@ class SurveyType:
         return collection.id if collection else None
 
     @strawberry.field
+    def collection(self) -> Optional[Annotated["SurveyCollectionType", strawberry.lazy("survey_collections.types.collection")]]:
+        return self.collections.first()
+
+    @strawberry.field
     def user_surveys(self, info: Info) -> List[Annotated["UserSurveyType", strawberry.lazy("user_surveys.types.user_survey")]]:
         try:
             django_user = get_django_user(info)
