@@ -7,6 +7,7 @@ import strawberry_django
 from strawberry import UNSET
 from pkg_filters.integrations.strawberry import (
     DateTimeRangeFilterInput,
+    IntRangeFilterInput,
     SortDirection,
 )
 
@@ -35,11 +36,11 @@ class SurveyFiltersInput:
     create_option_for_each_classification: Optional[bool] = None
     slug: Optional[str] = None
     category_id: Optional[str] = None
-    price_min_cents: Optional[int] = None
-    price_max_cents: Optional[int] = None
+    price: Optional[IntRangeFilterInput] = None
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
     currency: Optional[str] = None
+    collection_id: Optional[int] = None
     q: Optional[str] = None
 
 
@@ -67,11 +68,11 @@ class SurveyFilters:
     create_option_for_each_classification: Optional[bool]
     slug: Optional[str]
     category_id: Optional[str]
-    price_min_cents: Optional[int]
-    price_max_cents: Optional[int]
+    price: Optional[object]
     has_discount: Optional[bool]
     is_free: Optional[bool]
     currency: Optional[str]
+    collection_id: Optional[int]
     q: Optional[str]
 
 
@@ -130,6 +131,7 @@ class SurveyTranslationInput:
     description: Optional[str] = None
     short_description: Optional[str] = None
     slug: Optional[str] = None
+    seo: Optional[strawberry.scalars.JSON] = None
 
 
 @strawberry.input

@@ -4,16 +4,14 @@ from typing import List, Optional
 
 import strawberry
 
-from app.schema_common import CategoryFacetNodeGQL, FacetValueGQL
+from app.schema_common import CategoryFacetNodeGQL, PriceRangeFacetGQL
 from .collection import SurveyCollectionType
 
 
 @strawberry.type
 class CollectionsFacetsGQL:
-    status: List[FacetValueGQL]
-    language: List[FacetValueGQL]
-    type: List[FacetValueGQL]
     categories: List[CategoryFacetNodeGQL]
+    price: PriceRangeFacetGQL
 
 
 @strawberry.type

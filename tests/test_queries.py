@@ -98,8 +98,8 @@ class TestSurveysQuery:
         assert status == 200
         assert len(data["data"]["surveys"]["items"]) == 2
 
-    def test_surveys_with_facets(self):
-        s = Survey.objects.create(survey_type="survey", status="published")
+    def test_surveys_with_facets(self, category):
+        Survey.objects.create(survey_type="survey", status="published", category=category)
 
         client = Client()
         status, data = _gql(client, """
@@ -107,16 +107,14 @@ class TestSurveysQuery:
                 surveys(surveysListInput: { limit: 10, offset: 0 }) {
                     total
                     facets {
-                        status { value count }
-                        surveyType { value count }
+                        categories { id name count }
                     }
                 }
             }
         """)
         assert status == 200
         facets = data["data"]["surveys"]["facets"]
-        assert len(facets["status"]) >= 1
-        assert len(facets["surveyType"]) >= 1
+        assert len(facets["categories"]) >= 1
 
     def test_surveys_category_tree_facet(self):
         root = Category.objects.create(tree_id=uuid.uuid4(), name="Psychology", path_text="Psychology")
@@ -286,7 +284,7 @@ class TestCollectionsQuery:
             query {
                 collections(collectionsListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title }
+                    items { id }
                 }
             }
         """)
@@ -299,7 +297,7 @@ class TestCollectionsQuery:
             query {
                 collections(collectionsListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title status }
+                    items { id status translations { title } }
                 }
             }
         """)

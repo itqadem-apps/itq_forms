@@ -1,12 +1,39 @@
-"""Shared facet utilities for building category tree facets from querysets."""
+"""Shared facet utilities for building category tree and price range facets."""
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
-from django.db.models import Count, QuerySet
+from django.db.models import Count, Max, Min, QuerySet
 
-from app.schema_common import CategoryFacetNodeGQL, CategoryTranslationFacetGQL
+from app.schema_common import CategoryFacetNodeGQL, CategoryTranslationFacetGQL, PriceRangeFacetGQL
 from taxonomy.models import Category
+
+
+def build_price_range_facet(
+    base_qs: QuerySet,
+    currency: Optional[str],
+    price_relation: str = "prices",
+) -> PriceRangeFacetGQL:
+    """
+    Compute min/max amount_cents from the prices related to the filtered queryset.
+
+    Args:
+        base_qs: The already-filtered queryset (Survey, SurveyCollection, etc.)
+        currency: Currency code from X-Currency header. If None, uses all prices.
+        price_relation: The related name for prices on the model.
+    """
+    lookup = {f"{price_relation}__amount_cents__isnull": False}
+    if currency:
+        lookup[f"{price_relation}__currency"] = currency
+
+    agg = base_qs.filter(**lookup).aggregate(
+        min_price=Min(f"{price_relation}__amount_cents"),
+        max_price=Max(f"{price_relation}__amount_cents"),
+    )
+    return PriceRangeFacetGQL(
+        min=agg["min_price"] or 0,
+        max=agg["max_price"] or 0,
+    )
 
 
 def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id") -> List[CategoryFacetNodeGQL]:

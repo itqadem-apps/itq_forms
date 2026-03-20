@@ -27,6 +27,12 @@ class FacetGQL:
 
 
 @strawberry.type
+class PriceRangeFacetGQL:
+    min: int
+    max: int
+
+
+@strawberry.type
 class CategoryTranslationFacetGQL:
     language: str
     name: Optional[str]

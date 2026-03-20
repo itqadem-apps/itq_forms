@@ -5,6 +5,7 @@ import strawberry
 from strawberry import UNSET
 from pkg_filters.integrations.strawberry import (
     DateTimeRangeFilterInput,
+    IntRangeFilterInput,
     SortDirection,
 )
 
@@ -23,6 +24,10 @@ class SurveyCollectionFiltersInput:
     category_id: Optional[str] = None
     sponsor: Optional[int] = None
     type: Optional[str] = None
+    price: Optional[IntRangeFilterInput] = None
+    has_discount: Optional[bool] = None
+    is_free: Optional[bool] = None
+    currency: Optional[str] = None
     q: Optional[str] = None
 
 
@@ -38,6 +43,10 @@ class SurveyCollectionFilters:
     category_id: Optional[str]
     sponsor: Optional[int]
     type: Optional[str]
+    price: Optional[object]
+    has_discount: Optional[bool]
+    is_free: Optional[bool]
+    currency: Optional[str]
     q: Optional[str]
 
 
@@ -70,6 +79,7 @@ class SurveyCollectionTranslationInput:
     description: Optional[str] = None
     short_description: Optional[str] = None
     slug: Optional[str] = None
+    seo: Optional[strawberry.scalars.JSON] = None
 
 
 @strawberry.input

@@ -10,6 +10,7 @@ from pkg_filters.integrations.django import (
     DjangoExactFilterHandler,
 )
 
+from app.price_filter import DjangoPriceRangeFilterHandler
 from app.search import PostgresSearchHandler
 from survey_collections.inputs import (
     SurveyCollectionFilters,
@@ -49,10 +50,11 @@ SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {
 collections_pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
     DjangoRangeFilterHandler("updated_at"),
+    DjangoPriceRangeFilterHandler("price"),
     DjangoExactFilterHandler("title", lookup="translations__title"),
     DjangoExactFilterHandler("slug", lookup="translations__slug"),
     DjangoExactFilterHandler("language", lookup="translations__language"),
-    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q", "title", "slug", "language"}),
+    DjangoAllExactFiltersHandler(excluded={"created_at", "updated_at", "q", "title", "slug", "language", "price", "has_discount", "is_free", "currency"}),
     PostgresSearchHandler(
         "q",
         fields=("translations__title", "translations__description", "translations__short_description"),

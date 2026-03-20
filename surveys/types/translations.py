@@ -29,6 +29,7 @@ class SurveyTranslationType:
     description: auto
     short_description: auto
     slug: auto
+    seo: auto
 
 
 @strawberry_django.type(SectionTranslation)

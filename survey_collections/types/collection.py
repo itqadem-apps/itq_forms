@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
 
-import strawberry
 import strawberry_django
 from strawberry import auto
 
@@ -23,31 +22,6 @@ class SurveyCollectionType:
     translations: List["SurveyCollectionTranslationType"]
     prices: List[PriceType]
 
-    @strawberry.field
-    def title(self) -> Optional[str]:
-        t = self.translations.first()
-        return t.title if t else None
-
-    @strawberry.field
-    def description(self) -> Optional[str]:
-        t = self.translations.first()
-        return t.description if t else None
-
-    @strawberry.field
-    def short_description(self) -> Optional[str]:
-        t = self.translations.first()
-        return t.short_description if t else None
-
-    @strawberry.field
-    def slug(self) -> Optional[str]:
-        t = self.translations.first()
-        return t.slug if t else None
-
-    @strawberry.field
-    def language(self) -> Optional[str]:
-        t = self.translations.first()
-        return t.language if t else None
-
 
 @strawberry_django.type(SurveyCollectionTranslation)
 class SurveyCollectionTranslationType:
@@ -57,3 +31,4 @@ class SurveyCollectionTranslationType:
     description: auto
     short_description: auto
     slug: auto
+    seo: auto
