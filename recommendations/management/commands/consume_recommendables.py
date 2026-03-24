@@ -22,7 +22,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--subjects",
-            default=",".join(settings.RECOMMENDABLE_CONSUMER_SUBJECTS),
+            default=",".join(settings.MESSAGE_BROKER_SUBJECTS),
             help="Comma-separated subjects to subscribe to",
         )
 

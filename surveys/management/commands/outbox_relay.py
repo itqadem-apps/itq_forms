@@ -132,13 +132,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--poll-interval",
             type=float,
-            default=0.5,
+            default=settings.OUTBOX_POLL_INTERVAL,
             help="Seconds to sleep when no pending rows are found",
         )
         parser.add_argument(
             "--batch-size",
             type=int,
-            default=50,
+            default=settings.OUTBOX_BATCH_SIZE,
             help="Max outbox rows to process per batch",
         )
 
