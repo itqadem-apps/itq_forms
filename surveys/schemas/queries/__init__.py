@@ -1,4 +1,3 @@
-from .collections import CollectionsQuery
 from .question import QuestionQuery
 from .questions import QuestionsQuery
 from .survey import SurveyQuery

@@ -1,11 +1,9 @@
 from .common import (
-    FacetGQL,
-    FacetValueGQL,
-    SurveyCollectionsResultsGQL,
     QuestionsFiltersGQL,
 )
 from .results import SurveyResultsGQL, QuestionsResultsGQL
-from .survey import SurveyType, PriceType, SurveyPayload
+from .survey import SurveyType, SurveyPayload
+from pricing.types import PriceType
 from .types_category import CategoryType
 from .content import SectionType, QuestionType
 from .answer_schema import AnswerSchemaType, AnswerSchemaOptionType
@@ -23,7 +21,7 @@ from .translations import (
     RecommendationTranslationType,
 )
 from classifications.types import ClassificationTranslationType
-from .common import SurveyCollectionType, SurveyCollectionTranslationType
+from survey_collections.types import SurveyCollectionType, SurveyCollectionTranslationType
 
 # Re-exported from user_surveys app
 from user_surveys.types import (
@@ -48,8 +46,6 @@ __all__ = [
     "CategoryType",
     "ClassificationTranslationType",
     "ClassificationType",
-    "FacetGQL",
-    "FacetValueGQL",
     "FinishAssessmentResult",
     "PriceType",
     "QuestionTranslationType",
@@ -63,7 +59,6 @@ __all__ = [
     "SurveyPayload",
     "SurveyCollectionType",
     "SurveyCollectionTranslationType",
-    "SurveyCollectionsResultsGQL",
     "SurveyResultsGQL",
     "SurveyTranslationType",
     "SurveyType",

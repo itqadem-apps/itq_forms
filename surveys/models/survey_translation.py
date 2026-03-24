@@ -22,6 +22,7 @@ class SurveyTranslation(models.Model):
     description = models.TextField(null=True, blank=True)
     short_description = models.CharField(max_length=300, null=True, blank=True)
     slug = models.CharField(max_length=255, null=True, blank=True)
+    seo = models.JSONField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.survey_id}:{self.language}"

@@ -7,6 +7,7 @@ import strawberry_django
 from strawberry import UNSET
 from pkg_filters.integrations.strawberry import (
     DateTimeRangeFilterInput,
+    IntRangeFilterInput,
     SortDirection,
 )
 
@@ -34,11 +35,12 @@ class SurveyFiltersInput:
     allow_update_answer_options_text_based_on_classification: Optional[bool] = None
     create_option_for_each_classification: Optional[bool] = None
     slug: Optional[str] = None
-    price_min_cents: Optional[int] = None
-    price_max_cents: Optional[int] = None
+    category_id: Optional[str] = None
+    price: Optional[IntRangeFilterInput] = None
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
     currency: Optional[str] = None
+    collection_id: Optional[int] = None
     q: Optional[str] = None
 
 
@@ -65,11 +67,12 @@ class SurveyFilters:
     allow_update_answer_options_text_based_on_classification: Optional[bool]
     create_option_for_each_classification: Optional[bool]
     slug: Optional[str]
-    price_min_cents: Optional[int]
-    price_max_cents: Optional[int]
+    category_id: Optional[str]
+    price: Optional[object]
     has_discount: Optional[bool]
     is_free: Optional[bool]
     currency: Optional[str]
+    collection_id: Optional[int]
     q: Optional[str]
 
 
@@ -91,67 +94,6 @@ class SurveysListInput:
     offset: int = 0
     filters: Optional[SurveyFiltersInput] = None
     sort: Optional[SurveySortInput] = None
-
-
-@strawberry.input
-class SurveyCollectionFiltersInput:
-    created_at: Optional[DateTimeRangeFilterInput] = None
-    updated_at: Optional[DateTimeRangeFilterInput] = None
-    id: Optional[int] = None
-    status: Optional[str] = None
-    privacy_status: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    short_description: Optional[str] = None
-    slug: Optional[str] = None
-    language: Optional[str] = None
-    category_id: Optional[str] = None
-    sponsor: Optional[int] = None
-    type: Optional[str] = None
-    author_id: Optional[str] = None
-    q: Optional[str] = None
-
-
-@dataclass(frozen=True)
-class SurveyCollectionFilters:
-    created_at: Optional[object]  # RangeFilterVO[datetime]
-    updated_at: Optional[object]  # RangeFilterVO[datetime]
-    id: Optional[int]
-    status: Optional[str]
-    privacy_status: Optional[str]
-    title: Optional[str]
-    description: Optional[str]
-    short_description: Optional[str]
-    slug: Optional[str]
-    language: Optional[str]
-    category_id: Optional[str]
-    sponsor: Optional[int]
-    type: Optional[str]
-    q: Optional[str]
-
-
-@strawberry.enum
-class SurveyCollectionSortField(str, Enum):
-    CREATED_AT = "created_at"
-    UPDATED_AT = "updated_at"
-    TITLE = "title"
-    PRICE = "price"
-
-
-@strawberry.input
-class SurveyCollectionSortInput:
-    created_at: Optional[SortDirection] = None
-    updated_at: Optional[SortDirection] = None
-    title: Optional[SortDirection] = None
-    price: Optional[SortDirection] = None
-
-
-@strawberry.input
-class SurveyCollectionsListInput:
-    limit: int = 20
-    offset: int = 0
-    filters: Optional[SurveyCollectionFiltersInput] = None
-    sort: Optional[SurveyCollectionSortInput] = None
 
 
 @strawberry.input
@@ -183,21 +125,13 @@ class TranslationInput:
 
 
 @strawberry.input
-class SurveyCollectionTranslationInput:
-    language: str
-    title: Optional[str] = None
-    description: Optional[str] = None
-    short_description: Optional[str] = None
-    slug: Optional[str] = None
-
-
-@strawberry.input
 class SurveyTranslationInput:
     language: str
     title: Optional[str] = None
     description: Optional[str] = None
     short_description: Optional[str] = None
     slug: Optional[str] = None
+    seo: Optional[strawberry.scalars.JSON] = None
 
 
 @strawberry.input
@@ -222,22 +156,6 @@ class AnswerSchemaOptionTranslationInput:
 
 from classifications.inputs import ClassificationTranslationInput, ClassificationInput  # noqa: F401
 from recommendations.inputs import RecommendationTranslationInput, ActionTranslationInput, RecommendationInput, ActionInput  # noqa: F401
-
-
-# Survey Collection Inputs
-@strawberry.input
-class SurveyCollectionInput:
-    status: Optional[str] = UNSET
-    title: Optional[str] = UNSET
-    description: Optional[str] = UNSET
-    short_description: Optional[str] = UNSET
-    slug: Optional[str] = UNSET
-    language: Optional[str] = UNSET
-    category_id: Optional[str] = UNSET
-    price: Optional[float] = UNSET
-    sponsor: Optional[int] = UNSET
-    type: Optional[str] = UNSET
-    translations: Optional[List[SurveyCollectionTranslationInput]] = UNSET
 
 
 # Survey Inputs

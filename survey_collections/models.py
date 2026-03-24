@@ -35,16 +35,10 @@ class SurveyCollection(models.Model):
     )
 
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_DRAFT)
-    title = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    short_description = models.CharField(max_length=300, null=True, blank=True)
-    slug = models.CharField(max_length=255, null=True, blank=True)
-    language = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    price = models.FloatField(default=0)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     assessments = models.ManyToManyField(
@@ -53,6 +47,19 @@ class SurveyCollection(models.Model):
         blank=True,
         help_text=_("Assessments included in this collection."),
     )
+
+    @property
+    def title(self):
+        t = self.translations.first()
+        return t.title if t else None
+
+    @property
+    def language(self):
+        t = self.translations.first()
+        return t.language if t else None
+
+    def __str__(self):
+        return str(self.title or self.pk)
 
 
 class SurveyCollectionTranslation(models.Model):
@@ -71,3 +78,4 @@ class SurveyCollectionTranslation(models.Model):
     description = models.TextField(null=True, blank=True)
     short_description = models.CharField(max_length=300, null=True, blank=True)
     slug = models.CharField(max_length=255, null=True, blank=True)
+    seo = models.JSONField(null=True, blank=True)

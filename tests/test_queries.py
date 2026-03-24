@@ -14,6 +14,7 @@ from surveys.models import (
     Survey,
 )
 from survey_collections.models import SurveyCollection
+from taxonomy.models import Category, CategoryTranslation
 from user_surveys.models import UserAnswer, UserSurvey
 from user_surveys.services import enroll_user_in_assessment
 
@@ -97,23 +98,88 @@ class TestSurveysQuery:
         assert status == 200
         assert len(data["data"]["surveys"]["items"]) == 2
 
-    def test_surveys_with_facets(self):
-        s = Survey.objects.create(survey_type="survey", status="published")
+    def test_surveys_with_facets(self, category):
+        Survey.objects.create(survey_type="survey", status="published", category=category)
 
         client = Client()
         status, data = _gql(client, """
             query {
                 surveys(surveysListInput: { limit: 10, offset: 0 }) {
                     total
-                    facets { name values { value count } }
+                    facets {
+                        categories { id name count }
+                    }
                 }
             }
         """)
         assert status == 200
         facets = data["data"]["surveys"]["facets"]
-        facet_names = [f["name"] for f in facets]
-        assert "survey_type" in facet_names
-        assert "status" in facet_names
+        assert len(facets["categories"]) >= 1
+
+    def test_surveys_category_tree_facet(self):
+        root = Category.objects.create(tree_id=uuid.uuid4(), name="Psychology", path_text="Psychology")
+        child = Category.objects.create(tree_id=root.tree_id, name="Clinical", path_text="Psychology / Clinical")
+        CategoryTranslation.objects.create(category=root, language="ar", name="علم النفس", slug="psychology")
+        CategoryTranslation.objects.create(category=child, language="ar", name="سريري", slug="clinical")
+
+        Survey.objects.create(survey_type="survey", category=child)
+        Survey.objects.create(survey_type="survey", category=root)
+
+        client = Client()
+        status, data = _gql(client, """
+            query {
+                surveys(surveysListInput: { limit: 10, offset: 0 }) {
+                    total
+                    facets {
+                        categories {
+                            id name count pathText
+                            translations { language name slug }
+                            children {
+                                id name count pathText
+                                translations { language name slug }
+                                children { id name count }
+                            }
+                        }
+                    }
+                }
+            }
+        """)
+        assert status == 200
+        categories = data["data"]["surveys"]["facets"]["categories"]
+        # All categories are returned (including ones with count=0)
+        assert len(categories) >= 1
+        # Find our root node by name
+        root_node = next(c for c in categories if c["name"] == "Psychology")
+        assert root_node["count"] == 2  # 1 direct + 1 bubbled from child
+        assert len(root_node["translations"]) == 1
+        assert root_node["translations"][0]["language"] == "ar"
+        assert len(root_node["children"]) == 1
+        assert root_node["children"][0]["name"] == "Clinical"
+        assert root_node["children"][0]["count"] == 1
+
+    def test_surveys_search(self):
+        from surveys.models import SurveyTranslation
+        s1 = Survey.objects.create()
+        SurveyTranslation.objects.create(survey=s1, language="en", title="Psychology Assessment")
+        s2 = Survey.objects.create()
+        SurveyTranslation.objects.create(survey=s2, language="en", title="Math Exam")
+
+        client = Client()
+        status, data = _gql(client, """
+            query {
+                surveys(surveysListInput: {
+                    limit: 10, offset: 0,
+                    filters: { q: "psychology" }
+                }) {
+                    total
+                    items { id translations { title } }
+                }
+            }
+        """)
+        assert status == 200
+        result = data["data"]["surveys"]
+        assert result["total"] == 1
+        assert "Psychology" in result["items"][0]["translations"][0]["title"]
 
     def test_surveys_filter_by_type(self):
         Survey.objects.create(survey_type="survey")
@@ -218,7 +284,7 @@ class TestCollectionsQuery:
             query {
                 collections(collectionsListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title }
+                    items { id }
                 }
             }
         """)
@@ -231,7 +297,7 @@ class TestCollectionsQuery:
             query {
                 collections(collectionsListInput: { limit: 10, offset: 0 }) {
                     total
-                    items { id title status }
+                    items { id status translations { title } }
                 }
             }
         """)
@@ -240,8 +306,12 @@ class TestCollectionsQuery:
         assert result["total"] >= 1
 
     def test_collections_pagination(self):
+        from survey_collections.models import SurveyCollectionTranslation
         for i in range(5):
-            SurveyCollection.objects.create(title=f"Collection {i}")
+            c = SurveyCollection.objects.create()
+            SurveyCollectionTranslation.objects.create(
+                collection=c, language="en", title=f"Collection {i}",
+            )
         client = Client()
         status, data = _gql(client, """
             query {

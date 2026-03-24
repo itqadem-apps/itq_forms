@@ -40,12 +40,14 @@ class EnrollAssessmentMutation:
                 defaults={"name": grpc_child.name, "photo_id": grpc_child.photo_id or None},
             )
 
-        usage = Usage.objects.filter(user=django_user, survey=survey).first()
-        if usage:
-            if usage.usage_limit and usage.used_count >= usage.usage_limit:
-                raise ValidationError("Usage limit reached for this survey.")
-        elif UserSurvey.objects.filter(user=django_user, survey=survey).exists():
-            raise ValidationError("Usage limit reached. You are already enrolled in this survey.")
+        is_free = not survey.prices.filter(amount_cents__gt=0).exists()
+        if not is_free:
+            usage = Usage.objects.filter(user=django_user, survey=survey).first()
+            if usage:
+                if usage.usage_limit and usage.used_count >= usage.usage_limit:
+                    raise ValidationError("Usage limit reached for this survey.")
+            elif UserSurvey.objects.filter(user=django_user, survey=survey).exists():
+                raise ValidationError("Usage limit reached. You are already enrolled in this survey.")
 
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,

@@ -3,58 +3,6 @@ from __future__ import annotations
 from typing import List, Optional
 
 import strawberry
-import strawberry_django
-from strawberry import auto
-
-from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
-
-
-@strawberry_django.type(SurveyCollection)
-class SurveyCollectionType:
-    id: auto
-    status: auto
-    title: auto
-    description: auto
-    short_description: auto
-    slug: auto
-    language: auto
-    created_at: auto
-    updated_at: auto
-    deleted_at: auto
-    category_id: auto
-    price: auto
-    sponsor: auto
-    type: auto
-    translations: List["SurveyCollectionTranslationType"]
-
-
-@strawberry_django.type(SurveyCollectionTranslation)
-class SurveyCollectionTranslationType:
-    id: auto
-    language: auto
-    title: auto
-    description: auto
-    short_description: auto
-    slug: auto
-
-
-@strawberry.type
-class FacetValueGQL:
-    value: str
-    count: int
-
-
-@strawberry.type
-class FacetGQL:
-    name: str
-    values: List[FacetValueGQL]
-
-
-@strawberry.type
-class SurveyCollectionsResultsGQL:
-    items: List[SurveyCollectionType]
-    total: int
-    facets: List[FacetGQL]
 
 
 @strawberry.type

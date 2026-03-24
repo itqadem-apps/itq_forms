@@ -11,14 +11,12 @@ from surveys.inputs import (
     SectionTranslationInput,
     QuestionTranslationInput,
     AnswerSchemaOptionTranslationInput,
-    SurveyCollectionTranslationInput,
 )
 from surveys.types import (
     SurveyTranslationType,
     SectionTranslationType,
     QuestionTranslationType,
     AnswerSchemaOptionTranslationType,
-    SurveyCollectionTranslationType,
 )
 from surveys.models import (
     Survey,
@@ -30,7 +28,6 @@ from surveys.models import (
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
 )
-from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
 from ..common import RequireAuth, OperationResult
 
 
@@ -309,64 +306,3 @@ class TranslationMutations:
         translation.delete()
         return OperationResult(success=True)
 
-    # ==================== Survey Collection Translations ====================
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    def create_survey_collection_translation(
-        self,
-        info: Info,
-        collection_id: int,
-        input: SurveyCollectionTranslationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> SurveyCollectionTranslationType:
-        """Create a translation for a survey collection"""
-        collection = SurveyCollection.objects.get(pk=collection_id)
-        translation = SurveyCollectionTranslation.objects.create(
-            collection=collection,
-            language=input.language,
-            title=input.title,
-            description=input.description,
-            short_description=input.short_description,
-            slug=input.slug,
-        )
-        return translation
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    def update_survey_collection_translation(
-        self,
-        info: Info,
-        id: int,
-        input: SurveyCollectionTranslationInput,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> SurveyCollectionTranslationType:
-        """Update a survey collection translation"""
-        translation = SurveyCollectionTranslation.objects.get(pk=id)
-
-        if input.language:
-            translation.language = input.language
-        if input.title is not None:
-            translation.title = input.title
-        if input.description is not None:
-            translation.description = input.description
-        if input.short_description is not None:
-            translation.short_description = input.short_description
-        if input.slug is not None:
-            translation.slug = input.slug
-
-        translation.save()
-        return translation
-
-    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
-    @with_django_user
-    def delete_survey_collection_translation(
-        self,
-        info: Info,
-        id: int,
-        django_user: strawberry.Private[AbstractBaseUser] = None,
-    ) -> OperationResult:
-        """Delete a survey collection translation"""
-        translation = SurveyCollectionTranslation.objects.get(pk=id)
-        translation.delete()
-        return OperationResult(success=True)

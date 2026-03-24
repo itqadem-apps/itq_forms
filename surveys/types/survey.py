@@ -7,7 +7,7 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Survey, Usage, Price
+from surveys.models import Survey, Usage
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
 
@@ -69,6 +69,10 @@ class SurveyType:
         return collection.id if collection else None
 
     @strawberry.field
+    def collection(self) -> Optional[Annotated["SurveyCollectionType", strawberry.lazy("survey_collections.types.collection")]]:
+        return self.collections.first()
+
+    @strawberry.field
     def user_surveys(self, info: Info) -> List[Annotated["UserSurveyType", strawberry.lazy("user_surveys.types.user_survey")]]:
         try:
             django_user = get_django_user(info)
@@ -125,10 +129,4 @@ class SurveyPayload:
     survey: Optional[SurveyType]
 
 
-@strawberry_django.type(Price)
-class PriceType:
-    id: auto
-    survey_id: auto
-    currency: auto
-    amount_cents: auto
-    compare_at_amount_cents: auto
+from pricing.types import PriceType  # noqa: E402 — re-export for backward compat
