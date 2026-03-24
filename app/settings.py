@@ -21,6 +21,20 @@ environ.Env.read_env()
 environ.Env.read_env(BASE_DIR / ".env")
 
 
+def _env_bool(key: str, default: bool = False) -> bool:
+    val = os.environ.get(key)
+    if val is None:
+        return bool(default)
+    return str(val).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(key: str, default: str = "") -> list[str]:
+    raw = os.environ.get(key)
+    if raw is None:
+        raw = default
+    return [v.strip() for v in str(raw).split(",") if v and v.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -167,34 +181,28 @@ STRAWBERRY_DJANGO = {
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
 }
 
-NATS_URL = os.environ.get("NATS_URL", "nats://localhost:4222")
-MESSAGE_BROKER_SUBJECTS = [
-    subject.strip()
-    for subject in os.environ.get("MESSAGE_BROKER_SUBJECTS", "").split(",")
-    if subject.strip()
-]
+NATS_URL = os.environ.get("NATS_URL")
+if not NATS_URL:
+    nats_host = (os.environ.get("NATS_HOST") or "localhost").strip() or "localhost"
+    nats_port = (os.environ.get("NATS_PORT") or "4222").strip() or "4222"
+    NATS_URL = f"nats://{nats_host}:{nats_port}"
 
-RECOMMENDABLE_CONSUMER_SUBJECTS = [
-    subject.strip()
-    for subject in os.environ.get(
-        "RECOMMENDABLE_CONSUMER_SUBJECTS",
-        "courses.>,videos.>,articles.>",
-    ).split(",")
-    if subject.strip()
-]
-JETSTREAM_ENABLED = os.environ.get("JETSTREAM_ENABLED", "true").strip().lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-}
+_raw_message_subjects = os.environ.get("MESSAGE_BROKER_SUBJECTS")
+if _raw_message_subjects is None:
+    _raw_message_subjects = os.environ.get("MESSAGE_BROKER_CHANNELS", "")
+MESSAGE_BROKER_SUBJECTS = [subject.strip() for subject in str(_raw_message_subjects).split(",") if subject.strip()]
+MESSAGE_BROKER_CHANNELS = list(MESSAGE_BROKER_SUBJECTS)
+
+JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_STREAM_NAME = os.environ.get("JETSTREAM_STREAM_NAME", "FORMS")
-JETSTREAM_STREAM_SUBJECTS = [
-    subject.strip()
-    for subject in os.environ.get("JETSTREAM_STREAM_SUBJECTS", "forms.>").split(",")
-    if subject.strip()
-]
+JETSTREAM_STREAM_SUBJECTS = _env_list("JETSTREAM_STREAM_SUBJECTS", "forms.>")
+JETSTREAM_CONSUMERS = _env_list("JETSTREAM_CONSUMERS", "")
+JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
+JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
+
 OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
+OUTBOX_POLL_INTERVAL = float(os.environ.get("OUTBOX_POLL_INTERVAL", "0.5"))
+OUTBOX_BATCH_SIZE = int(os.environ.get("OUTBOX_BATCH_SIZE", "50"))
 
 # Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
 LOGGING = {
