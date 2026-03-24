@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Annotated, List, Optional
 
+import strawberry
 import strawberry_django
 from strawberry import auto
 
@@ -33,6 +34,8 @@ class AnswerSchemaOptionType:
     text: auto
     score: auto
     classification_id: auto
+    classification: Optional[Annotated["ClassificationType", strawberry.lazy("classifications.types.classification")]]
+    option_recommendations: List[Annotated["RecommendationType", strawberry.lazy("recommendations.types.recommendation")]]
     image_asset_id: auto
     is_row: auto
     is_column: auto
