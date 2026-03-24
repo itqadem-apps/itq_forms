@@ -67,7 +67,7 @@ INSTALLED_APPS = [
     "classifications",
     "recommendations",
     "user_surveys",
-    "app.unimessaging_apps.UnimessagingOutboxConfig",
+    "unimessaging.outbox_django",
 ]
 
 MIDDLEWARE = [
