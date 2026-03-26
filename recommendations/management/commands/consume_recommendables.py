@@ -6,9 +6,9 @@ import signal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
+from app.messaging import start_messaging, stop_messaging
 from recommendations.consumer import handle_recommendable_event
 from unimessaging.broker.registry import HandlerRegistry
-from unimessaging.integrations.django import start_messaging, stop_messaging
 
 
 def _to_handler_pattern(subject: str) -> str:

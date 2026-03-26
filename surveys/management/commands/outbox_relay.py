@@ -10,9 +10,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from unimessaging.integrations.django import get_messaging, start_messaging, stop_messaging
 from nats.js.api import StreamConfig
 from unimessaging.outbox_django import DjangoOutboxRelay
+from app.messaging import get_messaging, start_messaging, stop_messaging
 
 
 class SqliteOutboxRelay:
