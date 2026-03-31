@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Annotated, List
 
+import strawberry
 import strawberry_django
 from strawberry import auto
 
@@ -21,6 +22,7 @@ class SurveyCollectionType:
     type: auto
     translations: List["SurveyCollectionTranslationType"]
     prices: List[PriceType]
+    assessments: List[Annotated["SurveyType", strawberry.lazy("surveys.types.survey")]]
 
 
 @strawberry_django.type(SurveyCollectionTranslation)
