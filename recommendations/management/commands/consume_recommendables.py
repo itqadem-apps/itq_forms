@@ -8,12 +8,33 @@ from django.core.management.base import BaseCommand
 
 from app.messaging import start_messaging, stop_messaging
 from recommendations.consumer import handle_recommendable_event
+from unimessaging.broker.config import JetStreamConsumer
 from unimessaging.broker.registry import HandlerRegistry
 
 
 def _to_handler_pattern(subject: str) -> str:
     """Convert NATS wildcards to fnmatch wildcards used by unimessaging registry."""
     return subject.replace(">", "*")
+
+
+def _build_jetstream_consumers() -> list[JetStreamConsumer]:
+    consumers: list[JetStreamConsumer] = []
+    for raw in settings.JETSTREAM_CONSUMERS:
+        parts = [part.strip() for part in raw.split("|")]
+        if len(parts) == 3:
+            label, subject, durable = parts
+        elif len(parts) == 2:
+            subject, durable = parts
+            label = subject.split(".", 1)[0] or "consumer"
+        else:
+            raise ValueError(
+                "Invalid JETSTREAM_CONSUMERS entry. Use 'label|subject|durable' or 'subject|durable'. "
+                f"Got: {raw}"
+            )
+        consumers.append(
+            JetStreamConsumer(label=label, subject=subject, durable=durable)
+        )
+    return consumers
 
 
 class Command(BaseCommand):
@@ -36,6 +57,11 @@ class Command(BaseCommand):
             service_name=settings.SERVICE_NAME,
             url=settings.NATS_URL,
             enable_durable=settings.JETSTREAM_ENABLED,
+            stream_name=settings.JETSTREAM_STREAM_NAME or None,
+            stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
+            consumers=_build_jetstream_consumers() or None,
+            pull_batch=settings.JETSTREAM_PULL_BATCH,
+            pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
             registry=registry,
         )
 

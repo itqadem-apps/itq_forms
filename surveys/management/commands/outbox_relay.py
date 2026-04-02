@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from nats.js.api import StreamConfig
+from unimessaging.broker.config import JetStreamConsumer
 from unimessaging.outbox_django import DjangoOutboxRelay
 from app.messaging import get_messaging, start_messaging, stop_messaging
 
@@ -97,27 +97,24 @@ class SqliteOutboxRelay:
                     )
             return published
 
-
-async def ensure_jetstream_stream() -> None:
-    messaging = get_messaging()
-    adapter = getattr(messaging, "adapter", None)
-    js = getattr(adapter, "js", None)
-    if js is None:
-        return
-
-    stream_name = settings.JETSTREAM_STREAM_NAME
-    subjects = settings.JETSTREAM_STREAM_SUBJECTS
-
-    try:
-        info = await js.stream_info(stream_name)
-        current_subjects = list(getattr(info.config, "subjects", []) or [])
-        if current_subjects == subjects:
-            return
-        await js.update_stream(StreamConfig(name=stream_name, subjects=subjects))
-    except Exception as exc:
-        if exc.__class__.__name__ != "NotFoundError":
-            raise
-        await js.add_stream(StreamConfig(name=stream_name, subjects=subjects))
+def _build_jetstream_consumers() -> list[JetStreamConsumer]:
+    consumers: list[JetStreamConsumer] = []
+    for raw in settings.JETSTREAM_CONSUMERS:
+        parts = [part.strip() for part in raw.split("|")]
+        if len(parts) == 3:
+            label, subject, durable = parts
+        elif len(parts) == 2:
+            subject, durable = parts
+            label = subject.split(".", 1)[0] or "consumer"
+        else:
+            raise ValueError(
+                "Invalid JETSTREAM_CONSUMERS entry. Use 'label|subject|durable' or 'subject|durable'. "
+                f"Got: {raw}"
+            )
+        consumers.append(
+            JetStreamConsumer(label=label, subject=subject, durable=durable)
+        )
+    return consumers
 
 
 class Command(BaseCommand):
@@ -148,14 +145,17 @@ class Command(BaseCommand):
 
         loop.run_until_complete(
             start_messaging(
-                subjects=settings.MESSAGE_BROKER_SUBJECTS,
+                subjects=["__forms_internal.none"],
                 service_name=settings.SERVICE_NAME,
                 url=settings.NATS_URL,
                 enable_durable=settings.JETSTREAM_ENABLED,
+                stream_name=settings.JETSTREAM_STREAM_NAME or None,
+                stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
+                consumers=_build_jetstream_consumers() or None,
+                pull_batch=settings.JETSTREAM_PULL_BATCH,
+                pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
             )
         )
-        if settings.JETSTREAM_ENABLED:
-            loop.run_until_complete(ensure_jetstream_stream())
 
         messaging = get_messaging()
         relay_cls = SqliteOutboxRelay if connection.vendor == "sqlite" else DjangoOutboxRelay
