@@ -124,7 +124,7 @@ class Command(BaseCommand):
         # children_child.json, classifications_tag.json, classifications_modeltag.json, sponsors_sponsor.json
 
         ignored_fields = {
-            "assessments_assessment.json": {"deleted_at", "content_type", "object_id", "assessment_type"},
+            "assessments_assessment.json": {"deleted_at", "content_type", "object_id", "assessment_type", "price"},
             "assessments_section.json": {"deleted_at", "submit_action", "submit_action_target"},
             "assessments_question.json": {"deleted_at"},
             "assessments_userassessment.json": {"price"},
