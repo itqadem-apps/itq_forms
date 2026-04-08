@@ -152,6 +152,7 @@ class Command(BaseCommand):
             "title",
             "description",
             "short_description",
+            "price",
             "language",
             "status",
             "assessment_type",
