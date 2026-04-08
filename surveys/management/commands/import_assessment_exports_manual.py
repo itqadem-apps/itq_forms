@@ -923,6 +923,13 @@ class Command(BaseCommand):
         ]
         with connection.cursor() as cursor:
             for table in tables:
+                cursor.execute("SELECT to_regclass(%s)", [table])
+                if cursor.fetchone()[0] is None:
+                    continue
+                cursor.execute("SELECT pg_get_serial_sequence(%s, 'id')", [table])
+                sequence_name = cursor.fetchone()[0]
+                if not sequence_name:
+                    continue
                 cursor.execute(
                     f"SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE(MAX(id), 1)) FROM {table};",
                     [table],
