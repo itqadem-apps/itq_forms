@@ -22,7 +22,7 @@ from surveys.models import (
     Survey,
     SurveyTranslation,
 )
-from survey_collections.models import SurveyCollection
+from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
 from taxonomy.models import Category, CategoryTranslation
 # TODO: update for new snapshot model structure
 # from user_surveys.models import (
@@ -646,6 +646,7 @@ class Command(BaseCommand):
                 })
 
         collection_surveys = []
+        collection_translations_to_create = []
         for item in files["blogs_blog.json"]:
             fields = item["fields"]
             title_map = fields.get("title") or {}
@@ -673,11 +674,6 @@ class Command(BaseCommand):
 
             collection = SurveyCollection(
                 status=fields.get("status"),
-                title=title,
-                description=description,
-                short_description=short_description,
-                slug=fields.get("slug"),
-                language=lang,
                 created_at=parse_dt(fields.get("created_at")),
                 updated_at=parse_dt(fields.get("updated_at")),
                 deleted_at=parse_dt(fields.get("deleted_at")),
@@ -686,6 +682,17 @@ class Command(BaseCommand):
                 type=fields.get("type"),
             )
             collection_surveys.append(collection)
+            if title or description or short_description or fields.get("slug") or lang:
+                collection_translations_to_create.append(
+                    SurveyCollectionTranslation(
+                        collection=collection,
+                        language=lang,
+                        title=title,
+                        description=description,
+                        short_description=short_description,
+                        slug=fields.get("slug"),
+                    )
+                )
 
         # Build survey_id -> cover/thumb mapping from media library
         survey_assets = {}  # {survey_id: {"cover": asset_id, "thumbnail": asset_id}}
@@ -860,6 +867,11 @@ class Command(BaseCommand):
                         SurveyCollection.objects.filter(id=collection.id).update(
                             updated_at=desired_updated_at
                         )
+                if collection_translations_to_create:
+                    SurveyCollectionTranslation.objects.bulk_create(
+                        collection_translations_to_create,
+                        batch_size=500,
+                    )
 
             # TODO: update for new snapshot model structure
             # if user_assessments:
