@@ -137,6 +137,12 @@ class Survey(models.Model):
         blank=True,
         verbose_name=_("Sponsor"),
     )
+    organization_id = models.UUIDField(
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Organization ID"),
+    )
     cover_id = models.CharField(max_length=255, null=True, blank=True)
     thumb_id = models.CharField(max_length=255, null=True, blank=True)
 

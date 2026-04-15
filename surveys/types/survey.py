@@ -10,6 +10,7 @@ from strawberry.types import Info
 from surveys.models import Survey, Usage
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
+from survey_collections.types.collection import SurveyCollectionType
 
 from app.auth_utils import get_django_user
 from user_surveys.models import UserSurvey
@@ -69,7 +70,7 @@ class SurveyType:
         return collection.id if collection else None
 
     @strawberry.field
-    def collection(self) -> Optional[Annotated["SurveyCollectionType", strawberry.lazy("survey_collections.types.collection")]]:
+    def collection(self) -> Optional[SurveyCollectionType]:
         return self.collections.first()
 
     @strawberry.field

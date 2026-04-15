@@ -14,6 +14,7 @@ class DomainEvent:
     )
     aggregate_type: str = ""
     aggregate_id: int | str | None = None
+    organization_id: str | None = None
     metadata: dict[str, Any] | None = None
     event: str = ""
 
