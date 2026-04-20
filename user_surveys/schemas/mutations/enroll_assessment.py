@@ -5,10 +5,9 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 
 from app.auth_utils import with_django_user
-from interface.grpc.children_client import ChildrenClient
 from surveys.models import Survey, Usage
+from user_surveys.child_projection import get_active_child_for_user
 from user_surveys.types import UserSurveyType
-from accounts.models import Child
 from user_surveys.models import UserSurvey
 from user_surveys.services import enroll_user_in_assessment
 from ..common import RequireAuth
@@ -30,15 +29,9 @@ class EnrollAssessmentMutation:
 
         child = None
         if child_id:
-            with ChildrenClient() as client:
-                response = client.get_children_by_guardian(guardian_user_id=str(django_user.id), status="active")
-            grpc_child = next((c for c in response.items if c.id == str(child_id)), None)
-            if not grpc_child:
+            child = get_active_child_for_user(str(django_user.id), str(child_id))
+            if child is None:
                 raise ValidationError("Invalid child_id for this user.")
-            child, _ = Child.objects.update_or_create(
-                id=grpc_child.id,
-                defaults={"name": grpc_child.name, "photo_id": grpc_child.photo_id or None},
-            )
 
         is_free = not survey.prices.filter(amount_cents__gt=0).exists()
         if not is_free:

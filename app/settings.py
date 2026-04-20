@@ -177,6 +177,17 @@ else:
 KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
 
 USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
+USERS_CHILD_EVENT_SUBJECTS = _env_list(
+    "USERS_CHILD_EVENT_SUBJECTS",
+    ",".join(
+        [
+            "users.child.>",
+            "users.child_guardian.>",
+        ]
+    ),
+)
+USERS_CHILD_EVENT_STREAM_NAME = os.environ.get("USERS_CHILD_EVENT_STREAM_NAME", "USERS")
+USERS_CHILD_EVENT_STREAM_SUBJECTS = _env_list("USERS_CHILD_EVENT_STREAM_SUBJECTS", "users.>")
 STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
