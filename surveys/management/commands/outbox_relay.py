@@ -11,7 +11,9 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 
 from unimessaging.broker.config import JetStreamConsumer
+from unimessaging.broker.registry import HandlerRegistry
 from unimessaging.outbox_django import DjangoOutboxRelay
+from accounts.messaging import handle_auth_user_registered
 from app.messaging import get_messaging, start_messaging, stop_messaging
 
 
@@ -117,6 +119,24 @@ def _build_jetstream_consumers() -> list[JetStreamConsumer]:
     return consumers
 
 
+_CONSUMER_HANDLERS = {
+    "auth.UserRegistered": handle_auth_user_registered,
+}
+
+
+def _build_handler_registry(consumers: list[JetStreamConsumer]) -> HandlerRegistry | None:
+    registry = HandlerRegistry()
+    attached = False
+    for consumer in consumers:
+        handler = _CONSUMER_HANDLERS.get(consumer.subject)
+        if handler is None:
+            continue
+        pattern = consumer.subject.replace(">", "*")
+        registry.register_handler(pattern, handler)
+        attached = True
+    return registry if attached else None
+
+
 class Command(BaseCommand):
     help = "Run the unimessaging outbox relay for forms assessments"
 
@@ -143,6 +163,9 @@ class Command(BaseCommand):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
+        consumers = _build_jetstream_consumers()
+        registry = _build_handler_registry(consumers)
+
         loop.run_until_complete(
             start_messaging(
                 subjects=["__forms_internal.none"],
@@ -151,9 +174,10 @@ class Command(BaseCommand):
                 enable_durable=settings.JETSTREAM_ENABLED,
                 stream_name=settings.JETSTREAM_STREAM_NAME or None,
                 stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
-                consumers=_build_jetstream_consumers() or None,
+                consumers=consumers or None,
                 pull_batch=settings.JETSTREAM_PULL_BATCH,
                 pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
+                registry=registry,
             )
         )
 
