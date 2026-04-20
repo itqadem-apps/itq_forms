@@ -7,27 +7,24 @@ from django.contrib.auth import get_user_model
 
 
 def get_django_user(info):
-    ctx_user = getattr(info.context, "user", None)
-    identity = getattr(ctx_user, "identity", None) if ctx_user else None
-    subject = getattr(ctx_user, "keycloak_sub", None) or getattr(
-        getattr(identity, "subject", None), "value", None
-    )
-    if not subject:
+    identity = getattr(info.context, "identity", None)
+    if identity is None:
         raise ValueError("Authentication required.")
 
-    preferred_username = getattr(identity, "preferred_username", None) if identity else None
-    email_val = getattr(getattr(identity, "email", None), "value", None)
-    first_name = getattr(identity, "first_name", "") if identity else ""
-    last_name = getattr(identity, "last_name", "") if identity else ""
+    subject = identity.subject_str
+    email = identity.email_str or ""
+    preferred_username = identity.preferred_username or subject
+    first_name = identity.first_name or ""
+    last_name = identity.last_name or ""
 
     UserModel = get_user_model()
     django_user, _created = UserModel.objects.get_or_create(
         id=subject,
         defaults={
-            "username": preferred_username or subject,
-            "email": email_val or "",
-            "first_name": first_name or "",
-            "last_name": last_name or "",
+            "username": preferred_username,
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
         },
     )
     return django_user

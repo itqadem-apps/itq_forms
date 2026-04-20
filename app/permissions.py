@@ -2,7 +2,7 @@ import enum
 from functools import wraps
 from typing import Literal, Callable, Any, Union
 
-from pkg_auth.domain.exceptions import AuthorizationError
+from pkg_auth.authorization import MissingPermission
 
 
 class Permission(enum.Enum):
@@ -110,11 +110,12 @@ def check_permission(assessment_type: Union[str, Callable], action: ActionType) 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(self, info, *args, **kwargs) -> Any:
-            from app.auth import strawberry_auth
-
-            user = info.context.user
-            if not user:
-                raise PermissionError("Authentication required")
+            auth_ctx = getattr(info.context, "auth_context", None)
+            if auth_ctx is None:
+                identity = getattr(info.context, "identity", None)
+                if identity is None:
+                    raise PermissionError("Authentication required")
+                raise PermissionError("Missing X-Organization-Id header")
 
             if callable(assessment_type):
                 resolved_type = assessment_type(info, **kwargs)
@@ -122,12 +123,9 @@ def check_permission(assessment_type: Union[str, Callable], action: ActionType) 
                 resolved_type = assessment_type
 
             required_permission = get_permission_for_kind(resolved_type, action)
-            requirement = strawberry_auth.auth.require_permissions(
-                any_of=[required_permission.value]
-            )
             try:
-                strawberry_auth.auth.authorize(user, [requirement])
-            except AuthorizationError:
+                auth_ctx.require(required_permission.value)
+            except MissingPermission:
                 raise PermissionError(
                     f"Permission denied. Required permission: {required_permission.value}"
                 )

@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     "strawberry.django",
+    "pkg_auth.authorization.adapters.django_orm",
+    "pkg_auth.integrations.django",
     "accounts",
     'surveys',
     "taxonomy",
@@ -72,7 +74,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
-    "pkg_auth.integrations.django.PkgAuthMiddleware",
+    "pkg_auth.integrations.django.IdentityMiddleware",
+    "pkg_auth.integrations.django.AuthContextMiddleware",
     'django.middleware.common.CommonMiddleware',
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
@@ -175,6 +178,9 @@ else:
 
 # Compute API client id from service/app name
 KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
+KEYCLOAK_AUDIENCE = os.environ.get("KEYCLOAK_AUDIENCE") or KEYCLOAK_CLIENT_ID
+
+PLATFORM_ORG_SLUG = os.environ.get("PLATFORM_ORG_SLUG", "platform")
 
 USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
 USERS_CHILD_EVENT_SUBJECTS = _env_list(

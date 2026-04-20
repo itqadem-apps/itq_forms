@@ -3,9 +3,7 @@ from __future__ import annotations
 import strawberry
 from typing import List, Optional
 
-from app.auth import strawberry_auth
-
-RequireAuth = strawberry_auth.require_authenticated()
+from app.auth import RequireAuth  # noqa: F401
 
 
 @strawberry.type
