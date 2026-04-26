@@ -29,7 +29,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--assignable",
             action="store_true",
-            help="Force assignable_to_user=True",
+            help="Force is_for_child=True",
         )
         parser.add_argument(
             "--timed",
@@ -47,7 +47,7 @@ class Command(BaseCommand):
         if options["status"]:
             overrides["status"] = options["status"]
         if options["assignable"]:
-            overrides["assignable_to_user"] = True
+            overrides["is_for_child"] = True
         if options["timed"]:
             overrides["is_timed"] = True
 

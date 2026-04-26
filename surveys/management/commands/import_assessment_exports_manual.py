@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand, CommandError
-from django.db import transaction
+from django.db import connection, transaction
 from django.utils.dateparse import parse_datetime, parse_duration
 
 from surveys.models import (
@@ -19,17 +19,19 @@ from surveys.models import (
     Question,
     Recommendation,
     Section,
-    Status,
     Survey,
-    SurveyMediaAsset,
+    SurveyTranslation,
 )
-from survey_collections.models import SurveyCollection
+from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
 from taxonomy.models import Category, CategoryTranslation
-from user_surveys.models import (
-    UserAnswer,
-    UserAssessment,
-    UserAssessmentClassification,
-)
+# TODO: update for new snapshot model structure
+# from user_surveys.models import (
+#     UserAnswer,
+#     UserClassification,
+#     UserQuestion,
+#     UserSurvey,
+#     UserSurveyClassification,
+# )
 
 
 @dataclass
@@ -107,11 +109,12 @@ class Command(BaseCommand):
             "assessments_answerschemaoption.json": load_fixture(base_path / "assessments_answerschemaoption.json"),
             "assessments_action.json": load_fixture(base_path / "assessments_action.json"),
             "assessments_recommendation.json": load_fixture(base_path / "assessments_recommendation.json"),
-            "assessments_userassessment.json": load_fixture(base_path / "assessments_userassessment.json"),
-            "assessments_useranswer.json": load_fixture(base_path / "assessments_useranswer.json"),
-            "assessments_userassessmentclassification.json": load_fixture(
-                base_path / "assessments_userassessmentclassification.json"
-            ),
+            # TODO: update for new snapshot model structure
+            # "assessments_userassessment.json": load_fixture(base_path / "assessments_userassessment.json"),
+            # "assessments_useranswer.json": load_fixture(base_path / "assessments_useranswer.json"),
+            # "assessments_userassessmentclassification.json": load_fixture(
+            #     base_path / "assessments_userassessmentclassification.json"
+            # ),
             "blogs_blog.json": load_fixture(base_path / "blogs_blog.json"),
             "classifications_category.json": load_fixture(base_path / "classifications_category.json"),
             "media_library_medialibrary.json": load_fixture(base_path / "media_library_medialibrary.json"),
@@ -121,7 +124,7 @@ class Command(BaseCommand):
         # children_child.json, classifications_tag.json, classifications_modeltag.json, sponsors_sponsor.json
 
         ignored_fields = {
-            "assessments_assessment.json": {"deleted_at", "content_type", "object_id"},
+            "assessments_assessment.json": {"deleted_at", "content_type", "object_id", "assessment_type", "price"},
             "assessments_section.json": {"deleted_at", "submit_action", "submit_action_target"},
             "assessments_question.json": {"deleted_at"},
             "assessments_userassessment.json": {"price"},
@@ -145,11 +148,11 @@ class Command(BaseCommand):
             "created_at",
             "deleted_at",
             "category",
-            "price",
             "sponsor",
             "title",
             "description",
             "short_description",
+            "price",
             "language",
             "status",
             "assessment_type",
@@ -279,7 +282,6 @@ class Command(BaseCommand):
         }
         user_assessment_fields = {
             "price",
-            "is_paid",
             "assessment",
             "user",
             "child",
@@ -349,18 +351,19 @@ class Command(BaseCommand):
             extra = set(item["fields"]) - media_fields
             if extra:
                 report.add_fields("media_library_medialibrary.json", item["pk"], extra)
-        for item in files["assessments_userassessment.json"]:
-            extra = set(item["fields"]) - user_assessment_fields
-            if extra:
-                report.add_fields("assessments_userassessment.json", item["pk"], extra)
-        for item in files["assessments_useranswer.json"]:
-            extra = set(item["fields"]) - user_answer_fields
-            if extra:
-                report.add_fields("assessments_useranswer.json", item["pk"], extra)
-        for item in files["assessments_userassessmentclassification.json"]:
-            extra = set(item["fields"]) - user_assessment_class_fields
-            if extra:
-                report.add_fields("assessments_userassessmentclassification.json", item["pk"], extra)
+        # TODO: update for new snapshot model structure
+        # for item in files["assessments_userassessment.json"]:
+        #     extra = set(item["fields"]) - user_assessment_fields
+        #     if extra:
+        #         report.add_fields("assessments_userassessment.json", item["pk"], extra)
+        # for item in files["assessments_useranswer.json"]:
+        #     extra = set(item["fields"]) - user_answer_fields
+        #     if extra:
+        #         report.add_fields("assessments_useranswer.json", item["pk"], extra)
+        # for item in files["assessments_userassessmentclassification.json"]:
+        #     extra = set(item["fields"]) - user_assessment_class_fields
+        #     if extra:
+        #         report.add_fields("assessments_userassessmentclassification.json", item["pk"], extra)
 
         if report.has_issues() and not options["allow_unmapped"] and not options["dry_run"]:
             summary_lines = []
@@ -456,21 +459,28 @@ class Command(BaseCommand):
 
         survey_status_map: dict[int, str] = {}
         surveys = []
+        survey_translations_to_create = []
         for item in files["assessments_assessment.json"]:
             fields = item["fields"]
             survey_status_map[item["pk"]] = fields.get("status")
             category_uuid = category_map.get(fields.get("category"))
+            # Store translation data for later bulk_create
+            survey_lang = fields.get("language") or "default"
+            survey_translations_to_create.append({
+                "survey_id": item["pk"],
+                "language": survey_lang,
+                "title": fields.get("title"),
+                "description": fields.get("description"),
+                "short_description": fields.get("short_description"),
+                "slug": fields.get("slug"),
+            })
             surveys.append(
                 Survey(
                     id=item["pk"],
-                    title=fields.get("title"),
-                    description=fields.get("description"),
-                    short_description=fields.get("short_description"),
-                    language=fields.get("language"),
-                    assessment_type=fields.get("assessment_type"),
+                    survey_type=fields.get("assessment_type"),
                     display_option=fields.get("display_option"),
                     is_timed=fields.get("is_timed", False),
-                    assignable_to_user=fields.get("is_for_child", False),
+                    is_for_child=fields.get("is_for_child", False),
                     is_evaluable=fields.get("is_evaluable", False),
                     evaluation_type=fields.get("evaluation_type"),
                     use_score=fields.get("use_score", False),
@@ -497,7 +507,6 @@ class Command(BaseCommand):
                     updated_at=parse_dt(fields.get("updated_at")),
                     category_id=category_uuid,
                     sponsor=fields.get("sponsor"),
-                    price=fields.get("price", 0),
                 )
             )
 
@@ -555,12 +564,12 @@ class Command(BaseCommand):
             )
 
         classifications = []
+        classification_translations_to_create = []
         for item in files["assessments_classification.json"]:
             fields = item["fields"]
             classifications.append(
                 Classification(
                     id=item["pk"],
-                    name=fields.get("name"),
                     survey_id=fields.get("assessment"),
                     score=fields.get("score"),
                     created_at=parse_dt(fields.get("created_at")),
@@ -568,6 +577,12 @@ class Command(BaseCommand):
                     deleted_at=parse_dt(fields.get("deleted_at")),
                 )
             )
+            if fields.get("name"):
+                classification_translations_to_create.append({
+                    "classification_id": item["pk"],
+                    "language": "default",
+                    "name": fields.get("name"),
+                })
 
         schema_options = []
         for item in files["assessments_answerschemaoption.json"]:
@@ -591,26 +606,32 @@ class Command(BaseCommand):
             )
 
         actions = []
+        action_translations_to_create = []
         for item in files["assessments_action.json"]:
             fields = item["fields"]
             actions.append(
                 Action(
                     id=item["pk"],
-                    title=fields.get("title"),
-                    description=fields.get("description"),
                     survey_id=fields.get("assessment"),
                     upper_limit=fields.get("upper_limit", 0),
                     lower_limit=fields.get("lower_limit", 0),
                 )
             )
+            if fields.get("title") or fields.get("description"):
+                action_translations_to_create.append({
+                    "action_id": item["pk"],
+                    "language": "default",
+                    "title": fields.get("title"),
+                    "description": fields.get("description"),
+                })
 
         recommendations = []
+        recommendation_translations_to_create = []
         for item in files["assessments_recommendation.json"]:
             fields = item["fields"]
             recommendations.append(
                 Recommendation(
                     id=item["pk"],
-                    description=fields.get("description"),
                     survey_id=fields.get("assessment"),
                     option_id=fields.get("option"),
                     created_at=parse_dt(fields.get("created_at")),
@@ -618,10 +639,15 @@ class Command(BaseCommand):
                     deleted_at=parse_dt(fields.get("deleted_at")),
                 )
             )
+            if fields.get("description"):
+                recommendation_translations_to_create.append({
+                    "recommendation_id": item["pk"],
+                    "language": "default",
+                    "description": fields.get("description"),
+                })
 
         collection_surveys = []
-        collection_subscribers: list[tuple[SurveyCollection, list[Any]]] = []
-        collection_enrolled: list[tuple[SurveyCollection, list[Any]]] = []
+        collection_translations_to_create = []
         for item in files["blogs_blog.json"]:
             fields = item["fields"]
             title_map = fields.get("title") or {}
@@ -647,38 +673,30 @@ class Command(BaseCommand):
             if short_description is None and short_map:
                 short_description = next(iter(short_map.values()))
 
-            author_value = fields.get("author")
-            author_id = None
-            if isinstance(author_value, list):
-                author_value = author_value[0] if author_value else None
-            if isinstance(author_value, str) and author_value in user_by_email:
-                author_id = user_by_email[author_value]
-            elif author_value is not None:
-                report.add_value("blogs.author", author_value)
-
             collection = SurveyCollection(
                 status=fields.get("status"),
-                privacy_status=fields.get("privacy_status"),
-                title=title,
-                description=description,
-                short_description=short_description,
-                slug=fields.get("slug"),
-                language=lang,
                 created_at=parse_dt(fields.get("created_at")),
                 updated_at=parse_dt(fields.get("updated_at")),
                 deleted_at=parse_dt(fields.get("deleted_at")),
                 category_id=category_map.get(fields.get("category")),
-                price=fields.get("price", 0),
-                video_list=fields.get("video_list"),
                 sponsor=fields.get("sponsor"),
                 type=fields.get("type"),
-                author_id=author_id,
             )
             collection_surveys.append(collection)
-            collection_subscribers.append((collection, fields.get("subscribers") or []))
-            collection_enrolled.append((collection, fields.get("enrolled_users") or []))
+            if title or description or short_description or fields.get("slug") or lang:
+                collection_translations_to_create.append(
+                    SurveyCollectionTranslation(
+                        collection=collection,
+                        language=lang,
+                        title=title,
+                        description=description,
+                        short_description=short_description,
+                        slug=fields.get("slug"),
+                    )
+                )
 
-        assets = []
+        # Build survey_id -> cover/thumb mapping from media library
+        survey_assets = {}  # {survey_id: {"cover": asset_id, "thumbnail": asset_id}}
         asset_type_map = {"thumb": "thumbnail", "cover": "cover"}
         for item in files["media_library_medialibrary.json"]:
             fields = item["fields"]
@@ -690,76 +708,71 @@ class Command(BaseCommand):
             if not asset_type:
                 report.add_value("media_library.collection_name", fields.get("collection_name"))
                 continue
-            assets.append(
-                SurveyMediaAsset(
-                    survey_id=fields.get("object_id"),
-                    asset_id=fields.get("uuid"),
-                    asset_type=asset_type,
-                )
-            )
+            survey_id = fields.get("object_id")
+            survey_assets.setdefault(survey_id, {})
+            survey_assets[survey_id][asset_type] = fields.get("uuid")
 
-        user_assessments = []
-        for item in files["assessments_userassessment.json"]:
-            fields = item["fields"]
-            user_ref_list = fields.get("user") or []
-            user_ref = user_ref_list[0] if user_ref_list else None
-            user_id = user_by_email.get(user_ref) if user_ref else None
-            if user_ref and user_id is None:
-                report.add_value("userassessment.user", user_ref)
-            user_assessments.append(
-                UserAssessment(
-                    id=item["pk"],
-                    is_paid=fields.get("is_paid", False),
-                    survey_id=fields.get("assessment"),
-                    user_id=user_id,
-                    child_id=str(fields.get("child")) if fields.get("child") is not None else None,
-                    count_of_ending_options=fields.get("count_of_ending_options", 0),
-                    evaluated_at=parse_dt(fields.get("evaluated_at")),
-                    submitted_at=parse_dt(fields.get("submitted_at")),
-                    score=fields.get("score"),
-                    progress=fields.get("progress"),
-                    last_question_id=fields.get("last_question"),
-                    action_id=fields.get("action"),
-                )
-            )
-
-        user_answers = []
-        user_answer_selected = []
-        for item in files["assessments_useranswer.json"]:
-            fields = item["fields"]
-            user_ref_list = fields.get("user") or []
-            user_ref = user_ref_list[0] if user_ref_list else None
-            user_id = user_by_email.get(user_ref) if user_ref else None
-            if user_ref and user_id is None:
-                report.add_value("useranswer.user", user_ref)
-            user_answers.append(
-                UserAnswer(
-                    id=item["pk"],
-                    survey_id=fields.get("assessment"),
-                    user_id=user_id,
-                    question_id=fields.get("question"),
-                    question_title=fields.get("question_title"),
-                    user_assessment_id=fields.get("user_assessment"),
-                    answer=fields.get("answer"),
-                    type=fields.get("type"),
-                    score=fields.get("score"),
-                    order=fields.get("order"),
-                )
-            )
-            for option_id in fields.get("selected_options") or []:
-                user_answer_selected.append((item["pk"], option_id))
-
-        user_assessment_classifications = []
-        for item in files["assessments_userassessmentclassification.json"]:
-            fields = item["fields"]
-            user_assessment_classifications.append(
-                UserAssessmentClassification(
-                    id=item["pk"],
-                    user_assessment_id=fields.get("user_assessment"),
-                    classification_id=fields.get("classification"),
-                    count=fields.get("count", 0),
-                )
-            )
+        # TODO: update for new snapshot model structure
+        # user_assessments = []
+        # for item in files["assessments_userassessment.json"]:
+        #     fields = item["fields"]
+        #     user_ref_list = fields.get("user") or []
+        #     user_ref = user_ref_list[0] if user_ref_list else None
+        #     user_id = user_by_email.get(user_ref) if user_ref else None
+        #     if user_ref and user_id is None:
+        #         report.add_value("userassessment.user", user_ref)
+        #     user_assessments.append(
+        #         UserSurvey(
+        #             id=item["pk"],
+        #             survey_id=fields.get("assessment"),
+        #             user_id=user_id,
+        #             child_id=str(fields.get("child")) if fields.get("child") is not None else None,
+        #             count_of_ending_options=fields.get("count_of_ending_options", 0),
+        #             evaluated_at=parse_dt(fields.get("evaluated_at")),
+        #             submitted_at=parse_dt(fields.get("submitted_at")),
+        #             score=fields.get("score"),
+        #             last_question_id=fields.get("last_question"),
+        #             action_id=fields.get("action"),
+        #         )
+        #     )
+        #
+        # user_answers = []
+        # user_answer_selected = []
+        # for item in files["assessments_useranswer.json"]:
+        #     fields = item["fields"]
+        #     user_ref_list = fields.get("user") or []
+        #     user_ref = user_ref_list[0] if user_ref_list else None
+        #     user_id = user_by_email.get(user_ref) if user_ref else None
+        #     if user_ref and user_id is None:
+        #         report.add_value("useranswer.user", user_ref)
+        #     user_answers.append(
+        #         UserAnswer(
+        #             id=item["pk"],
+        #             survey_id=fields.get("assessment"),
+        #             user_id=user_id,
+        #             question_id=fields.get("question"),
+        #             question_title=fields.get("question_title"),
+        #             user_survey_id=fields.get("user_assessment"),
+        #             answer=fields.get("answer"),
+        #             type=fields.get("type"),
+        #             score=fields.get("score"),
+        #             order=fields.get("order"),
+        #         )
+        #     )
+        #     for option_id in fields.get("selected_options") or []:
+        #         user_answer_selected.append((item["pk"], option_id))
+        #
+        # user_assessment_classifications = []
+        # for item in files["assessments_userassessmentclassification.json"]:
+        #     fields = item["fields"]
+        #     user_assessment_classifications.append(
+        #         UserSurveyClassification(
+        #             id=item["pk"],
+        #             user_survey_id=fields.get("user_assessment"),
+        #             classification_id=fields.get("classification"),
+        #             count=fields.get("count", 0),
+        #         )
+        #     )
 
         if report.has_issues() and not options["allow_unmapped"] and not options["dry_run"]:
             summary_lines = []
@@ -782,12 +795,13 @@ class Command(BaseCommand):
                 ("answer_schema_options", len(schema_options)),
                 ("actions", len(actions)),
                 ("recommendations", len(recommendations)),
-                ("survey_media_assets", len(assets)),
+                ("survey_media_assets", len(survey_assets)),
                 ("survey_collections", len(collection_surveys)),
-                ("user_assessments", len(user_assessments)),
-                ("user_answers", len(user_answers)),
-                ("user_assessment_classifications", len(user_assessment_classifications)),
-                ("user_answer_selected", len(user_answer_selected)),
+                # TODO: update for new snapshot model structure
+                # ("user_assessments", len(user_assessments)),
+                # ("user_answers", len(user_answers)),
+                # ("user_assessment_classifications", len(user_assessment_classifications)),
+                # ("user_answer_selected", len(user_answer_selected)),
             ]
             for label, count in counts:
                 self.stdout.write(self.style.SUCCESS(f"OK {label}: {count}"))
@@ -818,21 +832,35 @@ class Command(BaseCommand):
                 CategoryTranslation.objects.bulk_create(translations, batch_size=500)
 
             Survey.objects.bulk_create(surveys, batch_size=500)
+            SurveyTranslation.objects.bulk_create([
+                SurveyTranslation(**t_data) for t_data in survey_translations_to_create
+            ], batch_size=500)
             Section.objects.bulk_create(sections, batch_size=500)
             Question.objects.bulk_create(questions, batch_size=500)
             AnswerSchema.objects.bulk_create(schemas, batch_size=500)
             Classification.objects.bulk_create(classifications, batch_size=500)
+            from classifications.models import ClassificationTranslation as CTranslation
+            CTranslation.objects.bulk_create([
+                CTranslation(**t_data) for t_data in classification_translations_to_create
+            ], batch_size=500)
             AnswerSchemaOption.objects.bulk_create(schema_options, batch_size=500)
             Action.objects.bulk_create(actions, batch_size=500)
+            from recommendations.models import ActionTranslation as ATranslation
+            ATranslation.objects.bulk_create([
+                ATranslation(**t_data) for t_data in action_translations_to_create
+            ], batch_size=500)
             Recommendation.objects.bulk_create(recommendations, batch_size=500)
-            if assets:
-                SurveyMediaAsset.objects.bulk_create(assets, batch_size=500)
+            from recommendations.models import RecommendationTranslation as RTranslation
+            RTranslation.objects.bulk_create([
+                RTranslation(**t_data) for t_data in recommendation_translations_to_create
+            ], batch_size=500)
+            for sid, asset_map in survey_assets.items():
+                Survey.objects.filter(pk=sid).update(
+                    cover_id=asset_map.get("cover"),
+                    thumb_id=asset_map.get("thumbnail"),
+                )
 
             if collection_surveys:
-                subscribers_through = SurveyCollection.subscribers.through
-                enrolled_through = SurveyCollection.enrolled_users.through
-                subscriber_rows = []
-                enrolled_rows = []
                 for collection in collection_surveys:
                     desired_updated_at = collection.updated_at
                     collection.save()
@@ -840,71 +868,34 @@ class Command(BaseCommand):
                         SurveyCollection.objects.filter(id=collection.id).update(
                             updated_at=desired_updated_at
                         )
-                for collection, subscribers in collection_subscribers:
-                    for value in subscribers:
-                        user_id = None
-                        if isinstance(value, list):
-                            value = value[0] if value else None
-                        if isinstance(value, str) and value in user_by_email:
-                            user_id = user_by_email[value]
-                        elif isinstance(value, int):
-                            user_id = value if UserModel.objects.filter(id=value).exists() else None
-                        if user_id is None and value is not None:
-                            report.add_value("blogs.subscribers", value)
-                            continue
-                        if user_id is not None:
-                            subscriber_rows.append(
-                                subscribers_through(
-                                    surveycollection_id=collection.id,
-                                    user_id=user_id,
-                                )
-                            )
-                for collection, enrolled in collection_enrolled:
-                    for value in enrolled:
-                        user_id = None
-                        if isinstance(value, list):
-                            value = value[0] if value else None
-                        if isinstance(value, str) and value in user_by_email:
-                            user_id = user_by_email[value]
-                        elif isinstance(value, int):
-                            user_id = value if UserModel.objects.filter(id=value).exists() else None
-                        if user_id is None and value is not None:
-                            report.add_value("blogs.enrolled_users", value)
-                            continue
-                        if user_id is not None:
-                            enrolled_rows.append(
-                                enrolled_through(
-                                    surveycollection_id=collection.id,
-                                    user_id=user_id,
-                                )
-                            )
-                if subscriber_rows:
-                    subscribers_through.objects.bulk_create(subscriber_rows, batch_size=500)
-                if enrolled_rows:
-                    enrolled_through.objects.bulk_create(enrolled_rows, batch_size=500)
+                if collection_translations_to_create:
+                    SurveyCollectionTranslation.objects.bulk_create(
+                        collection_translations_to_create,
+                        batch_size=500,
+                    )
 
-            if user_assessments:
-                UserAssessment.objects.bulk_create(user_assessments, batch_size=500)
-            if user_answers:
-                UserAnswer.objects.bulk_create(user_answers, batch_size=500)
-            if user_assessment_classifications:
-                UserAssessmentClassification.objects.bulk_create(
-                    user_assessment_classifications, batch_size=500
-                )
-
-            if user_answer_selected:
-                through = UserAnswer.selected_options.through
-                through_rows = [
-                    through(useranswer_id=ua_id, answerschemaoption_id=opt_id)
-                    for ua_id, opt_id in user_answer_selected
-                ]
-                through.objects.bulk_create(through_rows, batch_size=1000)
+            # TODO: update for new snapshot model structure
+            # if user_assessments:
+            #     UserSurvey.objects.bulk_create(user_assessments, batch_size=500)
+            # if user_answers:
+            #     UserAnswer.objects.bulk_create(user_answers, batch_size=500)
+            # if user_assessment_classifications:
+            #     UserSurveyClassification.objects.bulk_create(
+            #         user_assessment_classifications, batch_size=500
+            #     )
+            #
+            # if user_answer_selected:
+            #     through = UserAnswer.selected_options.through
+            #     through_rows = [
+            #         through(useranswer_id=ua_id, answerschemaoption_id=opt_id)
+            #         for ua_id, opt_id in user_answer_selected
+            #     ]
+            #     through.objects.bulk_create(through_rows, batch_size=1000)
 
             for survey in surveys:
                 status_value = survey_status_map.get(survey.id)
                 if status_value:
-                    status = Status.objects.create(survey_id=survey.id, status=status_value)
-                    Survey.objects.filter(id=survey.id).update(status_id=status.id)
+                    Survey.objects.filter(id=survey.id).update(status=status_value)
             if report.has_issues() and not options["allow_unmapped"]:
                 summary_lines = []
                 if report.values:
@@ -913,4 +904,34 @@ class Command(BaseCommand):
                         summary_lines.append(f"Unmapped values for {key}: {sample_vals}")
                 raise CommandError("Unmapped reference values detected. " + " | ".join(summary_lines))
 
+        if not options.get("dry_run"):
+            self._reset_sequences()
         self.stdout.write(self.style.SUCCESS("Import completed."))
+
+    def _reset_sequences(self):
+        tables = [
+            "surveys_survey",
+            "surveys_section",
+            "surveys_question",
+            "surveys_answerschema",
+            "surveys_answerschemaoption",
+            "surveys_classification",
+            "surveys_action",
+            "surveys_recommendation",
+            "surveys_usersurvey",
+            "surveys_useranswer",
+        ]
+        with connection.cursor() as cursor:
+            for table in tables:
+                cursor.execute("SELECT to_regclass(%s)", [table])
+                if cursor.fetchone()[0] is None:
+                    continue
+                cursor.execute("SELECT pg_get_serial_sequence(%s, 'id')", [table])
+                sequence_name = cursor.fetchone()[0]
+                if not sequence_name:
+                    continue
+                cursor.execute(
+                    f"SELECT setval(pg_get_serial_sequence(%s, 'id'), COALESCE(MAX(id), 1)) FROM {table};",
+                    [table],
+                )
+        self.stdout.write(self.style.SUCCESS("Sequences reset."))

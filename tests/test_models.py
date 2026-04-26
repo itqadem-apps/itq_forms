@@ -1,0 +1,525 @@
+"""Tests for all Django models: creation, relationships, constraints."""
+import uuid
+
+import pytest
+from django.contrib.auth import get_user_model
+from django.db import IntegrityError
+from django.utils.timezone import now
+
+from surveys.models import (
+    Action,
+    ActionTranslation,
+    AnswerSchema,
+    AnswerSchemaOption,
+    AnswerSchemaOptionTranslation,
+    Classification,
+    ClassificationTranslation,
+    Question,
+    QuestionTranslation,
+    Recommendation,
+    RecommendationTranslation,
+    Section,
+    SectionTranslation,
+    Survey,
+    SurveyTranslation,
+    Usage,
+)
+from pricing.models import Price, Discount
+from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
+from taxonomy.models import Category, CategoryTranslation
+from user_surveys.models import (
+    Child,
+    UserAnswer,
+    UserAnswerOption,
+    UserClassification,
+    UserQuestion,
+    UserRecommendation,
+    UserSurvey,
+    UserSurveyClassification,
+    UserSurveyRecommendation,
+)
+
+User = get_user_model()
+
+
+# ── User model ──────────────────────────────────────────────────
+class TestUserModel:
+    def test_create_user(self, user):
+        assert user.pk is not None
+        assert user.username == "testuser"
+        assert str(user) == "testuser"
+
+    def test_user_keycloak_pk(self, user):
+        assert user.pk.startswith("keycloak-")
+
+    def test_user_duplicate_pk_raises(self, user):
+        with pytest.raises(IntegrityError):
+            User.objects.create(id=user.pk, username="dup")
+
+
+# ── Survey model ────────────────────────────────────────────────
+class TestSurveyModel:
+    def test_create_survey(self, survey):
+        assert survey.pk is not None
+        assert survey.title == "Test Survey"
+        assert survey.survey_type == Survey.ASSESSMENT_TYPE_SURVEY
+
+    def test_survey_defaults(self):
+        s = Survey.objects.create()
+        assert s.display_option == Survey.DISPLAY_OPTION_BY_QUESTION
+        assert s.evaluation_type == Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION
+        assert s.use_score is True
+        assert s.is_timed is False
+        assert s.is_for_child is False
+
+    def test_survey_str(self, survey):
+        assert str(survey) == "Test Survey"
+
+    def test_survey_ordering(self):
+        s1 = Survey.objects.create()
+        s2 = Survey.objects.create()
+        surveys = list(Survey.objects.all())
+        assert surveys[0].pk == s2.pk  # -created_at ordering
+
+    def test_update_status(self, survey):
+        survey.status = Survey.STATUS_PUBLISHED
+        survey.save(update_fields=["status"])
+        survey.refresh_from_db()
+        assert survey.status == Survey.STATUS_PUBLISHED
+
+    def test_survey_all_types(self):
+        for type_val, _ in Survey.ASSESSMENT_TYPES:
+            s = Survey.objects.create(survey_type=type_val)
+            assert s.survey_type == type_val
+
+    def test_survey_all_display_options(self):
+        for opt_val, _ in Survey.DISPLAY_OPTIONS:
+            s = Survey.objects.create(display_option=opt_val)
+            assert s.display_option == opt_val
+
+    def test_survey_properties(self, survey):
+        assert survey.get_survey_type == "Survey"
+        assert survey.get_evaluation_type == "Automatic Evaluation"
+        assert survey.get_display_option == "By Question"
+        assert survey.get_status == "Draft"
+
+    def test_survey_category_fk(self, survey, category):
+        survey.category = category
+        survey.save()
+        survey.refresh_from_db()
+        assert survey.category_id == category.pk
+
+
+# ── Survey status ──────────────────────────────────────────────
+class TestSurveyStatus:
+    def test_status_default(self, survey):
+        assert survey.status == Survey.STATUS_DRAFT
+
+    def test_status_all_choices(self):
+        for status_val, label in Survey.STATUS_CHOICES:
+            s = Survey.objects.create(status=status_val)
+            assert s.status == status_val
+            assert s.get_status == str(label)
+
+
+# ── Section model ───────────────────────────────────────────────
+class TestSectionModel:
+    def test_create_section(self, section):
+        assert section.pk is not None
+        assert section.title == "Section 1"
+        assert section.order == 1
+
+    def test_section_auto_order(self, survey):
+        s1 = Section.objects.create(survey=survey, title="S1")
+        s2 = Section.objects.create(survey=survey, title="S2")
+        assert s1.order == 1
+        assert s2.order == 2
+
+    def test_section_survey_relationship(self, survey, section):
+        assert section.survey_id == survey.pk
+        assert section in survey.sections.all()
+
+    def test_section_ordering(self, survey):
+        s2 = Section.objects.create(survey=survey, title="B", order=2)
+        s1 = Section.objects.create(survey=survey, title="A", order=1)
+        sections = list(Section.objects.filter(survey=survey))
+        assert sections[0].order <= sections[1].order
+
+
+# ── Question model ──────────────────────────────────────────────
+class TestQuestionModel:
+    def test_create_question(self, question):
+        assert question.pk is not None
+        assert question.is_required is True
+        assert question.type == Question.QUESTION_TYPE_RADIO_MCQ
+
+    def test_question_auto_order(self, survey, section):
+        # Section signal auto-creates 1 question already (order=1)
+        q_new = Question.objects.create(survey=survey, section=section, title="Q_new")
+        assert q_new.order == 2
+
+    def test_question_all_types(self, survey, section):
+        for type_val, _ in Question.QUESTION_TYPE_CHOICES:
+            q = Question.objects.create(
+                survey=survey, section=section, title=f"Type {type_val}", type=type_val
+            )
+            assert q.type == type_val
+
+    def test_question_section_relationship(self, question, section):
+        assert question in section.questions.all()
+
+    def test_question_mcq_types_property(self, question):
+        assert "radio" in question.mcq_types
+        assert "checkbox" in question.mcq_types
+        assert "dropdown" in question.mcq_types
+
+    def test_question_grid_types_property(self, question):
+        assert "radio_grid" in question.grid_types
+        assert "checkbox_grid" in question.grid_types
+
+
+# ── AnswerSchema model ──────────────────────────────────────────
+class TestAnswerSchemaModel:
+    def test_create_answer_schema(self, answer_schema):
+        assert answer_schema.pk is not None
+        assert answer_schema.is_mcq is True
+        assert answer_schema.is_grid is False
+
+    def test_answer_schema_one_to_one(self, question, answer_schema):
+        assert question.answer_schema == answer_schema
+
+    def test_answer_schema_second_raises(self, survey, section, question, answer_schema):
+        with pytest.raises(IntegrityError):
+            AnswerSchema.objects.create(
+                survey=survey, section=section, question=question, type="radio"
+            )
+
+
+# ── AnswerSchemaOption model ────────────────────────────────────
+class TestAnswerSchemaOptionModel:
+    def test_create_options(self, options):
+        assert len(options) == 3
+        assert options[0].text == "Red"
+        assert options[0].score == 10
+
+    def test_option_auto_order(self, options):
+        assert options[0].order == 1
+        assert options[1].order == 2
+        assert options[2].order == 3
+
+    def test_option_schema_relationship(self, answer_schema, options):
+        assert answer_schema.options.count() == 3
+
+    def test_option_with_classification(self, survey, section, question, answer_schema):
+        classification = Classification.objects.create(survey=survey, score=10)
+        ClassificationTranslation.objects.create(classification=classification, language="en", name="Cat A")
+        opt = AnswerSchemaOption.objects.create(
+            survey=survey, section=section, question=question,
+            schema=answer_schema, text="Opt", classification=classification,
+        )
+        assert opt.classification == classification
+
+    def test_option_ending_option_flag(self, survey, section, question, answer_schema):
+        opt = AnswerSchemaOption.objects.create(
+            survey=survey, section=section, question=question,
+            schema=answer_schema, text="End", ending_option=True,
+        )
+        assert opt.ending_option is True
+
+
+# ── Classification model ────────────────────────────────────────
+class TestClassificationModel:
+    def test_create_classification(self, survey):
+        c = Classification.objects.create(survey=survey, score=100)
+        ClassificationTranslation.objects.create(classification=c, language="en", name="High")
+        assert c.name == "High"
+        assert c.score == 100
+        assert str(c) == "High"
+
+    def test_classification_survey_relationship(self, survey):
+        Classification.objects.create(survey=survey)
+        Classification.objects.create(survey=survey)
+        assert survey.classifications.count() == 2
+
+
+# ── Recommendation model ───────────────────────────────────────
+class TestRecommendationModel:
+    def test_create_recommendation(self, survey, options):
+        r = Recommendation.objects.create(survey=survey, option=options[0])
+        RecommendationTranslation.objects.create(
+            recommendation=r, language="en", description="Try red things",
+        )
+        assert r.description == "Try red things"
+        assert str(r) == "Try red things"
+
+    def test_recommendation_option_relationship(self, survey, options):
+        Recommendation.objects.create(survey=survey, option=options[0])
+        Recommendation.objects.create(survey=survey, option=options[0])
+        assert options[0].option_recommendations.count() == 2
+
+
+# ── Action model ────────────────────────────────────────────────
+class TestActionModel:
+    def test_create_action(self, survey):
+        a = Action.objects.create(
+            survey=survey, upper_limit=100, lower_limit=50,
+        )
+        ActionTranslation.objects.create(
+            action=a, language="en", title="Review", description="Review answers",
+        )
+        assert a.title == "Review"
+        assert a.upper_limit == 100.0
+        assert a.lower_limit == 50.0
+
+    def test_action_survey_relationship(self, survey):
+        Action.objects.create(survey=survey)
+        Action.objects.create(survey=survey)
+        assert survey.actions.count() == 2
+
+
+# ── Usage model ─────────────────────────────────────────────────
+class TestUsageModel:
+    def test_create_usage(self, user, survey):
+        u = Usage.objects.create(
+            user=user, survey=survey,
+            order_id=uuid.uuid4(), usage_limit=5, used_count=0,
+        )
+        assert u.usage_limit == 5
+        assert u.used_count == 0
+
+    def test_usage_increment(self, user, survey):
+        u = Usage.objects.create(
+            user=user, survey=survey, order_id=uuid.uuid4(), usage_limit=3, used_count=0,
+        )
+        u.used_count += 1
+        u.save()
+        u.refresh_from_db()
+        assert u.used_count == 1
+
+
+# ── Price model ─────────────────────────────────────────────────
+class TestPriceModel:
+    def test_create_price_for_survey(self, survey):
+        p = Price.objects.create(
+            survey=survey, currency="USD", amount_cents=1000,
+        )
+        assert p.amount_cents == 1000
+        assert p.currency == "USD"
+        assert p.survey_id == survey.pk
+        assert p.collection_id is None
+
+    def test_create_price_for_collection(self, collection):
+        p = Price.objects.create(
+            collection=collection, currency="SAR", amount_cents=500,
+        )
+        assert p.collection_id == collection.pk
+        assert p.survey_id is None
+
+    def test_price_str(self, survey):
+        p = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        assert str(p) == "USD 1000"
+
+
+# ── Discount model ─────────────────────────────────────────────
+class TestDiscountModel:
+    def test_create_discount(self, survey):
+        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        d = Discount.objects.create(
+            price=price, type=Discount.DISCOUNT_TYPE_PERCENTAGE, value=20,
+        )
+        assert d.type == "percentage"
+        assert d.value == 20
+        assert d.redemption_count == 0
+
+    def test_discount_fixed_amount(self, survey):
+        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        d = Discount.objects.create(
+            price=price, type=Discount.DISCOUNT_TYPE_FIXED_AMOUNT, value=250,
+        )
+        assert d.type == "fixed_amount"
+        assert d.value == 250
+
+    def test_discount_with_code(self, survey):
+        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        d = Discount.objects.create(
+            price=price, type=Discount.DISCOUNT_TYPE_PERCENTAGE, value=10,
+            code="SAVE10", max_redemptions=100,
+        )
+        assert d.code == "SAVE10"
+        assert d.max_redemptions == 100
+
+    def test_discount_relationship(self, survey):
+        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        Discount.objects.create(price=price, type="percentage", value=10)
+        Discount.objects.create(price=price, type="fixed_amount", value=50)
+        assert price.discounts.count() == 2
+
+
+# ── Child model ─────────────────────────────────────────────────
+class TestChildModel:
+    def test_create_child(self):
+        child = Child.objects.create(id="child-1", name="Alice")
+        assert child.name == "Alice"
+
+    def test_child_with_photo(self):
+        child = Child.objects.create(id="child-2", name="Bob", photo_id="photo-123")
+        assert child.photo_id == "photo-123"
+
+
+# ── UserSurvey model ───────────────────────────────────────────
+class TestUserSurveyModel:
+    def test_create_user_survey_via_enrollment(self, user, survey):
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id)
+        assert us.pk is not None
+        assert us.submitted_at is None
+        assert us.score is None
+        # title lives in translations JSONB now
+        assert us.translations["en"]["title"] == "Test Survey"
+
+    def test_user_survey_with_child(self, user):
+        survey = Survey.objects.create(is_for_child=True)
+        child = Child.objects.create(id="child-x", name="Child")
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id, child=child)
+        assert us.child == child
+
+    def test_user_survey_with_collection(self, user, survey, collection):
+        from user_surveys.services import enroll_user_in_assessment
+        us, _ = enroll_user_in_assessment(user, survey.id, collection_id=collection.id)
+        assert us.collection == collection
+
+
+# ── UserAnswer model ────────────────────────────────────────────
+class TestUserAnswerModel:
+    def test_create_user_answer(self, user, enrolled_survey, question, options):
+        uq = UserQuestion.objects.get(user_survey=enrolled_survey, origin_id=question.id)
+        uopt = UserAnswerOption.objects.get(user_survey=enrolled_survey, origin_id=options[0].id)
+        ua = UserAnswer.objects.create(
+            user=user, question=uq,
+            user_survey=enrolled_survey, answer="Red", type=uq.type,
+        )
+        assert ua.answer == "Red"
+
+    def test_user_answer_with_options(self, user, enrolled_survey, question, options):
+        uq = UserQuestion.objects.get(user_survey=enrolled_survey, origin_id=question.id)
+        uopt = UserAnswerOption.objects.get(user_survey=enrolled_survey, origin_id=options[0].id)
+        ua = UserAnswer.objects.create(
+            user=user, question=uq,
+            user_survey=enrolled_survey, type=uq.type,
+        )
+        ua.selected_options.set([uopt])
+        assert ua.selected_options.count() == 1
+
+
+# ── UserSurveyClassification model ─────────────────────────────
+class TestUserSurveyClassificationModel:
+    def test_create_classification_link(self, enrolled_survey, survey):
+        c = Classification.objects.create(survey=survey)
+        # Need to create a UserClassification for the through model
+        uc = UserClassification.objects.create(
+            user_survey=enrolled_survey, origin_id=c.id,
+            translations={"en": {"name": "Class A"}},
+        )
+        usc = UserSurveyClassification.objects.create(
+            user_survey=enrolled_survey, classification=uc, count=3,
+        )
+        assert usc.count == 3
+
+
+# ── UserSurveyRecommendation model ─────────────────────────────
+class TestUserSurveyRecommendationModel:
+    def test_create_recommendation_link(self, enrolled_survey, survey, options):
+        r = Recommendation.objects.create(survey=survey, option=options[0])
+        ur = UserRecommendation.objects.create(
+            user_survey=enrolled_survey, origin_id=r.id,
+            translations={"en": {"description": r.description}},
+        )
+        usr = UserSurveyRecommendation.objects.create(
+            user_survey=enrolled_survey, recommendation=ur, count=2,
+        )
+        assert usr.count == 2
+
+
+# ── SurveyCollection model ─────────────────────────────────────
+class TestSurveyCollectionModel:
+    def test_create_collection(self, collection):
+        assert collection.pk is not None
+        assert collection.status == SurveyCollection.STATUS_PUBLISHED
+
+    def test_collection_add_survey(self, collection, survey):
+        collection.assessments.add(survey)
+        assert survey in collection.assessments.all()
+
+    def test_collection_remove_survey(self, collection, survey):
+        collection.assessments.add(survey)
+        collection.assessments.remove(survey)
+        assert survey not in collection.assessments.all()
+
+
+# ── Category model ──────────────────────────────────────────────
+class TestCategoryModel:
+    def test_create_category(self, category):
+        assert category.name == "Test Category"
+        assert str(category) == "Test Category"
+
+
+# ── Translation models ─────────────────────────────────────────
+class TestTranslationModels:
+    def test_survey_translation(self, survey):
+        t = SurveyTranslation.objects.create(
+            survey=survey, language="ar", title="استبيان تجريبي",
+        )
+        assert t.language == "ar"
+        assert t.survey == survey
+
+    def test_section_translation(self, section):
+        t = SectionTranslation.objects.create(
+            section=section, language="ar", title="القسم الأول",
+        )
+        assert t.language == "ar"
+
+    def test_question_translation(self, question):
+        t = QuestionTranslation.objects.create(
+            question=question, language="ar", title="ما هو لونك المفضل؟",
+        )
+        assert t.language == "ar"
+
+    def test_answer_schema_option_translation(self, options):
+        t = AnswerSchemaOptionTranslation.objects.create(
+            option=options[0], language="ar", text="أحمر",
+        )
+        assert t.text == "أحمر"
+
+    def test_classification_translation(self, survey):
+        c = Classification.objects.create(survey=survey)
+        t = ClassificationTranslation.objects.create(
+            classification=c, language="ar", name="عالي",
+        )
+        assert t.name == "عالي"
+
+    def test_recommendation_translation(self, survey, options):
+        r = Recommendation.objects.create(survey=survey, option=options[0])
+        t = RecommendationTranslation.objects.create(
+            recommendation=r, language="ar", description="توصية",
+        )
+        assert t.description == "توصية"
+
+    def test_action_translation(self, survey):
+        a = Action.objects.create(survey=survey)
+        t = ActionTranslation.objects.create(
+            action=a, language="ar", title="إجراء",
+        )
+        assert t.title == "إجراء"
+
+    def test_category_translation(self, category):
+        t = CategoryTranslation.objects.create(
+            category=category, language="ar", name="فئة",
+        )
+        assert t.name == "فئة"
+
+    def test_collection_translation(self, collection):
+        t = SurveyCollectionTranslation.objects.create(
+            collection=collection, language="ar", title="مجموعة",
+        )
+        assert t.title == "مجموعة"

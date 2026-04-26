@@ -24,3 +24,25 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username or self.id
+
+
+class Child(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    photo_id = models.CharField(max_length=255, null=True, blank=True)
+    status = models.CharField(max_length=32, default="active")
+
+
+class ChildGuardian(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    child = models.ForeignKey(Child, on_delete=models.CASCADE, related_name="guardians")
+    user_id = models.CharField(max_length=128, db_index=True)
+    status = models.CharField(max_length=32, default="active")
+    role = models.CharField(max_length=64, blank=True)
+    organization_id = models.CharField(max_length=128, null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user_id", "child"], name="accounts_ch_user_id_2ae46f_idx"),
+            models.Index(fields=["user_id", "status"], name="accounts_ch_user_id_97f11b_idx"),
+        ]

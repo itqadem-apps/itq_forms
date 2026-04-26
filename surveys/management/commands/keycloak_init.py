@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from django.conf import settings
-from itq_surveys.permissions import Permission
+from app.permissions import Permission
 from pkg_auth.admin import ensure_keycloak_client_from_env
 class Command(BaseCommand):
     help = 'Prints the current date and time'

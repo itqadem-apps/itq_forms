@@ -4,7 +4,7 @@ import string
 from django.conf import settings
 from django.db import transaction
 
-from .models import Status, Survey
+from .models import Survey, SurveyTranslation
 
 
 def _pick_choice(choices, default=None):
@@ -70,21 +70,21 @@ class SurveyFactory:
             description = "\n".join([_sentence(10, 18) for _ in range(random.randint(2, 4))])
 
         status = overrides.pop("status", None) or random.choice(
-            [Status.STATUS_DRAFT, Status.STATUS_PENDING, Status.STATUS_PUBLISHED]
+            [Survey.STATUS_DRAFT, Survey.STATUS_PENDING, Survey.STATUS_PUBLISHED]
         )
 
-        assessment_type = overrides.pop("assessment_type", None) or Survey.ASSESSMENT_TYPE_SURVEY
+        survey_type = overrides.pop("survey_type", None) or Survey.ASSESSMENT_TYPE_SURVEY
         display_option = overrides.pop("display_option", None) or _pick_choice(
-            Survey.DISPLAY_OPTIONS, default=Survey.DISPLAY_OPTION_SINGLE_QUESTION
+            Survey.DISPLAY_OPTIONS, default=Survey.DISPLAY_OPTION_BY_QUESTION
         )
 
         is_timed = overrides.pop("is_timed", None)
         if is_timed is None:
             is_timed = random.random() < 0.25
 
-        assignable_to_user = overrides.pop("assignable_to_user", None)
-        if assignable_to_user is None:
-            assignable_to_user = random.random() < 0.35
+        is_for_child = overrides.pop("is_for_child", None)
+        if is_for_child is None:
+            is_for_child = random.random() < 0.35
 
         is_evaluable = overrides.pop("is_evaluable", None)
         if is_evaluable is None:
@@ -98,26 +98,36 @@ class SurveyFactory:
                 else Survey.EVALUATION_TYPE_MANUAL_EVALUATION
             )
 
-        return Survey(
-            title=title,
-            short_description=short_description,
-            description=description,
-            language=language,
+        # Store translation data for create()
+        instance = Survey(
             status=status,
-            assessment_type=assessment_type,
+            survey_type=survey_type,
             display_option=display_option,
             is_timed=is_timed,
-            assignable_to_user=assignable_to_user,
+            is_for_child=is_for_child,
             is_evaluable=is_evaluable,
             evaluation_type=evaluation_type,
             **overrides,
         )
+        instance._factory_translation = {
+            "language": language,
+            "title": title,
+            "short_description": short_description,
+            "description": description,
+        }
+        return instance
 
     @classmethod
     def create(cls, **overrides):
         instance = cls.build(**overrides)
+        translation_data = instance._factory_translation
+        del instance._factory_translation
         instance.full_clean()
         instance.save()
+        SurveyTranslation.objects.create(
+            survey=instance,
+            **translation_data,
+        )
         return instance
 
     @classmethod

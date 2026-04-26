@@ -17,6 +17,9 @@ RUN apt-get update && \
     postgresql-client \
     gettext \
     libmagic-dev \
+    build-essential \
+    pkg-config \
+    libcairo2-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy only requirements for better caching
@@ -39,6 +42,7 @@ ENV PYTHONUNBUFFERED=1 \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        libmagic1 \
+       libcairo2 \
        curl \
     && rm -rf /var/lib/apt/lists/*
 

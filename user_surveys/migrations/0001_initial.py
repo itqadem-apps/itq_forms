@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('surveys', '0001_initial'),
+        ('classifications', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -26,7 +27,7 @@ class Migration(migrations.Migration):
                 ('submitted_at', models.DateTimeField(blank=True, null=True)),
                 ('score', models.IntegerField(blank=True, null=True)),
                 ('progress', models.IntegerField(blank=True, default=0, null=True)),
-                ('action', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='surveys.action')),
+                ('action', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='recommendations.action')),
                 ('last_question', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='surveys.question')),
                 ('survey', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='surveys.survey')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
@@ -59,27 +60,27 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('count', models.IntegerField(default=0)),
-                ('classification', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.classification')),
+                ('classification', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='classifications.classification')),
                 ('user_assessment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_surveys.userassessment')),
             ],
         ),
         migrations.AddField(
             model_name='userassessment',
             name='classifications',
-            field=models.ManyToManyField(through='user_surveys.UserAssessmentClassification', to='surveys.classification'),
+            field=models.ManyToManyField(through='user_surveys.UserAssessmentClassification', to='classifications.classification'),
         ),
         migrations.CreateModel(
             name='UserAssessmentRecommendation',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('count', models.IntegerField(default=0)),
-                ('recommendation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='surveys.recommendation')),
+                ('recommendation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recommendations.recommendation')),
                 ('user_assessment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_surveys.userassessment')),
             ],
         ),
         migrations.AddField(
             model_name='userassessment',
             name='recommendations',
-            field=models.ManyToManyField(through='user_surveys.UserAssessmentRecommendation', to='surveys.recommendation'),
+            field=models.ManyToManyField(through='user_surveys.UserAssessmentRecommendation', to='recommendations.recommendation'),
         ),
     ]

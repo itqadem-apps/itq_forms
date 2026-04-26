@@ -35,34 +35,47 @@ class SurveyCollection(models.Model):
     )
 
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_DRAFT)
-    privacy_status = models.CharField(max_length=32, choices=PRIVACY_CHOICES, null=True, blank=True)
-    title = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    short_description = models.CharField(max_length=300, null=True, blank=True)
-    slug = models.CharField(max_length=255, null=True, blank=True)
-    language = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    price = models.FloatField(default=0)
-    video_list = models.JSONField(null=True, blank=True)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
-    author = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True)
-    subscribers = models.ManyToManyField(
-        UserModel,
-        related_name="subscribed_collections",
-        blank=True,
-    )
-    enrolled_users = models.ManyToManyField(
-        UserModel,
-        related_name="enrolled_collections",
-        blank=True,
-    )
     assessments = models.ManyToManyField(
         Survey,
         related_name="collections",
         blank=True,
         help_text=_("Assessments included in this collection."),
     )
+
+    @property
+    def title(self):
+        t = self.translations.first()
+        return t.title if t else None
+
+    @property
+    def language(self):
+        t = self.translations.first()
+        return t.language if t else None
+
+    def __str__(self):
+        return str(self.title or self.pk)
+
+
+class SurveyCollectionTranslation(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=["collection", "language"], name="ix_survey_col_tr_lang"),
+        ]
+
+    collection = models.ForeignKey(
+        SurveyCollection,
+        on_delete=models.CASCADE,
+        related_name="translations",
+    )
+    language = models.CharField(max_length=64, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    short_description = models.CharField(max_length=300, null=True, blank=True)
+    slug = models.CharField(max_length=255, null=True, blank=True)
+    seo = models.JSONField(null=True, blank=True)

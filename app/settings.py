@@ -21,6 +21,20 @@ environ.Env.read_env()
 environ.Env.read_env(BASE_DIR / ".env")
 
 
+def _env_bool(key: str, default: bool = False) -> bool:
+    val = os.environ.get(key)
+    if val is None:
+        return bool(default)
+    return str(val).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(key: str, default: str = "") -> list[str]:
+    raw = os.environ.get(key)
+    if raw is None:
+        raw = default
+    return [v.strip() for v in str(raw).split(",") if v and v.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -31,25 +45,39 @@ SECRET_KEY = 'django-insecure-^nxt4$0#3gdm)^66&gp1ddrh3+%nf4*9$6w7$8r#-d-@=l+xk4
 DEBUG = True
 
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS.extend(filter(None, os.environ.get('ALLOWED_HOSTS', '').split(',')))
+
+if POD_IP := os.environ.get('POD_IP', False):
+    ALLOWED_HOSTS.append(POD_IP)
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "django_prometheus",
     "django.contrib.auth",
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     "strawberry.django",
+    "pkg_auth.authorization.adapters.django_orm",
+    "pkg_auth.integrations.django",
     "accounts",
     'surveys',
     "taxonomy",
     "survey_collections",
+    "pricing",
+    "classifications",
+    "recommendations",
     "user_surveys",
+    "unimessaging.outbox_django",
 ]
 
 MIDDLEWARE = [
-    "pkg_auth.integrations.django.PkgAuthMiddleware",
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    "pkg_auth.integrations.django.IdentityMiddleware",
+    "pkg_auth.integrations.django.AuthContextMiddleware",
     'django.middleware.common.CommonMiddleware',
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -76,16 +104,24 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
-        'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
-        'USER': os.environ.get('DATABASE_USER', 'default'),
-        'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
-        "PORT": os.environ.get("DATABASE_PORT", "5432"),
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    normalized_database_url = DATABASE_URL.replace("postgresql+asyncpg://", "postgres://")
+    DATABASES = {
+        "default": env.db_url_config(normalized_database_url),
     }
-}
+    DATABASES["default"]["ENGINE"] = "django_prometheus.db.backends.postgresql"
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get("DATABASE_ENGINE", "django_prometheus.db.backends.sqlite3"),
+            'NAME': os.environ.get('DATABASE_NAME', BASE_DIR / "db.sqlite3"),
+            'USER': os.environ.get('DATABASE_USER', 'default'),
+            'PASSWORD': os.environ.get('DATABASE_PASS', 'default'),
+            "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+            "PORT": os.environ.get("DATABASE_PORT", "5432"),
+        }
+    }
 
 
 
@@ -142,9 +178,68 @@ else:
 
 # Compute API client id from service/app name
 KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
+KEYCLOAK_AUDIENCE = os.environ.get("KEYCLOAK_AUDIENCE") or KEYCLOAK_CLIENT_ID
 
+PLATFORM_ORG_SLUG = os.environ.get("PLATFORM_ORG_SLUG", "platform")
 
+USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
+USERS_CHILD_EVENT_SUBJECTS = _env_list(
+    "USERS_CHILD_EVENT_SUBJECTS",
+    ",".join(
+        [
+            "users.child.>",
+            "users.child_guardian.>",
+        ]
+    ),
+)
+USERS_CHILD_EVENT_STREAM_NAME = os.environ.get("USERS_CHILD_EVENT_STREAM_NAME", "USERS")
+USERS_CHILD_EVENT_STREAM_SUBJECTS = _env_list("USERS_CHILD_EVENT_STREAM_SUBJECTS", "users.>")
 STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
+}
+
+NATS_URL = os.environ.get("NATS_URL")
+if not NATS_URL:
+    nats_host = (os.environ.get("NATS_HOST") or "localhost").strip() or "localhost"
+    nats_port = (os.environ.get("NATS_PORT") or "4222").strip() or "4222"
+    NATS_URL = f"nats://{nats_host}:{nats_port}"
+
+_raw_message_subjects = os.environ.get("MESSAGE_BROKER_SUBJECTS")
+if _raw_message_subjects is None:
+    _raw_message_subjects = os.environ.get("MESSAGE_BROKER_CHANNELS", "")
+MESSAGE_BROKER_SUBJECTS = [subject.strip() for subject in str(_raw_message_subjects).split(",") if subject.strip()]
+MESSAGE_BROKER_CHANNELS = list(MESSAGE_BROKER_SUBJECTS)
+
+JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
+JETSTREAM_STREAM_NAME = os.environ.get("JETSTREAM_STREAM_NAME", "FORMS")
+JETSTREAM_STREAM_SUBJECTS = _env_list("JETSTREAM_STREAM_SUBJECTS", "forms.>")
+JETSTREAM_CONSUMERS = _env_list("JETSTREAM_CONSUMERS", "")
+JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
+JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
+
+OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
+OUTBOX_POLL_INTERVAL = float(os.environ.get("OUTBOX_POLL_INTERVAL", "0.5"))
+OUTBOX_BATCH_SIZE = int(os.environ.get("OUTBOX_BATCH_SIZE", "50"))
+
+# Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.json.JsonFormatter",
+            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
 }
