@@ -123,6 +123,15 @@ else:
         }
     }
 
+ACL_DATABASE_URL = os.environ.get("ACL_DATABASE_URL")
+if ACL_DATABASE_URL:
+    normalized_acl_url = ACL_DATABASE_URL.replace("postgresql+asyncpg://", "postgres://")
+    DATABASES["acl"] = env.db_url_config(normalized_acl_url)
+    DATABASES["acl"]["ENGINE"] = "django_prometheus.db.backends.postgresql"
+    DATABASES["acl"]["TEST"] = {"MIRROR": "default"}
+
+DATABASE_ROUTERS = ["app.db_routers.AclRouter"]
+
 
 
 # Password validation

@@ -41,6 +41,12 @@ class SurveyCollection(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
+    organization_id = models.UUIDField(
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Organization ID"),
+    )
     assessments = models.ManyToManyField(
         Survey,
         related_name="collections",

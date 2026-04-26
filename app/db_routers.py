@@ -1,0 +1,22 @@
+class AclRouter:
+    ACL_APP_LABEL = "pkg_auth_acl"
+
+    def db_for_read(self, model, **hints):
+        if model._meta.app_label == self.ACL_APP_LABEL:
+            return "acl"
+        return None
+
+    def db_for_write(self, model, **hints):
+        if model._meta.app_label == self.ACL_APP_LABEL:
+            return "acl"
+        return None
+
+    def allow_relation(self, obj1, obj2, **hints):
+        return None
+
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        if app_label == self.ACL_APP_LABEL:
+            return False
+        if db == "acl":
+            return False
+        return None
