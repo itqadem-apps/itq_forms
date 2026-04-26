@@ -1,8 +1,14 @@
-"""Permission catalog for itq_forms, registered against the shared ACL DB on boot.
+"""Declarative permission catalog for itq_forms.
 
-The keys mirror :class:`app.permissions.Permission`. Registration is
-idempotent (UPSERT by key), so calling :func:`register_catalog_sync` on
-every startup is safe.
+Reconciled into the ACL ``permissions`` table at deploy time by the k8s
+init container, which runs::
+
+    pkg-auth-sync-catalog --service forms \\
+        --catalog app.permission_catalog:CATALOG \\
+        --db-url "$ACL_DATABASE_URL"
+
+This file is purely declarative — the runtime process never writes to
+``permissions`` (the runtime Vault role is SELECT-only on ACL).
 """
 from __future__ import annotations
 
@@ -39,17 +45,3 @@ CATALOG: list[CatalogEntry] = [
     _entry(Permission.FORM_UPDATE, "Update forms"),
     _entry(Permission.FORM_DELETE, "Delete forms"),
 ]
-
-
-def register_catalog_sync() -> None:
-    from asgiref.sync import async_to_sync
-    from pkg_auth.authorization.adapters.django_orm.repositories.permission_catalog import (
-        DjangoPermissionCatalogRepository,
-    )
-    from pkg_auth.authorization.application.use_cases.register_permission_catalog import (
-        RegisterPermissionCatalogUseCase,
-    )
-
-    repo = DjangoPermissionCatalogRepository()
-    uc = RegisterPermissionCatalogUseCase(catalog_repo=repo)
-    async_to_sync(uc.execute)(service_name=SERVICE_NAME, entries=CATALOG)

@@ -4,6 +4,8 @@ from typing import Literal, Callable, Any, Union
 
 from pkg_auth.authorization import MissingPermission
 
+from app.platform import is_platform_context
+
 
 class Permission(enum.Enum):
     # Survey permissions
@@ -116,6 +118,9 @@ def check_permission(assessment_type: Union[str, Callable], action: ActionType) 
                 if identity is None:
                     raise PermissionError("Authentication required")
                 raise PermissionError("Missing X-Organization-Id header")
+
+            if is_platform_context(auth_ctx):
+                return func(self, info, *args, **kwargs)
 
             if callable(assessment_type):
                 resolved_type = assessment_type(info, **kwargs)

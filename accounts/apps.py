@@ -25,7 +25,6 @@ class AccountsConfig(AppConfig):
         )
         from pkg_auth.integrations.django import install_pkg_auth
 
-        from app.permission_catalog import register_catalog_sync
         from app.platform import init_platform_org_id_sync
 
         if not settings.KEYCLOAK_BASE_URL or not settings.KEYCLOAK_REALM:
@@ -52,12 +51,4 @@ class AccountsConfig(AppConfig):
             # ACL DB may not be reachable at import time (e.g. collectstatic,
             # migrate). The platform-org cache stays None and the helper
             # returns False; services that need it can re-init lazily.
-            pass
-
-        try:
-            register_catalog_sync()
-        except Exception:
-            # Same rationale as above — catalog registration is best-effort
-            # at boot; an operator can re-run it via a management command
-            # once the DB is reachable.
             pass
