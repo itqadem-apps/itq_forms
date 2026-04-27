@@ -152,39 +152,75 @@ jobs:
     if: always()
     steps:
       - name: Notify Discord
+        env:
+          BUILD_RESULT: ${{ needs.build-and-push-ghcr.result }}
+          COMMIT_MSG_RAW: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+          COMMIT_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          NEW_TAG: ${{ needs.tag-and-release.outputs.new_tag }}
+          IMAGE_NAME: ${{ needs.build-and-push-ghcr.outputs.image_name }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [ "${{ needs.build-and-push-ghcr.result }}" = "success" ]; then
-            COLOR=3066993; TITLE=":white_check_mark: Pipeline Succeeded"; STATUS="success"
+          set -euo pipefail
+
+          if [ "$BUILD_RESULT" = "success" ]; then
+            COLOR=3066993
+            TITLE=":white_check_mark: Pipeline Succeeded"
+            STATUS="success"
           else
-            COLOR=15158332; TITLE=":x: Pipeline Failed"; STATUS="failure"
+            COLOR=15158332
+            TITLE=":x: Pipeline Failed"
+            STATUS="failure"
           fi
 
-          COMMIT_MSG=$(echo '${{ github.event.head_commit.message }}' | head -1 | sed 's/"/\\"/g')
-          COMMIT_URL="${{ github.event.head_commit.url }}"
-          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          IMAGE="${{ needs.build-and-push-ghcr.outputs.image_name }}:${{ needs.tag-and-release.outputs.new_tag }}"
+          COMMIT_MSG=$(printf '%s' "$COMMIT_MSG_RAW" | head -n 1)
+          SHORT_SHA=$(printf '%s' "$COMMIT_SHA" | cut -c1-7)
+          IMAGE="${IMAGE_NAME}:${NEW_TAG}"
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-          curl -s -H "Content-Type: application/json" \
-            -d "{
-              \"embeds\": [{
-                \"title\": \"${TITLE}\",
-                \"color\": ${COLOR},
-                \"description\": \"Build for **${{ github.repository }}** completed with status: **${STATUS}**\",
-                \"fields\": [
-                  {\"name\": \"Project\", \"value\": \"Itqadem\", \"inline\": true},
-                  {\"name\": \"Service\", \"value\": \"forms\", \"inline\": true},
-                  {\"name\": \"Branch\", \"value\": \"\`${{ github.ref_name }}\`\", \"inline\": true},
-                  {\"name\": \"Tag\", \"value\": \"\`${{ needs.tag-and-release.outputs.new_tag }}\`\", \"inline\": true},
-                  {\"name\": \"Triggered by\", \"value\": \"${{ github.actor }}\", \"inline\": true},
-                  {\"name\": \"Commit\", \"value\": \"[\`${SHORT_SHA}\`](${COMMIT_URL})\", \"inline\": true},
-                  {\"name\": \"Commit Message\", \"value\": \"${COMMIT_MSG}\", \"inline\": false},
-                  {\"name\": \"Docker Image\", \"value\": \"\`${IMAGE}\`\", \"inline\": false}
+          # Build the JSON with jq so every string is escaped safely —
+          # inlining untrusted text (commit messages, branch names) into
+          # a bash-quoted JSON body is the footgun that caused this to
+          # fail on parentheses in commit messages.
+          PAYLOAD=$(jq -n \
+            --arg title       "$TITLE" \
+            --argjson color   "$COLOR" \
+            --arg repo        "$REPOSITORY" \
+            --arg status      "$STATUS" \
+            --arg branch      "$BRANCH" \
+            --arg tag         "$NEW_TAG" \
+            --arg actor       "$ACTOR" \
+            --arg short_sha   "$SHORT_SHA" \
+            --arg commit_url  "$COMMIT_URL" \
+            --arg commit_msg  "$COMMIT_MSG" \
+            --arg image       "$IMAGE" \
+            --arg timestamp   "$TIMESTAMP" \
+            '{
+              embeds: [{
+                title: $title,
+                color: $color,
+                description: ("Build for **" + $repo + "** completed with status: **" + $status + "**"),
+                fields: [
+                  {name: "Project",        value: "Itqadem",                              inline: true},
+                  {name: "Service",        value: "forms",                                inline: true},
+                  {name: "Branch",         value: ("`" + $branch + "`"),                  inline: true},
+                  {name: "Tag",            value: ("`" + $tag + "`"),                     inline: true},
+                  {name: "Triggered by",   value: $actor,                                 inline: true},
+                  {name: "Commit",         value: ("[`" + $short_sha + "`](" + $commit_url + ")"), inline: true},
+                  {name: "Commit Message", value: $commit_msg,                            inline: false},
+                  {name: "Docker Image",   value: ("`" + $image + "`"),                   inline: false}
                 ],
-                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-                \"footer\": {\"text\": \"GitHub Actions\"}
+                timestamp: $timestamp,
+                footer: {text: "GitHub Actions"}
               }]
-            }" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            }')
+
+          curl -sS -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_URL"
 
       - name: Trigger Tekton Deploy
         run: |
