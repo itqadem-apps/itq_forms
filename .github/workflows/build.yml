@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
-      - staging
 
   workflow_dispatch:
     inputs:
@@ -47,23 +45,10 @@ jobs:
           branch_name="${GITHUB_REF#refs/heads/}"
           manual_version="${{ github.event.inputs.release_version }}"
 
-          # Determine tag prefix based on branch
-          if [[ "$branch_name" == "dev" ]]; then
-            prefix="dev-v"
-            latest_tag=$(git tag --list 'dev-v*' --sort=-v:refname | head -n 1)
-            latest_tag=${latest_tag:-dev-v0.0.0}
-            latest_tag_alias="dev-latest"
-          elif [[ "$branch_name" == "staging" ]]; then
-            prefix="staging-v"
-            latest_tag=$(git tag --list 'staging-v*' --sort=-v:refname | head -n 1)
-            latest_tag=${latest_tag:-staging-v0.0.0}
-            latest_tag_alias="staging-latest"
-          else
-            prefix="v"
-            latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
-            latest_tag=${latest_tag:-v0.0.0}
-            latest_tag_alias="latest"
-          fi
+          prefix="v"
+          latest_tag=$(git tag --list 'v*' --sort=-v:refname | head -n 1)
+          latest_tag=${latest_tag:-v0.0.0}
+          latest_tag_alias="latest"
 
           if [[ -n "$manual_version" ]]; then
             # Use manually provided version directly
