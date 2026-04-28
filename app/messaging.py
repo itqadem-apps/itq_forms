@@ -1,16 +1,26 @@
 from __future__ import annotations
 
+import inspect
+from dataclasses import dataclass
 from typing import Optional
 
 from unimessaging.broker.broker import UnifiedMessageBroker
 from unimessaging.broker.client import UnifiedMessaging
-from unimessaging.broker.config import JetStreamConsumer
 from unimessaging.broker.registry import HandlerRegistry
 from unimessaging.integrations.django import (
     get_broker,
     start_messaging as _start_messaging,
     stop_messaging as _stop_messaging,
 )
+
+try:
+    from unimessaging.broker.config import JetStreamConsumer
+except ImportError:
+    @dataclass(frozen=True)
+    class JetStreamConsumer:
+        label: str
+        subject: str
+        durable: str
 
 
 async def start_messaging(
@@ -26,17 +36,21 @@ async def start_messaging(
     pull_timeout: float = 1.0,
     registry: Optional[HandlerRegistry] = None,
 ) -> UnifiedMessageBroker:
+    kwargs = {
+        "subjects": subjects,
+        "service_name": service_name,
+        "url": url,
+        "enable_durable": enable_durable,
+        "stream_name": stream_name,
+        "stream_subjects": stream_subjects,
+        "consumers": consumers,
+        "pull_batch": pull_batch,
+        "pull_timeout": pull_timeout,
+        "registry": registry,
+    }
+    supported_args = inspect.signature(_start_messaging).parameters
     return await _start_messaging(
-        subjects=subjects,
-        service_name=service_name,
-        url=url,
-        enable_durable=enable_durable,
-        stream_name=stream_name,
-        stream_subjects=stream_subjects,
-        consumers=consumers,
-        pull_batch=pull_batch,
-        pull_timeout=pull_timeout,
-        registry=registry,
+        **{key: value for key, value in kwargs.items() if key in supported_args}
     )
 
 

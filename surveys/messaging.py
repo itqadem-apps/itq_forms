@@ -89,10 +89,8 @@ def serialize_assessment(survey: Survey) -> dict:
                 "language": translation.language,
                 "title": translation.title,
                 "slug": translation.slug,
-                "description": {
-                    "text": translation.description,
-                    "summary": translation.short_description,
-                },
+                "description": translation.description,
+                "summary": translation.short_description,
             }
             for translation in survey.translations.all()
         ],

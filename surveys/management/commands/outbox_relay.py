@@ -10,11 +10,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from unimessaging.broker.config import JetStreamConsumer
 from unimessaging.broker.registry import HandlerRegistry
 from unimessaging.outbox_django import DjangoOutboxRelay
-from accounts.messaging import handle_auth_user_registered
-from app.messaging import get_messaging, start_messaging, stop_messaging
+from app.messaging import JetStreamConsumer, get_messaging, start_messaging, stop_messaging
 
 
 class SqliteOutboxRelay:
@@ -119,22 +117,82 @@ def _build_jetstream_consumers() -> list[JetStreamConsumer]:
     return consumers
 
 
-_CONSUMER_HANDLERS = {
-    "auth.UserRegistered": handle_auth_user_registered,
-}
+def _consumer_handlers():
+    from accounts.messaging import handle_auth_user_registered
+
+    return {
+        "auth.UserRegistered": handle_auth_user_registered,
+    }
 
 
 def _build_handler_registry(consumers: list[JetStreamConsumer]) -> HandlerRegistry | None:
     registry = HandlerRegistry()
+    handlers = _consumer_handlers()
     attached = False
     for consumer in consumers:
-        handler = _CONSUMER_HANDLERS.get(consumer.subject)
+        handler = handlers.get(consumer.subject)
         if handler is None:
             continue
         pattern = consumer.subject.replace(">", "*")
         registry.register_handler(pattern, handler)
         attached = True
     return registry if attached else None
+
+
+def start_outbox_messaging(loop: asyncio.AbstractEventLoop) -> None:
+    consumers = _build_jetstream_consumers()
+    registry = _build_handler_registry(consumers)
+
+    loop.run_until_complete(
+        start_messaging(
+            subjects=["__forms_internal.none"],
+            service_name=settings.SERVICE_NAME,
+            url=settings.NATS_URL,
+            enable_durable=settings.JETSTREAM_ENABLED,
+            stream_name=settings.JETSTREAM_STREAM_NAME or None,
+            stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
+            consumers=consumers or None,
+            pull_batch=settings.JETSTREAM_PULL_BATCH,
+            pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
+            registry=registry,
+        )
+    )
+
+
+def build_outbox_relay(messaging, *, subject_prefix: str):
+    relay_cls = SqliteOutboxRelay if connection.vendor == "sqlite" else DjangoOutboxRelay
+    return relay_cls(messaging, subject_prefix=subject_prefix)
+
+
+def count_outbox_rows(*, table_name: str = "outbox") -> dict[str, int]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"""
+            SELECT status, COUNT(*)
+            FROM {table_name}
+            WHERE (status = 'PENDING' AND available_at <= CURRENT_TIMESTAMP)
+               OR status = 'FAILED'
+            GROUP BY status
+            """
+        )
+        counts = {"PENDING": 0, "FAILED": 0}
+        counts.update({status: count for status, count in cursor.fetchall()})
+        return counts
+
+
+def reset_failed_outbox_rows(*, table_name: str = "outbox") -> int:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"""
+            UPDATE {table_name}
+            SET status = 'PENDING',
+                retries = 0,
+                available_at = CURRENT_TIMESTAMP,
+                last_error = NULL
+            WHERE status = 'FAILED'
+            """
+        )
+        return cursor.rowcount
 
 
 class Command(BaseCommand):
@@ -163,27 +221,10 @@ class Command(BaseCommand):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        consumers = _build_jetstream_consumers()
-        registry = _build_handler_registry(consumers)
-
-        loop.run_until_complete(
-            start_messaging(
-                subjects=["__forms_internal.none"],
-                service_name=settings.SERVICE_NAME,
-                url=settings.NATS_URL,
-                enable_durable=settings.JETSTREAM_ENABLED,
-                stream_name=settings.JETSTREAM_STREAM_NAME or None,
-                stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
-                consumers=consumers or None,
-                pull_batch=settings.JETSTREAM_PULL_BATCH,
-                pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
-                registry=registry,
-            )
-        )
+        start_outbox_messaging(loop)
 
         messaging = get_messaging()
-        relay_cls = SqliteOutboxRelay if connection.vendor == "sqlite" else DjangoOutboxRelay
-        relay = relay_cls(messaging, subject_prefix=options["subject_prefix"])
+        relay = build_outbox_relay(messaging, subject_prefix=options["subject_prefix"])
 
         running = True
 

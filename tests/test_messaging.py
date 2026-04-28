@@ -22,6 +22,16 @@ def test_serialize_assessment_uses_survey_organization_id(survey):
     assert payload["organization_id"] == str(org_id)
 
 
+def test_serialize_assessment_translations_match_orders_contract(survey):
+    payload = serialize_assessment(survey)
+
+    translation = payload["translations"][0]
+    assert translation["language"] == "en"
+    assert translation["title"] == "Test Survey"
+    assert translation["description"] == "A test survey"
+    assert translation["summary"] == "Short desc"
+
+
 def test_publish_assessment_status_event_skips_when_org_missing(survey, monkeypatch, caplog):
     published_events = []
 
