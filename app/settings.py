@@ -192,17 +192,6 @@ KEYCLOAK_AUDIENCE = os.environ.get("KEYCLOAK_AUDIENCE") or KEYCLOAK_CLIENT_ID
 PLATFORM_ORG_SLUG = os.environ.get("PLATFORM_ORG_SLUG", "platform")
 
 USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
-USERS_CHILD_EVENT_SUBJECTS = _env_list(
-    "USERS_CHILD_EVENT_SUBJECTS",
-    ",".join(
-        [
-            "users.child.>",
-            "users.child_guardian.>",
-        ]
-    ),
-)
-USERS_CHILD_EVENT_STREAM_NAME = os.environ.get("USERS_CHILD_EVENT_STREAM_NAME", "USERS")
-USERS_CHILD_EVENT_STREAM_SUBJECTS = _env_list("USERS_CHILD_EVENT_STREAM_SUBJECTS", "users.>")
 STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
@@ -214,20 +203,7 @@ if not NATS_URL:
     nats_port = (os.environ.get("NATS_PORT") or "4222").strip() or "4222"
     NATS_URL = f"nats://{nats_host}:{nats_port}"
 
-_raw_message_subjects = os.environ.get("MESSAGE_BROKER_SUBJECTS")
-if _raw_message_subjects is None:
-    _raw_message_subjects = os.environ.get("MESSAGE_BROKER_CHANNELS", "")
-MESSAGE_BROKER_SUBJECTS = [subject.strip() for subject in str(_raw_message_subjects).split(",") if subject.strip()]
-MESSAGE_BROKER_CHANNELS = list(MESSAGE_BROKER_SUBJECTS)
-ORDERS_EVENT_SUBJECTS = _env_list("ORDERS_EVENT_SUBJECTS", "orders.order")
-ORDERS_EVENT_STREAM_NAME = os.environ.get("ORDERS_EVENT_STREAM_NAME", "ORDERS")
-ORDERS_EVENT_STREAM_SUBJECTS = _env_list("ORDERS_EVENT_STREAM_SUBJECTS", "orders.>")
-ORDERS_EVENT_DURABLE = os.environ.get("ORDERS_EVENT_DURABLE", "forms-orders-order-consumer")
-
 JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
-JETSTREAM_STREAM_NAME = os.environ.get("JETSTREAM_STREAM_NAME", "FORMS")
-JETSTREAM_STREAM_SUBJECTS = _env_list("JETSTREAM_STREAM_SUBJECTS", "forms.>")
-JETSTREAM_CONSUMERS = _env_list("JETSTREAM_CONSUMERS", "")
 JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
 JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
 

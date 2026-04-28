@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import re
 import signal
 
 from django.conf import settings
@@ -11,15 +10,8 @@ from nats.errors import TimeoutError as NATSTimeout
 from unimessaging.broker.client import UnifiedMessaging
 from unimessaging.broker.config import MessagingConfig
 
+from app import messaging_contract as contract
 from surveys.order_messaging import handle_order_event
-
-
-def _durable_name(subject: str) -> str:
-    base = settings.ORDERS_EVENT_DURABLE or "forms-orders-order-consumer"
-    if len(settings.ORDERS_EVENT_SUBJECTS) == 1:
-        return base
-    suffix = re.sub(r"[^a-zA-Z0-9_-]+", "-", subject).strip("-")
-    return f"{base}-{suffix}"
 
 
 def _messaging_config() -> MessagingConfig:
@@ -28,8 +20,8 @@ def _messaging_config() -> MessagingConfig:
         url=settings.NATS_URL,
         name=settings.SERVICE_NAME,
         enable_durable=settings.JETSTREAM_ENABLED,
-        stream_name=settings.ORDERS_EVENT_STREAM_NAME or None,
-        stream_subjects=settings.ORDERS_EVENT_STREAM_SUBJECTS or [],
+        stream_name=contract.ORDERS_STREAM_NAME,
+        stream_subjects=contract.ORDERS_STREAM_SUBJECTS,
         default_headers={"service": settings.SERVICE_NAME},
     )
 
@@ -40,7 +32,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--subjects",
-            default=",".join(settings.ORDERS_EVENT_SUBJECTS),
+            default=",".join(contract.ORDERS_EVENT_SUBJECTS),
             help="Comma-separated order event subjects to subscribe to",
         )
 
@@ -92,7 +84,7 @@ class Command(BaseCommand):
                         self._pull_loop(
                             messaging,
                             subject=subject,
-                            durable=_durable_name(subject),
+                            durable=contract.order_durable_name(subject, subjects),
                             stop_flag=stop_flag,
                         )
                     )

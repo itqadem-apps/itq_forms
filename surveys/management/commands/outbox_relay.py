@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
+from app import messaging_contract as contract
 from unimessaging.broker.registry import HandlerRegistry
 from unimessaging.outbox_django import DjangoOutboxRelay
 from app.messaging import JetStreamConsumer, get_messaging, start_messaging, stop_messaging
@@ -97,26 +98,6 @@ class SqliteOutboxRelay:
                     )
             return published
 
-def _build_jetstream_consumers() -> list[JetStreamConsumer]:
-    consumers: list[JetStreamConsumer] = []
-    for raw in settings.JETSTREAM_CONSUMERS:
-        parts = [part.strip() for part in raw.split("|")]
-        if len(parts) == 3:
-            label, subject, durable = parts
-        elif len(parts) == 2:
-            subject, durable = parts
-            label = subject.split(".", 1)[0] or "consumer"
-        else:
-            raise ValueError(
-                "Invalid JETSTREAM_CONSUMERS entry. Use 'label|subject|durable' or 'subject|durable'. "
-                f"Got: {raw}"
-            )
-        consumers.append(
-            JetStreamConsumer(label=label, subject=subject, durable=durable)
-        )
-    return consumers
-
-
 def _consumer_handlers():
     from accounts.messaging import handle_auth_user_registered
 
@@ -140,7 +121,7 @@ def _build_handler_registry(consumers: list[JetStreamConsumer]) -> HandlerRegist
 
 
 def start_outbox_messaging(loop: asyncio.AbstractEventLoop) -> None:
-    consumers = _build_jetstream_consumers()
+    consumers = list(contract.AUTH_CONSUMERS)
     registry = _build_handler_registry(consumers)
 
     loop.run_until_complete(
@@ -149,8 +130,8 @@ def start_outbox_messaging(loop: asyncio.AbstractEventLoop) -> None:
             service_name=settings.SERVICE_NAME,
             url=settings.NATS_URL,
             enable_durable=settings.JETSTREAM_ENABLED,
-            stream_name=settings.JETSTREAM_STREAM_NAME or None,
-            stream_subjects=settings.JETSTREAM_STREAM_SUBJECTS or None,
+            stream_name=contract.FORMS_STREAM_NAME,
+            stream_subjects=contract.FORMS_STREAM_SUBJECTS,
             consumers=consumers or None,
             pull_batch=settings.JETSTREAM_PULL_BATCH,
             pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
