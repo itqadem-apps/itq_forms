@@ -219,6 +219,10 @@ if _raw_message_subjects is None:
     _raw_message_subjects = os.environ.get("MESSAGE_BROKER_CHANNELS", "")
 MESSAGE_BROKER_SUBJECTS = [subject.strip() for subject in str(_raw_message_subjects).split(",") if subject.strip()]
 MESSAGE_BROKER_CHANNELS = list(MESSAGE_BROKER_SUBJECTS)
+ORDERS_EVENT_SUBJECTS = _env_list("ORDERS_EVENT_SUBJECTS", "orders.order")
+ORDERS_EVENT_STREAM_NAME = os.environ.get("ORDERS_EVENT_STREAM_NAME", "ORDERS")
+ORDERS_EVENT_STREAM_SUBJECTS = _env_list("ORDERS_EVENT_STREAM_SUBJECTS", "orders.>")
+ORDERS_EVENT_DURABLE = os.environ.get("ORDERS_EVENT_DURABLE", "forms-orders-order-consumer")
 
 JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_STREAM_NAME = os.environ.get("JETSTREAM_STREAM_NAME", "FORMS")

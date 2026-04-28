@@ -8,6 +8,7 @@ from strawberry import auto
 from strawberry.types import Info
 
 from surveys.models import Usage
+from surveys.usage_access import summarize_usage_rows
 from app.auth_utils import get_django_user
 from accounts.models import Child
 from user_surveys.models import (
@@ -390,8 +391,11 @@ class UserSurveyType:
             return 0
         if django_user.id != self.user_id or not self.survey_id:
             return 0
-        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
-        return usage.used_count if usage else 0
+        usages = list(
+            Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id)
+            .order_by("created_at", "id")
+        )
+        return summarize_usage_rows(usages).total_used
 
     @strawberry.field
     def usage_limit(self, info: Info) -> int:
@@ -401,8 +405,14 @@ class UserSurveyType:
             return 1
         if django_user.id != self.user_id or not self.survey_id:
             return 1
-        usage = Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id).first()
-        return usage.usage_limit or 1 if usage else 1
+        usages = list(
+            Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id)
+            .order_by("created_at", "id")
+        )
+        summary = summarize_usage_rows(usages)
+        if not summary.has_any:
+            return 1
+        return summary.total_limit or 1
 
     @strawberry.field
     def progress(self, info: Info) -> int:

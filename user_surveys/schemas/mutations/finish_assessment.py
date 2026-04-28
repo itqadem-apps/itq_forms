@@ -7,6 +7,7 @@ from django.db import transaction
 
 from app.auth_utils import with_django_user
 from surveys.models import Usage
+from surveys.usage_access import select_usage_to_consume
 from user_surveys.types import FinishAssessmentResult
 from user_surveys.models import UserSurvey
 from user_surveys.services import finish_assessment as finish_assessment_service
@@ -31,11 +32,12 @@ class FinishAssessmentMutation:
 
         with transaction.atomic():
             finish_assessment_service(user_survey)
-            usage = (
+            usages = list(
                 Usage.objects.select_for_update()
                 .filter(user=django_user, survey=user_survey.survey)
-                .first()
+                .order_by("created_at", "id")
             )
+            usage = select_usage_to_consume(usages)
             if usage:
                 usage.used_count += 1
                 usage.save(update_fields=["used_count"])

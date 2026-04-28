@@ -1,0 +1,130 @@
+from __future__ import annotations
+
+import asyncio
+import json
+import re
+import signal
+
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from nats.errors import TimeoutError as NATSTimeout
+from unimessaging.broker.client import UnifiedMessaging
+from unimessaging.broker.config import MessagingConfig
+
+from surveys.order_messaging import handle_order_event
+
+
+def _durable_name(subject: str) -> str:
+    base = settings.ORDERS_EVENT_DURABLE or "forms-orders-order-consumer"
+    if len(settings.ORDERS_EVENT_SUBJECTS) == 1:
+        return base
+    suffix = re.sub(r"[^a-zA-Z0-9_-]+", "-", subject).strip("-")
+    return f"{base}-{suffix}"
+
+
+def _messaging_config() -> MessagingConfig:
+    return MessagingConfig(
+        backend="nats",
+        url=settings.NATS_URL,
+        name=settings.SERVICE_NAME,
+        enable_durable=settings.JETSTREAM_ENABLED,
+        stream_name=settings.ORDERS_EVENT_STREAM_NAME or None,
+        stream_subjects=settings.ORDERS_EVENT_STREAM_SUBJECTS or [],
+        default_headers={"service": settings.SERVICE_NAME},
+    )
+
+
+class Command(BaseCommand):
+    help = "Consume order payment/refund events and maintain local forms usage records"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--subjects",
+            default=",".join(settings.ORDERS_EVENT_SUBJECTS),
+            help="Comma-separated order event subjects to subscribe to",
+        )
+
+    async def _handle_message(self, data: bytes, meta: dict) -> None:
+        subject = meta.get("subject", "")
+        try:
+            payload = json.loads(data.decode()) if data else {}
+        except Exception as exc:
+            self.stderr.write(self.style.ERROR(f"Invalid JSON on {subject}: {exc}"))
+            return
+
+        await handle_order_event(payload, meta)
+
+    async def _pull_loop(
+        self,
+        messaging: UnifiedMessaging,
+        *,
+        subject: str,
+        durable: str,
+        stop_flag: dict[str, bool],
+    ) -> None:
+        sub = await messaging.adapter.js.pull_subscribe(subject, durable=durable)
+        while not stop_flag["stop"]:
+            try:
+                msgs = await sub.fetch(
+                    settings.JETSTREAM_PULL_BATCH,
+                    timeout=settings.JETSTREAM_PULL_TIMEOUT,
+                )
+            except NATSTimeout:
+                msgs = []
+            for msg in msgs:
+                meta = {"subject": msg.subject, "headers": dict(msg.headers or {})}
+                try:
+                    await self._handle_message(msg.data, meta)
+                    await msg.ack()
+                except Exception:
+                    await msg.nak()
+                    raise
+
+    async def _run(self, subjects: list[str], stop_flag: dict[str, bool]) -> None:
+        messaging = UnifiedMessaging(_messaging_config())
+        await messaging.start()
+
+        tasks: list[asyncio.Task] = []
+        if settings.JETSTREAM_ENABLED:
+            for subject in subjects:
+                tasks.append(
+                    asyncio.create_task(
+                        self._pull_loop(
+                            messaging,
+                            subject=subject,
+                            durable=_durable_name(subject),
+                            stop_flag=stop_flag,
+                        )
+                    )
+                )
+        else:
+            for subject in subjects:
+                await messaging.subscribe(subject, self._handle_message)
+
+        self.stdout.write(self.style.SUCCESS(f"Order consumer started (subjects={subjects})"))
+
+        try:
+            while not stop_flag["stop"]:
+                await asyncio.sleep(0.5)
+        finally:
+            for task in tasks:
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+            await messaging.stop()
+            self.stdout.write(self.style.SUCCESS("Order consumer stopped"))
+
+    def handle(self, **options):
+        subjects = [s.strip() for s in str(options["subjects"] or "").split(",") if s.strip()]
+        if not subjects:
+            self.stderr.write(self.style.ERROR("No subjects configured for order consumer"))
+            return
+
+        stop_flag = {"stop": False}
+
+        def _stop(sig, frame):
+            stop_flag["stop"] = True
+
+        signal.signal(signal.SIGINT, _stop)
+        signal.signal(signal.SIGTERM, _stop)
+        asyncio.run(self._run(subjects, stop_flag))
