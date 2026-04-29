@@ -5,6 +5,7 @@ import logging
 from typing import Any, Mapping
 
 from asgiref.sync import sync_to_async
+from pydantic import BaseModel, ConfigDict, Field
 
 from accounts.models import User
 from surveys.models import Survey, Usage
@@ -12,6 +13,36 @@ from surveys.models import Survey, Usage
 logger = logging.getLogger(__name__)
 
 _FORMS_SKU_PREFIX = "forms:Assessment:"
+
+
+class OrderLineModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    sku: str | None = None
+    service_name: str | None = None
+    qty: int | None = None
+    payment_state: str | None = None
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
+
+
+class OrderBodyModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str | int | None = None
+    user_id: str | None = None
+    payment_state: str | None = None
+    lines: list[OrderLineModel] = Field(default_factory=list)
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
+
+
+class OrderEventPayloadModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    event_type: str | None = None
+    event: str | None = None
+    order: OrderBodyModel | None = None
+    line: OrderLineModel | None = None
+    metadata: dict[str, Any] | None = Field(default_factory=dict)
 
 
 def _normalize_payload(payload: dict[str, Any] | str) -> dict[str, Any]:
@@ -123,7 +154,9 @@ async def handle_order_event(
     payload: dict[str, Any] | str,
     meta: Mapping[str, Any] | None = None,
 ) -> None:
-    data = _normalize_payload(payload)
+    data = OrderEventPayloadModel.model_validate(_normalize_payload(payload)).model_dump(
+        exclude_none=True
+    )
     event_type = _event_type(data, meta)
     order = data.get("order")
     if not isinstance(order, Mapping):

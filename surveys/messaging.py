@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from uuid import UUID
 
-from unimessaging.outbox_django import DjangoOutboxEventBus, DjangoOutboxRepository
+from unimessaging.outbox_django import DjangoOutboxRepository
 
 from surveys.events import (
     AssessmentCreated,
@@ -13,9 +13,10 @@ from surveys.events import (
     AssessmentUpdated,
 )
 from surveys.models import Survey
+from surveys.outbox_adapter import SurveysOutboxEventBus
 
 
-event_bus = DjangoOutboxEventBus(DjangoOutboxRepository())
+event_bus = SurveysOutboxEventBus(DjangoOutboxRepository())
 logger = logging.getLogger(__name__)
 
 

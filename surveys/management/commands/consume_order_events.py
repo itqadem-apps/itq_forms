@@ -7,11 +7,26 @@ import signal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from nats.errors import TimeoutError as NATSTimeout
+from pydantic import BaseModel, ConfigDict, Field
 from unimessaging.broker.client import UnifiedMessaging
 from unimessaging.broker.config import MessagingConfig
 
 from app import messaging_contract as contract
 from surveys.order_messaging import handle_order_event
+
+
+class OrderEventHeadersModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    event_type: str | None = None
+
+
+class OrderEventMetaModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    subject: str = ""
+    headers: OrderEventHeadersModel = Field(default_factory=OrderEventHeadersModel)
+    metadata: dict[str, object] | None = Field(default_factory=dict)
 
 
 def _messaging_config() -> MessagingConfig:
@@ -44,7 +59,8 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR(f"Invalid JSON on {subject}: {exc}"))
             return
 
-        await handle_order_event(payload, meta)
+        normalized_meta = OrderEventMetaModel.model_validate(meta).model_dump(exclude_none=True)
+        await handle_order_event(payload, normalized_meta)
 
     async def _pull_loop(
         self,
