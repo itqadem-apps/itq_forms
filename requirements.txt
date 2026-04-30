@@ -13,3 +13,4 @@ unimessaging[broker,outbox] @ https://github.com/fritill-team/pkg_unimessaging/r
 xhtml2pdf==0.2.17
 python-json-logger==3.3.0
 django-prometheus==2.3.1
+pydantic~=2.12.5
