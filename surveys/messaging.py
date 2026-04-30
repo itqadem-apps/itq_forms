@@ -3,20 +3,8 @@ from __future__ import annotations
 import logging
 from uuid import UUID
 
-from unimessaging.outbox_django import DjangoOutboxRepository
-
-from surveys.events import (
-    AssessmentCreated,
-    AssessmentDeleted,
-    AssessmentPublished,
-    AssessmentUnpublished,
-    AssessmentUpdated,
-)
 from surveys.models import Survey
-from surveys.outbox_adapter import SurveysOutboxEventBus
 
-
-event_bus = SurveysOutboxEventBus(DjangoOutboxRepository())
 logger = logging.getLogger(__name__)
 
 
@@ -43,20 +31,21 @@ def _resolve_organization_id(survey: Survey) -> str | None:
     return None
 
 
-def _build_payload_or_log(survey: Survey, event_name: str) -> dict | None:
-    payload = serialize_assessment(survey)
+def build_survey_payload_or_log(survey: Survey, event_name: str) -> dict | None:
+    """Serialize *survey* and return the payload, or ``None`` if the
+    survey is missing an organization id (in which case skip publish)."""
+    payload = serialize_survey(survey)
     if payload["organization_id"]:
         return payload
-
     logger.warning(
-        "Skipping assessment event publish: reason=missing_organization_id assessment_id=%s event=%s",
+        "Skipping survey event publish: reason=missing_organization_id survey_id=%s event=%s",
         survey.pk,
         event_name,
     )
     return None
 
 
-def serialize_assessment(survey: Survey) -> dict:
+def serialize_survey(survey: Survey) -> dict:
     return {
         "id": str(survey.pk),
         "status": survey.status,
@@ -102,80 +91,3 @@ def serialize_assessment(survey: Survey) -> dict:
             "use_actions": survey.use_actions,
         },
     }
-
-
-def publish_assessment_created(survey: Survey) -> None:
-    payload = _build_payload_or_log(survey, "AssessmentCreated")
-    if payload is None:
-        return
-
-    event_bus.publish(
-        AssessmentCreated(
-            aggregate_id=survey.pk,
-            organization_id=payload["organization_id"],
-            assessment=payload,
-        )
-    )
-
-
-def publish_assessment_updated(survey: Survey) -> None:
-    payload = _build_payload_or_log(survey, "AssessmentUpdated")
-    if payload is None:
-        return
-
-    event_bus.publish(
-        AssessmentUpdated(
-            aggregate_id=survey.pk,
-            organization_id=payload["organization_id"],
-            assessment=payload,
-        )
-    )
-
-
-def publish_assessment_deleted(survey: Survey) -> None:
-    payload = _build_payload_or_log(survey, "AssessmentDeleted")
-    if payload is None:
-        return
-
-    event_bus.publish(
-        AssessmentDeleted(
-            aggregate_id=survey.pk,
-            organization_id=payload["organization_id"],
-            assessment=payload,
-        )
-    )
-
-
-def publish_assessment_status_event(survey: Survey) -> None:
-    event_name = "AssessmentPublished" if survey.status == Survey.STATUS_PUBLISHED else "AssessmentUnpublished"
-    payload = _build_payload_or_log(survey, event_name)
-    if payload is None:
-        return
-
-    if survey.status == Survey.STATUS_PUBLISHED:
-        event_bus.publish(
-            AssessmentPublished(
-                aggregate_id=survey.pk,
-                organization_id=payload["organization_id"],
-                assessment=payload,
-            )
-        )
-        return
-
-    if survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:
-        event_bus.publish(
-            AssessmentUnpublished(
-                aggregate_id=survey.pk,
-                organization_id=payload["organization_id"],
-                assessment=payload,
-            )
-        )
-        return
-
-    event_bus.publish(
-        AssessmentUpdated(
-            aggregate_id=survey.pk,
-            organization_id=payload["organization_id"],
-            assessment=payload,
-        )
-    )

@@ -11,12 +11,15 @@ from app.permissions import check_permission
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
-from surveys.messaging import (
-    publish_assessment_created,
-    publish_assessment_deleted,
-    publish_assessment_status_event,
-    publish_assessment_updated,
+from app.messaging import publish
+from surveys.events import (
+    SurveyCreated,
+    SurveyDeleted,
+    SurveyPublished,
+    SurveyUnpublished,
+    SurveyUpdated,
 )
+from surveys.messaging import build_survey_payload_or_log
 from classifications.models import Classification, ClassificationTranslation
 from recommendations.models import Recommendation, RecommendationTranslation, Action, ActionTranslation
 from surveys.models import (
@@ -71,7 +74,13 @@ class SurveyMutations:
             for t in input.translations:
                 SurveyTranslation.objects.create(survey=survey, **input_to_dict(t))
 
-        publish_assessment_created(survey)
+        payload = build_survey_payload_or_log(survey, "SurveyCreated")
+        if payload is not None:
+            publish(SurveyCreated(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
 
         return SurveyPayload(success=True, message=None, survey=survey)
 
@@ -111,7 +120,13 @@ class SurveyMutations:
                         survey=survey, language=language, defaults=t_data
                     )
 
-        publish_assessment_updated(survey)
+        payload = build_survey_payload_or_log(survey, "SurveyUpdated")
+        if payload is not None:
+            publish(SurveyUpdated(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
 
         return SurveyPayload(success=True, message=None, survey=survey)
 
@@ -125,7 +140,13 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         survey = Survey.objects.get(pk=id)
-        publish_assessment_deleted(survey)
+        payload = build_survey_payload_or_log(survey, "SurveyDeleted")
+        if payload is not None:
+            publish(SurveyDeleted(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
         survey.delete()
         return OperationResult(success=True)
 
@@ -217,5 +238,20 @@ class SurveyMutations:
         survey = Survey.objects.get(pk=id)
         survey.status = status
         survey.save(update_fields=["status"])
-        publish_assessment_status_event(survey)
+        if survey.status == Survey.STATUS_PUBLISHED:
+            event_cls = SurveyPublished
+            event_name = "SurveyPublished"
+        elif survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:
+            event_cls = SurveyUnpublished
+            event_name = "SurveyUnpublished"
+        else:
+            event_cls = SurveyUpdated
+            event_name = "SurveyUpdated"
+        payload = build_survey_payload_or_log(survey, event_name)
+        if payload is not None:
+            publish(event_cls(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
         return survey

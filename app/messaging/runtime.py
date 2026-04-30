@@ -1,14 +1,19 @@
 """Unified messaging runtime started by ASGI lifespan.
 
-Boots all event consumers required by the forms service in a single
-process. Subjects span three JetStream streams (FORMS, USERS, ORDERS),
-so the runtime spins up one ``UnifiedMessageBroker`` per stream — all
-sharing the unimessaging default registry that
-``app.messaging.registry.register_handlers`` populates.
+Boots all event consumers, the FORMS publisher, and the in-process
+outbox relay in a single process. Subjects span three JetStream streams
+(FORMS, USERS, ORDERS), so the runtime spins up one
+``UnifiedMessageBroker`` per stream — all sharing the unimessaging
+default registry that ``app.messaging.registry.register_handlers``
+populates.
+
+The relay drains the outbox table and publishes rows on the FORMS
+broker, removing the need for a separate ``outbox_relay`` process.
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from django.conf import settings
@@ -16,14 +21,16 @@ from unimessaging.broker.broker import UnifiedMessageBroker
 from unimessaging.broker.config import JetStreamConsumer
 
 from app import messaging_contract as contract
-from app.messaging import start_messaging, stop_messaging
+from app.messaging import get_messaging, start_messaging, stop_messaging
 from app.messaging.registry import register_handlers
+from app.messaging.relay import run_relay_loop
 
 logger = logging.getLogger(__name__)
 
 
 _users_broker: UnifiedMessageBroker | None = None
 _orders_broker: UnifiedMessageBroker | None = None
+_relay_task: asyncio.Task | None = None
 _handlers_registered = False
 
 
@@ -40,8 +47,8 @@ def _orders_consumers() -> list[JetStreamConsumer]:
 
 
 async def start_all() -> None:
-    """Start every messaging consumer for the service."""
-    global _users_broker, _orders_broker, _handlers_registered
+    """Start every messaging consumer + the outbox relay for the service."""
+    global _users_broker, _orders_broker, _relay_task, _handlers_registered
 
     if not _handlers_registered:
         register_handlers()
@@ -92,11 +99,35 @@ async def start_all() -> None:
     )
     await _orders_broker.start()
 
-    logger.info("Messaging runtime started: forms+users+orders")
+    forms_messaging = get_messaging()
+    if forms_messaging is None:
+        raise RuntimeError("FORMS messaging client unavailable; cannot start outbox relay")
+
+    _relay_task = asyncio.create_task(
+        run_relay_loop(
+            forms_messaging,
+            subject_prefix=settings.OUTBOX_SUBJECT_PREFIX,
+            poll_interval=settings.OUTBOX_POLL_INTERVAL,
+            batch_size=settings.OUTBOX_BATCH_SIZE,
+        ),
+        name="outbox-relay",
+    )
+
+    logger.info("Messaging runtime started: forms+users+orders+relay")
 
 
 async def stop_all() -> None:
-    global _users_broker, _orders_broker
+    global _users_broker, _orders_broker, _relay_task
+
+    if _relay_task is not None:
+        _relay_task.cancel()
+        try:
+            await _relay_task
+        except asyncio.CancelledError:
+            pass
+        except Exception:
+            logger.exception("Error stopping outbox relay")
+        _relay_task = None
 
     if _orders_broker is not None:
         try:
