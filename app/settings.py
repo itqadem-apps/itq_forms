@@ -200,11 +200,7 @@ STRAWBERRY_DJANGO = {
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
 }
 
-NATS_URL = os.environ.get("NATS_URL")
-if not NATS_URL:
-    nats_host = (os.environ.get("NATS_HOST") or "localhost").strip() or "localhost"
-    nats_port = (os.environ.get("NATS_PORT") or "4222").strip() or "4222"
-    NATS_URL = f"nats://{nats_host}:{nats_port}"
+NATS_URL = (os.environ.get("NATS_URL") or "").strip() or "nats://localhost:4222"
 
 JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
