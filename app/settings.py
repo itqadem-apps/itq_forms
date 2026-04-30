@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'surveys',
     "taxonomy",
     "survey_collections",
-    "pricing",
+    "pricing.apps.PricingConfig",
     "classifications",
     "recommendations",
     "user_surveys",
@@ -190,6 +190,8 @@ KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
 KEYCLOAK_AUDIENCE = os.environ.get("KEYCLOAK_AUDIENCE") or KEYCLOAK_CLIENT_ID
 
 PLATFORM_ORG_SLUG = os.environ.get("PLATFORM_ORG_SLUG", "platform")
+
+AVAILABLE_CURRENCIES = _env_list("AVAILABLE_CURRENCIES", "EGP,USD,EUR,SAR")
 
 USERS_GRPC_TARGET = os.environ.get("USERS_GRPC_TARGET", "localhost:50051")
 STRAWBERRY_DJANGO = {
