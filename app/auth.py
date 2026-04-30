@@ -8,11 +8,23 @@ service-specific ``currency`` header.
 """
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from strawberry.django.views import GraphQLView
 from strawberry.permission import BasePermission
 from strawberry.types import Info
+
+from pkg_auth.authentication import (
+    AuthenticationError,
+    InvalidTokenError,
+    TokenExpiredError,
+)
+from pkg_auth.integrations.django import IdentityMiddleware as _BaseIdentityMiddleware
+from pkg_auth.integrations.django.install import get_registry
+from pkg_auth.integrations.django.middleware import _extract_token
+
+logger = logging.getLogger(__name__)
 
 
 class _ContextProxy:
@@ -33,32 +45,38 @@ class _ContextProxy:
         self.auth_context = getattr(request, "auth_context", None)
         self.currency = currency
 
-    @property
-    def user(self):
-        # Backward-compat shim: legacy resolvers read ``info.context.user``
-        # and then ``user.identity`` / ``user.keycloak_sub``. The new shape
-        # carries identity directly, so we expose the identity in both
-        # positions via this proxy.
-        return _UserShim(self.identity) if self.identity is not None else None
-
-
-class _UserShim:
-    """Presents the new ``IdentityContext`` under the legacy ``user`` name."""
-
-    __slots__ = ("identity",)
-
-    def __init__(self, identity) -> None:
-        self.identity = identity
-
-    @property
-    def keycloak_sub(self) -> str:
-        return self.identity.subject_str
-
 
 class AuthedGraphQLView(GraphQLView):
     async def get_context(self, request, response):
         currency = request.META.get("HTTP_X_CURRENCY")
         return _ContextProxy(request, currency=currency)
+
+
+class LoggingIdentityMiddleware(_BaseIdentityMiddleware):
+    """IdentityMiddleware that logs token-rejection reasons.
+
+    pkg_auth's base middleware silently sets ``request.identity = None``
+    on every auth failure (audience/issuer mismatch, expired, bad
+    signature). That makes config drift indistinguishable from "no token
+    sent" — every request quietly degrades to anonymous. This subclass
+    logs a WARNING with the exception class and message so misconfigured
+    audiences/issuers are visible.
+    """
+
+    def __call__(self, request):
+        registry = get_registry()
+        token = _extract_token(request, registry.cookie_name)
+        request.identity = None
+        if token is not None:
+            try:
+                request.identity = registry.authenticate.execute(token)
+            except (TokenExpiredError, InvalidTokenError, AuthenticationError) as exc:
+                logger.warning(
+                    "pkg_auth: token rejected (%s): %s",
+                    type(exc).__name__,
+                    exc,
+                )
+        return self.get_response(request)
 
 
 class RequireAuth(BasePermission):

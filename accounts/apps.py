@@ -1,4 +1,8 @@
+import logging
+
 from django.apps import AppConfig
+
+logger = logging.getLogger(__name__)
 
 
 class AccountsConfig(AppConfig):
@@ -47,8 +51,14 @@ class AccountsConfig(AppConfig):
 
         try:
             init_platform_org_id_sync(org_repo)
-        except Exception:
+        except Exception as exc:
             # ACL DB may not be reachable at import time (e.g. collectstatic,
             # migrate). The platform-org cache stays None and the helper
             # returns False; services that need it can re-init lazily.
-            pass
+            # Log so misconfiguration (missing 'platform' org row, ACL DB
+            # unreachable) doesn't silently disable the platform-admin path.
+            logger.warning(
+                "pkg_auth: platform org bootstrap failed (%s): %s",
+                type(exc).__name__,
+                exc,
+            )

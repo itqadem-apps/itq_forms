@@ -74,7 +74,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
-    "pkg_auth.integrations.django.IdentityMiddleware",
+    "app.auth.LoggingIdentityMiddleware",
     "pkg_auth.integrations.django.AuthContextMiddleware",
     'django.middleware.common.CommonMiddleware',
     "django_prometheus.middleware.PrometheusAfterMiddleware",
