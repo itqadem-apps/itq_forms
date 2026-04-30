@@ -1,19 +1,12 @@
-import argparse
-
 import pytest
 from asgiref.sync import async_to_sync
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from app import messaging_contract as contract
 from curriculum_references.consumer import (
     handle_curriculum_enrollment_event,
     handle_curriculum_reference_event,
 )
-from curriculum_references.management.commands.consume_curriculum_events import (
-    Command as CurriculumCommand,
-)
-from curriculum_references.management.commands import consume_curriculum_events as curriculum_module
 from curriculum_references.models import CurriculumReference
 from surveys.models import Usage
 
@@ -215,38 +208,3 @@ def test_handle_curriculum_enrollment_event_skips_collection_only_reference(coll
     assert Usage.objects.count() == 0
 
 
-def test_consume_curriculum_events_uses_contract(monkeypatch):
-    captured = {}
-
-    async def _fake_start_messaging(**kwargs):
-        captured.update(kwargs)
-
-    async def _fake_stop_messaging():
-        return None
-
-    monkeypatch.setattr(curriculum_module, "start_messaging", _fake_start_messaging)
-    monkeypatch.setattr(curriculum_module, "stop_messaging", _fake_stop_messaging)
-
-    subjects = list(contract.CURRICULUM_EVENT_SUBJECTS)
-    async_to_sync(CurriculumCommand()._run)(subjects, {"stop": True})
-
-    assert captured["stream_name"] == contract.FORMS_STREAM_NAME
-    assert captured["stream_subjects"] == contract.FORMS_STREAM_SUBJECTS
-    assert captured["consumers"] == contract.CURRICULUM_EVENT_CONSUMERS
-    assert (
-        captured["registry"].resolve_handler("courses.curriculum_reference")
-        == curriculum_module.handle_curriculum_reference_event
-    )
-    assert (
-        captured["registry"].resolve_handler("courses.curriculum_enrollment")
-        == curriculum_module.handle_curriculum_enrollment_event
-    )
-
-
-def test_curriculum_command_defaults_come_from_contract():
-    parser = argparse.ArgumentParser()
-    CurriculumCommand().add_arguments(parser)
-    defaults = parser.parse_args([])
-
-    assert defaults.subjects == ",".join(contract.CURRICULUM_EVENT_SUBJECTS)
-    assert contract.CURRICULUM_EVENT_CONSUMERS[0].durable == "forms-curriculum-events-consumer"

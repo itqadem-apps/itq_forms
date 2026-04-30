@@ -11,9 +11,8 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 
 from app import messaging_contract as contract
-from unimessaging.broker.registry import HandlerRegistry
 from unimessaging.outbox_django import DjangoOutboxRelay
-from app.messaging import JetStreamConsumer, get_messaging, start_messaging, stop_messaging
+from app.messaging import get_messaging, start_messaging, stop_messaging
 
 
 class SqliteOutboxRelay:
@@ -98,32 +97,13 @@ class SqliteOutboxRelay:
                     )
             return published
 
-def _consumer_handlers():
-    from accounts.messaging import handle_auth_user_registered
-
-    return {
-        "auth.UserRegistered": handle_auth_user_registered,
-    }
-
-
-def _build_handler_registry(consumers: list[JetStreamConsumer]) -> HandlerRegistry | None:
-    registry = HandlerRegistry()
-    handlers = _consumer_handlers()
-    attached = False
-    for consumer in consumers:
-        handler = handlers.get(consumer.subject)
-        if handler is None:
-            continue
-        pattern = consumer.subject.replace(">", "*")
-        registry.register_handler(pattern, handler)
-        attached = True
-    return registry if attached else None
-
-
 def start_outbox_messaging(loop: asyncio.AbstractEventLoop) -> None:
-    consumers = list(contract.AUTH_CONSUMERS)
-    registry = _build_handler_registry(consumers)
+    """Start a publish-only FORMS broker for the relay.
 
+    Event consumption (auth, curriculum, recommendables, users-child,
+    orders) is handled by the ASGI lifespan in ``app.asgi``; this
+    command only needs the publishing client.
+    """
     loop.run_until_complete(
         start_messaging(
             subjects=["__forms_internal.none"],
@@ -132,10 +112,8 @@ def start_outbox_messaging(loop: asyncio.AbstractEventLoop) -> None:
             enable_durable=settings.JETSTREAM_ENABLED,
             stream_name=contract.FORMS_STREAM_NAME,
             stream_subjects=contract.FORMS_STREAM_SUBJECTS,
-            consumers=consumers or None,
             pull_batch=settings.JETSTREAM_PULL_BATCH,
             pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
-            registry=registry,
         )
     )
 
