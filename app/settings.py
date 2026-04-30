@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "pricing.apps.PricingConfig",
     "classifications",
     "recommendations",
+    "curriculum_references",
     "user_surveys",
     "unimessaging.outbox_django",
 ]

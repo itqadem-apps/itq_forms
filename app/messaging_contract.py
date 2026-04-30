@@ -44,6 +44,24 @@ AUTH_CONSUMERS: list[JetStreamConsumer] = [
     )
 ]
 
+CURRICULUM_EVENT_SUBJECTS: list[str] = [
+    "*.curriculum_reference",
+    "*.curriculum_enrollment",
+]
+CURRICULUM_EVENT_CONSUMER = JetStreamConsumer(
+    label="curriculum",
+    subject="*.curriculum_reference",
+    durable="forms-curriculum-events-consumer",
+)
+CURRICULUM_EVENT_CONSUMERS: list[JetStreamConsumer] = [
+    CURRICULUM_EVENT_CONSUMER,
+    JetStreamConsumer(
+        label="curriculum",
+        subject="*.curriculum_enrollment",
+        durable="forms-curriculum-events-consumer-enrollment",
+    ),
+]
+
 USERS_CHILD_STREAM_NAME = "USERS"
 USERS_CHILD_STREAM_SUBJECTS: list[str] = ["users.>"]
 USERS_CHILD_SUBJECTS: list[str] = [
