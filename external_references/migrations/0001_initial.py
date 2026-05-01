@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="CurriculumReference",
+            name="ExternalReference",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("source_service", models.CharField(max_length=255)),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="curriculum_references",
+                        related_name="external_references",
                         to="survey_collections.surveycollection",
                     ),
                 ),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="curriculum_references",
+                        related_name="external_references",
                         to="surveys.survey",
                     ),
                 ),
@@ -51,17 +51,17 @@ class Migration(migrations.Migration):
                 "indexes": [
                     models.Index(
                         fields=["source_service", "source_model", "source_id"],
-                        name="ix_curr_ref_source",
+                        name="ix_ext_ref_source",
                     )
                 ],
                 "constraints": [
                     models.CheckConstraint(
                         condition=Q(collection__isnull=False) | Q(survey__isnull=False),
-                        name="curriculum_ref_has_local_target",
+                        name="external_ref_has_local_target",
                     ),
                     models.UniqueConstraint(
                         fields=["source_service", "source_model", "source_id", "collection", "survey"],
-                        name="uq_curriculum_ref_source_target",
+                        name="uq_external_ref_source_target",
                         nulls_distinct=False,
                     ),
                 ],

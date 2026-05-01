@@ -56,7 +56,7 @@ async def start_all() -> None:
 
     forms_consumers = [
         *contract.AUTH_CONSUMERS,
-        *contract.CURRICULUM_EVENT_CONSUMERS,
+        *contract.EXTERNAL_REFERENCE_EVENT_CONSUMERS,
         *contract.RECOMMENDABLE_CONSUMERS,
     ]
 

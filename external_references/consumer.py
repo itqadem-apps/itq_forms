@@ -13,14 +13,14 @@ from pydantic import (
 )
 
 from accounts.models import User
-from curriculum_references.models import CurriculumReference
-from survey_collections.models import SurveyCollection
-from surveys.models import Survey, Usage
+from external_references.models import ExternalReference
+from external_references.services import upsert_external_reference
+from surveys.models import Usage
 
 logger = logging.getLogger(__name__)
 
 
-class CurriculumReferencePayload(BaseModel):
+class ExternalReferencePayload(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     source_service: str | None = None
@@ -31,7 +31,7 @@ class CurriculumReferencePayload(BaseModel):
     data: dict[str, Any] = Field(default_factory=dict)
 
 
-class CurriculumEnrollmentPayload(BaseModel):
+class ExternalEnrollmentPayload(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     source_service: str | None = None
@@ -101,54 +101,18 @@ def _upsert_reference(
     collection_id: int | None,
     survey_id: int | None,
     data: dict[str, Any],
-) -> CurriculumReference | None:
-    if collection_id is None and survey_id is None:
-        logger.warning(
-            "curriculum reference skip source=%s:%s:%s reason=missing_local_target",
-            source_service,
-            source_model,
-            source_id,
-        )
-        return None
-
-    collection = None
-    if collection_id is not None:
-        collection = SurveyCollection.objects.filter(pk=collection_id).first()
-        if collection is None:
-            logger.warning(
-                "curriculum reference skip source=%s:%s:%s reason=missing_collection collection_id=%s",
-                source_service,
-                source_model,
-                source_id,
-                collection_id,
-            )
-            return None
-
-    survey = None
-    if survey_id is not None:
-        survey = Survey.objects.filter(pk=survey_id).first()
-        if survey is None:
-            logger.warning(
-                "curriculum reference skip source=%s:%s:%s reason=missing_survey survey_id=%s",
-                source_service,
-                source_model,
-                source_id,
-                survey_id,
-            )
-            return None
-
-    reference, _created = CurriculumReference.objects.update_or_create(
+) -> ExternalReference | None:
+    return upsert_external_reference(
         source_service=source_service,
         source_model=source_model,
         source_id=source_id,
-        collection=collection,
-        survey=survey,
-        defaults={"data": data},
+        collection_id=collection_id,
+        survey_id=survey_id,
+        data=data,
     )
-    return reference
 
 
-def _grant_curriculum_usage(
+def _grant_external_usage(
     *,
     source_service: str,
     source_model: str,
@@ -158,7 +122,7 @@ def _grant_curriculum_usage(
     enrollment_id: str,
 ) -> int:
     references = list(
-        CurriculumReference.objects.select_related("survey", "collection").filter(
+        ExternalReference.objects.select_related("survey", "collection").filter(
             source_service=source_service,
             source_model=source_model,
             source_id=source_id,
@@ -167,7 +131,7 @@ def _grant_curriculum_usage(
     )
     if not references:
         logger.warning(
-            "curriculum enrollment skip source=%s:%s:%s user_id=%s reason=no_survey_reference",
+            "external enrollment skip source=%s:%s:%s user_id=%s reason=no_survey_reference",
             source_service,
             source_model,
             source_id,
@@ -202,15 +166,15 @@ def _grant_curriculum_usage(
     return granted
 
 
-async def handle_curriculum_reference_event(payload: dict[str, Any], subject: str | None = None) -> None:
+async def handle_external_reference_event(payload: dict[str, Any], subject: str | None = None) -> None:
     if not isinstance(payload, dict):
         return
 
     try:
-        data = CurriculumReferencePayload.model_validate(payload)
+        data = ExternalReferencePayload.model_validate(payload)
     except PydanticValidationError as exc:
         logger.warning(
-            "curriculum reference skip subject=%s reason=invalid_payload error=%s",
+            "external reference skip subject=%s reason=invalid_payload error=%s",
             subject,
             exc,
         )
@@ -220,7 +184,7 @@ async def handle_curriculum_reference_event(payload: dict[str, Any], subject: st
     source_id = _text(data.source_id)
     if not source_service or not source_model or not source_id:
         logger.warning(
-            "curriculum reference skip subject=%s reason=missing_source_identity",
+            "external reference skip subject=%s reason=missing_source_identity",
             subject,
         )
         return
@@ -234,18 +198,18 @@ async def handle_curriculum_reference_event(payload: dict[str, Any], subject: st
         data=data.data,
     )
     if reference is not None:
-        logger.info("curriculum reference upserted id=%s source=%s", reference.id, reference)
+        logger.info("external reference upserted id=%s source=%s", reference.id, reference)
 
 
-async def handle_curriculum_enrollment_event(payload: dict[str, Any], subject: str | None = None) -> None:
+async def handle_external_enrollment_event(payload: dict[str, Any], subject: str | None = None) -> None:
     if not isinstance(payload, dict):
         return
 
     try:
-        data = CurriculumEnrollmentPayload.model_validate(payload)
+        data = ExternalEnrollmentPayload.model_validate(payload)
     except PydanticValidationError as exc:
         logger.warning(
-            "curriculum enrollment skip subject=%s reason=invalid_payload error=%s",
+            "external enrollment skip subject=%s reason=invalid_payload error=%s",
             subject,
             exc,
         )
@@ -256,12 +220,12 @@ async def handle_curriculum_enrollment_event(payload: dict[str, Any], subject: s
     user_id = _text(data.user_id)
     if not source_service or not source_model or not source_id or not user_id:
         logger.warning(
-            "curriculum enrollment skip subject=%s reason=missing_identity",
+            "external enrollment skip subject=%s reason=missing_identity",
             subject,
         )
         return
 
-    granted = await sync_to_async(_grant_curriculum_usage, thread_sensitive=True)(
+    granted = await sync_to_async(_grant_external_usage, thread_sensitive=True)(
         source_service=source_service,
         source_model=source_model,
         source_id=source_id,
@@ -270,7 +234,7 @@ async def handle_curriculum_enrollment_event(payload: dict[str, Any], subject: s
         enrollment_id=_text(data.enrollment_id),
     )
     logger.info(
-        "curriculum enrollment processed source=%s:%s:%s user_id=%s granted=%s",
+        "external enrollment processed source=%s:%s:%s user_id=%s granted=%s",
         source_service,
         source_model,
         source_id,

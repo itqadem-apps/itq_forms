@@ -44,21 +44,21 @@ AUTH_CONSUMERS: list[JetStreamConsumer] = [
     )
 ]
 
-CURRICULUM_EVENT_SUBJECTS: list[str] = [
-    "*.curriculum_reference",
-    "*.curriculum_enrollment",
+EXTERNAL_REFERENCE_EVENT_SUBJECTS: list[str] = [
+    "*.external_reference",
+    "*.external_enrollment",
 ]
-CURRICULUM_EVENT_CONSUMER = JetStreamConsumer(
-    label="curriculum",
-    subject="*.curriculum_reference",
-    durable="forms-curriculum-events-consumer",
+EXTERNAL_REFERENCE_EVENT_CONSUMER = JetStreamConsumer(
+    label="external_reference",
+    subject="*.external_reference",
+    durable="forms-external-reference-events-consumer",
 )
-CURRICULUM_EVENT_CONSUMERS: list[JetStreamConsumer] = [
-    CURRICULUM_EVENT_CONSUMER,
+EXTERNAL_REFERENCE_EVENT_CONSUMERS: list[JetStreamConsumer] = [
+    EXTERNAL_REFERENCE_EVENT_CONSUMER,
     JetStreamConsumer(
-        label="curriculum",
-        subject="*.curriculum_enrollment",
-        durable="forms-curriculum-events-consumer-enrollment",
+        label="external_reference",
+        subject="*.external_enrollment",
+        durable="forms-external-reference-events-consumer-enrollment",
     ),
 ]
 

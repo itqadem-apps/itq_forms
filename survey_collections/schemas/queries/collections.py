@@ -16,6 +16,7 @@ from survey_collections.filters import (
 from survey_collections.inputs import SurveyCollectionFilters, SurveyCollectionFiltersInput, SurveyCollectionsListInput
 from survey_collections.types.results import SurveyCollectionsResultsGQL, CollectionsFacetsGQL
 from app.facets import build_category_tree_facet, build_price_range_facet
+from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from survey_collections.models import SurveyCollection
 
 
@@ -46,11 +47,15 @@ class CollectionsQuery:
                 qs = qs.filter(free_filter)
             else:
                 qs = qs.exclude(free_filter)
+        ext_ref_active = has_external_reference_filter(filters_input.external_reference)
+        if ext_ref_active:
+            qs = apply_external_reference_filter(qs, filters_input.external_reference)
         if (
             filters_input.price is not None
             or filters_input.has_discount is not None
             or filters_input.currency is not None
             or filters_input.is_free is not None
+            or ext_ref_active
         ):
             qs = qs.distinct()
 

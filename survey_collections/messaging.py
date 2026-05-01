@@ -18,7 +18,7 @@ def serialize_collection(collection: SurveyCollection) -> dict:
         "category_id": str(collection.category_id) if collection.category_id else None,
         "organization_id": organization_id,
         "sponsor": collection.sponsor,
-        "assessment_ids": list(
+        "survey_ids": list(
             collection.assessments.values_list("pk", flat=True)
         ),
         "prices": [

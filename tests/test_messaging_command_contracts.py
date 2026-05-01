@@ -10,7 +10,7 @@ django.setup()
 
 from app import messaging_contract as contract
 from app.messaging.handlers.auth_events import AuthEventSubscriber
-from app.messaging.handlers.curriculum_events import CurriculumEventSubscriber
+from app.messaging.handlers.external_reference_events import ExternalReferenceEventSubscriber
 from app.messaging.handlers.order_events import OrderEventSubscriber
 from app.messaging.handlers.recommendable_events import RecommendableEventSubscriber
 from app.messaging.handlers.users_child_events import UsersChildEventSubscriber
@@ -40,12 +40,12 @@ def test_register_handlers_wires_every_contract_subject(fresh_registry):
         AuthEventSubscriber,
     )
     assert isinstance(
-        fresh_registry.resolve_handler("courses.curriculum_reference").__self__,
-        CurriculumEventSubscriber,
+        fresh_registry.resolve_handler("courses.external_reference").__self__,
+        ExternalReferenceEventSubscriber,
     )
     assert isinstance(
-        fresh_registry.resolve_handler("courses.curriculum_enrollment").__self__,
-        CurriculumEventSubscriber,
+        fresh_registry.resolve_handler("courses.external_enrollment").__self__,
+        ExternalReferenceEventSubscriber,
     )
     for subject in contract.RECOMMENDABLE_SUBJECTS:
         probe = subject.replace(".>", ".probe").replace(">", "probe")
