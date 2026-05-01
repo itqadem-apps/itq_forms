@@ -11,6 +11,9 @@ from pkg_filters.integrations.strawberry import (
 
 from enum import Enum
 
+from external_references.inputs import ExternalReferenceFilterInput
+from pricing.inputs import PriceNestedInput
+
 
 @strawberry.input
 class SurveyCollectionFiltersInput:
@@ -28,6 +31,7 @@ class SurveyCollectionFiltersInput:
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
     currency: Optional[str] = None
+    external_reference: Optional[ExternalReferenceFilterInput] = None
     q: Optional[str] = None
 
 
@@ -89,3 +93,4 @@ class SurveyCollectionInput:
     sponsor: Optional[int] = UNSET
     type: Optional[str] = UNSET
     translations: Optional[List[SurveyCollectionTranslationInput]] = UNSET
+    prices: Optional[List[PriceNestedInput]] = UNSET

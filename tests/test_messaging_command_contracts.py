@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import os
 
 import django
@@ -11,13 +10,12 @@ django.setup()
 
 from app import messaging_contract as contract
 from app.messaging.handlers.auth_events import AuthEventSubscriber
-from app.messaging.handlers.curriculum_events import CurriculumEventSubscriber
+from app.messaging.handlers.external_reference_events import ExternalReferenceEventSubscriber
 from app.messaging.handlers.order_events import OrderEventSubscriber
 from app.messaging.handlers.recommendable_events import RecommendableEventSubscriber
 from app.messaging.handlers.users_child_events import UsersChildEventSubscriber
 from app.messaging import registry as registry_module
 from app.messaging.registry import register_handlers
-from surveys.management.commands import outbox_relay as outbox_module
 from unimessaging.broker.registry import HandlerRegistry, _default_registry
 
 
@@ -42,12 +40,12 @@ def test_register_handlers_wires_every_contract_subject(fresh_registry):
         AuthEventSubscriber,
     )
     assert isinstance(
-        fresh_registry.resolve_handler("courses.curriculum_reference").__self__,
-        CurriculumEventSubscriber,
+        fresh_registry.resolve_handler("courses.external_reference").__self__,
+        ExternalReferenceEventSubscriber,
     )
     assert isinstance(
-        fresh_registry.resolve_handler("courses.curriculum_enrollment").__self__,
-        CurriculumEventSubscriber,
+        fresh_registry.resolve_handler("courses.external_enrollment").__self__,
+        ExternalReferenceEventSubscriber,
     )
     for subject in contract.RECOMMENDABLE_SUBJECTS:
         probe = subject.replace(".>", ".probe").replace(">", "probe")
@@ -68,27 +66,6 @@ def test_register_handlers_wires_every_contract_subject(fresh_registry):
             fresh_registry.resolve_handler(subject).__self__,
             OrderEventSubscriber,
         )
-
-
-def test_outbox_relay_starts_publish_only_forms_broker(monkeypatch):
-    captured = {}
-
-    async def _fake_start_messaging(**kwargs):
-        captured.update(kwargs)
-
-    monkeypatch.setattr(outbox_module, "start_messaging", _fake_start_messaging)
-
-    loop = asyncio.new_event_loop()
-    try:
-        outbox_module.start_outbox_messaging(loop)
-    finally:
-        loop.close()
-
-    assert captured["stream_name"] == contract.FORMS_STREAM_NAME
-    assert captured["stream_subjects"] == contract.FORMS_STREAM_SUBJECTS
-    # Outbox relay no longer wires consumers; ASGI lifespan owns consumption.
-    assert "consumers" not in captured
-    assert "registry" not in captured
 
 
 def test_default_registry_is_used_by_runtime():

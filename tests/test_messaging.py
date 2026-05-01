@@ -1,29 +1,25 @@
 import uuid
 
-from surveys.messaging import (
-    publish_assessment_status_event,
-    serialize_assessment,
-)
-from surveys.models import Survey
+from surveys.messaging import build_survey_payload_or_log, serialize_survey
 
 
-def test_serialize_assessment_returns_none_when_survey_org_missing(survey):
-    payload = serialize_assessment(survey)
+def test_serialize_survey_returns_none_when_survey_org_missing(survey):
+    payload = serialize_survey(survey)
 
     assert payload["organization_id"] is None
 
 
-def test_serialize_assessment_uses_survey_organization_id(survey):
+def test_serialize_survey_uses_survey_organization_id(survey):
     org_id = uuid.uuid4()
     survey.organization_id = org_id
 
-    payload = serialize_assessment(survey)
+    payload = serialize_survey(survey)
 
     assert payload["organization_id"] == str(org_id)
 
 
-def test_serialize_assessment_translations_match_orders_contract(survey):
-    payload = serialize_assessment(survey)
+def test_serialize_survey_translations_match_orders_contract(survey):
+    payload = serialize_survey(survey)
 
     translation = payload["translations"][0]
     assert translation["language"] == "en"
@@ -32,39 +28,22 @@ def test_serialize_assessment_translations_match_orders_contract(survey):
     assert translation["summary"] == "Short desc"
 
 
-def test_publish_assessment_status_event_skips_when_org_missing(survey, monkeypatch, caplog):
-    published_events = []
-
-    def _fake_publish(event):
-        published_events.append(event)
-
-    monkeypatch.setattr("surveys.messaging.event_bus.publish", _fake_publish)
-    survey.status = Survey.STATUS_PUBLISHED
-
+def test_build_survey_payload_or_log_skips_when_org_missing(survey, caplog):
     with caplog.at_level("WARNING"):
-        publish_assessment_status_event(survey)
+        payload = build_survey_payload_or_log(survey, "SurveyPublished")
 
-    assert published_events == []
+    assert payload is None
     assert (
-        f"reason=missing_organization_id assessment_id={survey.pk} event=AssessmentPublished"
+        f"reason=missing_organization_id survey_id={survey.pk} event=SurveyPublished"
         in caplog.text
     )
 
 
-def test_publish_assessment_status_event_publishes_when_survey_org_valid(survey, monkeypatch):
+def test_build_survey_payload_or_log_returns_payload_when_org_valid(survey):
     org_id = uuid.uuid4()
     survey.organization_id = org_id
-    published_events = []
 
-    def _fake_publish(event):
-        published_events.append(event)
+    payload = build_survey_payload_or_log(survey, "SurveyCreated")
 
-    monkeypatch.setattr("surveys.messaging.event_bus.publish", _fake_publish)
-    survey.status = Survey.STATUS_PUBLISHED
-
-    publish_assessment_status_event(survey)
-
-    assert len(published_events) == 1
-    assert published_events[0].event == "AssessmentPublished"
-    assert published_events[0].organization_id == str(org_id)
-    assert published_events[0].assessment["organization_id"] == str(org_id)
+    assert payload is not None
+    assert payload["organization_id"] == str(org_id)

@@ -1,8 +1,4 @@
-import logging
-
 from django.apps import AppConfig
-
-logger = logging.getLogger(__name__)
 
 
 class AccountsConfig(AppConfig):
@@ -29,7 +25,7 @@ class AccountsConfig(AppConfig):
         )
         from pkg_auth.integrations.django import install_pkg_auth
 
-        from app.platform import init_platform_org_id_sync
+        from app.platform import register_platform_org_provider
 
         if not settings.KEYCLOAK_BASE_URL or not settings.KEYCLOAK_REALM:
             # Local/dev bootstrap without Keycloak config — skip wiring so
@@ -49,16 +45,6 @@ class AccountsConfig(AppConfig):
             organization_repo=org_repo,
         )
 
-        try:
-            init_platform_org_id_sync(org_repo)
-        except Exception as exc:
-            # ACL DB may not be reachable at import time (e.g. collectstatic,
-            # migrate). The platform-org cache stays None and the helper
-            # returns False; services that need it can re-init lazily.
-            # Log so misconfiguration (missing 'platform' org row, ACL DB
-            # unreachable) doesn't silently disable the platform-admin path.
-            logger.warning(
-                "pkg_auth: platform org bootstrap failed (%s): %s",
-                type(exc).__name__,
-                exc,
-            )
+        register_platform_org_provider(
+            org_repo, getattr(settings, "PLATFORM_ORG_SLUG", "platform")
+        )

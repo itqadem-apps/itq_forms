@@ -61,3 +61,14 @@ def get_messaging() -> Optional[UnifiedMessaging]:
 
 async def stop_messaging() -> None:
     await _stop_messaging()
+
+
+from app.messaging.publisher import publish  # noqa: E402
+
+__all__ = [
+    "JetStreamConsumer",
+    "get_messaging",
+    "publish",
+    "start_messaging",
+    "stop_messaging",
+]

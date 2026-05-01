@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from app.schema_common import RequireAuth, OperationResult
+from pricing.services import upsert_prices_for_parent
 from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.types import SurveyCollectionType
 from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
@@ -29,7 +30,7 @@ class SurveyCollectionMutations:
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
-        data = input_to_dict(input, exclude=['category_id', 'translations'])
+        data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
         if input.category_id is not strawberry.UNSET:
             data['category'] = Category.objects.get(category_id=input.category_id)
 
@@ -46,6 +47,9 @@ class SurveyCollectionMutations:
                     slug=trans_input.slug,
                 )
 
+        if input.prices is not strawberry.UNSET and input.prices:
+            upsert_prices_for_parent(collection, input.prices)
+
         return collection
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -59,7 +63,7 @@ class SurveyCollectionMutations:
     ) -> SurveyCollectionType:
         collection = SurveyCollection.objects.get(pk=id)
 
-        for field, value in input_to_dict(input, exclude=['category_id', 'translations']).items():
+        for field, value in input_to_dict(input, exclude=['category_id', 'translations', 'prices']).items():
             setattr(collection, field, value)
         if input.category_id is not strawberry.UNSET:
             collection.category = Category.objects.get(category_id=input.category_id)
@@ -78,6 +82,9 @@ class SurveyCollectionMutations:
                         'slug': trans_input.slug,
                     }
                 )
+
+        if input.prices is not strawberry.UNSET and input.prices:
+            upsert_prices_for_parent(collection, input.prices)
 
         return collection
 

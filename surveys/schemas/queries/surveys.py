@@ -7,6 +7,7 @@ from django.db.models import F, Q
 from pkg_filters.integrations.django import DjangoQueryContext
 from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_field_paths
 
+from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from surveys.filters import SurveyProjection, SurveySpec, pipeline, survey_sort_input_to_spec
 from surveys.inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
 from surveys.models import Survey
@@ -44,11 +45,15 @@ class SurveysQuery:
                     qs = qs.filter(free_filter)
                 else:
                     qs = qs.exclude(free_filter)
+            ext_ref_active = has_external_reference_filter(filters_input.external_reference)
+            if ext_ref_active:
+                qs = apply_external_reference_filter(qs, filters_input.external_reference)
             if (
                 filters_input.price is not None
                 or filters_input.has_discount is not None
                 or filters_input.currency is not None
                 or filters_input.is_free is not None
+                or ext_ref_active
             ):
                 qs = qs.distinct()
         filters_data = {}

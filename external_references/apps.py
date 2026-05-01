@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CurriculumReferencesConfig(AppConfig):
+class ExternalReferencesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "curriculum_references"
+    name = "external_references"
