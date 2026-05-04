@@ -8,7 +8,7 @@ from surveys.models import Survey
 from .models import Price
 
 
-def _backfill_zero_prices(*, survey=None, collection=None) -> None:
+def backfill_zero_prices(*, survey=None, collection=None) -> None:
     currencies = getattr(settings, "AVAILABLE_CURRENCIES", []) or []
     if not currencies:
         return
@@ -30,9 +30,9 @@ def _backfill_zero_prices(*, survey=None, collection=None) -> None:
 
 @receiver(post_save, sender=Survey)
 def _backfill_survey_zero_prices(sender, instance: Survey, **kwargs):
-    _backfill_zero_prices(survey=instance)
+    backfill_zero_prices(survey=instance)
 
 
 @receiver(post_save, sender=SurveyCollection)
 def _backfill_collection_zero_prices(sender, instance: SurveyCollection, **kwargs):
-    _backfill_zero_prices(collection=instance)
+    backfill_zero_prices(collection=instance)

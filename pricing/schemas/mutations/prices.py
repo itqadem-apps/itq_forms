@@ -7,6 +7,7 @@ from app.auth_utils import with_django_user
 from app.schema_common import RequireAuth, OperationResult
 from pricing.inputs import PriceInput, PriceUpdateInput
 from pricing.models import Price
+from pricing.signals import backfill_zero_prices
 from pricing.types import PriceType
 from surveys.schemas.utils import input_to_dict
 
@@ -22,7 +23,9 @@ class PriceMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> PriceType:
         data = input_to_dict(input)
-        return Price.objects.create(**data)
+        price = Price.objects.create(**data)
+        backfill_zero_prices(survey=price.survey, collection=price.collection)
+        return price
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
@@ -37,6 +40,7 @@ class PriceMutations:
         for field, value in input_to_dict(input).items():
             setattr(price, field, value)
         price.save()
+        backfill_zero_prices(survey=price.survey, collection=price.collection)
         return price
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
