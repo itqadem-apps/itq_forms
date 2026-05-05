@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from app.auth_utils import with_django_user
 from surveys.models import Survey, Usage
-from surveys.usage_access import summarize_usage_rows
+from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
 from user_surveys.child_projection import get_active_child_for_user
 from user_surveys.types import UserSurveyType
 from user_surveys.models import UserSurvey
@@ -44,8 +44,8 @@ class EnrollAssessmentMutation:
             survey=survey,
             child=child,
             submitted_at__isnull=False,
-        ).exists():
-            raise ValidationError("Usage limit reached. You are already enrolled in this survey.")
+        ).count() >= FREE_ATTEMPTS:
+            raise ValidationError("Usage limit reached for this survey.")
 
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,

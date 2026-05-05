@@ -13,7 +13,7 @@ from .types_category import CategoryType
 from survey_collections.types.collection import SurveyCollectionType
 
 from app.auth_utils import get_django_user
-from surveys.usage_access import summarize_usage_rows
+from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
 from user_surveys.models import UserSurvey
 
 
@@ -102,10 +102,11 @@ class SurveyType:
             return 0
 
         usages = list(self.usage_set.filter(user=django_user).order_by("created_at", "id"))
-        user_survey = self.usersurvey_set.filter(user=django_user).exists()
         summary = summarize_usage_rows(usages)
         if not summary.has_any:
-            return 1 if user_survey else 0
+            return self.usersurvey_set.filter(
+                user=django_user, submitted_at__isnull=False
+            ).count()
         return summary.total_used
 
     @strawberry.field
@@ -118,8 +119,8 @@ class SurveyType:
         usages = list(self.usage_set.filter(user=django_user).order_by("created_at", "id"))
         summary = summarize_usage_rows(usages)
         if not summary.has_any:
-            return 1
-        return summary.total_limit or 1
+            return FREE_ATTEMPTS
+        return summary.total_limit or FREE_ATTEMPTS
 
     @strawberry.field
     def prices(self) -> List["PriceType"]:

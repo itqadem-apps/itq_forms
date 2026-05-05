@@ -8,7 +8,7 @@ from strawberry import auto
 from strawberry.types import Info
 
 from surveys.models import Usage
-from surveys.usage_access import summarize_usage_rows
+from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
 from app.auth_utils import get_django_user
 from accounts.models import Child
 from user_surveys.models import (
@@ -402,17 +402,17 @@ class UserSurveyType:
         try:
             django_user = get_django_user(info)
         except ValueError:
-            return 1
+            return FREE_ATTEMPTS
         if django_user.id != self.user_id or not self.survey_id:
-            return 1
+            return FREE_ATTEMPTS
         usages = list(
             Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id)
             .order_by("created_at", "id")
         )
         summary = summarize_usage_rows(usages)
         if not summary.has_any:
-            return 1
-        return summary.total_limit or 1
+            return FREE_ATTEMPTS
+        return summary.total_limit or FREE_ATTEMPTS
 
     @strawberry.field
     def progress(self, info: Info) -> int:
