@@ -27,7 +27,7 @@ def test_order_payment_captured_creates_usage_for_forms_line(survey):
                 "payment_state": "CAPTURED",
                 "lines": [
                     {
-                        "sku": f"forms:Assessment:{survey.id}",
+                        "sku": f"forms:Survey:{survey.id}",
                         "service_name": "forms",
                         "qty": 3,
                         "payment_state": "CAPTURED",
@@ -60,7 +60,7 @@ def test_duplicate_capture_updates_limit_but_preserves_used_count(user, survey):
                 "payment_state": "CAPTURED",
                 "lines": [
                     {
-                        "sku": f"forms:Assessment:{survey.id}",
+                        "sku": f"forms:Survey:{survey.id}",
                         "service_name": "forms",
                         "qty": 4,
                         "payment_state": "CAPTURED",
@@ -87,7 +87,7 @@ def test_full_refund_revokes_matching_forms_usages(user, survey):
                 "payment_state": "REFUNDED",
                 "lines": [
                     {
-                        "sku": f"forms:Assessment:{survey.id}",
+                        "sku": f"forms:Survey:{survey.id}",
                         "service_name": "forms",
                         "qty": 2,
                         "payment_state": "REFUNDED",
@@ -112,7 +112,7 @@ def test_line_refund_revokes_only_matching_forms_line(user, survey):
                 "payment_state": "PARTIALLY_REFUNDED",
                 "lines": [
                     {
-                        "sku": f"forms:Assessment:{survey.id}",
+                        "sku": f"forms:Survey:{survey.id}",
                         "service_name": "forms",
                         "qty": 1,
                         "payment_state": "REFUNDED",
@@ -120,7 +120,7 @@ def test_line_refund_revokes_only_matching_forms_line(user, survey):
                 ],
             },
             "line": {
-                "sku": f"forms:Assessment:{survey.id}",
+                "sku": f"forms:Survey:{survey.id}",
                 "service_name": "forms",
                 "qty": 1,
                 "payment_state": "REFUNDED",
