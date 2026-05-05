@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from strawberry.django.views import AsyncGraphQLView
+from strawberry.django.views import GraphQLView
 from strawberry.permission import BasePermission
 from strawberry.types import Info
 
@@ -55,8 +55,8 @@ class _ContextProxy:
         self.currency = currency
 
 
-class AuthedGraphQLView(AsyncGraphQLView):
-    async def get_context(self, request, response):
+class AuthedGraphQLView(GraphQLView):
+    def get_context(self, request, response):
         currency = request.META.get("HTTP_X_CURRENCY")
         return _ContextProxy(request, currency=currency)
 
