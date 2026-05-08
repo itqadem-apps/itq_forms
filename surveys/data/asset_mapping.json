@@ -1,0 +1,4841 @@
+{
+  "export_metadata": {
+    "exported_at": "2026-03-30T19:44:12.536046+00:00",
+    "source": "AdvanceBackend",
+    "total_files": 195,
+    "filters": {
+      "assessment_type": null,
+      "collections": null
+    }
+  },
+  "skipped": [],
+  "assets": [
+    {
+      "uuid": "8313a28c-67a3-4cff-a62b-c59216bea82d",
+      "file_in_zip": "8313a28c-67a3-4cff-a62b-c59216bea82d.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_2-01-02.png",
+      "mime_type": "image/png",
+      "size": 104820,
+      "collection_name": "thumb",
+      "content_hash_sha256": "afa1bbd10be92fcf561195aba925e33188ce045922219ff4b5c21ac949c99c6f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8313a28c-67a3-4cff-a62b-c59216bea82d/MANHAG_2-01-02.png",
+      "assessment": {
+        "id": 32,
+        "title": "منهج مهارات تكنولوجيا التعلم - المستوى الثانى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9f2c9c95-d066-4b88-8777-85cf00862fa3",
+      "file_in_zip": "9f2c9c95-d066-4b88-8777-85cf00862fa3.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_2-01-03.png",
+      "mime_type": "image/png",
+      "size": 101954,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b5e6e352e0ef35a1da3400f7e7fbc8e16a446a1260e3eb1a96911721f3d5f98f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9f2c9c95-d066-4b88-8777-85cf00862fa3/MANHAG_2-01-03.png",
+      "assessment": {
+        "id": 33,
+        "title": "منهج مهارات تكنولوجيا التعلم المستوى الثالث",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "20c9a200-b9a0-4925-b05f-306b04f7a232",
+      "file_in_zip": "20c9a200-b9a0-4925-b05f-306b04f7a232.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_2-01-04.png",
+      "mime_type": "image/png",
+      "size": 109320,
+      "collection_name": "thumb",
+      "content_hash_sha256": "343e7a6783032fa5d60c5420b621dd4c20d76180e779a1a7359ad46b336b4539",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/20c9a200-b9a0-4925-b05f-306b04f7a232/MANHAG_2-01-04.png",
+      "assessment": {
+        "id": 34,
+        "title": "منهج مهارات تكنولوجيا التعلم المستوى الرابع",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "e5a83ef6-fd50-4f68-9ec6-8b7aba32e054",
+      "file_in_zip": "e5a83ef6-fd50-4f68-9ec6-8b7aba32e054.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-16.png",
+      "mime_type": "image/png",
+      "size": 36316,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1df77228a05a8e6a0a3dd377a6e2260a6abdd77c8ab2278b214e71c766516dbb",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/e5a83ef6-fd50-4f68-9ec6-8b7aba32e054/MANHAG_6-01-16.png",
+      "assessment": {
+        "id": 51,
+        "title": "مجال دهانات الأخشاب والحوائط",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "7d5d2768-317a-4dfa-a1dd-a5394c2be631",
+      "file_in_zip": "7d5d2768-317a-4dfa-a1dd-a5394c2be631.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-15.png",
+      "mime_type": "image/png",
+      "size": 35603,
+      "collection_name": "thumb",
+      "content_hash_sha256": "2a6a99ed96eb74fd4a92d7bb21247487302fe8d5081c50f98181751e37b2d4bd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/7d5d2768-317a-4dfa-a1dd-a5394c2be631/MANHAG_6-01-15.png",
+      "assessment": {
+        "id": 50,
+        "title": "الإطار النظري لمجال المشغولات الجلدية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "3e8b4ed6-fdcc-4761-bef2-ddd1447d3041",
+      "file_in_zip": "3e8b4ed6-fdcc-4761-bef2-ddd1447d3041.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-14.png",
+      "mime_type": "image/png",
+      "size": 35519,
+      "collection_name": "thumb",
+      "content_hash_sha256": "d3038fcbf4f6e48f5945e122a16fc154c88938b02b22505798ad6baf658b5dce",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/3e8b4ed6-fdcc-4761-bef2-ddd1447d3041/MANHAG_6-01-14.png",
+      "assessment": {
+        "id": 49,
+        "title": "الإطار النظري لمجال النسيج",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "360cea73-a0b0-4f52-ba01-b0d8e001452f",
+      "file_in_zip": "360cea73-a0b0-4f52-ba01-b0d8e001452f.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-13.png",
+      "mime_type": "image/png",
+      "size": 35702,
+      "collection_name": "thumb",
+      "content_hash_sha256": "5c8b43775fd5c1c9583c9107612841bdc4e61bfde6bd6f83faacb6712a133066",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/360cea73-a0b0-4f52-ba01-b0d8e001452f/MANHAG_6-01-13.png",
+      "assessment": {
+        "id": 48,
+        "title": "الإطار النظري لمجال الصدف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "2604c4ad-1895-4eaa-90b7-58fd22243556",
+      "file_in_zip": "2604c4ad-1895-4eaa-90b7-58fd22243556.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-12.png",
+      "mime_type": "image/png",
+      "size": 35671,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1ece369936ca934469533e7d188bb1ffff34f42cd98b5dede1efef70ae9f74e7",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/2604c4ad-1895-4eaa-90b7-58fd22243556/MANHAG_6-01-12.png",
+      "assessment": {
+        "id": 47,
+        "title": "الإطار النظري لمجال الشمع",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "140b3870-76d1-45ac-af03-f5c96f8d9e76",
+      "file_in_zip": "140b3870-76d1-45ac-af03-f5c96f8d9e76.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-11.png",
+      "mime_type": "image/png",
+      "size": 35690,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b534d6e6f6d78783a507bc8a64ad8380acb230a32b0c0ab86608f99fe6eb42bf",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/140b3870-76d1-45ac-af03-f5c96f8d9e76/MANHAG_6-01-11.png",
+      "assessment": {
+        "id": 46,
+        "title": "الإطار النظري لمجال الزراعة (الأرضية)",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "bb5c7b5f-6585-44db-b71d-f22093de3fdf",
+      "file_in_zip": "bb5c7b5f-6585-44db-b71d-f22093de3fdf.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-10.png",
+      "mime_type": "image/png",
+      "size": 35460,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b6c9ab025083e30833e463be108ec933b7f9dfbb8f90d989de36327a76df93b2",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/bb5c7b5f-6585-44db-b71d-f22093de3fdf/MANHAG_6-01-10.png",
+      "assessment": {
+        "id": 45,
+        "title": "الإطار النظري لمجال الحلي والاكسسوار",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "0e89e694-63e6-4d65-80a1-50809ada7446",
+      "file_in_zip": "0e89e694-63e6-4d65-80a1-50809ada7446.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-09.png",
+      "mime_type": "image/png",
+      "size": 35770,
+      "collection_name": "thumb",
+      "content_hash_sha256": "62d86f5d579468c9c930c69fc3d839c3d1120a4e6774a2b4a39c1f0cced76a92",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/0e89e694-63e6-4d65-80a1-50809ada7446/MANHAG_6-01-09.png",
+      "assessment": {
+        "id": 44,
+        "title": "مجال التفصيل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9ec4fd25-ce7d-45a2-8e8e-ad60ee1635e9",
+      "file_in_zip": "9ec4fd25-ce7d-45a2-8e8e-ad60ee1635e9.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-08.png",
+      "mime_type": "image/png",
+      "size": 36340,
+      "collection_name": "thumb",
+      "content_hash_sha256": "30d8fe10887c8eeddd3924a08cd25d05e5ca5ac14a1a7803ff9884e5e00aa7f0",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9ec4fd25-ce7d-45a2-8e8e-ad60ee1635e9/MANHAG_6-01-08.png",
+      "assessment": {
+        "id": 43,
+        "title": "مجال التعبئة والتغليف للمنتجات والمحاصيل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "50995785-3194-4fab-9ab2-b210e17c4f82",
+      "file_in_zip": "50995785-3194-4fab-9ab2-b210e17c4f82.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-07.png",
+      "mime_type": "image/png",
+      "size": 35503,
+      "collection_name": "thumb",
+      "content_hash_sha256": "c71c5823cbe97430e2291c3d7ccd0abdcb3d1e8cd9e01b4f8d518823c85997f6",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/50995785-3194-4fab-9ab2-b210e17c4f82/MANHAG_6-01-07.png",
+      "assessment": {
+        "id": 42,
+        "title": "الإطار النظري لمجال البامبو (الخيزران)",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "a3783087-e28c-4d41-a148-75707a4ddb9f",
+      "file_in_zip": "a3783087-e28c-4d41-a148-75707a4ddb9f.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-06.png",
+      "mime_type": "image/png",
+      "size": 35734,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b85d3290bfd249e2e622226cc1e33307e811eb32f72b83d21f2b3e3cfc46aecd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/a3783087-e28c-4d41-a148-75707a4ddb9f/MANHAG_6-01-06.png",
+      "assessment": {
+        "id": 41,
+        "title": "مجال مهارات الأعمال الإدارية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "638b5dc5-53d7-4f3c-b83d-51cf12324286",
+      "file_in_zip": "638b5dc5-53d7-4f3c-b83d-51cf12324286.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-05.png",
+      "mime_type": "image/png",
+      "size": 35522,
+      "collection_name": "thumb",
+      "content_hash_sha256": "7ef8bf9b56dc91e8f7839fcac61468ee505fe75bd103df32dda6b40793f24e1d",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/638b5dc5-53d7-4f3c-b83d-51cf12324286/MANHAG_6-01-05.png",
+      "assessment": {
+        "id": 40,
+        "title": "مجال أعمال النجارة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "522366e8-a9db-46e7-9122-1fe04c4202db",
+      "file_in_zip": "522366e8-a9db-46e7-9122-1fe04c4202db.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-04.png",
+      "mime_type": "image/png",
+      "size": 36117,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b2130a4ed0f907f0504d3d30f1d726a0d34f34330760c5b5a2d13c6a7b41c1f8",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/522366e8-a9db-46e7-9122-1fe04c4202db/MANHAG_6-01-04.png",
+      "assessment": {
+        "id": 39,
+        "title": "مجال أعمال المطبخ الإنتاجي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "d9119727-0c44-474c-aa8d-b98cfb763ad6",
+      "file_in_zip": "d9119727-0c44-474c-aa8d-b98cfb763ad6.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-03.png",
+      "mime_type": "image/png",
+      "size": 36300,
+      "collection_name": "thumb",
+      "content_hash_sha256": "9c6699a2b4ab5bfb3c9f809a9060e264df1ef3c171da63b6638d47340d3ec8aa",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/d9119727-0c44-474c-aa8d-b98cfb763ad6/MANHAG_6-01-03.png",
+      "assessment": {
+        "id": 38,
+        "title": "مجال المقصف المدرسي - الكانتين",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "6cfb86e4-1008-403a-a08b-6f5c6a17d387",
+      "file_in_zip": "6cfb86e4-1008-403a-a08b-6f5c6a17d387.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-02.png",
+      "mime_type": "image/png",
+      "size": 36656,
+      "collection_name": "thumb",
+      "content_hash_sha256": "643d8651eff1b404e8f22b80cc476ad3d26442dc9cc71e1f6bdba494cee3272b",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/6cfb86e4-1008-403a-a08b-6f5c6a17d387/MANHAG_6-01-02.png",
+      "assessment": {
+        "id": 36,
+        "title": "مجال أعمال الكافتريا و الفندقة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "2afb7794-e28a-4507-8360-d93048964a02",
+      "file_in_zip": "2afb7794-e28a-4507-8360-d93048964a02.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_6-01-01.png",
+      "mime_type": "image/png",
+      "size": 36138,
+      "collection_name": "thumb",
+      "content_hash_sha256": "779462962bac3ec66a045ffa5f173957a6c2c7da91383f2e4f96411552a748df",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/2afb7794-e28a-4507-8360-d93048964a02/MANHAG_6-01-01.png",
+      "assessment": {
+        "id": 35,
+        "title": "أعمال التنجيد والستائر",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9ad79529-a432-4c62-9663-5fc7b6d6fd41",
+      "file_in_zip": "9ad79529-a432-4c62-9663-5fc7b6d6fd41.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-21.jpg",
+      "mime_type": "image/jpeg",
+      "size": 161169,
+      "collection_name": "thumb",
+      "content_hash_sha256": "9edd195123e1dbeb4abc13ff09bc354c91ca263666743fb295a299c2175590a1",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9ad79529-a432-4c62-9663-5fc7b6d6fd41/MANHAG_7-01-21.jpg",
+      "assessment": {
+        "id": 66,
+        "title": "مهارات الهندام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "336a720c-fa8a-4a4b-aa53-9730dfae359d",
+      "file_in_zip": "336a720c-fa8a-4a4b-aa53-9730dfae359d.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-20.jpg",
+      "mime_type": "image/jpeg",
+      "size": 165069,
+      "collection_name": "thumb",
+      "content_hash_sha256": "3463abdc867a980230f53288f68591b33701050c1b1c2e45906e4e4522b7d54b",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/336a720c-fa8a-4a4b-aa53-9730dfae359d/MANHAG_7-01-20.jpg",
+      "assessment": {
+        "id": 65,
+        "title": "تنظيم و ادارة الوقت",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "fe9721c4-3077-4531-b4ec-36847575e881",
+      "file_in_zip": "fe9721c4-3077-4531-b4ec-36847575e881.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-02.jpg",
+      "mime_type": "image/jpeg",
+      "size": 164822,
+      "collection_name": "thumb",
+      "content_hash_sha256": "9a6c954115f78564209d4396cd9a506132b2657ea3d196503e08dea31ac66e68",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/fe9721c4-3077-4531-b4ec-36847575e881/MANHAG_7-01-02.jpg",
+      "assessment": {
+        "id": 64,
+        "title": "الغسيل والكي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "4dd88e9f-6b24-4194-b621-abdf88b1e81b",
+      "file_in_zip": "4dd88e9f-6b24-4194-b621-abdf88b1e81b.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-19.jpg",
+      "mime_type": "image/jpeg",
+      "size": 165028,
+      "collection_name": "thumb",
+      "content_hash_sha256": "d0caada7920994651a52f17f0abd7f29e6391dd924d48884960f81740acc11ea",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/4dd88e9f-6b24-4194-b621-abdf88b1e81b/MANHAG_7-01-19.jpg",
+      "assessment": {
+        "id": 63,
+        "title": "النظافة المنزلية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "1e293f62-fe2b-4ab1-bebc-c9d30ae782df",
+      "file_in_zip": "1e293f62-fe2b-4ab1-bebc-c9d30ae782df.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-18.jpg",
+      "mime_type": "image/jpeg",
+      "size": 175982,
+      "collection_name": "thumb",
+      "content_hash_sha256": "d2916fb8148dfee0c6c22b7b62c9eb552c56c4232d3902049059a3636da5c5f6",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/1e293f62-fe2b-4ab1-bebc-c9d30ae782df/MANHAG_7-01-18.jpg",
+      "assessment": {
+        "id": 62,
+        "title": "المهارات الحياتية المجتمعية -  الميزانية والادخار",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "ea07a6ae-f261-4c87-bfd4-e2d3fcea5d21",
+      "file_in_zip": "ea07a6ae-f261-4c87-bfd4-e2d3fcea5d21.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-17.jpg",
+      "mime_type": "image/jpeg",
+      "size": 170364,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1f0f9fcd90398d9f5f3a936052424f7cc31b5d73fa3e0812d8dc74b92d1dc84a",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/ea07a6ae-f261-4c87-bfd4-e2d3fcea5d21/MANHAG_7-01-17.jpg",
+      "assessment": {
+        "id": 61,
+        "title": "المهارات الحياتية المجتمعية - التوظيف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "768a8cd6-1c50-4ce2-b125-2a3fba8586f3",
+      "file_in_zip": "768a8cd6-1c50-4ce2-b125-2a3fba8586f3.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-16.jpg",
+      "mime_type": "image/jpeg",
+      "size": 173841,
+      "collection_name": "thumb",
+      "content_hash_sha256": "3bbb3ef0effeab6b97b4b52ce39e76e43debc2bf282fe9829610a90ed86977fc",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/768a8cd6-1c50-4ce2-b125-2a3fba8586f3/MANHAG_7-01-16.jpg",
+      "assessment": {
+        "id": 60,
+        "title": "المهارات الحياتية المجتمعية - التنقل بالمواصلات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "59188253-3288-4732-8816-c12c927c8570",
+      "file_in_zip": "59188253-3288-4732-8816-c12c927c8570.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-14.jpg",
+      "mime_type": "image/jpeg",
+      "size": 161514,
+      "collection_name": "thumb",
+      "content_hash_sha256": "459aece5de870caba7cac489f37601116ea26e88d4b5d95b7ff41cdfca847681",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/59188253-3288-4732-8816-c12c927c8570/MANHAG_7-01-14.jpg",
+      "assessment": {
+        "id": 59,
+        "title": "المعارف العامة أهداف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "387edefe-3243-4540-8e20-e079649da9ac",
+      "file_in_zip": "387edefe-3243-4540-8e20-e079649da9ac.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-13.jpg",
+      "mime_type": "image/jpeg",
+      "size": 166652,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1cced36302dde7f9e602ab9442420c425cdd0a19388c71a173f3389715bacfc7",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/387edefe-3243-4540-8e20-e079649da9ac/MANHAG_7-01-13.jpg",
+      "assessment": {
+        "id": 58,
+        "title": "العادات الصحية ( الأكل - النوم )",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "a1e9f7c2-7714-4eab-9a49-b4a5e8ebae45",
+      "file_in_zip": "a1e9f7c2-7714-4eab-9a49-b4a5e8ebae45.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-12.jpg",
+      "mime_type": "image/jpeg",
+      "size": 159766,
+      "collection_name": "thumb",
+      "content_hash_sha256": "8176fda10ce8ce308e4882e07cd038158662751a81d39db01dc0640ed97a884f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/a1e9f7c2-7714-4eab-9a49-b4a5e8ebae45/MANHAG_7-01-12.jpg",
+      "assessment": {
+        "id": 57,
+        "title": "الضبط الذاتى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8e14c7ad-9cd2-498c-b29e-f1da292fdc82",
+      "file_in_zip": "8e14c7ad-9cd2-498c-b29e-f1da292fdc82.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-06.jpg",
+      "mime_type": "image/jpeg",
+      "size": 168799,
+      "collection_name": "thumb",
+      "content_hash_sha256": "86b561ab21d3cba0f8a9999c5fd901f2b95fdafd9742a7261ee11ebfe46b90b6",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8e14c7ad-9cd2-498c-b29e-f1da292fdc82/MANHAG_7-01-06.jpg",
+      "assessment": {
+        "id": 52,
+        "title": "التعاون و السلوك الايجابى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "bb5dfdf5-5f65-48ca-baa6-367c923ba955",
+      "file_in_zip": "bb5dfdf5-5f65-48ca-baa6-367c923ba955.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-10.jpg",
+      "mime_type": "image/jpeg",
+      "size": 167352,
+      "collection_name": "thumb",
+      "content_hash_sha256": "58573fa6d1b4583158c10708ffe97537567183fe2b85608c43e348d07ef70799",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/bb5dfdf5-5f65-48ca-baa6-367c923ba955/MANHAG_7-01-10.jpg",
+      "assessment": {
+        "id": 55,
+        "title": "التواصل والتعامل مع الآخرين - المناسبات والتفاعلات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "fc7f2d3d-523a-4681-ae54-c577723c59b6",
+      "file_in_zip": "fc7f2d3d-523a-4681-ae54-c577723c59b6.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-09.jpg",
+      "mime_type": "image/jpeg",
+      "size": 166270,
+      "collection_name": "thumb",
+      "content_hash_sha256": "7e40e2475934a371c86289f4e40533935dacbe7265124c4ea6514c5d8d5c270c",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/fc7f2d3d-523a-4681-ae54-c577723c59b6/MANHAG_7-01-09.jpg",
+      "assessment": {
+        "id": 56,
+        "title": "التواصل والتعامل مع الآخرين - الصداقة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9c209abd-d465-4ec5-ba14-6c7f03e74650",
+      "file_in_zip": "9c209abd-d465-4ec5-ba14-6c7f03e74650.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-01.jpg",
+      "mime_type": "image/jpeg",
+      "size": 165445,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1f0dc0b65de85dddb23916fe1683340f68e09b65909f074329fc41552f2626a7",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9c209abd-d465-4ec5-ba14-6c7f03e74650/MANHAG_7-01-01.jpg",
+      "assessment": {
+        "id": 53,
+        "title": "أعمال الصيانة المنزلية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "297f7cde-e9b6-4202-862a-575ad3cb45cb",
+      "file_in_zip": "297f7cde-e9b6-4202-862a-575ad3cb45cb.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-05.jpg",
+      "mime_type": "image/jpeg",
+      "size": 163811,
+      "collection_name": "thumb",
+      "content_hash_sha256": "cbc7cf5fb34fd01ef64b7984c7fb1142f52b57b7021573b57733036b8c7951a2",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/297f7cde-e9b6-4202-862a-575ad3cb45cb/MANHAG_7-01-05.jpg",
+      "assessment": {
+        "id": 14,
+        "title": "الأمن و السلامة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "458ed23c-2a5b-488b-b8d4-f3bcca15d974",
+      "file_in_zip": "458ed23c-2a5b-488b-b8d4-f3bcca15d974.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-11.jpg",
+      "mime_type": "image/jpeg",
+      "size": 162324,
+      "collection_name": "thumb",
+      "content_hash_sha256": "7ab8a7d7f30fb4af0df7041daaa9b131c97aa3f985a1dcbe20c0db8330af7699",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/458ed23c-2a5b-488b-b8d4-f3bcca15d974/MANHAG_7-01-11.jpg",
+      "assessment": {
+        "id": 12,
+        "title": "الروتين اليومى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "c2628d87-7d8a-4980-b68c-219bef01ca1c",
+      "file_in_zip": "c2628d87-7d8a-4980-b68c-219bef01ca1c.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-15.jpg",
+      "mime_type": "image/jpeg",
+      "size": 169420,
+      "collection_name": "thumb",
+      "content_hash_sha256": "896eadeec1c21cfb71a0fef2058cf8523f8a5c3600ba4ec6249924be99e69185",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/c2628d87-7d8a-4980-b68c-219bef01ca1c/MANHAG_7-01-15.jpg",
+      "assessment": {
+        "id": 11,
+        "title": "المهارات الحياتية المجتمعية – التسوق",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9bbace26-c560-4668-af34-93a92a8398e9",
+      "file_in_zip": "9bbace26-c560-4668-af34-93a92a8398e9.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-04.jpg",
+      "mime_type": "image/jpeg",
+      "size": 161094,
+      "collection_name": "thumb",
+      "content_hash_sha256": "c1366fcd25a82bea5c3010cf40bca9c877fde3a34123bfcf37a6ac917dae9314",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9bbace26-c560-4668-af34-93a92a8398e9/MANHAG_7-01-04.jpg",
+      "assessment": {
+        "id": 10,
+        "title": "مهارات اعداد الطعام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "5562b0c9-bc4f-49c7-b6c9-448540f05630",
+      "file_in_zip": "5562b0c9-bc4f-49c7-b6c9-448540f05630.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-03.jpg",
+      "mime_type": "image/jpeg",
+      "size": 161562,
+      "collection_name": "thumb",
+      "content_hash_sha256": "f977f62e1ce7a981cdb7c201493ed3408d02063c5abf68df5b83405080548a8b",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/5562b0c9-bc4f-49c7-b6c9-448540f05630/MANHAG_7-01-03.jpg",
+      "assessment": {
+        "id": 9,
+        "title": "استخدام النقود",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "2c5cb634-ed19-4302-891b-5d7465f7a0a4",
+      "file_in_zip": "2c5cb634-ed19-4302-891b-5d7465f7a0a4.jpg",
+      "source": "media_library",
+      "original_filename": "MANHAG_7-01-08.jpg",
+      "mime_type": "image/jpeg",
+      "size": 162625,
+      "collection_name": "thumb",
+      "content_hash_sha256": "e74ee6c4407bec6313f62821e7a282b80913c9d2d72479fa6471d77b8db145b4",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/2c5cb634-ed19-4302-891b-5d7465f7a0a4/MANHAG_7-01-08.jpg",
+      "assessment": {
+        "id": 54,
+        "title": "التواصل و التعامل مع الأخرين - الإتصال الشخصى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "bd88fb71-7cfa-457b-998c-7b0146f37736",
+      "file_in_zip": "bd88fb71-7cfa-457b-998c-7b0146f37736.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-01.png",
+      "mime_type": "image/png",
+      "size": 27286,
+      "collection_name": "thumb",
+      "content_hash_sha256": "73537e9d717252fbeb856288e33ab3c469cf68494c979818ec4e150990592714",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/bd88fb71-7cfa-457b-998c-7b0146f37736/MANHAG_3-01-01.png",
+      "assessment": {
+        "id": 27,
+        "title": "منهج الدمج للصف الثانى الإبتدائى – قراءة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "ca826a16-14db-46b2-a55c-1d2578f70264",
+      "file_in_zip": "ca826a16-14db-46b2-a55c-1d2578f70264.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-02.png",
+      "mime_type": "image/png",
+      "size": 13952,
+      "collection_name": "thumb",
+      "content_hash_sha256": "09a138cc5aaccc3e89b361bbb1e6260f2e4ebd4c68177fe3c43a8ebcd6673d73",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/ca826a16-14db-46b2-a55c-1d2578f70264/MANHAG_3-01-02.png",
+      "assessment": {
+        "id": 8,
+        "title": "منهج الدمج للصف الأول الإبتدائى – كتابة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "071bd6b3-70a1-4d2e-aac4-4c92766011a8",
+      "file_in_zip": "071bd6b3-70a1-4d2e-aac4-4c92766011a8.png",
+      "source": "media_library",
+      "original_filename": "1702513781-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/071bd6b3-70a1-4d2e-aac4-4c92766011a8/1702513781-3273583.png",
+      "assessment": {
+        "id": 5,
+        "title": "مقياس تشخيص اضطراب طيف التوحد",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "ce458a67-66e4-44aa-b9cd-ecc7f03ffed9",
+      "file_in_zip": "ce458a67-66e4-44aa-b9cd-ecc7f03ffed9.png",
+      "source": "media_library",
+      "original_filename": "1702513827-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "cover",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/ce458a67-66e4-44aa-b9cd-ecc7f03ffed9/1702513827-3273583.png",
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "cover"
+      }
+    },
+    {
+      "uuid": "7b7a7338-d91e-4188-b9db-e0722e03aaca",
+      "file_in_zip": "7b7a7338-d91e-4188-b9db-e0722e03aaca.png",
+      "source": "media_library",
+      "original_filename": "1702513865-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/7b7a7338-d91e-4188-b9db-e0722e03aaca/1702513865-3273583.png",
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "3c8b765c-e13b-47a7-9d70-a65c7d0f14c4",
+      "file_in_zip": "3c8b765c-e13b-47a7-9d70-a65c7d0f14c4.png",
+      "source": "media_library",
+      "original_filename": "1702513912-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/3c8b765c-e13b-47a7-9d70-a65c7d0f14c4/1702513912-3273583.png",
+      "assessment": {
+        "id": 2,
+        "title": "تقييم الإستعداد للتعليم الدمجي - استبيان تقييم البروفيل الشخصي للطالب",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "5e0d5d36-4642-46a3-9feb-c616fc5733db",
+      "file_in_zip": "5e0d5d36-4642-46a3-9feb-c616fc5733db.png",
+      "source": "media_library",
+      "original_filename": "1702513954-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/5e0d5d36-4642-46a3-9feb-c616fc5733db/1702513954-3273583.png",
+      "assessment": {
+        "id": 17,
+        "title": "استبيان أخلاقيات العمل",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "4bc2a468-17f8-4a64-aaa0-af82d4883419",
+      "file_in_zip": "4bc2a468-17f8-4a64-aaa0-af82d4883419.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-01.png",
+      "mime_type": "image/png",
+      "size": 11685,
+      "collection_name": "thumb",
+      "content_hash_sha256": "bb2a4b8320c8a65cae36a4ccc8a9b07374a274e452d07461f8623a1a2622b4cc",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/4bc2a468-17f8-4a64-aaa0-af82d4883419/MANHAG_3-01-01.png",
+      "assessment": {
+        "id": 6,
+        "title": "منهج الدمج الصف الأول – قراءه",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "42566e78-55f0-4d5d-8066-847c9213e51d",
+      "file_in_zip": "42566e78-55f0-4d5d-8066-847c9213e51d.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-03.png",
+      "mime_type": "image/png",
+      "size": 11313,
+      "collection_name": "thumb",
+      "content_hash_sha256": "e9970e120fde0298d62126f7024b4435399195a91130d9f9052074fa630f77a9",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/42566e78-55f0-4d5d-8066-847c9213e51d/MANHAG_3-01-03.png",
+      "assessment": {
+        "id": 7,
+        "title": "منهج الدمج للصف الأول الإبتدائى – رياضيات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "29da52ca-10b2-4086-8626-767f9958e831",
+      "file_in_zip": "29da52ca-10b2-4086-8626-767f9958e831.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-02.png",
+      "mime_type": "image/png",
+      "size": 29302,
+      "collection_name": "thumb",
+      "content_hash_sha256": "6cc40d577a52e4a7c99fa7049ec8bb8915105181fa0a387b48b580e3f1aa0164",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/29da52ca-10b2-4086-8626-767f9958e831/MANHAG_3-01-02.png",
+      "assessment": {
+        "id": 28,
+        "title": "منهج الدمج للصف الثانى الإبتدائى – كتابة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "3c67b221-2e05-4695-9f43-7fedb9e1d4ba",
+      "file_in_zip": "3c67b221-2e05-4695-9f43-7fedb9e1d4ba.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_3-01-03.png",
+      "mime_type": "image/png",
+      "size": 27316,
+      "collection_name": "thumb",
+      "content_hash_sha256": "14041bad88a921d60d1f23dd7ccef87b7357d41dd763cea6d3465cf0a4dd455f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/3c67b221-2e05-4695-9f43-7fedb9e1d4ba/MANHAG_3-01-03.png",
+      "assessment": {
+        "id": 26,
+        "title": "منهج الدمج للصف الثانى الإبتدائى – رياضيات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "43a9732c-f369-43db-b104-55aa2e1aedb6",
+      "file_in_zip": "43a9732c-f369-43db-b104-55aa2e1aedb6.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_5-01-01.png",
+      "mime_type": "image/png",
+      "size": 11638,
+      "collection_name": "thumb",
+      "content_hash_sha256": "f5f9f262cda850e69e97e04b06c746656c2ecc8389bd7e2da2528ca6e52951f6",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/43a9732c-f369-43db-b104-55aa2e1aedb6/MANHAG_5-01-01.png",
+      "assessment": {
+        "id": 24,
+        "title": "منهج الدمج للصف الثالث الإبتدائى – قراءة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "06365445-1dd4-48b8-8197-28f866b2efef",
+      "file_in_zip": "06365445-1dd4-48b8-8197-28f866b2efef.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_5-01-02.png",
+      "mime_type": "image/png",
+      "size": 14100,
+      "collection_name": "thumb",
+      "content_hash_sha256": "98f20ee20068a8a6eb3eea0c72a8895dead28e225b30dc46130ee192307a7e8f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/06365445-1dd4-48b8-8197-28f866b2efef/MANHAG_5-01-02.png",
+      "assessment": {
+        "id": 25,
+        "title": "منهج الدمج للصف الثالث الإبتدائى – كتابة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "02ac458e-1771-48ad-b252-64993f8f7502",
+      "file_in_zip": "02ac458e-1771-48ad-b252-64993f8f7502.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_2-01-01.png",
+      "mime_type": "image/png",
+      "size": 103904,
+      "collection_name": "thumb",
+      "content_hash_sha256": "398cf521a8c3fe46582923d99817b88ff5879551215cf5760f66d9bd411cf3dc",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/02ac458e-1771-48ad-b252-64993f8f7502/MANHAG_2-01-01.png",
+      "assessment": {
+        "id": 31,
+        "title": "منهج مهارات تكنولوجيا التعلم - المستوى الأول",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "ccbf45b2-c832-4624-a23a-96a80a8108b0",
+      "file_in_zip": "ccbf45b2-c832-4624-a23a-96a80a8108b0.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_1-02.png",
+      "mime_type": "image/png",
+      "size": 146114,
+      "collection_name": "thumb",
+      "content_hash_sha256": "b5f58f56069cbf5d2d7293cacc7fe40b36860542d391c710611a5b970fa03642",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/ccbf45b2-c832-4624-a23a-96a80a8108b0/MANHAG_1-02.png",
+      "assessment": {
+        "id": 29,
+        "title": "منهج المهارات الأساسية للطلاب المدمجين (المعالجة البصرية)",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "68243e14-4e26-48d4-ae5c-70f2eeea1fab",
+      "file_in_zip": "68243e14-4e26-48d4-ae5c-70f2eeea1fab.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/68243e14-4e26-48d4-ae5c-70f2eeea1fab/survey_3273583.png",
+      "assessment": {
+        "id": 85,
+        "title": "مهارات التفاعل مع الزملاء",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "2985bd36-998f-4157-be6c-f6e8116d8a52",
+      "file_in_zip": "2985bd36-998f-4157-be6c-f6e8116d8a52.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/2985bd36-998f-4157-be6c-f6e8116d8a52/survey_3273583.png",
+      "assessment": {
+        "id": 84,
+        "title": "مهارات التعامل مع المواصلات و الزمن و النقود",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "4dbfd763-8e14-468f-96ec-90ca058c2146",
+      "file_in_zip": "4dbfd763-8e14-468f-96ec-90ca058c2146.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/4dbfd763-8e14-468f-96ec-90ca058c2146/survey_3273583.png",
+      "assessment": {
+        "id": 83,
+        "title": "الضبط الذاتي وحسن التصرف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "b808c7d2-4aca-4707-ac01-fb30de1e695a",
+      "file_in_zip": "b808c7d2-4aca-4707-ac01-fb30de1e695a.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/b808c7d2-4aca-4707-ac01-fb30de1e695a/survey_3273583.png",
+      "assessment": {
+        "id": 82,
+        "title": "الجانب الصحي والطبي ( بيئة المدرسة والعمل )",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8f092bd6-dc6c-4561-b6ec-961855a282de",
+      "file_in_zip": "8f092bd6-dc6c-4561-b6ec-961855a282de.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8f092bd6-dc6c-4561-b6ec-961855a282de/survey_3273583.png",
+      "assessment": {
+        "id": 81,
+        "title": "التعلم الجماعي و الروتين المدرسي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "513e57bb-a7fe-4646-b006-7298c9406c11",
+      "file_in_zip": "513e57bb-a7fe-4646-b006-7298c9406c11.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/513e57bb-a7fe-4646-b006-7298c9406c11/survey_3273583.png",
+      "assessment": {
+        "id": 80,
+        "title": "إجراءات الأمان والسلامة المهنية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "79880112-bb12-41d4-b271-b4514b7bbe35",
+      "file_in_zip": "79880112-bb12-41d4-b271-b4514b7bbe35.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/79880112-bb12-41d4-b271-b4514b7bbe35/survey_3273583.png",
+      "assessment": {
+        "id": 79,
+        "title": "قواعد ولوائح وإجراءات العمل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "f0adc0c7-8f5b-4a03-a282-a37f094ae643",
+      "file_in_zip": "f0adc0c7-8f5b-4a03-a282-a37f094ae643.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/f0adc0c7-8f5b-4a03-a282-a37f094ae643/survey_3273583.png",
+      "assessment": {
+        "id": 77,
+        "title": "المهارات الإنتقالية - السلوك المهني",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "d54f2112-ba87-4720-a6ed-51a1d464fd88",
+      "file_in_zip": "d54f2112-ba87-4720-a6ed-51a1d464fd88.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/d54f2112-ba87-4720-a6ed-51a1d464fd88/survey_3273583.png",
+      "assessment": {
+        "id": 135,
+        "title": "فهم مشاعر وانفعالات الآخرين",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "9152939d-23fb-48d6-b20c-53b4dc85c580",
+      "file_in_zip": "9152939d-23fb-48d6-b20c-53b4dc85c580.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/9152939d-23fb-48d6-b20c-53b4dc85c580/survey_3273583.png",
+      "assessment": {
+        "id": 134,
+        "title": "تنظيم الانفعال الذاتي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "08713037-92f3-46fb-ad54-2c1747a77cce",
+      "file_in_zip": "08713037-92f3-46fb-ad54-2c1747a77cce.png",
+      "source": "media_library",
+      "original_filename": "Screenshot 2024-08-25 125633.png",
+      "mime_type": "image/png",
+      "size": 8402,
+      "collection_name": "thumb",
+      "content_hash_sha256": "63987e534b9a180a2e66faedb837a72add1ae86781a4b390a2d0bb48df8a165f",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/08713037-92f3-46fb-ad54-2c1747a77cce/Screenshot_2024-08-25_125633.png",
+      "assessment": {
+        "id": 144,
+        "title": "منهج تجربي فرعي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "24becf0f-7339-41df-8e46-71892cda1c1d",
+      "file_in_zip": "24becf0f-7339-41df-8e46-71892cda1c1d.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_1-01.png",
+      "mime_type": "image/png",
+      "size": 136116,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1816d4d738e7451dc150fad2c424c4d8d39e070f07e5b1a08f127eb9fd53e230",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/24becf0f-7339-41df-8e46-71892cda1c1d/MANHAG_1-01.png",
+      "assessment": {
+        "id": 30,
+        "title": "منهج مهارات اللغة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "44191ca3-884d-40ca-a3b7-53ed3f5eafc6",
+      "file_in_zip": "44191ca3-884d-40ca-a3b7-53ed3f5eafc6.png",
+      "source": "media_library",
+      "original_filename": "MANHAG_5-01-03.png",
+      "mime_type": "image/png",
+      "size": 11190,
+      "collection_name": "thumb",
+      "content_hash_sha256": "1881475945e19fd0fc04ff14cdc294fff696893e2f244d9b115dc8b2ee8c7c08",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/44191ca3-884d-40ca-a3b7-53ed3f5eafc6/MANHAG_5-01-03.png",
+      "assessment": {
+        "id": 72,
+        "title": "منهج الدمج للصف الثالث الإبتدائى – رياضيات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "bd9a1ffb-ecd4-41ef-9638-f46595088d7c",
+      "file_in_zip": "bd9a1ffb-ecd4-41ef-9638-f46595088d7c.png",
+      "source": "media_library",
+      "original_filename": "1702513733-3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/bd9a1ffb-ecd4-41ef-9638-f46595088d7c/1702513733-3273583.png",
+      "assessment": {
+        "id": 3,
+        "title": "استبيان المؤشرات المبكرة لاضطراب طيف التوحد",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "cb0efcb3-c9dc-42be-b61f-ad4357b31fbc",
+      "file_in_zip": "cb0efcb3-c9dc-42be-b61f-ad4357b31fbc.png",
+      "source": "media_library",
+      "original_filename": "3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/cb0efcb3-c9dc-42be-b61f-ad4357b31fbc/3273583.png",
+      "assessment": {
+        "id": 140,
+        "title": "مهارات التقليد الصوتى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "a41941a0-8f40-4ba6-b866-bed77b9fbba5",
+      "file_in_zip": "a41941a0-8f40-4ba6-b866-bed77b9fbba5.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/a41941a0-8f40-4ba6-b866-bed77b9fbba5/survey_3273583.png",
+      "assessment": {
+        "id": 138,
+        "title": "مهارات الصداقة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "f97d7c72-f97d-4e22-914d-06f90c4eb4c8",
+      "file_in_zip": "f97d7c72-f97d-4e22-914d-06f90c4eb4c8.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/f97d7c72-f97d-4e22-914d-06f90c4eb4c8/survey_3273583.png",
+      "assessment": {
+        "id": 137,
+        "title": "مهارات التواصل باستخدام الأجهزه الالكترونية - التابلت",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "86aafc20-eff6-4538-a748-78b28318754a",
+      "file_in_zip": "86aafc20-eff6-4538-a748-78b28318754a.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/86aafc20-eff6-4538-a748-78b28318754a/survey_3273583.png",
+      "assessment": {
+        "id": 136,
+        "title": "المهارات الاجتماعية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "e62de849-b36c-46fa-837d-04fe149a9231",
+      "file_in_zip": "e62de849-b36c-46fa-837d-04fe149a9231.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/e62de849-b36c-46fa-837d-04fe149a9231/survey_3273583.png",
+      "assessment": {
+        "id": 133,
+        "title": "اللعب الاستكشافي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "04f62d10-c283-4f4c-b56e-d7f67a5dcbcd",
+      "file_in_zip": "04f62d10-c283-4f4c-b56e-d7f67a5dcbcd.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/04f62d10-c283-4f4c-b56e-d7f67a5dcbcd/survey_3273583.png",
+      "assessment": {
+        "id": 132,
+        "title": "اللعب الجماعي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "159bd167-0938-4634-8aa8-42db3953f318",
+      "file_in_zip": "159bd167-0938-4634-8aa8-42db3953f318.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/159bd167-0938-4634-8aa8-42db3953f318/survey_3273583.png",
+      "assessment": {
+        "id": 131,
+        "title": "اللعب التظاهري أو الرمزي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "eaa38e22-ec95-48ec-be2e-82fc5a756518",
+      "file_in_zip": "eaa38e22-ec95-48ec-be2e-82fc5a756518.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/eaa38e22-ec95-48ec-be2e-82fc5a756518/survey_3273583.png",
+      "assessment": {
+        "id": 130,
+        "title": "تقليد المهارات الحركية الكبرى والصغرى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8cb9dc80-d18a-4614-9651-00fd46a7f945",
+      "file_in_zip": "8cb9dc80-d18a-4614-9651-00fd46a7f945.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8cb9dc80-d18a-4614-9651-00fd46a7f945/survey_3273583.png",
+      "assessment": {
+        "id": 129,
+        "title": "تقليد التتابع الحركي من الذاكرة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "bcb5ca87-3a68-4493-82e2-f77f3997b3d9",
+      "file_in_zip": "bcb5ca87-3a68-4493-82e2-f77f3997b3d9.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/bcb5ca87-3a68-4493-82e2-f77f3997b3d9/survey_3273583.png",
+      "assessment": {
+        "id": 128,
+        "title": "التقليد باستخدام الأشياء",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "560dead1-4f8f-4e31-a493-143a731f6965",
+      "file_in_zip": "560dead1-4f8f-4e31-a493-143a731f6965.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/560dead1-4f8f-4e31-a493-143a731f6965/survey_3273583.png",
+      "assessment": {
+        "id": 127,
+        "title": "التصوير الضوئى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "c2af47a3-46b6-4ad9-a7b6-bad6063b5994",
+      "file_in_zip": "c2af47a3-46b6-4ad9-a7b6-bad6063b5994.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/c2af47a3-46b6-4ad9-a7b6-bad6063b5994/survey_3273583.png",
+      "assessment": {
+        "id": 126,
+        "title": "الألعاب الألكترونية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "127fe316-79ba-4de8-aea5-8ed9a1bff0ce",
+      "file_in_zip": "127fe316-79ba-4de8-aea5-8ed9a1bff0ce.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/127fe316-79ba-4de8-aea5-8ed9a1bff0ce/survey_3273583.png",
+      "assessment": {
+        "id": 125,
+        "title": "رعاية الحيوانات الأليفة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "75203eda-1583-4a95-9ba8-1d575fa2cdb3",
+      "file_in_zip": "75203eda-1583-4a95-9ba8-1d575fa2cdb3.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/75203eda-1583-4a95-9ba8-1d575fa2cdb3/survey_3273583.png",
+      "assessment": {
+        "id": 124,
+        "title": "الموضة والتجميل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "ea340636-e22a-4e93-b269-645e75fa32d1",
+      "file_in_zip": "ea340636-e22a-4e93-b269-645e75fa32d1.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/ea340636-e22a-4e93-b269-645e75fa32d1/survey_3273583.png",
+      "assessment": {
+        "id": 123,
+        "title": "الصيد",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "6af7467a-b390-41d5-a02b-31a7747201dc",
+      "file_in_zip": "6af7467a-b390-41d5-a02b-31a7747201dc.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/6af7467a-b390-41d5-a02b-31a7747201dc/survey_3273583.png",
+      "assessment": {
+        "id": 122,
+        "title": "الأحداث الفنية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "dd8e541c-22ca-4705-917e-d332675d15e5",
+      "file_in_zip": "dd8e541c-22ca-4705-917e-d332675d15e5.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/dd8e541c-22ca-4705-917e-d332675d15e5/survey_3273583.png",
+      "assessment": {
+        "id": 121,
+        "title": "الأحداث الرياضية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "7bd2b975-b603-4dd8-b04d-459810b5d694",
+      "file_in_zip": "7bd2b975-b603-4dd8-b04d-459810b5d694.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/7bd2b975-b603-4dd8-b04d-459810b5d694/survey_3273583.png",
+      "assessment": {
+        "id": 120,
+        "title": "مهارات ارتداء الملابس",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8d468f66-8d8d-4e1d-b35e-9fa3ba70ae37",
+      "file_in_zip": "8d468f66-8d8d-4e1d-b35e-9fa3ba70ae37.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8d468f66-8d8d-4e1d-b35e-9fa3ba70ae37/survey_3273583.png",
+      "assessment": {
+        "id": 119,
+        "title": "مهارات خلع الملابس",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "13edda29-6537-4d23-afdb-39180077f07f",
+      "file_in_zip": "13edda29-6537-4d23-afdb-39180077f07f.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/13edda29-6537-4d23-afdb-39180077f07f/survey_3273583.png",
+      "assessment": {
+        "id": 118,
+        "title": "مهارات تناول الطعام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "fbd3268e-ec0b-4c0a-ac18-d8cdf1c9e926",
+      "file_in_zip": "fbd3268e-ec0b-4c0a-ac18-d8cdf1c9e926.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/fbd3268e-ec0b-4c0a-ac18-d8cdf1c9e926/survey_3273583.png",
+      "assessment": {
+        "id": 117,
+        "title": "مهارات النظافة الشخصية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8aaabb2c-7e03-4ca7-81ea-fc528c6957f1",
+      "file_in_zip": "8aaabb2c-7e03-4ca7-81ea-fc528c6957f1.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8aaabb2c-7e03-4ca7-81ea-fc528c6957f1/survey_3273583.png",
+      "assessment": {
+        "id": 116,
+        "title": "مهارات إستخدام الحمام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "6e8dfb33-d521-4d93-9c0e-19426eae07a7",
+      "file_in_zip": "6e8dfb33-d521-4d93-9c0e-19426eae07a7.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/6e8dfb33-d521-4d93-9c0e-19426eae07a7/survey_3273583.png",
+      "assessment": {
+        "id": 115,
+        "title": "مجال العادات الصحية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "d7a67d6d-0a81-465c-8ca4-1be4a89e7d95",
+      "file_in_zip": "d7a67d6d-0a81-465c-8ca4-1be4a89e7d95.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/d7a67d6d-0a81-465c-8ca4-1be4a89e7d95/survey_3273583.png",
+      "assessment": {
+        "id": 114,
+        "title": "الإدراك البصرى للون",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "fc6293a6-0922-45f4-854d-020cb6b5ae79",
+      "file_in_zip": "fc6293a6-0922-45f4-854d-020cb6b5ae79.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/fc6293a6-0922-45f4-854d-020cb6b5ae79/survey_3273583.png",
+      "assessment": {
+        "id": 113,
+        "title": "الانتباه البصري ودوام الشيء",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "b6399616-43d6-4589-a606-0ac68bb4b3fb",
+      "file_in_zip": "b6399616-43d6-4589-a606-0ac68bb4b3fb.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/b6399616-43d6-4589-a606-0ac68bb4b3fb/survey_3273583.png",
+      "assessment": {
+        "id": 112,
+        "title": "مهارات الإدراك البصري المكانى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "cc3fd261-b68d-4133-a45a-006660bc0956",
+      "file_in_zip": "cc3fd261-b68d-4133-a45a-006660bc0956.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/cc3fd261-b68d-4133-a45a-006660bc0956/survey_3273583.png",
+      "assessment": {
+        "id": 111,
+        "title": "مهارات الإغلاق البصري",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8c04d335-15d2-4a26-967b-931f1fe69ffb",
+      "file_in_zip": "8c04d335-15d2-4a26-967b-931f1fe69ffb.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8c04d335-15d2-4a26-967b-931f1fe69ffb/survey_3273583.png",
+      "assessment": {
+        "id": 110,
+        "title": "مهارات التتابع والتسلسل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "815cfb47-aa83-4dc9-9d42-5f4096c2e2dc",
+      "file_in_zip": "815cfb47-aa83-4dc9-9d42-5f4096c2e2dc.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/815cfb47-aa83-4dc9-9d42-5f4096c2e2dc/survey_3273583.png",
+      "assessment": {
+        "id": 109,
+        "title": "مهارات التمييز البصري",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "1ad1801e-9854-4df5-af5a-b3623138d283",
+      "file_in_zip": "1ad1801e-9854-4df5-af5a-b3623138d283.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/1ad1801e-9854-4df5-af5a-b3623138d283/survey_3273583.png",
+      "assessment": {
+        "id": 108,
+        "title": "مهارات الذاكرة البصرية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "1d047ff4-7a62-4070-a5cb-75c5734db00c",
+      "file_in_zip": "1d047ff4-7a62-4070-a5cb-75c5734db00c.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/1d047ff4-7a62-4070-a5cb-75c5734db00c/survey_3273583.png",
+      "assessment": {
+        "id": 107,
+        "title": "مهارات العلاقات المكانية",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "aa6ec8e7-3568-4da5-9b56-cfe3f9ce1d8a",
+      "file_in_zip": "aa6ec8e7-3568-4da5-9b56-cfe3f9ce1d8a.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/aa6ec8e7-3568-4da5-9b56-cfe3f9ce1d8a/survey_3273583.png",
+      "assessment": {
+        "id": 106,
+        "title": "مهارات حل المشكلات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "57cd3a35-f160-491f-a593-58f39f80aa28",
+      "file_in_zip": "57cd3a35-f160-491f-a593-58f39f80aa28.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/57cd3a35-f160-491f-a593-58f39f80aa28/survey_3273583.png",
+      "assessment": {
+        "id": 105,
+        "title": "إعداد المائدة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "b24864f0-26a5-49fa-a6d4-9d4611243132",
+      "file_in_zip": "b24864f0-26a5-49fa-a6d4-9d4611243132.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/b24864f0-26a5-49fa-a6d4-9d4611243132/survey_3273583.png",
+      "assessment": {
+        "id": 104,
+        "title": "ترتيب المائدة",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "8ed25c94-0f63-44f1-a164-179f82149c91",
+      "file_in_zip": "8ed25c94-0f63-44f1-a164-179f82149c91.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/8ed25c94-0f63-44f1-a164-179f82149c91/survey_3273583.png",
+      "assessment": {
+        "id": 103,
+        "title": "غسل الأطباق",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "634a3409-76a0-49e1-8589-8b89c210f89d",
+      "file_in_zip": "634a3409-76a0-49e1-8589-8b89c210f89d.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/634a3409-76a0-49e1-8589-8b89c210f89d/survey_3273583.png",
+      "assessment": {
+        "id": 102,
+        "title": "اعداد الطعام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "7b0482f2-576c-41b2-b259-2efd405c8f55",
+      "file_in_zip": "7b0482f2-576c-41b2-b259-2efd405c8f55.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/7b0482f2-576c-41b2-b259-2efd405c8f55/survey_3273583.png",
+      "assessment": {
+        "id": 101,
+        "title": "الإعتناء بالمطبخ",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "df32f2a3-ebcd-4338-9687-5ee7688806d6",
+      "file_in_zip": "df32f2a3-ebcd-4338-9687-5ee7688806d6.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/df32f2a3-ebcd-4338-9687-5ee7688806d6/survey_3273583.png",
+      "assessment": {
+        "id": 100,
+        "title": "الإعتناء بالملابس",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "0b7774be-db2f-4820-9953-3e9b1ef8b80e",
+      "file_in_zip": "0b7774be-db2f-4820-9953-3e9b1ef8b80e.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/0b7774be-db2f-4820-9953-3e9b1ef8b80e/survey_3273583.png",
+      "assessment": {
+        "id": 99,
+        "title": "ترتيب الفراش",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "17219259-f96b-4199-a232-49fe9e15e64a",
+      "file_in_zip": "17219259-f96b-4199-a232-49fe9e15e64a.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/17219259-f96b-4199-a232-49fe9e15e64a/survey_3273583.png",
+      "assessment": {
+        "id": 99,
+        "title": "ترتيب الفراش",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "91ae4d81-4ba5-42d7-9d00-098776179a14",
+      "file_in_zip": "91ae4d81-4ba5-42d7-9d00-098776179a14.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/91ae4d81-4ba5-42d7-9d00-098776179a14/survey_3273583.png",
+      "assessment": {
+        "id": 98,
+        "title": "تنظيف وتنسيق الغرف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "14d0ec21-aefd-433b-80ff-1ce5fe6c7ce7",
+      "file_in_zip": "14d0ec21-aefd-433b-80ff-1ce5fe6c7ce7.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/14d0ec21-aefd-433b-80ff-1ce5fe6c7ce7/survey_3273583.png",
+      "assessment": {
+        "id": 97,
+        "title": "مهارات الهاتف",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "f05dcc49-c5f8-420b-b85c-79f383b70e70",
+      "file_in_zip": "f05dcc49-c5f8-420b-b85c-79f383b70e70.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/f05dcc49-c5f8-420b-b85c-79f383b70e70/survey_3273583.png",
+      "assessment": {
+        "id": 96,
+        "title": "مهارات الروتين اليومي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "5aa93937-b998-4bb6-90f2-c938d43a3245",
+      "file_in_zip": "5aa93937-b998-4bb6-90f2-c938d43a3245.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/5aa93937-b998-4bb6-90f2-c938d43a3245/survey_3273583.png",
+      "assessment": {
+        "id": 95,
+        "title": "مهارات التمشية والتسوق",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "310bbbb8-7ba0-475c-b947-3345cde92d84",
+      "file_in_zip": "310bbbb8-7ba0-475c-b947-3345cde92d84.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/310bbbb8-7ba0-475c-b947-3345cde92d84/survey_3273583.png",
+      "assessment": {
+        "id": 94,
+        "title": "فواتير الخدمات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "4e33fab9-2401-4ee1-9291-e6cbeff505bc",
+      "file_in_zip": "4e33fab9-2401-4ee1-9291-e6cbeff505bc.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/4e33fab9-2401-4ee1-9291-e6cbeff505bc/survey_3273583.png",
+      "assessment": {
+        "id": 92,
+        "title": "شغل أوقات الفراغ والترويح",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "4d6e4b3b-1832-4397-825d-880d87847ce3",
+      "file_in_zip": "4d6e4b3b-1832-4397-825d-880d87847ce3.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/4d6e4b3b-1832-4397-825d-880d87847ce3/survey_3273583.png",
+      "assessment": {
+        "id": 91,
+        "title": "الاتصال الشخصي - السلامة والأمان",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "d9a3730a-83e7-44a5-a0f5-50a94233dcf3",
+      "file_in_zip": "d9a3730a-83e7-44a5-a0f5-50a94233dcf3.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/d9a3730a-83e7-44a5-a0f5-50a94233dcf3/survey_3273583.png",
+      "assessment": {
+        "id": 90,
+        "title": "التنقل و استخدام المواصلات",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "74c4f4f8-c4fd-4d7c-b0ee-ff318e91f41e",
+      "file_in_zip": "74c4f4f8-c4fd-4d7c-b0ee-ff318e91f41e.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/74c4f4f8-c4fd-4d7c-b0ee-ff318e91f41e/survey_3273583.png",
+      "assessment": {
+        "id": 89,
+        "title": "الروتين اليومي",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "5a3fc64e-9b62-4bab-986a-756db92cbd57",
+      "file_in_zip": "5a3fc64e-9b62-4bab-986a-756db92cbd57.png",
+      "source": "media_library",
+      "original_filename": "survey_3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "thumb",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_url": "https://fsn1.your-objectstorage.com/itqadem-media/itqadem-media/assessment/5a3fc64e-9b62-4bab-986a-756db92cbd57/survey_3273583.png",
+      "assessment": {
+        "id": 86,
+        "title": "مهارات التنقل داخل بيئة العمل",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessments",
+        "collection_name": "thumb"
+      }
+    },
+    {
+      "uuid": "1ddb913d-db08-5ac8-886a-d0d1015de44c",
+      "file_in_zip": "1ddb913d-db08-5ac8-886a-d0d1015de44c.png",
+      "source": "section_cover",
+      "source_id": 123,
+      "original_filename": "3273583.png",
+      "mime_type": "image/png",
+      "size": 15854,
+      "collection_name": "cover",
+      "content_hash_sha256": "33176879763590db9797f421a56ae33549161f6366c0361f75ef8cf33eef62cd",
+      "s3_path": "assessments/66/sections/123/3273583.png",
+      "section": {
+        "id": 123,
+        "title": "",
+        "order": 1
+      },
+      "assessment": {
+        "id": 66,
+        "title": "مهارات الهندام",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_sections",
+        "collection_name": "cover"
+      }
+    },
+    {
+      "uuid": "815e8db1-a46b-591c-afd2-b28ac5c7a112",
+      "file_in_zip": "815e8db1-a46b-591c-afd2-b28ac5c7a112.png",
+      "source": "section_cover",
+      "source_id": 196,
+      "original_filename": "survey_10266602.png",
+      "mime_type": "image/png",
+      "size": 33973,
+      "collection_name": "cover",
+      "content_hash_sha256": "eefe56028d76a88031717555a9bb1fc67c651b303a0f5615ca8ce09bc027be01",
+      "s3_path": "assessments/140/sections/196/survey_10266602.png",
+      "section": {
+        "id": 196,
+        "title": "مهارات التقليد الصوتى",
+        "order": 1
+      },
+      "assessment": {
+        "id": 140,
+        "title": "مهارات التقليد الصوتى",
+        "assessment_type": "curriculum"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_sections",
+        "collection_name": "cover"
+      }
+    },
+    {
+      "uuid": "ae1b3294-cb26-5e49-bb94-3ef16bd9c1c2",
+      "file_in_zip": "ae1b3294-cb26-5e49-bb94-3ef16bd9c1c2.png",
+      "source": "option_image",
+      "source_id": 1422,
+      "original_filename": "option-1422-image59.png",
+      "mime_type": "image/png",
+      "size": 1150891,
+      "collection_name": "option_image",
+      "content_hash_sha256": "fe3664508921abfe890d8cd9dee95299a67ac1811c67fd1a838bc3b8261c6cc2",
+      "s3_path": "assessments/15/sections/34/questions/375/options/option-1422-image59.png",
+      "option": {
+        "id": 1422,
+        "text": "أ",
+        "question_id": 375,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "372847c5-20d3-5e3d-acb6-1e72ff3c8e3f",
+      "file_in_zip": "372847c5-20d3-5e3d-acb6-1e72ff3c8e3f.jpeg",
+      "source": "option_image",
+      "source_id": 1437,
+      "original_filename": "option-1437-image73.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 206248,
+      "collection_name": "option_image",
+      "content_hash_sha256": "1d23cbba4b7a1b574afedcd57e82db0b826217f9270f9b037a8e2a356343744d",
+      "s3_path": "assessments/15/sections/34/questions/380/options/option-1437-image73.jpeg",
+      "option": {
+        "id": 1437,
+        "text": "أ",
+        "question_id": 380,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "883b6b81-ccee-596b-b8e1-e8409302f6d5",
+      "file_in_zip": "883b6b81-ccee-596b-b8e1-e8409302f6d5.png",
+      "source": "option_image",
+      "source_id": 1419,
+      "original_filename": "option-1419-image57.png",
+      "mime_type": "image/png",
+      "size": 1346771,
+      "collection_name": "option_image",
+      "content_hash_sha256": "8053b63eb43478992b3f3084e249b9aa74c78cc6720981521204a9048cfd05b2",
+      "s3_path": "assessments/15/sections/34/questions/374/options/option-1419-image57.png",
+      "option": {
+        "id": 1419,
+        "text": "أ",
+        "question_id": 374,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "79d604e6-5a17-5f70-bb8f-36a5f3b919a5",
+      "file_in_zip": "79d604e6-5a17-5f70-bb8f-36a5f3b919a5.jpeg",
+      "source": "option_image",
+      "source_id": 1413,
+      "original_filename": "option-1413-image50.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 257226,
+      "collection_name": "option_image",
+      "content_hash_sha256": "21e24dadf9e2c9863839cc0d46fa4aa30590b57de89080f7e83e6f1383a58a89",
+      "s3_path": "assessments/15/sections/34/questions/372/options/option-1413-image50.jpeg",
+      "option": {
+        "id": 1413,
+        "text": "أ",
+        "question_id": 372,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "25b2c945-f7f1-5418-b6f3-f49316f82ffa",
+      "file_in_zip": "25b2c945-f7f1-5418-b6f3-f49316f82ffa.png",
+      "source": "option_image",
+      "source_id": 1434,
+      "original_filename": "option-1434-image70_xFN30wu.png",
+      "mime_type": "image/png",
+      "size": 1362728,
+      "collection_name": "option_image",
+      "content_hash_sha256": "44324b9e8b7645ef651636d8522af9e8bff9ab8f29d6f8179f6683dc8dfb52c1",
+      "s3_path": "assessments/15/sections/34/questions/379/options/option-1434-image70_xFN30wu.png",
+      "option": {
+        "id": 1434,
+        "text": "أ",
+        "question_id": 379,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "2e2a3a3a-455b-5b1b-a1c8-4e94ba103b72",
+      "file_in_zip": "2e2a3a3a-455b-5b1b-a1c8-4e94ba103b72.jpeg",
+      "source": "option_image",
+      "source_id": 1383,
+      "original_filename": "option-1383-image20.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 199745,
+      "collection_name": "option_image",
+      "content_hash_sha256": "04a4edc79d45a4712fa7447dade1ee7400e6e1e16bc16647dfa586af9fd78c3b",
+      "s3_path": "assessments/15/sections/34/questions/362/options/option-1383-image20.jpeg",
+      "option": {
+        "id": 1383,
+        "text": "أ",
+        "question_id": 362,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "61b60b08-5d07-54b5-a26a-ba17b1d30e8d",
+      "file_in_zip": "61b60b08-5d07-54b5-a26a-ba17b1d30e8d.jpeg",
+      "source": "option_image",
+      "source_id": 1386,
+      "original_filename": "option-1386-image23.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 334028,
+      "collection_name": "option_image",
+      "content_hash_sha256": "47cc36e59cbad6395774785173a2a2c5f83671435fa585e7ad3bd962309d7d04",
+      "s3_path": "assessments/15/sections/34/questions/363/options/option-1386-image23.jpeg",
+      "option": {
+        "id": 1386,
+        "text": "أ",
+        "question_id": 363,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "221e21b0-5ea5-54ac-ba94-01f79bc3e20a",
+      "file_in_zip": "221e21b0-5ea5-54ac-ba94-01f79bc3e20a.png",
+      "source": "option_image",
+      "source_id": 1392,
+      "original_filename": "option-1392-image29.png",
+      "mime_type": "image/png",
+      "size": 2909946,
+      "collection_name": "option_image",
+      "content_hash_sha256": "14451ae00487d151960625324c1ff8a99c11999746951c6b2eeeb27724eb2e20",
+      "s3_path": "assessments/15/sections/34/questions/365/options/option-1392-image29.png",
+      "option": {
+        "id": 1392,
+        "text": "أ",
+        "question_id": 365,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "8f2aea9b-2154-5fb4-8185-64590a4ad9b7",
+      "file_in_zip": "8f2aea9b-2154-5fb4-8185-64590a4ad9b7.jpeg",
+      "source": "option_image",
+      "source_id": 1416,
+      "original_filename": "option-1416-image53.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 177188,
+      "collection_name": "option_image",
+      "content_hash_sha256": "049006249c6e914dfa21ddd392fbfd52cf9ed0ef052fac657833ffe69694bee9",
+      "s3_path": "assessments/15/sections/34/questions/373/options/option-1416-image53.jpeg",
+      "option": {
+        "id": 1416,
+        "text": "أ",
+        "question_id": 373,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "5f83eb97-2074-5f7b-b356-56703343a4d0",
+      "file_in_zip": "5f83eb97-2074-5f7b-b356-56703343a4d0.jpeg",
+      "source": "option_image",
+      "source_id": 1389,
+      "original_filename": "option-1389-image26.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 222969,
+      "collection_name": "option_image",
+      "content_hash_sha256": "b624733abfe52a8c69a237d54c0af82d60df844953efe90d8f3c930bbd7aa8e6",
+      "s3_path": "assessments/15/sections/34/questions/364/options/option-1389-image26.jpeg",
+      "option": {
+        "id": 1389,
+        "text": "أ",
+        "question_id": 364,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "aecbcea9-b2ee-5cc2-b3ff-baefe00de1bb",
+      "file_in_zip": "aecbcea9-b2ee-5cc2-b3ff-baefe00de1bb.jpeg",
+      "source": "option_image",
+      "source_id": 1376,
+      "original_filename": "option-1376-image14.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 274313,
+      "collection_name": "option_image",
+      "content_hash_sha256": "107ace42577688ef12881d52561dbfb9412b1d235252d4f772e0d74637d1d111",
+      "s3_path": "assessments/15/sections/34/questions/359/options/option-1376-image14.jpeg",
+      "option": {
+        "id": 1376,
+        "text": "أ",
+        "question_id": 359,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "de674da3-2a8e-5ff5-a0c0-3b3b72128176",
+      "file_in_zip": "de674da3-2a8e-5ff5-a0c0-3b3b72128176.jpeg",
+      "source": "option_image",
+      "source_id": 1407,
+      "original_filename": "option-1407-image44.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 165315,
+      "collection_name": "option_image",
+      "content_hash_sha256": "71c48c3df83d62175a28576085b92f5cc6b96bde516af87220363ad3e3e6d947",
+      "s3_path": "assessments/15/sections/34/questions/370/options/option-1407-image44.jpeg",
+      "option": {
+        "id": 1407,
+        "text": "أ",
+        "question_id": 370,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "04b99ac2-1464-50cf-ba44-2716bdcf36b6",
+      "file_in_zip": "04b99ac2-1464-50cf-ba44-2716bdcf36b6.png",
+      "source": "option_image",
+      "source_id": 1395,
+      "original_filename": "option-1395-image32.png",
+      "mime_type": "image/png",
+      "size": 1894619,
+      "collection_name": "option_image",
+      "content_hash_sha256": "1b90221d523122b43d352761b5acb0f4612e7bb97b8a11ff874a61ad40e667cc",
+      "s3_path": "assessments/15/sections/34/questions/366/options/option-1395-image32.png",
+      "option": {
+        "id": 1395,
+        "text": "أ",
+        "question_id": 366,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "4078b6c3-33d0-5b52-89aa-1cb55f3dc11d",
+      "file_in_zip": "4078b6c3-33d0-5b52-89aa-1cb55f3dc11d.jpeg",
+      "source": "option_image",
+      "source_id": 1410,
+      "original_filename": "option-1410-image47.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 161498,
+      "collection_name": "option_image",
+      "content_hash_sha256": "5fafb7e40f0cbe610faf31b3b7c4ca86071dc6e5683deaa9d53b68def6eeb670",
+      "s3_path": "assessments/15/sections/34/questions/371/options/option-1410-image47.jpeg",
+      "option": {
+        "id": 1410,
+        "text": "أ",
+        "question_id": 371,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "d77cb5c6-756b-5080-8146-1557e0f6a539",
+      "file_in_zip": "d77cb5c6-756b-5080-8146-1557e0f6a539.png",
+      "source": "option_image",
+      "source_id": 1398,
+      "original_filename": "option-1398-image35.png",
+      "mime_type": "image/png",
+      "size": 1274647,
+      "collection_name": "option_image",
+      "content_hash_sha256": "cc19bac14cb186c78cc8ebc763ad710bf7daed3ff6c6255f18303b20f5c773c4",
+      "s3_path": "assessments/15/sections/34/questions/367/options/option-1398-image35.png",
+      "option": {
+        "id": 1398,
+        "text": "أ",
+        "question_id": 367,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "eae05bea-76fe-5aa6-b27e-b8eb2373468e",
+      "file_in_zip": "eae05bea-76fe-5aa6-b27e-b8eb2373468e.png",
+      "source": "option_image",
+      "source_id": 1431,
+      "original_filename": "option-1431-image68.png",
+      "mime_type": "image/png",
+      "size": 1900479,
+      "collection_name": "option_image",
+      "content_hash_sha256": "856f0353187176183acb8443385e6c365cb19ef3dee1104b293a6f6a6737ad44",
+      "s3_path": "assessments/15/sections/34/questions/378/options/option-1431-image68.png",
+      "option": {
+        "id": 1431,
+        "text": "أ",
+        "question_id": 378,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "cc714bb4-3952-5dbf-881b-6426b118d356",
+      "file_in_zip": "cc714bb4-3952-5dbf-881b-6426b118d356.jpeg",
+      "source": "option_image",
+      "source_id": 1404,
+      "original_filename": "option-1404-image43.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 161918,
+      "collection_name": "option_image",
+      "content_hash_sha256": "a90a4afecca40e91a66de776817ac7c5daa54557943c0ffee7862839b2e2ac3e",
+      "s3_path": "assessments/15/sections/34/questions/369/options/option-1404-image43.jpeg",
+      "option": {
+        "id": 1404,
+        "text": "أ",
+        "question_id": 369,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "8f79e8b1-8f40-587b-b385-d0ddd2fa46af",
+      "file_in_zip": "8f79e8b1-8f40-587b-b385-d0ddd2fa46af.png",
+      "source": "option_image",
+      "source_id": 1401,
+      "original_filename": "option-1401-image38.png",
+      "mime_type": "image/png",
+      "size": 1266539,
+      "collection_name": "option_image",
+      "content_hash_sha256": "72d00e4d3706d6c883f27d0e7e6dcd02fa64178365e8262b6b59451cbb8e2329",
+      "s3_path": "assessments/15/sections/34/questions/368/options/option-1401-image38.png",
+      "option": {
+        "id": 1401,
+        "text": "أ",
+        "question_id": 368,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "b267dea3-b838-5bc6-a6f3-6b52a2f7da9a",
+      "file_in_zip": "b267dea3-b838-5bc6-a6f3-6b52a2f7da9a.jpeg",
+      "source": "option_image",
+      "source_id": 1428,
+      "original_filename": "option-1428-image65.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 196199,
+      "collection_name": "option_image",
+      "content_hash_sha256": "f0e1caaaa4d15e50ae129c3e99b9db67b3a02a2ab1bb1400d3c1ea791e0a9f22",
+      "s3_path": "assessments/15/sections/34/questions/377/options/option-1428-image65.jpeg",
+      "option": {
+        "id": 1428,
+        "text": "أ",
+        "question_id": 377,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "c9422653-8849-54d0-bfb2-10920678edab",
+      "file_in_zip": "c9422653-8849-54d0-bfb2-10920678edab.png",
+      "source": "option_image",
+      "source_id": 1440,
+      "original_filename": "option-1440-image76.png",
+      "mime_type": "image/png",
+      "size": 1255166,
+      "collection_name": "option_image",
+      "content_hash_sha256": "e5f250020f42e26cbc468ad230213c55977c17dd0e8a4710a9816077b16d23e2",
+      "s3_path": "assessments/15/sections/34/questions/381/options/option-1440-image76.png",
+      "option": {
+        "id": 1440,
+        "text": "أ",
+        "question_id": 381,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "a03ceabc-d67f-5158-a06b-98e8ceac13d9",
+      "file_in_zip": "a03ceabc-d67f-5158-a06b-98e8ceac13d9.png",
+      "source": "option_image",
+      "source_id": 1373,
+      "original_filename": "option-1373-image11.png",
+      "mime_type": "image/png",
+      "size": 1176324,
+      "collection_name": "option_image",
+      "content_hash_sha256": "0a1ffc7a51975b33964226f2342a35b316caf60ca621f80cc0d8c35c26080bc2",
+      "s3_path": "assessments/15/sections/34/questions/358/options/option-1373-image11.png",
+      "option": {
+        "id": 1373,
+        "text": "أ",
+        "question_id": 358,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "910f2c0c-2c0e-57cf-a9ba-47955877b043",
+      "file_in_zip": "910f2c0c-2c0e-57cf-a9ba-47955877b043.jpeg",
+      "source": "option_image",
+      "source_id": 1370,
+      "original_filename": "option-1370-image8.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 209446,
+      "collection_name": "option_image",
+      "content_hash_sha256": "3925d442da4f896f1b0f67ec5b0a95fa244afd679efd7e71da72d610510289e3",
+      "s3_path": "assessments/15/sections/34/questions/357/options/option-1370-image8.jpeg",
+      "option": {
+        "id": 1370,
+        "text": "أ",
+        "question_id": 357,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "71ce401a-c158-5cc7-97d6-c7dbf53fd758",
+      "file_in_zip": "71ce401a-c158-5cc7-97d6-c7dbf53fd758.png",
+      "source": "option_image",
+      "source_id": 1425,
+      "original_filename": "option-1425-image62.png",
+      "mime_type": "image/png",
+      "size": 1140295,
+      "collection_name": "option_image",
+      "content_hash_sha256": "aec62a9b5d289834f777a33cc67249d7fb8de2a35be6778ab736f310c0930c4a",
+      "s3_path": "assessments/15/sections/34/questions/376/options/option-1425-image62.png",
+      "option": {
+        "id": 1425,
+        "text": "أ",
+        "question_id": 376,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "ee146a4b-9913-5f77-a47a-cd289cfeab2a",
+      "file_in_zip": "ee146a4b-9913-5f77-a47a-cd289cfeab2a.jpeg",
+      "source": "option_image",
+      "source_id": 1380,
+      "original_filename": "option-1380-image17.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 221534,
+      "collection_name": "option_image",
+      "content_hash_sha256": "a63b9c3e0da30319ab67cecb565ad95f3c7316bad496739910c5f90eb6012993",
+      "s3_path": "assessments/15/sections/34/questions/361/options/option-1380-image17.jpeg",
+      "option": {
+        "id": 1380,
+        "text": "أ",
+        "question_id": 361,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "9883a38f-cf2b-5d6a-983b-933effe74e01",
+      "file_in_zip": "9883a38f-cf2b-5d6a-983b-933effe74e01.png",
+      "source": "option_image",
+      "source_id": 1357,
+      "original_filename": "option-1357-image7_Zinkv66.png",
+      "mime_type": "image/png",
+      "size": 1835814,
+      "collection_name": "option_image",
+      "content_hash_sha256": "45c2878ee74ef9b04d091d43b63a5173cc9f894a6c2569862a4150b0794f931f",
+      "s3_path": "assessments/15/sections/34/questions/353/options/option-1357-image7_Zinkv66.png",
+      "option": {
+        "id": 1357,
+        "text": "أ",
+        "question_id": 353,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "27cc63af-e438-550e-acae-0020f744df91",
+      "file_in_zip": "27cc63af-e438-550e-acae-0020f744df91.jpg",
+      "source": "option_image",
+      "source_id": 1441,
+      "original_filename": "option-1441-image78.jpg",
+      "mime_type": "image/jpeg",
+      "size": 38185,
+      "collection_name": "option_image",
+      "content_hash_sha256": "31e409b39cdf0712a4fa4083d4ce08a0db4f62b3ad40a9aa52b5ea30a760537a",
+      "s3_path": "assessments/15/sections/34/questions/381/options/option-1441-image78.jpg",
+      "option": {
+        "id": 1441,
+        "text": "ب",
+        "question_id": 381,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "61267c65-7540-5510-9f22-ef33551f0475",
+      "file_in_zip": "61267c65-7540-5510-9f22-ef33551f0475.jpeg",
+      "source": "option_image",
+      "source_id": 1399,
+      "original_filename": "option-1399-image36.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 167031,
+      "collection_name": "option_image",
+      "content_hash_sha256": "23d456eaf756535d76861738c8a77c760fdf71a5cee09b6ba891003c63140dfb",
+      "s3_path": "assessments/15/sections/34/questions/367/options/option-1399-image36.jpeg",
+      "option": {
+        "id": 1399,
+        "text": "ب",
+        "question_id": 367,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "e021a785-bda4-557f-bcab-27e8c854510a",
+      "file_in_zip": "e021a785-bda4-557f-bcab-27e8c854510a.jpeg",
+      "source": "option_image",
+      "source_id": 1402,
+      "original_filename": "option-1402-image39.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 188339,
+      "collection_name": "option_image",
+      "content_hash_sha256": "4b881002658df0061a2166fd44a6079f1b24e68ddcd294702e4bb13fe59629b4",
+      "s3_path": "assessments/15/sections/34/questions/368/options/option-1402-image39.jpeg",
+      "option": {
+        "id": 1402,
+        "text": "ب",
+        "question_id": 368,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "512d576e-fa15-5545-b9e4-1b359335a7af",
+      "file_in_zip": "512d576e-fa15-5545-b9e4-1b359335a7af.png",
+      "source": "option_image",
+      "source_id": 1393,
+      "original_filename": "option-1393-image30.png",
+      "mime_type": "image/png",
+      "size": 975287,
+      "collection_name": "option_image",
+      "content_hash_sha256": "ef7da5d5f4e4ef77b1332a4760f67acebdced822441640b8205db4afaa7816e0",
+      "s3_path": "assessments/15/sections/34/questions/365/options/option-1393-image30.png",
+      "option": {
+        "id": 1393,
+        "text": "ب",
+        "question_id": 365,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "3844df06-f516-5cf5-a42d-3a1af4589aa1",
+      "file_in_zip": "3844df06-f516-5cf5-a42d-3a1af4589aa1.png",
+      "source": "option_image",
+      "source_id": 1396,
+      "original_filename": "option-1396-image33.png",
+      "mime_type": "image/png",
+      "size": 1468133,
+      "collection_name": "option_image",
+      "content_hash_sha256": "870552bfaecae8b5d70dc4fd68ab34ff8a89bb054a97318571e941f302b9c270",
+      "s3_path": "assessments/15/sections/34/questions/366/options/option-1396-image33.png",
+      "option": {
+        "id": 1396,
+        "text": "ب",
+        "question_id": 366,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "a9fe94db-98f5-56d6-bce3-4190a0140f17",
+      "file_in_zip": "a9fe94db-98f5-56d6-bce3-4190a0140f17.jpeg",
+      "source": "option_image",
+      "source_id": 1405,
+      "original_filename": "option-1405-image41.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 211771,
+      "collection_name": "option_image",
+      "content_hash_sha256": "58b4bff13140d580b68dce81fc4568a37d47bf5eb0a16135bc5d6c33651318c0",
+      "s3_path": "assessments/15/sections/34/questions/369/options/option-1405-image41.jpeg",
+      "option": {
+        "id": 1405,
+        "text": "ب",
+        "question_id": 369,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "e7f590f2-97a8-5efb-8135-27a0c3d5154a",
+      "file_in_zip": "e7f590f2-97a8-5efb-8135-27a0c3d5154a.jpeg",
+      "source": "option_image",
+      "source_id": 1408,
+      "original_filename": "option-1408-image45.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 157174,
+      "collection_name": "option_image",
+      "content_hash_sha256": "62711a3db755b2eed1d31a0c126a3b7c0db5001a6d6648da0fe1dc071fe9e323",
+      "s3_path": "assessments/15/sections/34/questions/370/options/option-1408-image45.jpeg",
+      "option": {
+        "id": 1408,
+        "text": "ب",
+        "question_id": 370,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "763afbc4-85cb-51aa-ad9e-c8ee82892258",
+      "file_in_zip": "763afbc4-85cb-51aa-ad9e-c8ee82892258.jpeg",
+      "source": "option_image",
+      "source_id": 1371,
+      "original_filename": "option-1371-image10.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 319618,
+      "collection_name": "option_image",
+      "content_hash_sha256": "0ecc1c73d069984a68468e5940a7da526958f2b4cbb8cac96456de4cfc2c4883",
+      "s3_path": "assessments/15/sections/34/questions/357/options/option-1371-image10.jpeg",
+      "option": {
+        "id": 1371,
+        "text": "ب",
+        "question_id": 357,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "373b6cb2-5a7d-5302-a578-16dd4566c689",
+      "file_in_zip": "373b6cb2-5a7d-5302-a578-16dd4566c689.png",
+      "source": "option_image",
+      "source_id": 1374,
+      "original_filename": "option-1374-image12.png",
+      "mime_type": "image/png",
+      "size": 3145981,
+      "collection_name": "option_image",
+      "content_hash_sha256": "839a4ab8dc2dfec8965b145912d7ad56a77ba8a3833e6587fee163bf731136dc",
+      "s3_path": "assessments/15/sections/34/questions/358/options/option-1374-image12.png",
+      "option": {
+        "id": 1374,
+        "text": "ب",
+        "question_id": 358,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "629a33d0-3a79-5f3e-b7db-15b17e6dc04b",
+      "file_in_zip": "629a33d0-3a79-5f3e-b7db-15b17e6dc04b.jpeg",
+      "source": "option_image",
+      "source_id": 1377,
+      "original_filename": "option-1377-image15.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 161074,
+      "collection_name": "option_image",
+      "content_hash_sha256": "4eac9161c103491654501132476d3712fd2acccf92fad22ec53468206b52baaf",
+      "s3_path": "assessments/15/sections/34/questions/359/options/option-1377-image15.jpeg",
+      "option": {
+        "id": 1377,
+        "text": "ب",
+        "question_id": 359,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "26266a09-baec-5afc-9c13-63a914045db4",
+      "file_in_zip": "26266a09-baec-5afc-9c13-63a914045db4.jpeg",
+      "source": "option_image",
+      "source_id": 1381,
+      "original_filename": "option-1381-image18.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 284200,
+      "collection_name": "option_image",
+      "content_hash_sha256": "dedd608a77fe187126dc6dc9cfea51d2ee23064335c4fde9102e8795ad23ff1a",
+      "s3_path": "assessments/15/sections/34/questions/361/options/option-1381-image18.jpeg",
+      "option": {
+        "id": 1381,
+        "text": "ب",
+        "question_id": 361,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "a0bb0840-5b6a-56ce-ad05-bd6bfba62b87",
+      "file_in_zip": "a0bb0840-5b6a-56ce-ad05-bd6bfba62b87.jpeg",
+      "source": "option_image",
+      "source_id": 1384,
+      "original_filename": "option-1384-image21.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 267740,
+      "collection_name": "option_image",
+      "content_hash_sha256": "112c486bdbe53e8d4a9c159a4866dc9975242d721b5acc88ccbab86079a7a0a1",
+      "s3_path": "assessments/15/sections/34/questions/362/options/option-1384-image21.jpeg",
+      "option": {
+        "id": 1384,
+        "text": "ب",
+        "question_id": 362,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "bf33bb42-c9a4-56d1-bff4-8f89662e6469",
+      "file_in_zip": "bf33bb42-c9a4-56d1-bff4-8f89662e6469.jpeg",
+      "source": "option_image",
+      "source_id": 1387,
+      "original_filename": "option-1387-image24.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 151358,
+      "collection_name": "option_image",
+      "content_hash_sha256": "2afa5573dee488208644c26c2ac746382f6e40fc7f812a0015f196d235955daa",
+      "s3_path": "assessments/15/sections/34/questions/363/options/option-1387-image24.jpeg",
+      "option": {
+        "id": 1387,
+        "text": "ب",
+        "question_id": 363,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "52f87d92-f407-5b8f-bb8e-bc26486105e9",
+      "file_in_zip": "52f87d92-f407-5b8f-bb8e-bc26486105e9.jpeg",
+      "source": "option_image",
+      "source_id": 1390,
+      "original_filename": "option-1390-image27.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 192749,
+      "collection_name": "option_image",
+      "content_hash_sha256": "62d48c83af89234f138df589d54bea57130874f06d9b07e092ce8bb421cdbef6",
+      "s3_path": "assessments/15/sections/34/questions/364/options/option-1390-image27.jpeg",
+      "option": {
+        "id": 1390,
+        "text": "ب",
+        "question_id": 364,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "85cfc48a-1ce9-50ad-bb69-e3f26f5c0999",
+      "file_in_zip": "85cfc48a-1ce9-50ad-bb69-e3f26f5c0999.JPG",
+      "source": "option_image",
+      "source_id": 1420,
+      "original_filename": "option-1420-image58.JPG",
+      "mime_type": "image/jpeg",
+      "size": 50505,
+      "collection_name": "option_image",
+      "content_hash_sha256": "8a0fd54e945fd77bab6dbbf4a91cb78835a02b7fe6020f47839cbdecf12039b2",
+      "s3_path": "assessments/15/sections/34/questions/374/options/option-1420-image58.JPG",
+      "option": {
+        "id": 1420,
+        "text": "ب",
+        "question_id": 374,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "3930ae13-e28d-5bba-954d-7f3d7d8def01",
+      "file_in_zip": "3930ae13-e28d-5bba-954d-7f3d7d8def01.jpeg",
+      "source": "option_image",
+      "source_id": 1417,
+      "original_filename": "option-1417-image54.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 273137,
+      "collection_name": "option_image",
+      "content_hash_sha256": "70fb03f27b1e67b8a2a5ff9ce3351fb2514cf9ba040fea6c1760cf850a0dac27",
+      "s3_path": "assessments/15/sections/34/questions/373/options/option-1417-image54.jpeg",
+      "option": {
+        "id": 1417,
+        "text": "ب",
+        "question_id": 373,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "0306032d-af72-56b1-a07c-740ad5352b8a",
+      "file_in_zip": "0306032d-af72-56b1-a07c-740ad5352b8a.png",
+      "source": "option_image",
+      "source_id": 1411,
+      "original_filename": "option-1411-image48.png",
+      "mime_type": "image/png",
+      "size": 1522931,
+      "collection_name": "option_image",
+      "content_hash_sha256": "fa5b12e74202458e700082296b935c2a576894398cea66b7b8568a9c0e02e33b",
+      "s3_path": "assessments/15/sections/34/questions/371/options/option-1411-image48.png",
+      "option": {
+        "id": 1411,
+        "text": "ب",
+        "question_id": 371,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "90d6b505-d218-511b-9a97-7dded3d8c508",
+      "file_in_zip": "90d6b505-d218-511b-9a97-7dded3d8c508.jpeg",
+      "source": "option_image",
+      "source_id": 1414,
+      "original_filename": "option-1414-image51.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 202706,
+      "collection_name": "option_image",
+      "content_hash_sha256": "6a8a44b96ad0c44a70b765005ce56a6b51b65594e29afadb8dc72a820c3265e2",
+      "s3_path": "assessments/15/sections/34/questions/372/options/option-1414-image51.jpeg",
+      "option": {
+        "id": 1414,
+        "text": "ب",
+        "question_id": 372,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "1dc1d87c-c1cb-56f0-a8b4-531f3bc55529",
+      "file_in_zip": "1dc1d87c-c1cb-56f0-a8b4-531f3bc55529.png",
+      "source": "option_image",
+      "source_id": 1423,
+      "original_filename": "option-1423-image60.png",
+      "mime_type": "image/png",
+      "size": 1070814,
+      "collection_name": "option_image",
+      "content_hash_sha256": "bb17a0d66b7dd9e488fd65fee5b4cd8632da1ba8c39ef182df33caeae6b3692f",
+      "s3_path": "assessments/15/sections/34/questions/375/options/option-1423-image60.png",
+      "option": {
+        "id": 1423,
+        "text": "ب",
+        "question_id": 375,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "f16a91ad-be9c-55cb-b51a-27f0f5cde9e1",
+      "file_in_zip": "f16a91ad-be9c-55cb-b51a-27f0f5cde9e1.jpeg",
+      "source": "option_image",
+      "source_id": 1429,
+      "original_filename": "option-1429-image66.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 254690,
+      "collection_name": "option_image",
+      "content_hash_sha256": "ea1bde416cf610cd05ce518c3db33f8a3ee15f2c252b643b2ddeeff0d1db9f94",
+      "s3_path": "assessments/15/sections/34/questions/377/options/option-1429-image66.jpeg",
+      "option": {
+        "id": 1429,
+        "text": "ب",
+        "question_id": 377,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "83ec1024-3003-55f1-adaa-b47509677604",
+      "file_in_zip": "83ec1024-3003-55f1-adaa-b47509677604.jpg",
+      "source": "option_image",
+      "source_id": 1426,
+      "original_filename": "option-1426-image64.jpg",
+      "mime_type": "image/jpeg",
+      "size": 18491,
+      "collection_name": "option_image",
+      "content_hash_sha256": "7dc3bac8bb2bf9c2ba0a18d951b945d31b0e5ef26d8c9b732c9e55b5b5e39aac",
+      "s3_path": "assessments/15/sections/34/questions/376/options/option-1426-image64.jpg",
+      "option": {
+        "id": 1426,
+        "text": "ب",
+        "question_id": 376,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "a5fb6e07-689a-5748-888a-0e4e3f7edb46",
+      "file_in_zip": "a5fb6e07-689a-5748-888a-0e4e3f7edb46.jpg",
+      "source": "option_image",
+      "source_id": 1432,
+      "original_filename": "option-1432-image69.jpg",
+      "mime_type": "image/jpeg",
+      "size": 117992,
+      "collection_name": "option_image",
+      "content_hash_sha256": "a9e8fcbb7cd18aef3f491f021e84abf930e42d9c4e7acbf05823fb012bcca9d9",
+      "s3_path": "assessments/15/sections/34/questions/378/options/option-1432-image69.jpg",
+      "option": {
+        "id": 1432,
+        "text": "ب",
+        "question_id": 378,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "17aeb6b8-3ba8-5a7e-9141-771a70304cc3",
+      "file_in_zip": "17aeb6b8-3ba8-5a7e-9141-771a70304cc3.jpeg",
+      "source": "option_image",
+      "source_id": 1435,
+      "original_filename": "option-1435-image71.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 257260,
+      "collection_name": "option_image",
+      "content_hash_sha256": "9b10ee4559c2f8b4c5a64fc4776e415846fae97f5febb55002da136bc5c047ad",
+      "s3_path": "assessments/15/sections/34/questions/379/options/option-1435-image71.jpeg",
+      "option": {
+        "id": 1435,
+        "text": "ب",
+        "question_id": 379,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "7f2cff20-bd38-5f33-89d0-30ce0dccf9c7",
+      "file_in_zip": "7f2cff20-bd38-5f33-89d0-30ce0dccf9c7.jpeg",
+      "source": "option_image",
+      "source_id": 1438,
+      "original_filename": "option-1438-image74.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 219475,
+      "collection_name": "option_image",
+      "content_hash_sha256": "a26f74a8932544ab631a2344dc57036dafefdb0a71c95c2dbd8df039eb242393",
+      "s3_path": "assessments/15/sections/34/questions/380/options/option-1438-image74.jpeg",
+      "option": {
+        "id": 1438,
+        "text": "ب",
+        "question_id": 380,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "44d2c22a-d6a0-5192-bde7-ac582d51e4f8",
+      "file_in_zip": "44d2c22a-d6a0-5192-bde7-ac582d51e4f8.jpeg",
+      "source": "option_image",
+      "source_id": 1366,
+      "original_filename": "option-1366-image23.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 334028,
+      "collection_name": "option_image",
+      "content_hash_sha256": "47cc36e59cbad6395774785173a2a2c5f83671435fa585e7ad3bd962309d7d04",
+      "s3_path": "assessments/15/sections/34/questions/353/options/option-1366-image23.jpeg",
+      "option": {
+        "id": 1366,
+        "text": "ب",
+        "question_id": 353,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "b044a75b-3e9d-5cd0-bf32-cab9fdea7f32",
+      "file_in_zip": "b044a75b-3e9d-5cd0-bf32-cab9fdea7f32.jpeg",
+      "source": "option_image",
+      "source_id": 1385,
+      "original_filename": "option-1385-image22.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 207391,
+      "collection_name": "option_image",
+      "content_hash_sha256": "2875e4716dde5b4ecdbe8b525dd0dd81bd25ee9648ae06357f90ef8bade37ffc",
+      "s3_path": "assessments/15/sections/34/questions/362/options/option-1385-image22.jpeg",
+      "option": {
+        "id": 1385,
+        "text": "ج",
+        "question_id": 362,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "57653536-8262-51d3-b591-3c07a72d5afe",
+      "file_in_zip": "57653536-8262-51d3-b591-3c07a72d5afe.jpeg",
+      "source": "option_image",
+      "source_id": 1382,
+      "original_filename": "option-1382-image19.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 231727,
+      "collection_name": "option_image",
+      "content_hash_sha256": "ff569fd90ee1820b9349eda3110aba36a6e31e1f2f7f4f9895645705b253fe31",
+      "s3_path": "assessments/15/sections/34/questions/361/options/option-1382-image19.jpeg",
+      "option": {
+        "id": 1382,
+        "text": "ج",
+        "question_id": 361,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "9fc342ca-c33c-5ddc-af0e-0b53007ab0c5",
+      "file_in_zip": "9fc342ca-c33c-5ddc-af0e-0b53007ab0c5.jpeg",
+      "source": "option_image",
+      "source_id": 1430,
+      "original_filename": "option-1430-image67.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 187814,
+      "collection_name": "option_image",
+      "content_hash_sha256": "de6dfaf6f1752083ab9d27b1211bdc398b545e79772571cea666b2bb324c7467",
+      "s3_path": "assessments/15/sections/34/questions/377/options/option-1430-image67.jpeg",
+      "option": {
+        "id": 1430,
+        "text": "ج",
+        "question_id": 377,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "f2ea4686-2866-51ec-9537-a3657ae1112e",
+      "file_in_zip": "f2ea4686-2866-51ec-9537-a3657ae1112e.png",
+      "source": "option_image",
+      "source_id": 1400,
+      "original_filename": "option-1400-image37.png",
+      "mime_type": "image/png",
+      "size": 1438139,
+      "collection_name": "option_image",
+      "content_hash_sha256": "c400319c8444cba86a7540a6ba0799a93d76575a2726e51e63042437346f7b2f",
+      "s3_path": "assessments/15/sections/34/questions/367/options/option-1400-image37.png",
+      "option": {
+        "id": 1400,
+        "text": "ج",
+        "question_id": 367,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "2acacc2f-57f0-51be-90bb-f21a71567437",
+      "file_in_zip": "2acacc2f-57f0-51be-90bb-f21a71567437.jpeg",
+      "source": "option_image",
+      "source_id": 1378,
+      "original_filename": "option-1378-image16.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 250739,
+      "collection_name": "option_image",
+      "content_hash_sha256": "85111606de87528a197df2d19fa6b2297a22f2bc34bd3a60a79edc28c51067d0",
+      "s3_path": "assessments/15/sections/34/questions/359/options/option-1378-image16.jpeg",
+      "option": {
+        "id": 1378,
+        "text": "ج",
+        "question_id": 359,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "c817094e-1197-5af5-9c63-d6ec365c6028",
+      "file_in_zip": "c817094e-1197-5af5-9c63-d6ec365c6028.png",
+      "source": "option_image",
+      "source_id": 1427,
+      "original_filename": "option-1427-image63.png",
+      "mime_type": "image/png",
+      "size": 1180911,
+      "collection_name": "option_image",
+      "content_hash_sha256": "2e48ccd0d3f879efce241f621517545511e93f62aef1fa0ea543bb969862f954",
+      "s3_path": "assessments/15/sections/34/questions/376/options/option-1427-image63.png",
+      "option": {
+        "id": 1427,
+        "text": "ج",
+        "question_id": 376,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "e7204494-59a0-5541-a818-693a054c468b",
+      "file_in_zip": "e7204494-59a0-5541-a818-693a054c468b.jpeg",
+      "source": "option_image",
+      "source_id": 1375,
+      "original_filename": "option-1375-image13.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 152770,
+      "collection_name": "option_image",
+      "content_hash_sha256": "45fa70d2bd70af28999efbbf734e535922b44857fbe508f25f8a911193272ae9",
+      "s3_path": "assessments/15/sections/34/questions/358/options/option-1375-image13.jpeg",
+      "option": {
+        "id": 1375,
+        "text": "ج",
+        "question_id": 358,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "cbafb837-54c2-500c-8e95-12f842c1a9c7",
+      "file_in_zip": "cbafb837-54c2-500c-8e95-12f842c1a9c7.png",
+      "source": "option_image",
+      "source_id": 1372,
+      "original_filename": "option-1372-image9.png",
+      "mime_type": "image/png",
+      "size": 1291826,
+      "collection_name": "option_image",
+      "content_hash_sha256": "9a0a15fd3ddefe5c505a4e973085c9be03f5586f7f7f3db836b886e1420aca9f",
+      "s3_path": "assessments/15/sections/34/questions/357/options/option-1372-image9.png",
+      "option": {
+        "id": 1372,
+        "text": "ج",
+        "question_id": 357,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "6e8300ab-0271-5110-8842-0b87a2ec4ab4",
+      "file_in_zip": "6e8300ab-0271-5110-8842-0b87a2ec4ab4.png",
+      "source": "option_image",
+      "source_id": 1433,
+      "original_filename": "option-1433-image70.png",
+      "mime_type": "image/png",
+      "size": 1362728,
+      "collection_name": "option_image",
+      "content_hash_sha256": "44324b9e8b7645ef651636d8522af9e8bff9ab8f29d6f8179f6683dc8dfb52c1",
+      "s3_path": "assessments/15/sections/34/questions/378/options/option-1433-image70.png",
+      "option": {
+        "id": 1433,
+        "text": "ج",
+        "question_id": 378,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "774a33c9-86e1-5076-88eb-80cf2b5203a2",
+      "file_in_zip": "774a33c9-86e1-5076-88eb-80cf2b5203a2.png",
+      "source": "option_image",
+      "source_id": 1436,
+      "original_filename": "option-1436-image72.png",
+      "mime_type": "image/png",
+      "size": 1190611,
+      "collection_name": "option_image",
+      "content_hash_sha256": "ccd64ea35a70448f1b3259428ca0a254531eec1131ed2d3283be6ea5aafc975f",
+      "s3_path": "assessments/15/sections/34/questions/379/options/option-1436-image72.png",
+      "option": {
+        "id": 1436,
+        "text": "ج",
+        "question_id": 379,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "c64c0d94-471c-50bf-9f0f-ab8942aa9f3a",
+      "file_in_zip": "c64c0d94-471c-50bf-9f0f-ab8942aa9f3a.jpeg",
+      "source": "option_image",
+      "source_id": 1442,
+      "original_filename": "option-1442-image77.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 169384,
+      "collection_name": "option_image",
+      "content_hash_sha256": "0349ba5575a2c8e46976550aa74d6e19e7e6ba65ac15fb98029fc61244201c62",
+      "s3_path": "assessments/15/sections/34/questions/381/options/option-1442-image77.jpeg",
+      "option": {
+        "id": 1442,
+        "text": "ج",
+        "question_id": 381,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "f643065d-485a-5e4b-9504-ee2f56734f97",
+      "file_in_zip": "f643065d-485a-5e4b-9504-ee2f56734f97.jpeg",
+      "source": "option_image",
+      "source_id": 1406,
+      "original_filename": "option-1406-image42.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 171347,
+      "collection_name": "option_image",
+      "content_hash_sha256": "60c2c6bbd94d0d5d7ce5b36d0905edd959eafb5307c64fcd928e2a593bb74e72",
+      "s3_path": "assessments/15/sections/34/questions/369/options/option-1406-image42.jpeg",
+      "option": {
+        "id": 1406,
+        "text": "ج",
+        "question_id": 369,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "1a61fe77-5523-5a75-a3ef-4f4c5aeedf81",
+      "file_in_zip": "1a61fe77-5523-5a75-a3ef-4f4c5aeedf81.png",
+      "source": "option_image",
+      "source_id": 1397,
+      "original_filename": "option-1397-image34.png",
+      "mime_type": "image/png",
+      "size": 5990712,
+      "collection_name": "option_image",
+      "content_hash_sha256": "cf71244124ff36cfb1a6bce74b0c916808fd32c5a0300a1487eb7af4058df4cb",
+      "s3_path": "assessments/15/sections/34/questions/366/options/option-1397-image34.png",
+      "option": {
+        "id": 1397,
+        "text": "ج",
+        "question_id": 366,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "86c88aa8-e812-5e94-af80-f1e6797fdb92",
+      "file_in_zip": "86c88aa8-e812-5e94-af80-f1e6797fdb92.png",
+      "source": "option_image",
+      "source_id": 1367,
+      "original_filename": "option-1367-image5.png",
+      "mime_type": "image/png",
+      "size": 1193706,
+      "collection_name": "option_image",
+      "content_hash_sha256": "d2983bb63129e9507d579a5ebbc9fba673baa8688dd8b93bfcdc05f91a9d04ca",
+      "s3_path": "assessments/15/sections/34/questions/353/options/option-1367-image5.png",
+      "option": {
+        "id": 1367,
+        "text": "ج",
+        "question_id": 353,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "88a07f39-7711-5873-acdf-fd2ade33f601",
+      "file_in_zip": "88a07f39-7711-5873-acdf-fd2ade33f601.png",
+      "source": "option_image",
+      "source_id": 1394,
+      "original_filename": "option-1394-image31.png",
+      "mime_type": "image/png",
+      "size": 1169614,
+      "collection_name": "option_image",
+      "content_hash_sha256": "da9433f6e97bbc0448cc74f62d732fae81c5b7f73892726d0693d7cf50acee5e",
+      "s3_path": "assessments/15/sections/34/questions/365/options/option-1394-image31.png",
+      "option": {
+        "id": 1394,
+        "text": "ج",
+        "question_id": 365,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "0258f40a-48ce-5718-a2ee-2d4d0ea90651",
+      "file_in_zip": "0258f40a-48ce-5718-a2ee-2d4d0ea90651.jpeg",
+      "source": "option_image",
+      "source_id": 1439,
+      "original_filename": "option-1439-image75.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 202968,
+      "collection_name": "option_image",
+      "content_hash_sha256": "1ec393ce1e2586657fdc41ee0e2531102ce85338874e16325c60f0bcdca00439",
+      "s3_path": "assessments/15/sections/34/questions/380/options/option-1439-image75.jpeg",
+      "option": {
+        "id": 1439,
+        "text": "ج",
+        "question_id": 380,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "a6a07353-9838-5751-a8c5-4fc8796a18f2",
+      "file_in_zip": "a6a07353-9838-5751-a8c5-4fc8796a18f2.png",
+      "source": "option_image",
+      "source_id": 1424,
+      "original_filename": "option-1424-image61.png",
+      "mime_type": "image/png",
+      "size": 1051433,
+      "collection_name": "option_image",
+      "content_hash_sha256": "4c710d699b055d0cdf387393e731586cda5ecac8aa965df8503f6d83699599b4",
+      "s3_path": "assessments/15/sections/34/questions/375/options/option-1424-image61.png",
+      "option": {
+        "id": 1424,
+        "text": "ج",
+        "question_id": 375,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "196df389-eaab-54b4-9b5b-6cfc031f3b70",
+      "file_in_zip": "196df389-eaab-54b4-9b5b-6cfc031f3b70.png",
+      "source": "option_image",
+      "source_id": 1391,
+      "original_filename": "option-1391-image28.png",
+      "mime_type": "image/png",
+      "size": 1226617,
+      "collection_name": "option_image",
+      "content_hash_sha256": "63c379380072a83ddfc94d55f8a448ca850ca6d41df8f84d760fc872562da0a9",
+      "s3_path": "assessments/15/sections/34/questions/364/options/option-1391-image28.png",
+      "option": {
+        "id": 1391,
+        "text": "ج",
+        "question_id": 364,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "145a7cde-b438-5a55-8c35-e4d83d7b3b61",
+      "file_in_zip": "145a7cde-b438-5a55-8c35-e4d83d7b3b61.jpeg",
+      "source": "option_image",
+      "source_id": 1415,
+      "original_filename": "option-1415-image52.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 153384,
+      "collection_name": "option_image",
+      "content_hash_sha256": "546df07ecb94bfa4e664d1386e5649e3d281978fb7e1e6767a8bfb1d73bf351c",
+      "s3_path": "assessments/15/sections/34/questions/372/options/option-1415-image52.jpeg",
+      "option": {
+        "id": 1415,
+        "text": "ج",
+        "question_id": 372,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "9d591a6d-672f-5a09-ae7e-2a80bef51660",
+      "file_in_zip": "9d591a6d-672f-5a09-ae7e-2a80bef51660.jpg",
+      "source": "option_image",
+      "source_id": 1412,
+      "original_filename": "option-1412-image49.jpg",
+      "mime_type": "image/jpeg",
+      "size": 54512,
+      "collection_name": "option_image",
+      "content_hash_sha256": "9d96d5e124d6007f3868255735a6f1954cf296e53b2f196962fe27efeabf8aec",
+      "s3_path": "assessments/15/sections/34/questions/371/options/option-1412-image49.jpg",
+      "option": {
+        "id": 1412,
+        "text": "ج",
+        "question_id": 371,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "1cc20f11-0963-5ab3-8331-095aabca8fe5",
+      "file_in_zip": "1cc20f11-0963-5ab3-8331-095aabca8fe5.jpeg",
+      "source": "option_image",
+      "source_id": 1418,
+      "original_filename": "option-1418-image55.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 180071,
+      "collection_name": "option_image",
+      "content_hash_sha256": "5bdd112c2782eb8b23433dec8a316acd2cfb28355e6280e4731b1b7d560357da",
+      "s3_path": "assessments/15/sections/34/questions/373/options/option-1418-image55.jpeg",
+      "option": {
+        "id": 1418,
+        "text": "ج",
+        "question_id": 373,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "fdc5fdb6-ce08-5db8-b789-4f856f81e141",
+      "file_in_zip": "fdc5fdb6-ce08-5db8-b789-4f856f81e141.jpeg",
+      "source": "option_image",
+      "source_id": 1388,
+      "original_filename": "option-1388-image25.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 545640,
+      "collection_name": "option_image",
+      "content_hash_sha256": "42e2c81f04589e1564701ea275fadaad303020b4d0b05733c1852f89ce917e2d",
+      "s3_path": "assessments/15/sections/34/questions/363/options/option-1388-image25.jpeg",
+      "option": {
+        "id": 1388,
+        "text": "ج",
+        "question_id": 363,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "dd6c6d81-aed0-5cd5-96ac-bf7c4676ea99",
+      "file_in_zip": "dd6c6d81-aed0-5cd5-96ac-bf7c4676ea99.png",
+      "source": "option_image",
+      "source_id": 1421,
+      "original_filename": "option-1421-image56.png",
+      "mime_type": "image/png",
+      "size": 1754557,
+      "collection_name": "option_image",
+      "content_hash_sha256": "7f4531bd5581c3f9889241698bd8e26700a821574cc33922220e23ad69ba3db9",
+      "s3_path": "assessments/15/sections/34/questions/374/options/option-1421-image56.png",
+      "option": {
+        "id": 1421,
+        "text": "ج",
+        "question_id": 374,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "b357c4eb-47b6-59b6-afea-d13f7abf0310",
+      "file_in_zip": "b357c4eb-47b6-59b6-afea-d13f7abf0310.jpeg",
+      "source": "option_image",
+      "source_id": 1409,
+      "original_filename": "option-1409-image46.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 183365,
+      "collection_name": "option_image",
+      "content_hash_sha256": "4fb6d3851a0a7c0db318fb4bdc75dc7635085d85e184b009ac41b40abc336fc1",
+      "s3_path": "assessments/15/sections/34/questions/370/options/option-1409-image46.jpeg",
+      "option": {
+        "id": 1409,
+        "text": "ج",
+        "question_id": 370,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    },
+    {
+      "uuid": "c134c628-80c2-59b0-86bc-865c2c79b88b",
+      "file_in_zip": "c134c628-80c2-59b0-86bc-865c2c79b88b.jpeg",
+      "source": "option_image",
+      "source_id": 1403,
+      "original_filename": "option-1403-image40.jpeg",
+      "mime_type": "image/jpeg",
+      "size": 166728,
+      "collection_name": "option_image",
+      "content_hash_sha256": "c854dd4c298322c508a18e5b25551d69f930205f5371e0b50e4019d6728c1b25",
+      "s3_path": "assessments/15/sections/34/questions/368/options/option-1403-image40.jpeg",
+      "option": {
+        "id": 1403,
+        "text": "ج",
+        "question_id": 368,
+        "section_id": 34
+      },
+      "assessment": {
+        "id": 15,
+        "title": "استبيان التفضيل المهني",
+        "assessment_type": "survey"
+      },
+      "target": {
+        "kind": "IMAGE",
+        "visibility": "PUBLIC",
+        "resource_type": "assessment_options",
+        "collection_name": "image"
+      }
+    }
+  ]
+}
