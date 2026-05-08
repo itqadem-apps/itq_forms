@@ -127,6 +127,8 @@ jobs:
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           tags: |
             ${{ steps.get_image_name.outputs.IMAGE_NAME }}:${{ needs.tag-and-release.outputs.new_tag }}
             ${{ steps.get_image_name.outputs.IMAGE_NAME }}:${{ needs.tag-and-release.outputs.latest_tag }}

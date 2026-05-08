@@ -210,6 +210,10 @@ OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
 OUTBOX_POLL_INTERVAL = float(os.environ.get("OUTBOX_POLL_INTERVAL", "0.5"))
 OUTBOX_BATCH_SIZE = int(os.environ.get("OUTBOX_BATCH_SIZE", "50"))
 
+MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
+MEDIA_LIBRARY_TENANT_ID = os.environ.get("MEDIA_LIBRARY_TENANT_ID", "")
+MEDIA_LIBRARY_TOKEN = os.environ.get("MEDIA_LIBRARY_TOKEN", "")
+
 # Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
 LOGGING = {
     "version": 1,

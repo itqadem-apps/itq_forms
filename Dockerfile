@@ -27,8 +27,12 @@ COPY requirements.txt ./
 
 # Create and activate virtual environment
 RUN python3 -m venv --system-site-packages /py && \
-    /py/bin/pip install --upgrade pip && \
-    /py/bin/pip install --no-cache-dir -r /app/requirements.txt
+    /py/bin/pip install --upgrade pip
+RUN --mount=type=secret,id=github_token \
+    printf 'machine github.com\nlogin x-access-token\npassword %s\n' \
+      "$(cat /run/secrets/github_token)" > /root/.netrc && \
+    /py/bin/pip install --no-cache-dir -r /app/requirements.txt && \
+    rm -f /root/.netrc
 
 # Stage 2: Runtime - Minimal lightweight image
 FROM python:3.13-slim AS runtime
