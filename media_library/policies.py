@@ -16,9 +16,40 @@ ANSWER_FILE_MIME = {
 }
 
 POLICIES: list[dict] = [
-    {"resource_type": "forms", "collection_name": "image", "kind": AssetKind.IMAGE, "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME, "allow_multiple": False, "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
-    {"resource_type": "form_items", "collection_name": "image", "kind": AssetKind.IMAGE, "visibility": Visibility.RESTRICTED, "allowed_mime_types": IMAGE_MIME, "allow_multiple": False, "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
-    {"resource_type": "form_answers", "collection_name": "file", "kind": AssetKind.DOCUMENT, "visibility": Visibility.PRIVATE, "allowed_mime_types": ANSWER_FILE_MIME, "allow_multiple": False},
-    {"resource_type": "forms", "collection_name": "image_batch", "kind": AssetKind.IMAGE_BATCH, "visibility": Visibility.PUBLIC, "allowed_mime_types": ZIP_MIME, "allow_multiple": False, "step_options": {"image_batch": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
-    {"resource_type": "form_items", "collection_name": "image_batch", "kind": AssetKind.IMAGE_BATCH, "visibility": Visibility.RESTRICTED, "allowed_mime_types": ZIP_MIME, "allow_multiple": False, "step_options": {"image_batch": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
+    {"resource_type": "forms", "collection_name": "image", "kind": AssetKind.IMAGE, "visibility": Visibility.PUBLIC,
+     "allowed_mime_types": IMAGE_MIME, "allow_multiple": False,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
+    {"resource_type": "form_items", "collection_name": "image", "kind": AssetKind.IMAGE,
+     "visibility": Visibility.RESTRICTED, "allowed_mime_types": IMAGE_MIME, "allow_multiple": False,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
+    {"resource_type": "form_answers", "collection_name": "file", "kind": AssetKind.DOCUMENT,
+     "visibility": Visibility.PRIVATE, "allowed_mime_types": ANSWER_FILE_MIME, "allow_multiple": False},
+    {
+        "resource_type": "forms",
+        "collection_name": "image_batch",
+        "kind": AssetKind.IMAGE_BATCH,
+        "visibility": Visibility.PUBLIC,
+        "allowed_mime_types": ZIP_MIME,
+        "allow_multiple": False,
+        "step_options": {
+            "zip_image_extract": {
+                "allowed_extensions": [".jpg", ".jpeg", ".png", ".webp"],
+                "auto_process_children": True,
+            },
+        }
+    },
+    {
+        "resource_type": "form_items",
+        "collection_name": "image_batch",
+        "kind": AssetKind.IMAGE_BATCH,
+        "visibility": Visibility.RESTRICTED,
+        "allowed_mime_types": ZIP_MIME,
+        "allow_multiple": False,
+        "step_options": {
+            "zip_image_extract": {
+                "allowed_extensions": [".jpg", ".jpeg", ".png", ".webp"],
+                "auto_process_children": True,
+            },
+        }
+    },
 ]
