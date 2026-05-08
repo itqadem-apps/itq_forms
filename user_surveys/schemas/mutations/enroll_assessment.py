@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from app.auth_utils import with_django_user
 from surveys.models import Survey, Usage
-from surveys.usage_access import summarize_usage_rows
+from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
 from user_surveys.child_projection import get_active_child_for_user
 from user_surveys.types import UserSurveyType
 from user_surveys.models import UserSurvey
@@ -34,15 +34,18 @@ class EnrollAssessmentMutation:
             if child is None:
                 raise ValidationError("Invalid child_id for this user.")
 
-        is_free = not survey.prices.filter(amount_cents__gt=0).exists()
-        if not is_free:
-            usages = list(Usage.objects.filter(user=django_user, survey=survey).order_by("created_at", "id"))
-            summary = summarize_usage_rows(usages)
-            if summary.has_any:
-                if not summary.has_unlimited and summary.total_used >= summary.total_limit:
-                    raise ValidationError("Usage limit reached for this survey.")
-            elif UserSurvey.objects.filter(user=django_user, survey=survey).exists():
-                raise ValidationError("Usage limit reached. You are already enrolled in this survey.")
+        usages = list(Usage.objects.filter(user=django_user, survey=survey).order_by("created_at", "id"))
+        summary = summarize_usage_rows(usages)
+        if summary.has_any:
+            if not summary.has_unlimited and summary.total_used >= summary.total_limit:
+                raise ValidationError("Usage limit reached for this survey.")
+        elif UserSurvey.objects.filter(
+            user=django_user,
+            survey=survey,
+            child=child,
+            submitted_at__isnull=False,
+        ).count() >= FREE_ATTEMPTS:
+            raise ValidationError("Usage limit reached for this survey.")
 
         user_survey, _created = enroll_user_in_assessment(
             request_user=django_user,

@@ -6,6 +6,9 @@ from typing import Iterable
 from surveys.models import Usage
 
 
+FREE_ATTEMPTS = 10
+
+
 @dataclass(frozen=True)
 class UsageSummary:
     total_used: int

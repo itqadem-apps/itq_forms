@@ -11,12 +11,17 @@ from app.permissions import check_permission
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
-from surveys.messaging import (
-    publish_assessment_created,
-    publish_assessment_deleted,
-    publish_assessment_status_event,
-    publish_assessment_updated,
+from app.messaging import publish
+from external_references.models import ExternalReference
+from pricing.services import upsert_prices_for_parent
+from surveys.events import (
+    SurveyCreated,
+    SurveyDeleted,
+    SurveyPublished,
+    SurveyUnpublished,
+    SurveyUpdated,
 )
+from surveys.messaging import build_survey_payload_or_log
 from classifications.models import Classification, ClassificationTranslation
 from recommendations.models import Recommendation, RecommendationTranslation, Action, ActionTranslation
 from surveys.models import (
@@ -57,7 +62,7 @@ class SurveyMutations:
         input: SurveyCreateInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
-        data = input_to_dict(input, exclude=['category_id', 'translations'])
+        data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
 
         if input.category_id is not UNSET and input.category_id is not None:
             try:
@@ -65,13 +70,47 @@ class SurveyMutations:
             except Category.DoesNotExist:
                 raise ObjectDoesNotExist(f"Category not found: {input.category_id}")
 
+        target_collection = None
+        if input.external_reference is not UNSET and input.external_reference is not None:
+            ref = (
+                ExternalReference.objects
+                .select_related("collection")
+                .filter(
+                    source_service=input.external_reference.source_service,
+                    source_model=input.external_reference.source_model,
+                    source_id=input.external_reference.source_id,
+                    collection__isnull=False,
+                )
+                .first()
+            )
+            if ref is None:
+                raise ObjectDoesNotExist(
+                    f"External reference not found or has no collection: "
+                    f"{input.external_reference.source_service}:"
+                    f"{input.external_reference.source_model}:"
+                    f"{input.external_reference.source_id}"
+                )
+            target_collection = ref.collection
+
         survey = Survey.objects.create(**data)
+
+        if target_collection is not None:
+            target_collection.assessments.add(survey)
 
         if input.translations is not UNSET and input.translations:
             for t in input.translations:
                 SurveyTranslation.objects.create(survey=survey, **input_to_dict(t))
 
-        publish_assessment_created(survey)
+        if input.prices is not UNSET and input.prices:
+            upsert_prices_for_parent(survey, input.prices)
+
+        payload = build_survey_payload_or_log(survey, "SurveyCreated")
+        if payload is not None:
+            publish(SurveyCreated(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
 
         return SurveyPayload(success=True, message=None, survey=survey)
 
@@ -87,7 +126,7 @@ class SurveyMutations:
     ) -> SurveyPayload:
         survey = Survey.objects.get(pk=input.id)
 
-        data = input_to_dict(input, exclude=['id', 'category_id', 'translations'])
+        data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
         for field, value in data.items():
             setattr(survey, field, value)
 
@@ -111,7 +150,16 @@ class SurveyMutations:
                         survey=survey, language=language, defaults=t_data
                     )
 
-        publish_assessment_updated(survey)
+        if input.prices is not UNSET and input.prices:
+            upsert_prices_for_parent(survey, input.prices)
+
+        payload = build_survey_payload_or_log(survey, "SurveyUpdated")
+        if payload is not None:
+            publish(SurveyUpdated(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
 
         return SurveyPayload(success=True, message=None, survey=survey)
 
@@ -125,7 +173,13 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         survey = Survey.objects.get(pk=id)
-        publish_assessment_deleted(survey)
+        payload = build_survey_payload_or_log(survey, "SurveyDeleted")
+        if payload is not None:
+            publish(SurveyDeleted(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
         survey.delete()
         return OperationResult(success=True)
 
@@ -217,5 +271,20 @@ class SurveyMutations:
         survey = Survey.objects.get(pk=id)
         survey.status = status
         survey.save(update_fields=["status"])
-        publish_assessment_status_event(survey)
+        if survey.status == Survey.STATUS_PUBLISHED:
+            event_cls = SurveyPublished
+            event_name = "SurveyPublished"
+        elif survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:
+            event_cls = SurveyUnpublished
+            event_name = "SurveyUnpublished"
+        else:
+            event_cls = SurveyUpdated
+            event_name = "SurveyUpdated"
+        payload = build_survey_payload_or_log(survey, event_name)
+        if payload is not None:
+            publish(event_cls(
+                aggregate_id=survey.pk,
+                organization_id=payload["organization_id"],
+                survey=payload,
+            ))
         return survey

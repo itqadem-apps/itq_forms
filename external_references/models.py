@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.timezone import now
 
 
-class CurriculumReference(models.Model):
+class ExternalReference(models.Model):
     source_service = models.CharField(max_length=255)
     source_model = models.CharField(max_length=255)
     source_id = models.CharField(max_length=255)
@@ -13,14 +13,14 @@ class CurriculumReference(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="curriculum_references",
+        related_name="external_references",
     )
     survey = models.ForeignKey(
         "surveys.Survey",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="curriculum_references",
+        related_name="external_references",
     )
     data = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(default=now, blank=True)
@@ -30,24 +30,24 @@ class CurriculumReference(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=Q(collection__isnull=False) | Q(survey__isnull=False),
-                name="curriculum_ref_has_local_target",
+                name="external_ref_has_local_target",
             ),
             models.UniqueConstraint(
                 fields=["source_service", "source_model", "source_id", "collection", "survey"],
-                name="uq_curriculum_ref_source_target",
+                name="uq_external_ref_source_target",
                 nulls_distinct=False,
             ),
         ]
         indexes = [
             models.Index(
                 fields=["source_service", "source_model", "source_id"],
-                name="ix_curr_ref_source",
+                name="ix_ext_ref_source",
             ),
         ]
 
     def clean(self):
         if self.collection_id is None and self.survey_id is None:
-            raise ValidationError("Curriculum reference requires collection or survey.")
+            raise ValidationError("External reference requires collection or survey.")
 
     def save(self, *args, **kwargs):
         self.full_clean()

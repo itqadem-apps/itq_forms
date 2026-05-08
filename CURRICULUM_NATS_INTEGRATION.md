@@ -19,13 +19,10 @@ This keeps the integration service-agnostic. Courses can be the first producer, 
 - Added NATS handlers:
   - `handle_curriculum_reference_event`
   - `handle_curriculum_enrollment_event`
-- Added management command:
-
-```bash
-python manage.py consume_curriculum_events
-```
-
-- Added default subjects:
+- Curriculum events are consumed automatically by the ASGI lifespan
+  (see `app/messaging/runtime.py` + `app/messaging/registry.py`); no
+  dedicated management command is required.
+- Default subjects:
   - `*.curriculum_reference`
   - `*.curriculum_enrollment`
 
@@ -71,7 +68,7 @@ Enrollment/access grant:
 Static compilation passed:
 
 ```bash
-.venv/bin/python -m py_compile app/messaging_contract.py curriculum_references/models.py curriculum_references/consumer.py curriculum_references/management/commands/consume_curriculum_events.py tests/test_curriculum_references.py
+.venv/bin/python -m py_compile app/messaging_contract.py curriculum_references/models.py curriculum_references/consumer.py app/messaging/handlers/curriculum_events.py tests/test_curriculum_references.py
 ```
 
 Local pytest could not be run because `pytest` is not installed in the available Python environments. `manage.py check` is also blocked locally by a missing `pkg_auth.authorization` dependency in `.venv`.

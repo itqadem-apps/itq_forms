@@ -11,6 +11,9 @@ from pkg_filters.integrations.strawberry import (
     SortDirection,
 )
 
+from external_references.inputs import ExternalReferenceFilterInput, ExternalReferenceInput
+from pricing.inputs import PriceNestedInput
+
 
 @strawberry.input
 class SurveyFiltersInput:
@@ -41,6 +44,7 @@ class SurveyFiltersInput:
     is_free: Optional[bool] = None
     currency: Optional[str] = None
     collection_id: Optional[int] = None
+    external_reference: Optional[ExternalReferenceFilterInput] = None
     q: Optional[str] = None
 
 
@@ -178,6 +182,8 @@ class SurveyCreateInput:
     category_id: Optional[str] = UNSET
     time_limit: Optional[str] = UNSET
     translations: Optional[List[SurveyTranslationCreateInput]] = UNSET
+    external_reference: Optional[ExternalReferenceInput] = UNSET
+    prices: Optional[List[PriceNestedInput]] = UNSET
 
 
 @strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit"])
@@ -188,6 +194,7 @@ class SurveyUpdateInput:
     category_id: Optional[str] = UNSET
     time_limit: Optional[str] = UNSET
     translations: Optional[List[SurveyTranslationUpdateInput]] = UNSET
+    prices: Optional[List[PriceNestedInput]] = UNSET
 
 
 # Section Inputs
