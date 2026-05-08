@@ -44,4 +44,8 @@ CATALOG: list[CatalogEntry] = [
     _entry(Permission.FORM_READ, "Read forms"),
     _entry(Permission.FORM_UPDATE, "Update forms"),
     _entry(Permission.FORM_DELETE, "Delete forms"),
+    _entry(Permission.COLLECTION_CREATE, "Create collections"),
+    _entry(Permission.COLLECTION_READ, "Read collections"),
+    _entry(Permission.COLLECTION_UPDATE, "Update collections"),
+    _entry(Permission.COLLECTION_DELETE, "Delete collections"),
 ]

@@ -38,6 +38,12 @@ class Permission(enum.Enum):
     FORM_UPDATE = 'forms:update'
     FORM_DELETE = 'forms:delete'
 
+    # Collection permissions
+    COLLECTION_CREATE = 'collections:create'
+    COLLECTION_READ = 'collections:read'
+    COLLECTION_UPDATE = 'collections:update'
+    COLLECTION_DELETE = 'collections:delete'
+
 
 # Assessment type constants (matching Survey.ASSESSMENT_TYPES)
 AssessmentType = Literal['survey', 'assessment', 'curriculum', 'exam', 'form']
