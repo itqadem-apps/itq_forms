@@ -7,7 +7,8 @@ from django.db import transaction
 
 from app.auth_utils import with_django_user
 from surveys.models import Usage
-from surveys.usage_access import select_usage_to_consume
+from surveys.usage_access import select_usage_to_consume, summarize_usage_rows
+from surveys.media_access import revoke_survey_access
 from user_surveys.types import FinishAssessmentResult
 from user_surveys.models import UserSurvey
 from user_surveys.services import finish_assessment as finish_assessment_service
@@ -41,6 +42,17 @@ class FinishAssessmentMutation:
             if usage:
                 usage.used_count += 1
                 usage.save(update_fields=["used_count"])
+
+                # Revoke media access when all usage is exhausted
+                usages_refreshed = list(
+                    Usage.objects.filter(user=django_user, survey=user_survey.survey)
+                )
+                summary = summarize_usage_rows(usages_refreshed)
+                if not summary.has_unlimited and summary.total_used >= summary.total_limit:
+                    revoke_survey_access(
+                        survey_id=user_survey.survey_id,
+                        user_id=str(django_user.pk),
+                    )
 
         user_survey.refresh_from_db()
         classifications = list(user_survey.usersurveyclassification_set.all())

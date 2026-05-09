@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from accounts.models import User
 from surveys.models import Survey, Usage
+from surveys.media_access import grant_survey_access, revoke_survey_access
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +131,7 @@ def _grant_usage(*, user_id: str, order_id: str, survey_id: int, qty: int) -> bo
         },
     )
     if created:
+        grant_survey_access(survey_id=survey_id, user_id=user_id)
         return True
 
     if usage.usage_limit != qty:
@@ -147,6 +149,13 @@ def _revoke_usages(*, user_id: str, order_id: str, survey_ids: list[int]) -> int
         order_id=order_id,
         survey_id__in=survey_ids,
     ).delete()
+
+    # Revoke media access for surveys where user has no remaining usage
+    for survey_id in survey_ids:
+        remaining = Usage.objects.filter(user_id=user_id, survey_id=survey_id).exists()
+        if not remaining:
+            revoke_survey_access(survey_id=survey_id, user_id=user_id)
+
     return deleted
 
 
