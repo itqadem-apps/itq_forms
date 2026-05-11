@@ -53,11 +53,46 @@ def _organization_id(payload: dict[str, Any]):
 
 
 def _apply_translations(collection: SurveyCollection, payload: dict[str, Any]) -> None:
-    """Set/refresh a single collection translation from the course payload.
+    """Set/refresh collection translations from the course payload.
 
-    Falls back gracefully when the upstream event lacks translation fields.
+    The courses service publishes translations as a list of per-language
+    dicts under ``course.translations``; mirror each into a
+    ``SurveyCollectionTranslation``. Falls back to the legacy flat shape
+    (top-level title/description/slug/language on ``course``) so tests and
+    out-of-band ingest tools that send the simpler shape keep working.
     """
     entity = _entity(payload)
+
+    translations = entity.get("translations")
+    if isinstance(translations, list) and translations:
+        for tr in translations:
+            if not isinstance(tr, dict):
+                continue
+            title = tr.get("title")
+            if not title:
+                continue
+            language = tr.get("language") or "en"
+            description = tr.get("description")
+            # Courses can publish description as a dict (e.g. {"text": "..."}).
+            if isinstance(description, dict):
+                description = (
+                    description.get("text")
+                    or description.get("body")
+                    or description.get("content")
+                    or None
+                )
+            SurveyCollectionTranslation.objects.update_or_create(
+                collection=collection,
+                language=language,
+                defaults={
+                    "title": title,
+                    "description": description or None,
+                    "short_description": tr.get("summary") or None,
+                    "slug": tr.get("slug") or None,
+                },
+            )
+        return
+
     title = entity.get("title") or payload.get("title")
     if not title:
         return
