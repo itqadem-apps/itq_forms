@@ -414,3 +414,19 @@ def finish_assessment(
 
     if user_survey.evaluation_type == UserSurvey.EVALUATION_TYPE_AUTOMATIC:
         evaluate_assessment(user_survey)
+
+    # Notify downstream consumers (e.g. itq_courses, for quiz-lesson progress)
+    # that the user finished this survey. Published AFTER any automatic
+    # evaluation so the event payload carries the final score when scoring
+    # is in scope. Outbox-backed: same DB transaction as the save above.
+    from app.messaging.publisher import publish
+    from user_surveys.events import SurveyResponseSubmitted
+
+    publish(SurveyResponseSubmitted(
+        aggregate_id=user_survey.id,
+        survey_id=user_survey.survey_id,
+        user_survey_id=user_survey.id,
+        respondent_user_id=user_survey.user_id,
+        score=user_survey.score,
+        submitted_at=user_survey.submitted_at,
+    ))
