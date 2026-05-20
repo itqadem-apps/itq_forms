@@ -48,6 +48,56 @@ def grant_survey_access(survey_id: int, user_id: str) -> None:
         client.close()
 
 
+def promote_survey_assets(survey_id: int) -> None:
+    """Promote restricted survey assets to PUBLIC on publish."""
+    asset_ids = _collect_restricted_asset_ids(survey_id)
+    if not asset_ids:
+        return
+
+    client = build_client()
+    if client is None:
+        logger.warning("Media library not configured, skipping visibility promote")
+        return
+
+    try:
+        from saas_media_library.models import Visibility
+
+        result = client.assets.bulk_update_visibility(asset_ids, Visibility.PUBLIC)
+        logger.info(
+            "Promoted assets to PUBLIC: survey_id=%s updated=%s failed=%s",
+            survey_id, result.updated, result.failed,
+        )
+    except Exception:
+        logger.exception("Failed to promote survey assets: survey_id=%s", survey_id)
+    finally:
+        client.close()
+
+
+def demote_survey_assets(survey_id: int) -> None:
+    """Demote restricted survey assets to PRIVATE on unpublish."""
+    asset_ids = _collect_restricted_asset_ids(survey_id)
+    if not asset_ids:
+        return
+
+    client = build_client()
+    if client is None:
+        logger.warning("Media library not configured, skipping visibility demote")
+        return
+
+    try:
+        from saas_media_library.models import Visibility
+
+        result = client.assets.bulk_update_visibility(asset_ids, Visibility.PRIVATE)
+        logger.info(
+            "Demoted assets to PRIVATE: survey_id=%s updated=%s failed=%s",
+            survey_id, result.updated, result.failed,
+        )
+    except Exception:
+        logger.exception("Failed to demote survey assets: survey_id=%s", survey_id)
+    finally:
+        client.close()
+
+
 def revoke_survey_access(survey_id: int, user_id: str) -> None:
     """Revoke a user's access to all restricted assets in a survey."""
     asset_ids = _collect_restricted_asset_ids(survey_id)
