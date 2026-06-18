@@ -44,6 +44,9 @@ class Permission(enum.Enum):
     COLLECTION_UPDATE = 'collections:update'
     COLLECTION_DELETE = 'collections:delete'
 
+    # Submission permissions (cross-cutting; not tied to an assessment kind)
+    SUBMISSION_READ = 'submissions:read'
+
 
 # Assessment type constants (matching Survey.ASSESSMENT_TYPES)
 AssessmentType = Literal['survey', 'assessment', 'curriculum', 'exam', 'form']

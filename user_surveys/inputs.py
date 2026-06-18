@@ -17,6 +17,7 @@ class UserSurveyFiltersInput:
     collection_id: Optional[int] = None
     collection_type: Optional[str] = None
     child_id: Optional[str] = None
+    user_id: Optional[str] = None
     submitted: Optional[bool] = None
     submitted_at: Optional[DateTimeRangeFilterInput] = None
     evaluated_at: Optional[DateTimeRangeFilterInput] = None
@@ -30,6 +31,7 @@ class UserSurveyFilters:
     collection_id: Optional[int]
     collection_type: Optional[str]
     child_id: Optional[str]
+    user_id: Optional[str]
     submitted: Optional[bool]
     submitted_at: Optional[object]  # RangeFilterVO[datetime]
     evaluated_at: Optional[object]  # RangeFilterVO[datetime]

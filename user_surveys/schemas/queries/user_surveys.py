@@ -3,9 +3,12 @@ from dataclasses import fields as dc_fields
 import strawberry
 from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
+from pkg_auth.authorization import MissingPermission
 from pkg_filters.integrations.django import DjangoQueryContext
 
 from app.auth_utils import with_django_user
+from app.permissions import Permission
+from app.platform import is_platform_context
 from user_surveys.filters import (
     UserSurveyProjection,
     UserSurveySpec,
@@ -18,6 +21,19 @@ from user_surveys.models import UserSurvey
 from ..common import RequireAuth
 
 
+def _caller_has_submissions_read(info: Info) -> bool:
+    auth_ctx = getattr(info.context, "auth_context", None)
+    if auth_ctx is None:
+        return False
+    if is_platform_context(auth_ctx):
+        return True
+    try:
+        auth_ctx.require(Permission.SUBMISSION_READ.value)
+    except MissingPermission:
+        return False
+    return True
+
+
 @strawberry.type
 class UserSurveyQuery:
     @strawberry.field(permission_classes=[RequireAuth])
@@ -28,7 +44,8 @@ class UserSurveyQuery:
         user_surveys_list_input: UserSurveysListInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveysResultsGQL:
-        qs = UserSurvey.objects.filter(user=django_user)
+        is_admin = _caller_has_submissions_read(info)
+        qs = UserSurvey.objects.all() if is_admin else UserSurvey.objects.filter(user=django_user)
         if user_surveys_list_input is None:
             user_surveys_list_input = UserSurveysListInput()
         filters_input = user_surveys_list_input.filters or UserSurveyFiltersInput()
