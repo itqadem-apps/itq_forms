@@ -115,11 +115,14 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
     dash_offset = round(circumference * (1 - score_pct / 100), 2)
 
     # ── Action ──
+    # title is a short label; description is admin-authored rich text (HTML).
     action_title = ""
+    action_description = ""
     if user_survey.use_actions and user_survey.action_id:
         action = UserAction.objects.filter(id=user_survey.action_id).first()
         if action:
-            action_title = _t(action.translations, "title", lang) or _t(action.translations, "description", lang)
+            action_title = _t(action.translations, "title", lang)
+            action_description = _t(action.translations, "description", lang)
 
     # ── Classifications ──
     show_classifications = user_survey.use_classifications
@@ -289,6 +292,7 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
         "circumference": circumference,
         "dash_offset": dash_offset,
         "action_title": action_title,
+        "action_description": action_description,
         "show_classifications": show_classifications,
         "classifications": classifications,
         "show_recommendations": show_recommendations,
