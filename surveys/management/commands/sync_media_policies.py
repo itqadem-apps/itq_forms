@@ -21,6 +21,14 @@ ANSWER_FILE_MIME = {
 }
 
 POLICIES: list[dict] = [
+    {"resource_type": "surveys", "collection_name": "thumb", "kind": AssetKind.IMAGE,
+     "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME,
+     "allow_multiple": False, "max_size_bytes": 2_000_000,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [128, 256]}}},
+    {"resource_type": "surveys", "collection_name": "cover", "kind": AssetKind.IMAGE,
+     "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME,
+     "allow_multiple": False, "max_size_bytes": 5_000_000,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
     {"resource_type": "forms", "collection_name": "image", "kind": AssetKind.IMAGE, "visibility": Visibility.PUBLIC,
      "allowed_mime_types": IMAGE_MIME, "allow_multiple": False,
      "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
