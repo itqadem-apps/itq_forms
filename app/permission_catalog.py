@@ -1,22 +1,50 @@
 """Declarative permission catalog for itq_forms.
 
-Reconciled into the ACL ``permissions`` table at deploy time by the k8s
-init container, which runs::
+Reconciled into the ACL ``permissions`` + ``services`` tables at deploy
+time by the k8s init containers, which run::
 
     pkg-auth-sync-catalog --service forms \\
         --catalog app.permission_catalog:CATALOG \\
+        --service-manifest app.permission_catalog:SERVICE \\
         --db-url "$ACL_DATABASE_URL"
+
+    pkg-auth-sync-services --services app.permission_catalog:SERVICES \\
+        --db-url "$ACL_DATABASE_URL"
+
+``SERVICE`` self-registers the service identity (name + localized
+``display_label``); ``SERVICES`` overlays the vendor flags
+(``auto_provision`` / ``saas_available``) — the only path that flips
+those flags. Both syncs are non-pruning.
 
 This file is purely declarative — the runtime process never writes to
 ``permissions`` (the runtime Vault role is SELECT-only on ACL).
 """
 from __future__ import annotations
 
-from pkg_auth.authorization import CatalogEntry, PermissionKey
+from pkg_auth.authorization import (
+    CatalogEntry,
+    PermissionKey,
+    ServiceManifest,
+    ServiceSpec,
+)
 
 from app.permissions import Permission
 
 SERVICE_NAME = "forms"
+
+SERVICE = ServiceManifest.make(
+    SERVICE_NAME,
+    {"en": "Forms", "ar": "النماذج"},
+)
+
+SERVICES: list[ServiceSpec] = [
+    ServiceSpec.make(
+        SERVICE_NAME,
+        SERVICE.display_label,
+        auto_provision=True,
+        saas_available=True,
+    ),
+]
 
 
 def _entry(perm: Permission, description: str) -> CatalogEntry:
