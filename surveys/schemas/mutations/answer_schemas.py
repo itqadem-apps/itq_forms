@@ -65,7 +65,11 @@ class AnswerSchemaMutations:
         data = input_to_dict(input, exclude=['classification_id', 'translations'])
         data.update(survey=schema.survey, section=schema.section, question=schema.question, schema=schema)
         if input.classification_id is not strawberry.UNSET:
-            data['classification'] = Classification.objects.get(pk=input.classification_id, survey=schema.survey)
+            data['classification'] = (
+                Classification.objects.get(pk=input.classification_id, survey=schema.survey)
+                if input.classification_id is not None
+                else None
+            )
 
         option = AnswerSchemaOption.objects.create(**data)
 
@@ -96,7 +100,11 @@ class AnswerSchemaMutations:
         for field, value in input_to_dict(input, exclude=['classification_id', 'translations']).items():
             setattr(option, field, value)
         if input.classification_id is not strawberry.UNSET:
-            option.classification = Classification.objects.get(pk=input.classification_id, survey=option.survey)
+            option.classification = (
+                Classification.objects.get(pk=input.classification_id, survey=option.survey)
+                if input.classification_id is not None
+                else None
+            )
 
         option.save()
 
