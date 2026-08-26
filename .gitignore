@@ -45,3 +45,6 @@ staticfiles/
 # OS files
 .DS_Store
 Thumbs.db
+
+# graphify build state — regenerable, never committed
+graphify-out/
