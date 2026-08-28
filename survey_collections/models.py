@@ -82,6 +82,8 @@ class SurveyCollectionTranslation(models.Model):
     language = models.CharField(max_length=64, null=True, blank=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    short_description = models.CharField(max_length=300, null=True, blank=True)
+    # TextField, not CharField(300): one legacy collection carries a 355-character
+    # short description. Truncating it to fit was the alternative.
+    short_description = models.TextField(null=True, blank=True)
     slug = models.CharField(max_length=255, null=True, blank=True)
     seo = models.JSONField(null=True, blank=True)

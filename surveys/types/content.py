@@ -62,7 +62,8 @@ class QuestionType:
         if not survey_id:
             return None
         ids = list(
-            Question.objects.filter(survey_id=survey_id, section__isnull=False)
+            Question.objects.filter(survey_id=survey_id, section__isnull=False,
+                                    deleted_at__isnull=True)
             .order_by("section__order", "order")
             .values_list("id", flat=True)
         )
@@ -80,7 +81,8 @@ class QuestionType:
         if not survey_id:
             return None
         ids = list(
-            Question.objects.filter(survey_id=survey_id, section__isnull=False)
+            Question.objects.filter(survey_id=survey_id, section__isnull=False,
+                                    deleted_at__isnull=True)
             .order_by("section__order", "order")
             .values_list("id", flat=True)
         )
