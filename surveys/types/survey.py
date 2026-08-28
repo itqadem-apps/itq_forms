@@ -66,6 +66,10 @@ class SurveyType:
         return list(self.classifications.filter(deleted_at__isnull=True))
 
     @strawberry.field
+    def sections(self) -> List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]:
+        return list(self.sections.filter(deleted_at__isnull=True))
+
+    @strawberry.field
     def collection_id(self) -> Optional[int]:
         collection = self.collections.first()
         return collection.id if collection else None

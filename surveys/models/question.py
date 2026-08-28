@@ -54,6 +54,7 @@ class Question(models.Model):
     cover_asset_id = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     @property
     def mcq_types(self):

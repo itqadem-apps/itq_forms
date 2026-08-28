@@ -20,7 +20,7 @@ class SurveysQuery:
     @strawberry.field()
     def surveys(self, info: Info, surveys_list_input: SurveysListInput) -> SurveyResultsGQL:
         paths = get_root_field_paths(info, "surveys")
-        qs = Survey.objects.all()
+        qs = Survey.objects.filter(deleted_at__isnull=True)
         if has_any_under_prefix(paths, ("items", "contentType")):
             qs = qs.select_related("content_type")
 

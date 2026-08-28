@@ -24,6 +24,10 @@ class SurveyCollectionType:
     prices: List[PriceType]
     assessments: List[Annotated["SurveyType", strawberry.lazy("surveys.types.survey")]]
 
+    @strawberry.field
+    def assessments(self) -> List[Annotated["SurveyType", strawberry.lazy("surveys.types.survey")]]:
+        return list(self.assessments.filter(deleted_at__isnull=True))
+
 
 @strawberry_django.type(SurveyCollectionTranslation)
 class SurveyCollectionTranslationType:

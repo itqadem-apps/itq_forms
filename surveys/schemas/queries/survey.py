@@ -10,6 +10,6 @@ class SurveyQuery:
     @strawberry.field()
     def survey(self, info: Info, id: int) -> SurveyType | None:
         try:
-            return Survey.objects.get(pk=id)
+            return Survey.objects.get(pk=id, deleted_at__isnull=True)
         except Survey.DoesNotExist:
             return None

@@ -25,7 +25,7 @@ class CollectionsQuery:
     @strawberry.field()
     def collections(self, info: Info, collections_list_input: SurveyCollectionsListInput) -> SurveyCollectionsResultsGQL:
         paths = get_root_field_paths(info, "collections")
-        qs = SurveyCollection.objects.all()
+        qs = SurveyCollection.objects.filter(deleted_at__isnull=True)
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
 
         if filters_input.has_discount is not None:

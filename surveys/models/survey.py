@@ -124,6 +124,7 @@ class Survey(models.Model):
 
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True, verbose_name=_("Created At"))
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True, verbose_name=_("Updated At"))
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Deleted At"))
 
     category = models.ForeignKey(
         Category,

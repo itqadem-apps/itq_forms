@@ -26,6 +26,7 @@ class Section(models.Model):
     submit_action_target = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
