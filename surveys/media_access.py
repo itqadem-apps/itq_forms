@@ -4,22 +4,43 @@ from __future__ import annotations
 import logging
 from typing import List
 
-from surveys.models import Survey, Section, AnswerSchemaOption
+from surveys.models import Survey, Section, Question, AnswerSchemaOption
 from surveys.media_client import build_client
 
 logger = logging.getLogger(__name__)
 
 
 def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
-    """Collect all non-null asset IDs from a survey's sections and options."""
+    """Collect all non-null asset IDs from a survey's sections, questions and options.
+
+    Every caller of this -- grant, revoke, promote, demote -- acts on exactly the
+    list it returns, so an asset omitted here is never granted to a buyer, never
+    promoted on publish and never demoted on unpublish. It stays RESTRICTED with
+    nobody holding a grant, which resolves as 403 for everyone, forever.
+
+    Question covers were omitted. They are stored by the same policy as section
+    covers and option images (form_items/image, RESTRICTED) and belong here for
+    the same reason.
+    """
     asset_ids: list[str] = []
 
     sections = Section.objects.filter(survey_id=survey_id).values_list("cover_asset_id", flat=True)
     asset_ids.extend(aid for aid in sections if aid)
 
+    questions = (
+        Question.objects
+        .filter(section__survey_id=survey_id)
+        .values_list("cover_asset_id", flat=True)
+    )
+    asset_ids.extend(aid for aid in questions if aid)
+
+    # `survey` is a real column on the option -- the chain this used to walk,
+    # `answer_schema__question__section__survey_id`, names no field at all
+    # (the FK is `schema`, not `answer_schema`), so every call raised FieldError
+    # before it reached the media client.
     options = (
         AnswerSchemaOption.objects
-        .filter(answer_schema__question__section__survey_id=survey_id)
+        .filter(survey_id=survey_id)
         .values_list("image_asset_id", flat=True)
     )
     asset_ids.extend(aid for aid in options if aid)
