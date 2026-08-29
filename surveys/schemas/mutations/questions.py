@@ -161,18 +161,22 @@ class QuestionMutations:
                 description=translation.description,
             )
 
-        # Duplicate answer schema and options
-        if hasattr(original_question, 'answer_schema'):
-            old_schema = original_question.answer_schema
-            new_schema = AnswerSchema.objects.create(
-                survey=new_question.survey,
-                section=new_question.section,
-                question=new_question,
-                type=old_schema.type,
-                with_file=old_schema.with_file,
-                is_mcq=old_schema.is_mcq,
-                is_grid=old_schema.is_grid,
-            )
+        # Reshape the answer schema the post_save signal has already created for the
+        # copy. Creating a second one here violates surveys_answerschema_question_id_key
+        # -- AnswerSchema.question is a OneToOneField -- and every question has a schema,
+        # so that path was taken every time and duplication never worked at all.
+        old_schema = getattr(original_question, 'answer_schema', None)
+        new_schema = AnswerSchema.objects.filter(question=new_question).first()
+        if old_schema and new_schema:
+            new_schema.type = old_schema.type
+            new_schema.with_file = old_schema.with_file
+            new_schema.is_mcq = old_schema.is_mcq
+            new_schema.is_grid = old_schema.is_grid
+            new_schema.save()
+
+            # The signal seeds a blank option (or one per classification). Those belong
+            # to a question being created, not to a copy, which takes the original's.
+            new_schema.options.all().delete()
 
             # Duplicate options
             for option in old_schema.options.all():
