@@ -2,6 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 
 from app.auth_utils import with_django_user
@@ -31,8 +32,11 @@ class SurveyCollectionMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
-        if input.category_id is not strawberry.UNSET:
-            data['category'] = Category.objects.get(category_id=input.category_id)
+        if input.category_id is not strawberry.UNSET and input.category_id is not None:
+            try:
+                data['category'] = Category.objects.get(category_id=input.category_id)
+            except Category.DoesNotExist:
+                raise ObjectDoesNotExist(f"Category not found: {input.category_id}")
 
         collection = SurveyCollection.objects.create(**data)
 
@@ -66,7 +70,13 @@ class SurveyCollectionMutations:
         for field, value in input_to_dict(input, exclude=['category_id', 'translations', 'prices']).items():
             setattr(collection, field, value)
         if input.category_id is not strawberry.UNSET:
-            collection.category = Category.objects.get(category_id=input.category_id)
+            if input.category_id:
+                try:
+                    collection.category = Category.objects.get(category_id=input.category_id)
+                except Category.DoesNotExist:
+                    raise ObjectDoesNotExist(f"Category not found: {input.category_id}")
+            else:
+                collection.category = None
 
         collection.save()
 
