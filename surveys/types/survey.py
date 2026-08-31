@@ -13,7 +13,7 @@ from .types_category import CategoryType
 from survey_collections.types.collection import SurveyCollectionType
 
 from app.auth_utils import get_django_user
-from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
+from surveys.usage_access import resolve_usage_limit, resolve_usage_used
 from user_surveys.models import UserSurvey
 
 
@@ -105,13 +105,9 @@ class SurveyType:
         except ValueError:
             return 0
 
-        usages = list(self.usage_set.filter(user=django_user).order_by("created_at", "id"))
-        summary = summarize_usage_rows(usages)
-        if not summary.has_any:
-            return self.usersurvey_set.filter(
-                user=django_user, submitted_at__isnull=False
-            ).count()
-        return summary.total_used
+        # No child scope here: the survey card has no child context, so it
+        # reports every attempt the user has spent on this survey.
+        return resolve_usage_used(user_id=django_user.id, survey_id=self.id)
 
     @strawberry.field
     def usage_limit(self, info: Info) -> int:
@@ -120,11 +116,7 @@ class SurveyType:
         except ValueError:
             return 0
 
-        usages = list(self.usage_set.filter(user=django_user).order_by("created_at", "id"))
-        summary = summarize_usage_rows(usages)
-        if not summary.has_any:
-            return FREE_ATTEMPTS
-        return summary.total_limit or FREE_ATTEMPTS
+        return resolve_usage_limit(user_id=django_user.id, survey_id=self.id)
 
     @strawberry.field
     def prices(self) -> List["PriceType"]:

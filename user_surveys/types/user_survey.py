@@ -7,8 +7,7 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Usage
-from surveys.usage_access import FREE_ATTEMPTS, summarize_usage_rows
+from surveys.usage_access import FREE_ATTEMPTS, resolve_usage_limit, resolve_usage_used
 from app.auth_utils import get_django_user
 from accounts.models import Child
 from user_surveys.models import (
@@ -391,11 +390,12 @@ class UserSurveyType:
             return 0
         if django_user.id != self.user_id or not self.survey_id:
             return 0
-        usages = list(
-            Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id)
-            .order_by("created_at", "id")
+        # Scoped by child, matching the enrolment gate: this attempt knows who
+        # it was taken for, so it reports that child's allowance and not the
+        # user's total across all of their children.
+        return resolve_usage_used(
+            user_id=django_user.id, survey_id=self.survey_id, child_id=self.child_id
         )
-        return summarize_usage_rows(usages).total_used
 
     @strawberry.field
     def usage_limit(self, info: Info) -> int:
@@ -405,14 +405,7 @@ class UserSurveyType:
             return FREE_ATTEMPTS
         if django_user.id != self.user_id or not self.survey_id:
             return FREE_ATTEMPTS
-        usages = list(
-            Usage.objects.filter(user_id=django_user.id, survey_id=self.survey_id)
-            .order_by("created_at", "id")
-        )
-        summary = summarize_usage_rows(usages)
-        if not summary.has_any:
-            return FREE_ATTEMPTS
-        return summary.total_limit or FREE_ATTEMPTS
+        return resolve_usage_limit(user_id=django_user.id, survey_id=self.survey_id)
 
     @strawberry.field
     def progress(self, info: Info) -> int:
