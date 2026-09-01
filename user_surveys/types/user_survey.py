@@ -7,7 +7,12 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.usage_access import FREE_ATTEMPTS, resolve_usage_limit, resolve_usage_used
+from surveys.usage_access import (
+    FREE_ATTEMPTS,
+    resolve_usage_is_unlimited,
+    resolve_usage_limit,
+    resolve_usage_used,
+)
 from app.auth_utils import get_django_user
 from accounts.models import Child
 from user_surveys.models import (
@@ -406,6 +411,21 @@ class UserSurveyType:
         if django_user.id != self.user_id or not self.survey_id:
             return FREE_ATTEMPTS
         return resolve_usage_limit(user_id=django_user.id, survey_id=self.survey_id)
+
+    @strawberry.field
+    def is_usage_unlimited(self, info: Info) -> bool:
+        """True when the grant has no cap. ``usageLimit`` reports FREE_ATTEMPTS
+        in that case for want of a value meaning "no cap", so read this flag
+        before gating on ``usageUsed < usageLimit``."""
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return False
+        if django_user.id != self.user_id or not self.survey_id:
+            return False
+        return resolve_usage_is_unlimited(
+            user_id=django_user.id, survey_id=self.survey_id
+        )
 
     @strawberry.field
     def progress(self, info: Info) -> int:

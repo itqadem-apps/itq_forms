@@ -76,6 +76,18 @@ def resolve_usage_used(*, user_id, survey_id, child_id=_ANY_CHILD) -> int:
     )
 
 
+def resolve_usage_is_unlimited(*, user_id, survey_id) -> bool:
+    """Whether the grant is uncapped.
+
+    ``resolve_usage_limit`` cannot express this: an unlimited row carries
+    ``usage_limit = 0``, which the ``or FREE_ATTEMPTS`` fallback turns into the
+    free-tier constant, so on the wire an unlimited grant is indistinguishable
+    from a cap of ten. Clients gate enrolment on used < limit, so without this
+    flag an unlimited user is refused their eleventh attempt.
+    """
+    return summarize_usage_rows(_usage_rows(user_id=user_id, survey_id=survey_id)).has_unlimited
+
+
 def resolve_usage_limit(*, user_id, survey_id) -> int:
     """The allowance matching :func:`resolve_usage_used` — never 0 for a user
     who simply has no usage rows; that user is on the free tier."""

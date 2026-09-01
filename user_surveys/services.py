@@ -1,3 +1,4 @@
+import logging
 import random
 from collections import Counter
 from uuid import uuid4
@@ -5,6 +6,8 @@ from uuid import uuid4
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+
+logger = logging.getLogger(__name__)
 
 from .models import (
     UserAction,
@@ -74,8 +77,8 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
 
     # ── 2. Sections ──────────────────────────────────────────────────
     section_map = {}  # original_id -> UserSection
-    sections = list(survey.sections.order_by("order"))
-    for s in sections:
+
+    def snapshot_section(s):
         us = UserSection.objects.create(
             origin_id=s.id,
             user_survey=user_survey,
@@ -89,6 +92,33 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
             translations=_build_translations(s.translations.all(), ["title", "description"], source=s, primary_lang=primary_lang),
         )
         section_map[s.id] = us
+        return us
+
+    def section_for(source, kind):
+        """Resolve a child row's section, snapshotting one the survey's own
+        section list did not cover rather than dropping the link.
+
+        ``section_map.get(...)`` used to swallow that case, and a snapshot
+        question left with ``section = NULL`` disappears from
+        ``userSurvey.sections[].questions`` for good — the results screen then
+        renders a section with no questions. A row whose source section is
+        genuinely NULL has nothing to link and stays unsectioned.
+        """
+        section_id = source.section_id
+        if section_id is None:
+            return None
+        if section_id in section_map:
+            return section_map[section_id]
+        logger.warning(
+            "%s %s on survey %s references section %s, which is not in that "
+            "survey's own section list; snapshotting it so the link survives",
+            kind, source.id, survey.id, section_id,
+        )
+        return snapshot_section(source.section)
+
+    sections = list(survey.sections.order_by("order"))
+    for s in sections:
+        snapshot_section(s)
 
     # resolve self-FK submit_action_target
     for s in sections:
@@ -108,7 +138,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         uq = UserQuestion.objects.create(
             origin_id=q.id,
             user_survey=user_survey,
-            section=section_map.get(q.section_id),
+            section=section_for(q, "question"),
             answer_time=q.answer_time,
             order=q.order,
             is_required=q.is_required,
@@ -129,7 +159,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         uas = UserAnswerSchema.objects.create(
             origin_id=schema.id,
             user_survey=user_survey,
-            section=section_map.get(schema.section_id),
+            section=section_for(schema, "answer schema"),
             question=question_map[schema.question_id],
             type=schema.type,
             with_file=schema.with_file,
@@ -151,7 +181,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         uao = UserAnswerOption.objects.create(
             origin_id=opt.id,
             user_survey=user_survey,
-            section=section_map.get(opt.section_id),
+            section=section_for(opt, "answer option"),
             question=question_map.get(opt.question_id),
             schema=schema_map[opt.schema_id],
             classification=classification_map.get(opt.classification_id),

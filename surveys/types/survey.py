@@ -13,7 +13,11 @@ from .types_category import CategoryType
 from survey_collections.types.collection import SurveyCollectionType
 
 from app.auth_utils import get_django_user
-from surveys.usage_access import resolve_usage_limit, resolve_usage_used
+from surveys.usage_access import (
+    resolve_usage_is_unlimited,
+    resolve_usage_limit,
+    resolve_usage_used,
+)
 from user_surveys.models import UserSurvey
 
 
@@ -117,6 +121,17 @@ class SurveyType:
             return 0
 
         return resolve_usage_limit(user_id=django_user.id, survey_id=self.id)
+
+    @strawberry.field
+    def is_usage_unlimited(self, info: Info) -> bool:
+        """True when the grant has no cap. ``usageLimit`` reports FREE_ATTEMPTS
+        in that case for want of a value meaning "no cap", so read this flag
+        before gating on ``usageUsed < usageLimit``."""
+        try:
+            django_user = get_django_user(info)
+        except ValueError:
+            return False
+        return resolve_usage_is_unlimited(user_id=django_user.id, survey_id=self.id)
 
     @strawberry.field
     def prices(self) -> List["PriceType"]:

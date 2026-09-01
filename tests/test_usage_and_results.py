@@ -30,6 +30,7 @@ query Attempts($input: UserSurveysListInput!) {
       submittedAt
       usageUsed
       usageLimit
+      isUsageUnlimited
       sections {
         id
         isHidden
@@ -178,6 +179,82 @@ def test_usage_used_is_scoped_to_the_child_the_attempt_was_taken_for(user, surve
         by_child.setdefault(child_id, set()).add(item["usageUsed"])
 
     assert by_child == {first.id: {2}, second.id: {1}}
+
+
+# ── unlimited grants ─────────────────────────────────────────────────
+
+def test_an_unlimited_grant_is_flagged_rather_than_reported_as_a_cap_of_ten(user, survey, section):
+    """The reported defect: `usageLimit` cannot express "no cap".
+
+    An unlimited grant carries `usage_limit = 0`, which the `or FREE_ATTEMPTS`
+    fallback turns into 10, so a client gating on `usageUsed < usageLimit`
+    refuses the 11th attempt. `isUsageUnlimited` is that missing signal.
+    """
+    _submit(enroll_user_in_assessment(user, survey.id)[0])
+    Usage.objects.create(
+        user=user, survey=survey, order_id="order-1", usage_limit=0, used_count=11
+    )
+
+    attempt = _attempts(user)[0]
+    assert attempt["isUsageUnlimited"] is True
+    assert attempt["usageUsed"] == 11
+    assert attempt["usageLimit"] == FREE_ATTEMPTS  # still not a real cap
+
+
+def test_a_capped_grant_is_not_flagged_unlimited(user, survey, section):
+    _submit(enroll_user_in_assessment(user, survey.id)[0])
+    Usage.objects.create(
+        user=user, survey=survey, order_id="order-1", usage_limit=5, used_count=1
+    )
+
+    attempt = _attempts(user)[0]
+    assert attempt["isUsageUnlimited"] is False
+    assert attempt["usageLimit"] == 5
+
+
+def test_the_free_tier_is_not_flagged_unlimited(user, survey, section):
+    _submit(enroll_user_in_assessment(user, survey.id)[0])
+
+    attempt = _attempts(user)[0]
+    assert attempt["isUsageUnlimited"] is False
+    assert attempt["usageLimit"] == FREE_ATTEMPTS
+
+
+def test_the_server_already_lets_an_unlimited_user_past_the_free_cap(user, survey, section):
+    """Confirms the block was only ever client-side: the enrolment gate honours
+    an uncapped grant, so `isUsageUnlimited` closes the gap without changing
+    what the server enforces."""
+    for _ in range(FREE_ATTEMPTS):
+        _submit(enroll_user_in_assessment(user, survey.id)[0])
+    Usage.objects.create(
+        user=user, survey=survey, order_id="order-1", usage_limit=0, used_count=FREE_ATTEMPTS
+    )
+
+    from user_surveys.schemas.mutations.enroll_assessment import EnrollAssessmentMutation
+
+    class _Info:
+        context = None
+
+    info = _Info()
+    info.context = _Context(user)
+    eleventh = EnrollAssessmentMutation().enroll_assessment(info, survey_id=survey.id)
+    assert eleventh.submitted_at is None
+
+
+def test_the_survey_card_and_the_attempt_agree_on_unlimited(user, survey, section):
+    from surveys.types.survey import SurveyType
+
+    _submit(enroll_user_in_assessment(user, survey.id)[0])
+    Usage.objects.create(
+        user=user, survey=survey, order_id="order-1", usage_limit=0, used_count=3
+    )
+
+    class _Info:
+        context = None
+
+    info = _Info()
+    info.context = _Context(user)
+    assert _attempts(user)[0]["isUsageUnlimited"] is SurveyType.is_usage_unlimited(survey, info) is True
 
 
 # ── submitted results ────────────────────────────────────────────────
