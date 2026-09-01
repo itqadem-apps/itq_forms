@@ -20,7 +20,7 @@ from user_surveys.services import enroll_user_in_assessment
 
 
 ANSWER = """
-mutation Answer($us: Int!, $q: Int!, $a: [String!]!) {
+mutation Answer($us: ID!, $q: ID!, $a: [String!]!) {
   answerQuestion(userSurveyId: $us, questionId: $q, answer: $a) {
     __typename
     ... on UserAnswerType { id }
@@ -30,7 +30,7 @@ mutation Answer($us: Int!, $q: Int!, $a: [String!]!) {
 """
 
 FINISH = """
-mutation Finish($us: Int!) { finishAssessment(userSurveyId: $us) { status score } }
+mutation Finish($us: ID!) { finishAssessment(userSurveyId: $us) { status score } }
 """
 
 RESULTS = """

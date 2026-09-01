@@ -19,7 +19,7 @@ from pricing.inputs import PriceNestedInput
 class SurveyCollectionFiltersInput:
     created_at: Optional[DateTimeRangeFilterInput] = None
     updated_at: Optional[DateTimeRangeFilterInput] = None
-    id: Optional[int] = None
+    id: Optional[strawberry.ID] = None
     status: Optional[str] = None
     title: Optional[str] = None
     slug: Optional[str] = None

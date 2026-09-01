@@ -9,6 +9,7 @@ from pricing.inputs import DiscountInput, DiscountUpdateInput
 from pricing.models import Discount
 from pricing.types import DiscountType
 from surveys.schemas.utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -29,10 +30,11 @@ class DiscountMutations:
     def update_discount(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: DiscountUpdateInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> DiscountType:
+        id = as_pk(id)
         discount = Discount.objects.get(pk=id)
         for field, value in input_to_dict(input).items():
             setattr(discount, field, value)
@@ -44,8 +46,9 @@ class DiscountMutations:
     def delete_discount(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         Discount.objects.filter(pk=id).delete()
         return OperationResult(success=True)

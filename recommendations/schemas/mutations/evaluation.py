@@ -17,6 +17,7 @@ from recommendations.models import (
 from surveys.models import Survey, AnswerSchemaOption
 from app.schema_common import RequireAuth, OperationResult
 from surveys.schemas.utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -40,10 +41,11 @@ class RecommendationMutations:
     def create_recommendation(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendationType:
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
         data = {'survey': survey}
@@ -68,10 +70,11 @@ class RecommendationMutations:
     def update_recommendation(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: RecommendationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendationType:
+        id = as_pk(id)
         recommendation = Recommendation.objects.select_related('survey').get(pk=id)
 
         if input.option_id is not strawberry.UNSET:
@@ -94,9 +97,10 @@ class RecommendationMutations:
     def delete_recommendation(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         recommendation = Recommendation.objects.get(pk=id)
         recommendation.deleted_at = now()
         recommendation.save()
@@ -112,10 +116,11 @@ class ActionMutations:
     def create_action(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ActionType:
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
         data = input_to_dict(input, exclude=['translations'])
@@ -140,10 +145,11 @@ class ActionMutations:
     def update_action(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: ActionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ActionType:
+        id = as_pk(id)
         action = Action.objects.select_related('survey').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['translations']).items():
@@ -170,9 +176,10 @@ class ActionMutations:
     def delete_action(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         action = Action.objects.get(pk=id)
         action.delete()
         return OperationResult(success=True)

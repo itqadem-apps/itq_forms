@@ -13,6 +13,7 @@ from user_surveys.types import FinishAssessmentResult
 from user_surveys.models import UserSurvey
 from user_surveys.services import finish_assessment as finish_assessment_service
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -22,9 +23,10 @@ class FinishAssessmentMutation:
     def finish_assessment(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> FinishAssessmentResult:
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             raise ValidationError("Assessment not found.")

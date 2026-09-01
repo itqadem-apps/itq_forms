@@ -19,11 +19,12 @@ from user_surveys.services import evaluate_assessment
 from user_surveys.types import FinishAssessmentResult
 from user_surveys.types.user_survey import UserAnswerType
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.input
 class ScoreAnswerInput:
-    answer_id: int
+    answer_id: strawberry.ID
     score: int
 
 
@@ -35,12 +36,14 @@ class ManualEvaluationMutation:
     def score_answer(
         self,
         info: Info,
-        user_survey_id: int,
-        answer_id: int,
+        user_survey_id: strawberry.ID,
+        answer_id: strawberry.ID,
         score: int,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserAnswerType:
         """Set the score for a single answer (admin review)."""
+        user_survey_id = as_pk(user_survey_id)
+        answer_id = as_pk(answer_id)
         user_answer = UserAnswer.objects.filter(
             id=answer_id,
             user_survey_id=user_survey_id,
@@ -61,18 +64,23 @@ class ManualEvaluationMutation:
     def score_answers_batch(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         scores: list[ScoreAnswerInput],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> list[UserAnswerType]:
         """Set scores for multiple answers at once (admin review)."""
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id).first()
         if not user_survey:
             raise ValidationError("Assessment not found.")
         if not user_survey.submitted_at:
             raise ValidationError("Assessment has not been submitted yet.")
 
-        answer_ids = [s.answer_id for s in scores]
+        # ``answer_id`` arrives as an ``ID``, so it is a string. The dict below is
+        # keyed by the integer pk, and the difference is silent: an uncoerced
+        # string key matches nothing and every answer reads as missing.
+        wanted = [(as_pk(s.answer_id), s.score) for s in scores]
+        answer_ids = [pk for pk, _ in wanted]
         answers = {
             a.id: a
             for a in UserAnswer.objects.filter(
@@ -85,9 +93,9 @@ class ManualEvaluationMutation:
             raise ValidationError(f"Answers not found: {missing}")
 
         with transaction.atomic():
-            for s in scores:
-                answer = answers[s.answer_id]
-                answer.score = s.score
+            for pk, score in wanted:
+                answer = answers[pk]
+                answer.score = score
             UserAnswer.objects.bulk_update(answers.values(), ["score"])
 
         return list(answers.values())
@@ -97,7 +105,7 @@ class ManualEvaluationMutation:
     def evaluate_manual_assessment(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         score_override: Optional[int] = None,
         action_id_override: Optional[int] = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
@@ -110,6 +118,7 @@ class ManualEvaluationMutation:
         3. If action_id_override is provided, uses that action instead of
            score-range matching.
         """
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id).first()
         if not user_survey:
             raise ValidationError("Assessment not found.")

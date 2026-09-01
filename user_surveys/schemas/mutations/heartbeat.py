@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from app.auth_utils import with_django_user
 from user_surveys.models import UserSurvey
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -17,10 +18,11 @@ class HeartbeatMutation:
     def heartbeat(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         session_token: str,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> bool:
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             raise ValidationError("Assessment not found.")

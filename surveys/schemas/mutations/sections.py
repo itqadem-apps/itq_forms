@@ -12,6 +12,7 @@ from surveys.types import SectionType
 from surveys.models import Survey, Section, SectionTranslation
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -30,11 +31,12 @@ class SectionMutations:
     def create_section(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         input: SectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionType:
         """Create a new section in a survey"""
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
         data = input_to_dict(input, exclude=['submit_action_target_id', 'translations'])
@@ -62,11 +64,12 @@ class SectionMutations:
     def update_section(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: SectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionType:
         """Update an existing section"""
+        id = as_pk(id)
         section = Section.objects.select_related('survey').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations']).items():
@@ -96,10 +99,11 @@ class SectionMutations:
     def delete_section(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         """Delete a section"""
+        id = as_pk(id)
         section = Section.objects.get(pk=id)
         section.delete()
         return OperationResult(success=True)
@@ -110,11 +114,12 @@ class SectionMutations:
     def reorder_sections(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         section_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> List[SectionType]:
         """Reorder sections in a survey"""
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
         # Validate all section IDs belong to the survey

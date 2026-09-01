@@ -22,6 +22,7 @@ from surveys.models import (
 )
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 def _type_from_section_id(info, section_id, **kw):
@@ -40,11 +41,12 @@ class QuestionMutations:
     def create_question(
         self,
         info: Info,
-        section_id: int,
+        section_id: strawberry.ID,
         input: QuestionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
         """Create a new question in a section"""
+        section_id = as_pk(section_id)
         section = Section.objects.select_related('survey').get(pk=section_id)
 
         data = input_to_dict(input, exclude=['answer_time', 'translations'])
@@ -82,11 +84,12 @@ class QuestionMutations:
     def update_question(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: QuestionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
         """Update an existing question"""
+        id = as_pk(id)
         question = Question.objects.select_related('survey', 'section').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['answer_time', 'translations']).items():
@@ -125,10 +128,11 @@ class QuestionMutations:
     def delete_question(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         """Delete a question"""
+        id = as_pk(id)
         question = Question.objects.get(pk=id)
         question.delete()
         return OperationResult(success=True)
@@ -140,10 +144,11 @@ class QuestionMutations:
     def duplicate_question(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
         """Duplicate a question with its answer schema and options"""
+        id = as_pk(id)
         original_question = Question.objects.select_related('survey', 'section').get(pk=id)
 
         # Duplicate question
@@ -204,11 +209,12 @@ class QuestionMutations:
     def reorder_questions(
         self,
         info: Info,
-        section_id: int,
+        section_id: strawberry.ID,
         question_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> List[QuestionType]:
         """Reorder questions in a section"""
+        section_id = as_pk(section_id)
         section = Section.objects.select_related('survey').get(pk=section_id)
 
         # Validate all question IDs belong to the section

@@ -15,6 +15,7 @@ from recommendations.models import (
     ActionTranslation,
 )
 from app.schema_common import RequireAuth, OperationResult
+from app.graphql_ids import as_pk
 
 
 def _type_from_recommendation_id(info, recommendation_id, **kw):
@@ -42,10 +43,11 @@ class RecommendationTranslationMutations:
     def create_recommendation_translation(
         self,
         info: Info,
-        recommendation_id: int,
+        recommendation_id: strawberry.ID,
         input: RecommendationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendationTranslationType:
+        recommendation_id = as_pk(recommendation_id)
         recommendation = Recommendation.objects.get(pk=recommendation_id)
         translation = RecommendationTranslation.objects.create(
             recommendation=recommendation,
@@ -97,10 +99,11 @@ class ActionTranslationMutations:
     def create_action_translation(
         self,
         info: Info,
-        action_id: int,
+        action_id: strawberry.ID,
         input: ActionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ActionTranslationType:
+        action_id = as_pk(action_id)
         action = Action.objects.get(pk=action_id)
         translation = ActionTranslation.objects.create(
             action=action,

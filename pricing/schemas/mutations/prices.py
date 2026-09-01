@@ -10,6 +10,7 @@ from pricing.models import Price
 from pricing.signals import backfill_zero_prices
 from pricing.types import PriceType
 from surveys.schemas.utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -32,10 +33,11 @@ class PriceMutations:
     def update_price(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: PriceUpdateInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> PriceType:
+        id = as_pk(id)
         price = Price.objects.get(pk=id)
         for field, value in input_to_dict(input).items():
             setattr(price, field, value)
@@ -48,8 +50,9 @@ class PriceMutations:
     def delete_price(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         Price.objects.filter(pk=id).delete()
         return OperationResult(success=True)

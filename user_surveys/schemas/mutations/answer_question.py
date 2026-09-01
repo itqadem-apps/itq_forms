@@ -11,6 +11,7 @@ from user_surveys.types import UserAnswerType
 from user_surveys.models import UserAnswer, UserAnswerOption, UserQuestion, UserSurvey
 from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 def _opt_text(opt: UserAnswerOption) -> str | None:
@@ -36,12 +37,14 @@ class AnswerQuestionMutation:
     def answer_question(
         self,
         info: Info,
-        user_survey_id: int,
-        question_id: int,
+        user_survey_id: strawberry.ID,
+        question_id: strawberry.ID,
         answer: list[str],
         session_token: str | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserAnswerType:
+        user_survey_id = as_pk(user_survey_id)
+        question_id = as_pk(question_id)
         with transaction.atomic():
             user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
             if not user_survey:

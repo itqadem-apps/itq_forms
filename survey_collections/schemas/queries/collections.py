@@ -18,6 +18,7 @@ from survey_collections.types.results import SurveyCollectionsResultsGQL, Collec
 from app.facets import build_category_tree_facet, build_price_range_facet
 from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from survey_collections.models import SurveyCollection
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -65,6 +66,11 @@ class CollectionsQuery:
             if name in {"created_at", "updated_at", "price"}:
                 value = getattr(filters_input, name, None)
                 filters_data[name] = value.to_vo() if value else None
+                continue
+            # Id filters arrive as ``ID`` — strings. The specs and the ORM
+            # comparisons downstream expect the integer pk.
+            if name == "id" or name.endswith("_id"):
+                filters_data[name] = as_pk(getattr(filters_input, name, None))
                 continue
             filters_data[name] = getattr(filters_input, name, None)
 

@@ -9,6 +9,7 @@ from recommendations.types import RecommendableType
 from recommendations.models import Recommendable
 from app.schema_common import RequireAuth, OperationResult
 from surveys.schemas.utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -31,10 +32,11 @@ class RecommendableMutations:
     def update_recommendable(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: RecommendableInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> RecommendableType:
+        id = as_pk(id)
         recommendable = Recommendable.objects.get(pk=id)
         for field, value in input_to_dict(input).items():
             setattr(recommendable, field, value)
@@ -46,9 +48,10 @@ class RecommendableMutations:
     def delete_recommendable(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         recommendable = Recommendable.objects.get(pk=id)
         recommendable.delete()
         return OperationResult(success=True)

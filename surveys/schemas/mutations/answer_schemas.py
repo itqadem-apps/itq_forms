@@ -17,6 +17,7 @@ from surveys.models import (
 )
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 def _type_from_schema_id(info, schema_id=None, id=None, **kw):
@@ -36,11 +37,12 @@ class AnswerSchemaMutations:
     def update_answer_schema(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: AnswerSchemaInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> AnswerSchemaType:
         """Update an answer schema"""
+        id = as_pk(id)
         schema = AnswerSchema.objects.select_related('survey', 'question').get(pk=id)
 
         for field, value in input_to_dict(input).items():
@@ -55,11 +57,12 @@ class AnswerSchemaMutations:
     def create_answer_schema_option(
         self,
         info: Info,
-        schema_id: int,
+        schema_id: strawberry.ID,
         input: AnswerSchemaOptionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> AnswerSchemaOptionType:
         """Create a new answer schema option"""
+        schema_id = as_pk(schema_id)
         schema = AnswerSchema.objects.select_related('survey', 'section', 'question').get(pk=schema_id)
 
         data = input_to_dict(input, exclude=['classification_id', 'translations'])
@@ -90,11 +93,12 @@ class AnswerSchemaMutations:
     def update_answer_schema_option(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: AnswerSchemaOptionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> AnswerSchemaOptionType:
         """Update an existing answer schema option"""
+        id = as_pk(id)
         option = AnswerSchemaOption.objects.select_related('survey', 'schema').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['classification_id', 'translations']).items():
@@ -127,10 +131,11 @@ class AnswerSchemaMutations:
     def delete_answer_schema_option(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         """Delete an answer schema option"""
+        id = as_pk(id)
         option = AnswerSchemaOption.objects.get(pk=id)
         option.delete()
         return OperationResult(success=True)
@@ -141,11 +146,12 @@ class AnswerSchemaMutations:
     def reorder_answer_schema_options(
         self,
         info: Info,
-        schema_id: int,
+        schema_id: strawberry.ID,
         option_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> List[AnswerSchemaOptionType]:
         """Reorder answer schema options"""
+        schema_id = as_pk(schema_id)
         schema = AnswerSchema.objects.select_related('survey').get(pk=schema_id)
 
         # Validate all option IDs belong to the schema

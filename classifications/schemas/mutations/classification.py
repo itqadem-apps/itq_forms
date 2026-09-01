@@ -12,6 +12,7 @@ from classifications.models import Classification, ClassificationTranslation
 from surveys.models import Survey
 from app.schema_common import RequireAuth, OperationResult
 from surveys.schemas.utils import input_to_dict
+from app.graphql_ids import as_pk
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -31,10 +32,11 @@ class ClassificationMutations:
     def create_classification(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         input: ClassificationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ClassificationType:
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
         data = input_to_dict(input, exclude=['translations'])
         data['survey'] = survey
@@ -54,10 +56,11 @@ class ClassificationMutations:
     def update_classification(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: ClassificationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ClassificationType:
+        id = as_pk(id)
         classification = Classification.objects.select_related('survey').get(pk=id)
         for field, value in input_to_dict(input, exclude=['translations']).items():
             setattr(classification, field, value)
@@ -77,9 +80,10 @@ class ClassificationMutations:
     def delete_classification(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         classification = Classification.objects.get(pk=id)
         classification.deleted_at = now()
         classification.save()

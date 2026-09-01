@@ -13,6 +13,7 @@ from surveys.inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
 from surveys.models import Survey
 from app.facets import build_category_tree_facet, build_price_range_facet
 from surveys.types.results import SurveyResultsGQL, SurveysFacetsGQL
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -62,6 +63,11 @@ class SurveysQuery:
             if name in {"created_at", "updated_at", "price"}:
                 value = getattr(filters_input, name, None) if filters_input else None
                 filters_data[name] = value.to_vo() if value else None
+                continue
+            # Id filters arrive as ``ID`` — strings. The specs and the ORM
+            # comparisons downstream expect the integer pk.
+            if name == "id" or name.endswith("_id"):
+                filters_data[name] = as_pk(getattr(filters_input, name, None))
                 continue
             filters_data[name] = getattr(filters_input, name, None) if filters_input else None
 

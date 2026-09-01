@@ -19,6 +19,7 @@ from user_surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserS
 from user_surveys.types import UserSurveysResultsGQL
 from user_surveys.models import UserSurvey
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 def _caller_has_submissions_read(info: Info) -> bool:
@@ -55,6 +56,11 @@ class UserSurveyQuery:
             if name in {"submitted_at", "evaluated_at"}:
                 value = getattr(filters_input, name, None)
                 filters_data[name] = value.to_vo() if value else None
+                continue
+            # Id filters arrive as ``ID`` — strings. The specs and the ORM
+            # comparisons downstream expect the integer pk.
+            if name == "id" or name.endswith("_id"):
+                filters_data[name] = as_pk(getattr(filters_input, name, None))
                 continue
             filters_data[name] = getattr(filters_input, name, None)
 

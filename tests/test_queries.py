@@ -206,7 +206,7 @@ class TestSurveyQuery:
     def test_survey_by_id(self, survey):
         client = Client()
         status, data = _gql(client, """
-            query($id: Int!) {
+            query($id: ID!) {
                 survey(id: $id) {
                     id
                     surveyType
@@ -231,7 +231,7 @@ class TestSurveyQuery:
     def test_survey_with_sections(self, survey, section):
         client = Client()
         status, data = _gql(client, """
-            query($id: Int!) {
+            query($id: ID!) {
                 survey(id: $id) {
                     id
                     sections { id title order }

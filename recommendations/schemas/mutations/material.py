@@ -9,6 +9,7 @@ from recommendations.inputs import MaterialInput
 from recommendations.types import MaterialType
 from recommendations.models import Action, Material, Recommendable
 from app.schema_common import RequireAuth, OperationResult
+from app.graphql_ids import as_pk
 
 
 def _type_from_action_id(info, action_id, **kw):
@@ -28,10 +29,12 @@ class MaterialMutations:
     def create_material(
         self,
         info: Info,
-        action_id: int,
-        recommendable_id: int,
+        action_id: strawberry.ID,
+        recommendable_id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> MaterialType:
+        action_id = as_pk(action_id)
+        recommendable_id = as_pk(recommendable_id)
         action = Action.objects.get(pk=action_id)
         recommendable = Recommendable.objects.get(pk=recommendable_id)
         material = Material.objects.create(action=action, recommendable=recommendable)
@@ -43,10 +46,11 @@ class MaterialMutations:
     def update_material(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: MaterialInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> MaterialType:
+        id = as_pk(id)
         material = Material.objects.get(pk=id)
         material.action = Action.objects.get(pk=input.action_id)
         material.recommendable = Recommendable.objects.get(pk=input.recommendable_id)
@@ -59,9 +63,10 @@ class MaterialMutations:
     def delete_material(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         material = Material.objects.get(pk=id)
         material.delete()
         return OperationResult(success=True)

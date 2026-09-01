@@ -36,6 +36,7 @@ from surveys.models import (
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict, clone_instance
+from app.graphql_ids import as_pk
 
 
 def _type_from_input(info, input, **kw):
@@ -169,9 +170,10 @@ class SurveyMutations:
     def delete_survey(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         survey = Survey.objects.get(pk=id)
         payload = build_survey_payload_or_log(survey, "SurveyDeleted")
         if payload is not None:
@@ -190,9 +192,10 @@ class SurveyMutations:
     def duplicate_survey(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
+        id = as_pk(id)
         original = Survey.objects.get(pk=id)
 
         new_survey = clone_instance(original)
@@ -264,10 +267,11 @@ class SurveyMutations:
     def update_survey_status(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         status: str,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyType:
+        id = as_pk(id)
         survey = Survey.objects.get(pk=id)
         old_status = survey.status
         survey.status = status

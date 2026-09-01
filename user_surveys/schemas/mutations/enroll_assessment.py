@@ -15,6 +15,7 @@ from user_surveys.child_projection import get_active_child_for_user
 from user_surveys.types import UserSurveyType
 from user_surveys.services import enroll_user_in_assessment
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -24,11 +25,13 @@ class EnrollAssessmentMutation:
     def enroll_assessment(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         child_id: str | None = None,
-        collection_id: int | None = None,
+        collection_id: strawberry.ID | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveyType:
+        survey_id = as_pk(survey_id)
+        collection_id = as_pk(collection_id)
         survey = Survey.objects.get(pk=survey_id)
 
         child = None

@@ -6,6 +6,7 @@ from app.auth_utils import with_django_user
 from surveys.types import QuestionType
 from user_surveys.models import UserQuestion, UserSurvey
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -15,10 +16,12 @@ class QuestionQuery:
     def question(
         self,
         info: Info,
-        user_survey_id: int,
-        question_id: int | None = None,
+        user_survey_id: strawberry.ID,
+        question_id: strawberry.ID | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType | None:
+        user_survey_id = as_pk(user_survey_id)
+        question_id = as_pk(question_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             return None

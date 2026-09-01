@@ -11,10 +11,10 @@ from pkg_filters.integrations.strawberry import (
 
 @strawberry.input
 class UserSurveyFiltersInput:
-    id: Optional[int] = None
-    survey_id: Optional[int] = None
+    id: Optional[strawberry.ID] = None
+    survey_id: Optional[strawberry.ID] = None
     survey_type: Optional[str] = None
-    collection_id: Optional[int] = None
+    collection_id: Optional[strawberry.ID] = None
     collection_type: Optional[str] = None
     child_id: Optional[str] = None
     user_id: Optional[str] = None

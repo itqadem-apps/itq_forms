@@ -29,6 +29,7 @@ from surveys.models import (
     AnswerSchemaOptionTranslation,
 )
 from ..common import RequireAuth, OperationResult
+from app.graphql_ids import as_pk
 
 
 # --- Type resolvers for @check_permission ---
@@ -75,11 +76,12 @@ class TranslationMutations:
     def create_survey_translation(
         self,
         info: Info,
-        survey_id: int,
+        survey_id: strawberry.ID,
         input: SurveyTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyTranslationType:
         """Create a translation for a survey"""
+        survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
         translation = SurveyTranslation.objects.create(
             survey=survey,
@@ -140,11 +142,12 @@ class TranslationMutations:
     def create_section_translation(
         self,
         info: Info,
-        section_id: int,
+        section_id: strawberry.ID,
         input: SectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionTranslationType:
         """Create a translation for a section"""
+        section_id = as_pk(section_id)
         section = Section.objects.get(pk=section_id)
         translation = SectionTranslation.objects.create(
             section=section,
@@ -199,11 +202,12 @@ class TranslationMutations:
     def create_question_translation(
         self,
         info: Info,
-        question_id: int,
+        question_id: strawberry.ID,
         input: QuestionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionTranslationType:
         """Create a translation for a question"""
+        question_id = as_pk(question_id)
         question = Question.objects.get(pk=question_id)
         translation = QuestionTranslation.objects.create(
             question=question,
@@ -258,11 +262,12 @@ class TranslationMutations:
     def create_answer_schema_option_translation(
         self,
         info: Info,
-        option_id: int,
+        option_id: strawberry.ID,
         input: AnswerSchemaOptionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> AnswerSchemaOptionTranslationType:
         """Create a translation for an answer schema option"""
+        option_id = as_pk(option_id)
         option = AnswerSchemaOption.objects.get(pk=option_id)
         translation = AnswerSchemaOptionTranslation.objects.create(
             option=option,

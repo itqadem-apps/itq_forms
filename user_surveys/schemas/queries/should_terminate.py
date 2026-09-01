@@ -6,6 +6,7 @@ from app.auth_utils import with_django_user
 from user_surveys.models import UserSurvey
 from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -15,9 +16,10 @@ class ShouldTerminateQuery:
     def should_terminate(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> bool:
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             return False

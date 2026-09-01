@@ -19,7 +19,7 @@ from pricing.inputs import PriceNestedInput
 class SurveyFiltersInput:
     created_at: Optional[DateTimeRangeFilterInput] = None
     updated_at: Optional[DateTimeRangeFilterInput] = None
-    id: Optional[int] = None
+    id: Optional[strawberry.ID] = None
     status: Optional[str] = None
     survey_type: Optional[str] = None
     display_option: Optional[str] = None
@@ -43,7 +43,7 @@ class SurveyFiltersInput:
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
     currency: Optional[str] = None
-    collection_id: Optional[int] = None
+    collection_id: Optional[strawberry.ID] = None
     external_reference: Optional[ExternalReferenceFilterInput] = None
     q: Optional[str] = None
 
@@ -103,7 +103,7 @@ class SurveysListInput:
 @strawberry.input
 class QuestionsFiltersInput:
     question_ids: Optional[List[int]] = None
-    section_id: Optional[int] = None
+    section_id: Optional[strawberry.ID] = None
     is_required: Optional[bool] = None
     question_type: Optional[str] = None
     answered: Optional[bool] = None

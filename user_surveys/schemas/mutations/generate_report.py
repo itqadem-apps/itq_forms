@@ -10,6 +10,7 @@ from app.auth_utils import with_django_user
 from user_surveys.models import UserSurvey
 from user_surveys.pdf_service import generate_report_pdf
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -25,10 +26,11 @@ class GenerateReportMutation:
     def generate_report(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         lang: str = "default",
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> GenerateReportResult:
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             raise ValidationError("Assessment not found.")

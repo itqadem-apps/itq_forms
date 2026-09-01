@@ -10,6 +10,7 @@ from classifications.inputs import ClassificationTranslationInput
 from classifications.types import ClassificationTranslationType
 from classifications.models import Classification, ClassificationTranslation
 from app.schema_common import RequireAuth, OperationResult
+from app.graphql_ids import as_pk
 
 
 def _type_from_classification_id(info, classification_id, **kw):
@@ -29,10 +30,11 @@ class ClassificationTranslationMutations:
     def create_classification_translation(
         self,
         info: Info,
-        classification_id: int,
+        classification_id: strawberry.ID,
         input: ClassificationTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> ClassificationTranslationType:
+        classification_id = as_pk(classification_id)
         classification = Classification.objects.get(pk=classification_id)
         translation = ClassificationTranslation.objects.create(
             classification=classification,

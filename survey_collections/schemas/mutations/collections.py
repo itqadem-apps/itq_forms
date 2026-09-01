@@ -15,6 +15,7 @@ from survey_collections.models import SurveyCollection, SurveyCollectionTranslat
 from surveys.models import Survey
 from surveys.schemas.utils import input_to_dict
 from taxonomy.models import Category
+from app.graphql_ids import as_pk
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -61,10 +62,11 @@ class SurveyCollectionMutations:
     def update_survey_collection(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
+        id = as_pk(id)
         collection = SurveyCollection.objects.get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['category_id', 'translations', 'prices']).items():
@@ -103,9 +105,10 @@ class SurveyCollectionMutations:
     def delete_survey_collection(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         collection = SurveyCollection.objects.get(pk=id)
         collection.deleted_at = now()
         collection.save()
@@ -117,10 +120,12 @@ class SurveyCollectionMutations:
     def add_survey_to_collection(
         self,
         info: Info,
-        collection_id: int,
-        survey_id: int,
+        collection_id: strawberry.ID,
+        survey_id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
+        collection_id = as_pk(collection_id)
+        survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
         collection.assessments.add(survey)
@@ -132,10 +137,12 @@ class SurveyCollectionMutations:
     def remove_survey_from_collection(
         self,
         info: Info,
-        collection_id: int,
-        survey_id: int,
+        collection_id: strawberry.ID,
+        survey_id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
+        collection_id = as_pk(collection_id)
+        survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
         collection.assessments.remove(survey)

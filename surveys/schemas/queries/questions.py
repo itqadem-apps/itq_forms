@@ -9,6 +9,7 @@ from surveys.inputs import QuestionsFilters, QuestionsFiltersInput
 from surveys.types import QuestionsFiltersGQL, QuestionsResultsGQL
 from user_surveys.models import UserAnswer, UserQuestion, UserSurvey
 from ..common import RequireAuth
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -18,12 +19,13 @@ class QuestionsQuery:
     def questions(
         self,
         info: Info,
-        user_survey_id: int,
+        user_survey_id: strawberry.ID,
         limit: int = 20,
         offset: int = 0,
         filters: QuestionsFiltersInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionsResultsGQL:
+        user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(
             id=user_survey_id,
             user=django_user,
@@ -45,7 +47,7 @@ class QuestionsQuery:
             projection=QuestionProjection(),
             filters=QuestionsFilters(
                 question_ids=filters_input.question_ids,
-                section_id=filters_input.section_id,
+                section_id=as_pk(filters_input.section_id),
                 is_required=filters_input.is_required,
                 question_type=filters_input.question_type,
                 answered=filters_input.answered,
@@ -71,7 +73,7 @@ class QuestionsQuery:
             question._user_survey_id = user_survey.id
         filters_out = QuestionsFiltersGQL(
             question_ids=filters_input.question_ids,
-            section_id=filters_input.section_id,
+            section_id=as_pk(filters_input.section_id),
             is_required=filters_input.is_required,
             question_type=filters_input.question_type,
             answered=filters_input.answered,

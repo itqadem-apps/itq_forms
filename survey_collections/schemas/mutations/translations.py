@@ -8,6 +8,7 @@ from app.schema_common import RequireAuth, OperationResult
 from survey_collections.inputs import SurveyCollectionTranslationInput
 from survey_collections.types import SurveyCollectionTranslationType
 from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
+from app.graphql_ids import as_pk
 
 
 @strawberry.type
@@ -18,10 +19,11 @@ class SurveyCollectionTranslationMutations:
     def create_survey_collection_translation(
         self,
         info: Info,
-        collection_id: int,
+        collection_id: strawberry.ID,
         input: SurveyCollectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionTranslationType:
+        collection_id = as_pk(collection_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         translation = SurveyCollectionTranslation.objects.create(
             collection=collection,
@@ -38,10 +40,11 @@ class SurveyCollectionTranslationMutations:
     def update_survey_collection_translation(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         input: SurveyCollectionTranslationInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionTranslationType:
+        id = as_pk(id)
         translation = SurveyCollectionTranslation.objects.get(pk=id)
 
         if input.language:
@@ -63,9 +66,10 @@ class SurveyCollectionTranslationMutations:
     def delete_survey_collection_translation(
         self,
         info: Info,
-        id: int,
+        id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
+        id = as_pk(id)
         translation = SurveyCollectionTranslation.objects.get(pk=id)
         translation.delete()
         return OperationResult(success=True)
