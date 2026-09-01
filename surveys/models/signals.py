@@ -2,6 +2,7 @@ from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from .answer_schema import AnswerSchema
+from .answer_schema_option import AnswerSchemaOption
 from .question import Question
 from .section import Section
 
@@ -103,3 +104,31 @@ def _update_question_order(sender, instance: Question, **kwargs):
     for idx, question in enumerate(questions):
         question.order = idx + 1
     Question.objects.bulk_update(questions, ["order"])
+
+
+@receiver(post_save, sender=AnswerSchemaOption)
+@receiver(post_delete, sender=AnswerSchemaOption)
+def _update_answer_schema_option_order(sender, instance: AnswerSchemaOption, **kwargs):
+    """Keep option order contiguous, the way sections and questions already are.
+
+    Options were the one level of the tree without this. Deleting the third of
+    four left the survey holding 1, 2, 4 for good — a hole a respondent sees as
+    a missing choice, and one that no amount of re-reading the template
+    explains, because nothing in the authoring UI can produce it. Worse,
+    ``AnswerSchemaOption.save`` assigns a new option ``schema.options.count() +
+    1``, so the next option added to that schema is also given 4 and ties with
+    the survivor under ``Meta.ordering``.
+
+    Both follow from the same absence, so both are fixed here rather than in
+    ``save``: resequencing after a delete keeps ``count() + 1`` correct by
+    construction.
+    """
+    options = AnswerSchemaOption.objects.filter(schema_id=instance.schema_id).order_by("order", "id")
+    options_order = list(options.values_list("order", flat=True))
+
+    if all(order == idx + 1 for idx, order in enumerate(options_order)):
+        return
+
+    for idx, option in enumerate(options):
+        option.order = idx + 1
+    AnswerSchemaOption.objects.bulk_update(options, ["order"])

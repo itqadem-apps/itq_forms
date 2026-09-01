@@ -39,9 +39,17 @@ def _build_translations(qs, fields, source=None, primary_lang=None):
             entry[f] = getattr(t, f, None)
         result[t.language] = entry
     if source and primary_lang:
-        result.setdefault(primary_lang, {})
+        entry = result.setdefault(primary_lang, {})
         for f in fields:
-            result[primary_lang].setdefault(f, getattr(source, f, None))
+            # `setdefault` was wrong here: a primary-language translation row
+            # that exists but carries a null title puts the key in the dict
+            # with a `None` value, so the fallback never fired and the question
+            # snapshotted with no text at all — blank on the runner and on the
+            # review screen, while every question lacking the row entirely
+            # rendered fine. An empty translation means "not translated", not
+            # "intentionally empty", so the model's own value wins.
+            if entry.get(f) in (None, ""):
+                entry[f] = getattr(source, f, None)
     return result
 
 
