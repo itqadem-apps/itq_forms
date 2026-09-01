@@ -9,7 +9,6 @@ from strawberry.types import Info
 
 from surveys.usage_access import (
     FREE_ATTEMPTS,
-    resolve_usage_is_unlimited,
     resolve_usage_limit,
     resolve_usage_used,
 )
@@ -403,7 +402,10 @@ class UserSurveyType:
         )
 
     @strawberry.field
-    def usage_limit(self, info: Info) -> int:
+    def usage_limit(self, info: Info) -> Optional[int]:
+        """``null`` means the grant is uncapped — the clients gate enrolment on
+        ``usageUsed < usageLimit``, and a number is the only thing that can
+        block them. The free tier is a real cap and still reports one."""
         try:
             django_user = get_django_user(info)
         except ValueError:
@@ -411,21 +413,6 @@ class UserSurveyType:
         if django_user.id != self.user_id or not self.survey_id:
             return FREE_ATTEMPTS
         return resolve_usage_limit(user_id=django_user.id, survey_id=self.survey_id)
-
-    @strawberry.field
-    def is_usage_unlimited(self, info: Info) -> bool:
-        """True when the grant has no cap. ``usageLimit`` reports FREE_ATTEMPTS
-        in that case for want of a value meaning "no cap", so read this flag
-        before gating on ``usageUsed < usageLimit``."""
-        try:
-            django_user = get_django_user(info)
-        except ValueError:
-            return False
-        if django_user.id != self.user_id or not self.survey_id:
-            return False
-        return resolve_usage_is_unlimited(
-            user_id=django_user.id, survey_id=self.survey_id
-        )
 
     @strawberry.field
     def progress(self, info: Info) -> int:

@@ -5,9 +5,12 @@ Both cases here came out of a QA report against the live API:
 * ``usageUsed`` read ``0`` on an attempt the user had just submitted, while the
   survey card reported ``1`` for the same allowance — the attempt resolver had
   no free-tier fallback, so it only ever saw paid ``Usage`` rows.
-* a submitted ``userSurvey`` was reported as returning an empty ``sections``
-  list. That one did not reproduce; the tests below pin the behaviour so a
-  future change cannot quietly introduce it.
+* an unlimited grant was reported as a cap of ten, because ``usageLimit`` had
+  no value meaning "no cap" and fell back to ``FREE_ATTEMPTS``.
+
+The submitted-attempt cases here set ``submitted_at`` directly rather than going
+through ``finish_assessment``; see ``test_submit_keeps_questions`` for coverage
+of the real submit path.
 """
 
 import uuid
@@ -30,7 +33,6 @@ query Attempts($input: UserSurveysListInput!) {
       submittedAt
       usageUsed
       usageLimit
-      isUsageUnlimited
       sections {
         id
         isHidden
@@ -183,12 +185,12 @@ def test_usage_used_is_scoped_to_the_child_the_attempt_was_taken_for(user, surve
 
 # ── unlimited grants ─────────────────────────────────────────────────
 
-def test_an_unlimited_grant_is_flagged_rather_than_reported_as_a_cap_of_ten(user, survey, section):
-    """The reported defect: `usageLimit` cannot express "no cap".
+def test_an_unlimited_grant_reports_a_null_limit_rather_than_a_cap_of_ten(user, survey, section):
+    """The reported defect: `usageLimit` could not express "no cap".
 
     An unlimited grant carries `usage_limit = 0`, which the `or FREE_ATTEMPTS`
-    fallback turns into 10, so a client gating on `usageUsed < usageLimit`
-    refuses the 11th attempt. `isUsageUnlimited` is that missing signal.
+    fallback turned into 10, so a client gating on `usageUsed < usageLimit`
+    refused the 11th attempt. `null` is that missing value.
     """
     _submit(enroll_user_in_assessment(user, survey.id)[0])
     Usage.objects.create(
@@ -196,34 +198,31 @@ def test_an_unlimited_grant_is_flagged_rather_than_reported_as_a_cap_of_ten(user
     )
 
     attempt = _attempts(user)[0]
-    assert attempt["isUsageUnlimited"] is True
+    assert attempt["usageLimit"] is None
     assert attempt["usageUsed"] == 11
-    assert attempt["usageLimit"] == FREE_ATTEMPTS  # still not a real cap
 
 
-def test_a_capped_grant_is_not_flagged_unlimited(user, survey, section):
+def test_a_capped_grant_still_reports_its_number(user, survey, section):
     _submit(enroll_user_in_assessment(user, survey.id)[0])
     Usage.objects.create(
         user=user, survey=survey, order_id="order-1", usage_limit=5, used_count=1
     )
 
-    attempt = _attempts(user)[0]
-    assert attempt["isUsageUnlimited"] is False
-    assert attempt["usageLimit"] == 5
+    assert _attempts(user)[0]["usageLimit"] == 5
 
 
-def test_the_free_tier_is_not_flagged_unlimited(user, survey, section):
+def test_the_free_tier_is_a_real_cap_not_an_unlimited_grant(user, survey, section):
+    """A user with no usage rows is capped at FREE_ATTEMPTS. That is a number,
+    not `null` — the two must not collapse into each other."""
     _submit(enroll_user_in_assessment(user, survey.id)[0])
 
-    attempt = _attempts(user)[0]
-    assert attempt["isUsageUnlimited"] is False
-    assert attempt["usageLimit"] == FREE_ATTEMPTS
+    assert _attempts(user)[0]["usageLimit"] == FREE_ATTEMPTS
 
 
 def test_the_server_already_lets_an_unlimited_user_past_the_free_cap(user, survey, section):
     """Confirms the block was only ever client-side: the enrolment gate honours
-    an uncapped grant, so `isUsageUnlimited` closes the gap without changing
-    what the server enforces."""
+    an uncapped grant, so the null limit closes the gap without changing what
+    the server enforces."""
     for _ in range(FREE_ATTEMPTS):
         _submit(enroll_user_in_assessment(user, survey.id)[0])
     Usage.objects.create(
@@ -254,7 +253,7 @@ def test_the_survey_card_and_the_attempt_agree_on_unlimited(user, survey, sectio
 
     info = _Info()
     info.context = _Context(user)
-    assert _attempts(user)[0]["isUsageUnlimited"] is SurveyType.is_usage_unlimited(survey, info) is True
+    assert _attempts(user)[0]["usageLimit"] is SurveyType.usage_limit(survey, info) is None
 
 
 # ── submitted results ────────────────────────────────────────────────

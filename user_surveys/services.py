@@ -432,15 +432,12 @@ def finish_assessment(
     user_survey.termination_reason = reason
     user_survey.save(update_fields=["last_question", "submitted_at", "termination_reason"])
 
-    # Delete unanswered questions (keep only those with an actual answer)
-    answered_question_ids = set(
-        UserAnswer.objects.filter(user_survey=user_survey)
-        .exclude(answer__isnull=True, selected_options__isnull=True)
-        .values_list("question_id", flat=True)
-    )
-    UserQuestion.objects.filter(
-        user_survey=user_survey,
-    ).exclude(id__in=answered_question_ids).delete()
+    # The snapshot is the record of what this user was asked, and results and
+    # review render from it. A question the user skipped still belongs on the
+    # review screen, shown as unanswered — deleting it here was unrecoverable
+    # and left every fully-skipped section with `questions: []`, which the
+    # clients read as a zero denominator. If a surface ever wants only the
+    # answered questions, that is a filter at query time, not a write here.
 
     if user_survey.evaluation_type == UserSurvey.EVALUATION_TYPE_AUTOMATIC:
         evaluate_assessment(user_survey)

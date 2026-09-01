@@ -76,24 +76,21 @@ def resolve_usage_used(*, user_id, survey_id, child_id=_ANY_CHILD) -> int:
     )
 
 
-def resolve_usage_is_unlimited(*, user_id, survey_id) -> bool:
-    """Whether the grant is uncapped.
+def resolve_usage_limit(*, user_id, survey_id) -> int | None:
+    """The allowance matching :func:`resolve_usage_used`.
 
-    ``resolve_usage_limit`` cannot express this: an unlimited row carries
-    ``usage_limit = 0``, which the ``or FREE_ATTEMPTS`` fallback turns into the
-    free-tier constant, so on the wire an unlimited grant is indistinguishable
-    from a cap of ten. Clients gate enrolment on used < limit, so without this
-    flag an unlimited user is refused their eleventh attempt.
+    ``None`` means uncapped, and is the only way to say so: an unlimited grant
+    carries ``usage_limit = 0``, and reporting that as ``FREE_ATTEMPTS`` made an
+    uncapped user indistinguishable on the wire from one holding ten attempts,
+    so the clients refused their eleventh. A user with no usage rows at all is
+    on the free tier and genuinely capped at ``FREE_ATTEMPTS`` — that is not the
+    same thing, and still reports a number.
     """
-    return summarize_usage_rows(_usage_rows(user_id=user_id, survey_id=survey_id)).has_unlimited
-
-
-def resolve_usage_limit(*, user_id, survey_id) -> int:
-    """The allowance matching :func:`resolve_usage_used` — never 0 for a user
-    who simply has no usage rows; that user is on the free tier."""
     summary = summarize_usage_rows(_usage_rows(user_id=user_id, survey_id=survey_id))
     if not summary.has_any:
         return FREE_ATTEMPTS
+    if summary.has_unlimited:
+        return None
     return summary.total_limit or FREE_ATTEMPTS
 
 
