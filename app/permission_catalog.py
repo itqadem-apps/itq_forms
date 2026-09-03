@@ -76,4 +76,10 @@ CATALOG: list[CatalogEntry] = [
     _entry(Permission.COLLECTION_READ, "Read collections"),
     _entry(Permission.COLLECTION_UPDATE, "Update collections"),
     _entry(Permission.COLLECTION_DELETE, "Delete collections"),
+    # Cross-cutting, and the only key here that is not tied to one
+    # assessment kind. Granting it to a tenant role lets that role read
+    # the submissions of the children its organization actively
+    # supervises — and nothing else; the scoping lives in
+    # ``user_surveys.schemas.queries.user_surveys._submissions_visible_to``.
+    _entry(Permission.SUBMISSION_READ, "Read submissions"),
 ]

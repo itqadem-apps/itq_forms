@@ -2,6 +2,7 @@ from dataclasses import fields as dc_fields
 
 import strawberry
 from strawberry.types import Info
+from django.db.models import Q, QuerySet
 from django.contrib.auth.base_user import AbstractBaseUser
 from pkg_auth.authorization import MissingPermission
 from pkg_filters.integrations.django import DjangoQueryContext
@@ -15,6 +16,7 @@ from user_surveys.filters import (
     user_surveys_pipeline,
     user_survey_sort_input_to_spec,
 )
+from user_surveys.child_projection import supervised_child_ids_for_org
 from user_surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserSurveysListInput
 from user_surveys.types import UserSurveysResultsGQL
 from user_surveys.models import UserSurvey
@@ -22,17 +24,53 @@ from ..common import RequireAuth
 from app.graphql_ids import as_pk
 
 
-def _caller_has_submissions_read(info: Info) -> bool:
-    auth_ctx = getattr(info.context, "auth_context", None)
-    if auth_ctx is None:
-        return False
-    if is_platform_context(auth_ctx):
-        return True
+def _holds_submissions_read(auth_ctx) -> bool:
     try:
         auth_ctx.require(Permission.SUBMISSION_READ.value)
     except MissingPermission:
         return False
     return True
+
+
+def _submissions_visible_to(info: Info, django_user) -> QuerySet:
+    """The submissions this caller is allowed to read.
+
+    Submitting has no organization: a parent can take a screening survey at
+    home weeks before contacting any clinic, and ``UserSurvey`` accordingly
+    carries no organization column. Organization access is therefore *derived*
+    from the child's active supervisor relation at read time — the same
+    consent path the rest of the system uses for children, and the reason
+    revoking a clinic's relation revokes its access to the history too.
+
+    - a platform context reads everything;
+    - a ``submissions:read`` holder in a tenant context reads the submissions
+      of the children its organization actively supervises;
+    - adult self-submissions have no child and so no relation to derive from:
+      they stay private to their submitter and platform admins;
+    - everyone reads their own, whatever else they hold.
+
+    The supervisor relation is read through ``accounts.ChildGuardian``, a
+    read-only projection of ``itq_users``' ``child_guardians`` table fed by
+    NATS (``accounts/messaging.py``). It is eventually consistent: a revoked
+    relation stops granting access only once ``GuardianRelationEnded`` has
+    been consumed.
+    """
+    own = Q(user=django_user)
+
+    auth_ctx = getattr(info.context, "auth_context", None)
+    if auth_ctx is None:
+        return UserSurvey.objects.filter(own)
+    if is_platform_context(auth_ctx):
+        return UserSurvey.objects.all()
+    if not _holds_submissions_read(auth_ctx):
+        return UserSurvey.objects.filter(own)
+
+    organization_id = getattr(auth_ctx, "organization_id", None)
+    if not organization_id:
+        return UserSurvey.objects.filter(own)
+
+    supervised = Q(child_id__in=supervised_child_ids_for_org(organization_id))
+    return UserSurvey.objects.filter(own | supervised)
 
 
 @strawberry.type
@@ -45,8 +83,7 @@ class UserSurveyQuery:
         user_surveys_list_input: UserSurveysListInput | None = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserSurveysResultsGQL:
-        is_admin = _caller_has_submissions_read(info)
-        qs = UserSurvey.objects.all() if is_admin else UserSurvey.objects.filter(user=django_user)
+        qs = _submissions_visible_to(info, django_user)
         if user_surveys_list_input is None:
             user_surveys_list_input = UserSurveysListInput()
         filters_input = user_surveys_list_input.filters or UserSurveyFiltersInput()
