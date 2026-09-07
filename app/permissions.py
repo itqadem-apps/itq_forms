@@ -88,7 +88,18 @@ PERMISSION_MAP: dict[AssessmentType, dict[ActionType, Permission]] = {
 
 
 def get_permission_for_kind(assessment_type: AssessmentType, action: ActionType) -> Permission:
-    return PERMISSION_MAP[assessment_type][action]
+    try:
+        return PERMISSION_MAP[assessment_type][action]
+    except KeyError:
+        # `survey_type` is a CharField with `choices`, and choices are not enforced
+        # by the database — a row written around the model can hold anything. The
+        # bare KeyError this used to raise surfaced to the client as the message
+        # `'smart_form'`, which reads like nothing at all; say what is wrong and
+        # which row kind to look for instead.
+        raise ValueError(
+            f"No permission mapping for assessment type {assessment_type!r} "
+            f"(action {action!r}). Valid types: {', '.join(sorted(PERMISSION_MAP))}."
+        ) from None
 
 
 def check_permission(assessment_type: Union[str, Callable], action: ActionType) -> Callable:

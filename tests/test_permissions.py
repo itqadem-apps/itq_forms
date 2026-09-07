@@ -70,3 +70,18 @@ def test_check_permission_raises_without_org_header():
     info.context.identity = Mock()  # JWT present, but no org context
     with pytest.raises(PermissionError, match="Missing X-Organization-Id"):
         view(None, info)
+
+
+def test_get_permission_for_kind_names_the_bad_type():
+    """A stray `survey_type` used to surface to the client as the message
+    `'smart_form'` — a bare KeyError arg, with nothing saying what it was."""
+    from app.permissions import get_permission_for_kind
+
+    with pytest.raises(ValueError, match="No permission mapping.*'smart_form'"):
+        get_permission_for_kind("smart_form", "delete")
+
+
+def test_get_permission_for_kind_still_maps_valid_types():
+    from app.permissions import Permission, get_permission_for_kind
+
+    assert get_permission_for_kind("form", "delete") is Permission.FORM_DELETE
