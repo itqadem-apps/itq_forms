@@ -19,6 +19,7 @@ from app.facets import build_category_tree_facet, build_price_range_facet
 from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from survey_collections.models import SurveyCollection
 from app.graphql_ids import as_pk
+from app.status_sort import annotate_status_rank
 
 
 @strawberry.type
@@ -26,7 +27,9 @@ class CollectionsQuery:
     @strawberry.field()
     def collections(self, info: Info, collections_list_input: SurveyCollectionsListInput) -> SurveyCollectionsResultsGQL:
         paths = get_root_field_paths(info, "collections")
-        qs = SurveyCollection.objects.filter(deleted_at__isnull=True)
+        # See the surveys resolver: annotated unconditionally so `status` sorting
+        # needs nothing from the pipeline.
+        qs = annotate_status_rank(SurveyCollection.objects.filter(deleted_at__isnull=True))
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
 
         if filters_input.has_discount is not None:

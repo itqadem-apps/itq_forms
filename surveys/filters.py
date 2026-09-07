@@ -7,10 +7,12 @@ from pkg_filters.integrations.django import (
     DjangoRangeFilterHandler,
     DjangoSortHandler,
     DjangoAllExactFiltersHandler, DjangoExactFilterHandler,
+    DjangoInFilterHandler,
 )
 
 from app.price_filter import DjangoPriceRangeFilterHandler
 from app.search import PostgresSearchHandler
+from app.status_sort import STATUS_RANK_FIELD
 from surveys.inputs import (
     SurveyFilters,
     SurveySortField,
@@ -41,7 +43,10 @@ def survey_sort_input_to_spec(inp: SurveySortInput | None) -> SortSpec | None:
     return SortSpec(fields=fields)
 
 
+# `status` is the one logical field that does not name a column: it orders by
+# the rank annotation the resolver adds (`app.status_sort`).
 SURVEY_SORT_MAP: dict[str, str] = {f.value: f.value for f in SurveySortField}
+SURVEY_SORT_MAP[SurveySortField.STATUS.value] = STATUS_RANK_FIELD
 
 pipeline = DjangoPipeline([
     DjangoRangeFilterHandler("created_at"),
@@ -50,6 +55,8 @@ pipeline = DjangoPipeline([
     DjangoExactFilterHandler("status"),
     DjangoExactFilterHandler("slug", lookup="translations__slug"),
     DjangoExactFilterHandler("collection_id", lookup="collections__id"),
+    # Reads the plural `survey_type_in` field but filters the singular column.
+    DjangoInFilterHandler("survey_type_in", lookup="survey_type__in"),
     DjangoAllExactFiltersHandler(
         excluded={
             "created_at",
@@ -62,6 +69,7 @@ pipeline = DjangoPipeline([
             "is_free",
             "currency",
             "collection_id",
+            "survey_type_in",
         }
     ),
     PostgresSearchHandler(

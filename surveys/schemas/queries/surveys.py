@@ -14,6 +14,7 @@ from surveys.models import Survey
 from app.facets import build_category_tree_facet, build_price_range_facet
 from surveys.types.results import SurveyResultsGQL, SurveysFacetsGQL
 from app.graphql_ids import as_pk
+from app.status_sort import annotate_status_rank
 
 
 @strawberry.type
@@ -21,7 +22,9 @@ class SurveysQuery:
     @strawberry.field()
     def surveys(self, info: Info, surveys_list_input: SurveysListInput) -> SurveyResultsGQL:
         paths = get_root_field_paths(info, "surveys")
-        qs = Survey.objects.filter(deleted_at__isnull=True)
+        # Cheap CASE, added unconditionally so the sort handler can order by it
+        # without the pipeline having to know which sort was asked for.
+        qs = annotate_status_rank(Survey.objects.filter(deleted_at__isnull=True))
         if has_any_under_prefix(paths, ("items", "contentType")):
             qs = qs.select_related("content_type")
 

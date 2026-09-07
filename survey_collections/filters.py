@@ -12,6 +12,7 @@ from pkg_filters.integrations.django import (
 
 from app.price_filter import DjangoPriceRangeFilterHandler
 from app.search import PostgresSearchHandler
+from app.status_sort import STATUS_RANK_FIELD
 from survey_collections.inputs import (
     SurveyCollectionFilters,
     SurveyCollectionSortField,
@@ -45,6 +46,8 @@ SURVEY_COLLECTION_SORT_MAP: dict[str, str] = {
     "created_at": "created_at",
     "updated_at": "updated_at",
     "title": "translations__title",
+    # Not a column: the rank annotation the resolver adds (`app.status_sort`).
+    "status": STATUS_RANK_FIELD,
 }
 
 collections_pipeline = DjangoPipeline([

@@ -59,6 +59,7 @@ class SurveyCollectionSortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
     TITLE = "title"
+    STATUS = "status"
 
 
 @strawberry.input
@@ -66,6 +67,14 @@ class SurveyCollectionSortInput:
     created_at: Optional[SortDirection] = None
     updated_at: Optional[SortDirection] = None
     title: Optional[SortDirection] = None
+    #: Same contract as `SurveySortInput.status` — the shared rank, not the column.
+    status: Optional[SortDirection] = strawberry.field(
+        default=None,
+        description=(
+            "Order by publication state rather than the raw column: ASC yields "
+            "published, pending, draft, suspended, archived; DESC reverses it."
+        ),
+    )
 
 
 @strawberry.input

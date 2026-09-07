@@ -22,6 +22,13 @@ class SurveyFiltersInput:
     id: Optional[strawberry.ID] = None
     status: Optional[str] = None
     survey_type: Optional[str] = None
+    #: Several kinds at once, for callers that span them — a curriculum's member
+    #: picker offers surveys, assessments and forms from one list. `survey_type`
+    #: stays for the single-kind case; both may be sent and both apply.
+    survey_type_in: Optional[List[str]] = strawberry.field(
+        default=None,
+        description="Match any of these survey types. Combine with, or use instead of, `surveyType`.",
+    )
     display_option: Optional[str] = None
     is_timed: Optional[bool] = None
     is_for_child: Optional[bool] = None
@@ -55,6 +62,7 @@ class SurveyFilters:
     id: Optional[int]
     status: Optional[str]
     survey_type: Optional[str]
+    survey_type_in: Optional[list[str]]
     display_option: Optional[str]
     is_timed: Optional[bool]
     is_for_child: Optional[bool]
@@ -84,12 +92,22 @@ class SurveyFilters:
 class SurveySortField(str, Enum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
+    STATUS = "status"
 
 
 @strawberry.input
 class SurveySortInput:
     created_at: Optional[SortDirection] = None
     updated_at: Optional[SortDirection] = None
+    #: Not the alphabetical column order — publication state, ranked by
+    #: `app.status_sort.STATUS_SORT_ORDER`. ASC puts published first.
+    status: Optional[SortDirection] = strawberry.field(
+        default=None,
+        description=(
+            "Order by publication state rather than the raw column: ASC yields "
+            "published, pending, draft, suspended, archived; DESC reverses it."
+        ),
+    )
 
 
 @strawberry.input
