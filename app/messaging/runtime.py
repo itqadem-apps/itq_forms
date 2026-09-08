@@ -60,8 +60,11 @@ async def start_all() -> None:
         *contract.RECOMMENDABLE_CONSUMERS,
     ]
 
+    # No core-NATS subjects: everything this service consumes arrives on a
+    # JetStream durable. The empty list used to need a placeholder because the
+    # broker fell back to "notifications.>"; that fallback is gone.
     await start_messaging(
-        subjects=["__forms_internal.none"],
+        subjects=[],
         service_name=settings.SERVICE_NAME,
         url=settings.NATS_URL,
         enable_durable=settings.JETSTREAM_ENABLED,
@@ -74,7 +77,7 @@ async def start_all() -> None:
 
     users_subjects = list(contract.USERS_CHILD_SUBJECTS)
     _users_broker = UnifiedMessageBroker(
-        subjects=["__forms_users_internal.none"],
+        subjects=[],
         service_name=settings.SERVICE_NAME,
         url=settings.NATS_URL,
         enable_durable=settings.JETSTREAM_ENABLED,
@@ -87,7 +90,7 @@ async def start_all() -> None:
     await _users_broker.start()
 
     _orders_broker = UnifiedMessageBroker(
-        subjects=["__forms_orders_internal.none"],
+        subjects=[],
         service_name=settings.SERVICE_NAME,
         url=settings.NATS_URL,
         enable_durable=settings.JETSTREAM_ENABLED,
