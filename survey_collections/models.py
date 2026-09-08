@@ -41,6 +41,12 @@ class SurveyCollection(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     sponsor = models.PositiveIntegerField(null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
+    # Media-library asset ids, the same two flat columns a Survey carries
+    # (`surveys.Survey.cover_id` / `thumb_id`). A collection used to hold no
+    # imagery of its own, so its admin hero and every storefront card rendered
+    # the placeholder no matter what its members looked like.
+    cover_id = models.CharField(max_length=255, null=True, blank=True)
+    thumb_id = models.CharField(max_length=255, null=True, blank=True)
     organization_id = models.UUIDField(
         null=True,
         blank=True,

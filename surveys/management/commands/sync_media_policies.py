@@ -29,6 +29,18 @@ POLICIES: list[dict] = [
      "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME,
      "allow_multiple": False, "max_size_bytes": 5_000_000,
      "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
+    # Collections (curricula and the rest) carry the same two image slots a
+    # survey does — same shapes, same limits — so their policies mirror the two
+    # above rather than sharing them: `resource_type` is what scopes an asset to
+    # a kind of record, and a curriculum's cover is not a survey's.
+    {"resource_type": "collections", "collection_name": "thumb", "kind": AssetKind.IMAGE,
+     "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME,
+     "allow_multiple": False, "max_size_bytes": 2_000_000,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [128, 256]}}},
+    {"resource_type": "collections", "collection_name": "cover", "kind": AssetKind.IMAGE,
+     "visibility": Visibility.PUBLIC, "allowed_mime_types": IMAGE_MIME,
+     "allow_multiple": False, "max_size_bytes": 5_000_000,
+     "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},
     {"resource_type": "forms", "collection_name": "image", "kind": AssetKind.IMAGE, "visibility": Visibility.PUBLIC,
      "allowed_mime_types": IMAGE_MIME, "allow_multiple": False,
      "step_options": {"image_derive": {"formats": ["webp"], "sizes": [256, 512, 1024]}}},

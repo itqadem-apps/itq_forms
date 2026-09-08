@@ -101,5 +101,9 @@ class SurveyCollectionInput:
     category_id: Optional[str] = UNSET
     sponsor: Optional[int] = UNSET
     type: Optional[str] = UNSET
+    #: Media-library asset ids. UNSET leaves them alone; an explicit null clears
+    #: them — the same contract `SurveyInput` uses for its two.
+    cover_id: Optional[str] = UNSET
+    thumb_id: Optional[str] = UNSET
     translations: Optional[List[SurveyCollectionTranslationInput]] = UNSET
     prices: Optional[List[PriceNestedInput]] = UNSET

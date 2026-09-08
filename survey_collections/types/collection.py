@@ -20,6 +20,8 @@ class SurveyCollectionType:
     category_id: auto
     sponsor: auto
     type: auto
+    cover_id: auto
+    thumb_id: auto
     translations: List["SurveyCollectionTranslationType"]
     prices: List[PriceType]
     assessments: List[Annotated["SurveyType", strawberry.lazy("surveys.types.survey")]]
