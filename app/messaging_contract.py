@@ -62,15 +62,17 @@ EXTERNAL_REFERENCE_EVENT_CONSUMERS: list[JetStreamConsumer] = [
     ),
 ]
 
-USERS_CHILD_STREAM_NAME = "USERS"
-USERS_CHILD_STREAM_SUBJECTS: list[str] = ["users.>"]
+# No USERS/ORDERS stream declaration here. estate:AD-13: a stream is declared by
+# the one service owning its subject prefix -- itq_users owns USERS, itq_orders
+# owns ORDERS. This service consumes from both and declares neither; a consumer
+# binds by subject and durable, so it never needs the stream name. The removed
+# USERS declaration read ["users.>"] and omitted "auth.>", which itq_users
+# declares and which nothing else in the estate declares at all.
 USERS_CHILD_SUBJECTS: list[str] = [
     "users.child.>",
     "users.child_guardian.>",
 ]
 
-ORDERS_STREAM_NAME = "ORDERS"
-ORDERS_STREAM_SUBJECTS: list[str] = ["orders.>"]
 ORDERS_EVENT_SUBJECTS: list[str] = ["orders.order"]
 ORDERS_EVENT_DURABLE_BASE = "forms-orders-order-consumer"
 

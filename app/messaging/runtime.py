@@ -7,6 +7,16 @@ outbox relay in a single process. Subjects span three JetStream streams
 default registry that ``app.messaging.registry.register_handlers``
 populates.
 
+Only the FORMS broker declares a stream. Per ``estate:AD-13`` a stream is
+declared by the one service that owns its subject prefix, and this service
+owns ``forms.>`` only — ``USERS`` belongs to ``itq_users`` and ``ORDERS`` to
+``itq_orders``. The other two brokers consume without declaring: a consumer
+binds by subject and durable, and JetStream resolves the stream server-side,
+so ``stream_name`` is not needed to read. Do not re-add it: ``add_stream``
+does not reconcile an existing stream, it fails with BadRequestError 10058
+and the package swallows that at debug, so a second declaration is settled
+silently by boot order rather than reported.
+
 The relay drains the outbox table and publishes rows on the FORMS
 broker, removing the need for a separate ``outbox_relay`` process.
 """
@@ -81,8 +91,7 @@ async def start_all() -> None:
         service_name=settings.SERVICE_NAME,
         url=settings.NATS_URL,
         enable_durable=settings.JETSTREAM_ENABLED,
-        stream_name=contract.USERS_CHILD_STREAM_NAME,
-        stream_subjects=contract.USERS_CHILD_STREAM_SUBJECTS,
+        # No stream_name/stream_subjects: itq_users owns USERS (estate:AD-13).
         consumers=contract.build_users_child_consumers(users_subjects),
         pull_batch=settings.JETSTREAM_PULL_BATCH,
         pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
@@ -94,8 +103,7 @@ async def start_all() -> None:
         service_name=settings.SERVICE_NAME,
         url=settings.NATS_URL,
         enable_durable=settings.JETSTREAM_ENABLED,
-        stream_name=contract.ORDERS_STREAM_NAME,
-        stream_subjects=contract.ORDERS_STREAM_SUBJECTS,
+        # No stream_name/stream_subjects: itq_orders owns ORDERS (estate:AD-13).
         consumers=_orders_consumers(),
         pull_batch=settings.JETSTREAM_PULL_BATCH,
         pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
