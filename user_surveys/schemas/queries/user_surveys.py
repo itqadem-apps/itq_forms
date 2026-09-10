@@ -1,4 +1,5 @@
 from dataclasses import fields as dc_fields
+from typing import Optional
 
 import strawberry
 from strawberry.types import Info
@@ -94,9 +95,12 @@ class UserSurveyQuery:
                 value = getattr(filters_input, name, None)
                 filters_data[name] = value.to_vo() if value else None
                 continue
-            # Id filters arrive as ``ID`` — strings. The specs and the ORM
-            # comparisons downstream expect the integer pk.
-            if name == "id" or name.endswith("_id"):
+            # Integer-pk filters arrive as ``ID`` — strings — and the specs and
+            # ORM comparisons downstream expect the integer pk. ``child_id``
+            # and ``user_id`` are not among them: ``accounts.Child`` and
+            # ``accounts.User`` are keyed by the string ids ``itq_users``
+            # issues, so ``int()`` rejected every real one as "Invalid id".
+            if field.type == Optional[int]:
                 filters_data[name] = as_pk(getattr(filters_input, name, None))
                 continue
             filters_data[name] = getattr(filters_input, name, None)

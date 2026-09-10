@@ -91,3 +91,79 @@ def test_the_whole_answer_and_submit_round_trip_runs_on_string_ids(user, survey)
     _run(user, FINISH, us=str(user_survey.id))
 
     assert UserAnswer.objects.filter(user_survey=user_survey).count() == len(questions)
+
+
+# ── userSurvey id filters ───────────────────────────────────────────
+#
+# The listing ran every filter ending in ``_id`` through ``as_pk``. That is
+# right for ``id``, ``surveyId`` and ``collectionId``, which name integer pks,
+# and wrong for ``childId`` and ``userId``: ``accounts.Child`` and
+# ``accounts.User`` are keyed by the string ids ``itq_users`` issues, so a real
+# child id could never pass ``int()`` and every child-filtered request failed
+# with "Invalid id".
+
+ATTEMPTS = """
+query Attempts($input: UserSurveysListInput!) {
+  userSurvey(userSurveysListInput: $input) { total items { id } }
+}
+"""
+
+
+def _attempt_ids(user, **filters):
+    from .test_usage_and_results import _run as _query
+
+    data = _query(ATTEMPTS, user, input={"limit": 50, "offset": 0, "filters": filters})
+    return {int(item["id"]) for item in data["userSurvey"]["items"]}
+
+
+def _for_child(user, survey, child):
+    return enroll_user_in_assessment(user, survey.id, child=child)[0]
+
+
+def test_child_id_filter_takes_the_string_id_a_child_actually_has(user, survey, section):
+    """The defect behind the child profile's missing tab: ``childId`` is a
+    UUID, and it must select that child's rows — not another child's, and not
+    the caller's own adult attempts."""
+    import uuid
+
+    from accounts.models import Child
+    from user_surveys.models import UserSurvey
+
+    survey.is_for_child = True
+    survey.save(update_fields=["is_for_child"])
+    first = Child.objects.create(id=str(uuid.uuid4()), name="First")
+    second = Child.objects.create(id=str(uuid.uuid4()), name="Second")
+
+    mine = {_for_child(user, survey, first).id, _for_child(user, survey, first).id}
+    _for_child(user, survey, second)
+    # A child-only survey refuses an adult enrolment, so the caller's own
+    # adult attempt is written directly.
+    UserSurvey.objects.create(user=user, survey=survey, child=None)
+
+    assert _attempt_ids(user, childId=first.id) == mine
+
+
+def test_user_id_filter_takes_the_string_id_a_user_actually_has(user, survey, section):
+    """Same shape, same fault: ``accounts.User`` is keyed by the identity
+    provider's subject, never an integer."""
+    attempt = enroll_user_in_assessment(user, survey.id)[0]
+
+    assert _attempt_ids(user, userId=user.id) == {attempt.id}
+
+
+@pytest.mark.parametrize("field", ["id", "surveyId", "collectionId"])
+def test_integer_id_filters_still_reject_a_non_integer(user, field):
+    """Only the string-keyed filters stopped being coerced. The integer ones
+    still refuse garbage as a malformed request rather than an empty page."""
+    from surveys import schema as schema_module
+
+    from .test_usage_and_results import _Context
+
+    result = schema_module.schema.execute_sync(
+        ATTEMPTS,
+        variable_values={"input": {"filters": {field: "not-a-number"}}},
+        context_value=_Context(user),
+    )
+
+    assert result.errors, result.data
+    assert "Invalid id" in result.errors[0].message
