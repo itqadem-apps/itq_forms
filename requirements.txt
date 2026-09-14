@@ -9,7 +9,7 @@ django-choices-field==3.1.1
 django-environ==0.12.0
 pkg-filters[all] @ https://github.com/itqadem-apps/pkg_filters/releases/download/pkg_filters-v1.14.0/pkg_filters-1.14.0-py3-none-any.whl
 pkg-auth[acl-django,acl-sqlalchemy]==3.1.0
-unimessaging[broker,outbox] @ https://github.com/fritill-team/pkg_unimessaging/releases/download/pkg_unimessaging-v0.10.0/unimessaging-0.10.0-py3-none-any.whl
+unimessaging[broker,outbox] @ https://github.com/fritill-team/pkg_unimessaging/releases/download/pkg_unimessaging-v0.13.0/unimessaging-0.13.0-py3-none-any.whl
 saas-media-library @ https://github.com/fritill-team/saas_media_library_py_client/releases/download/saas_media_library-v0.16.0/saas_media_library-0.16.0-py3-none-any.whl
 xhtml2pdf==0.2.17
 python-json-logger==3.3.0
