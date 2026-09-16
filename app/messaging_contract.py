@@ -73,6 +73,25 @@ USERS_CHILD_SUBJECTS: list[str] = [
     "users.child_guardian.>",
 ]
 
+# itq_taxonomy owns the TAXONOMY stream; forms consumes it and declares nothing
+# (estate:AD-13). One durable bound on the single-token wildcard carries every
+# operation on a category, so create/update/delete for the same aggregate are
+# ordered against each other (estate:AD-15). Taxonomy's three-token subjects are
+# the sanctioned exception to estate:AD-7's subject grammar.
+TAXONOMY_CATEGORY_SUBJECTS: list[str] = ["taxonomy.category.*"]
+TAXONOMY_CATEGORY_CONSUMERS: list[JetStreamConsumer] = [
+    JetStreamConsumer(
+        label="taxonomy",
+        subject="taxonomy.category.*",
+        durable="forms-taxonomy-category-consumer",
+        # A projection wants the whole history, not just what happens next: a
+        # fresh durable replays the retained stream and fills the tree by
+        # itself. `manage.py seed_categories` is the fallback for categories
+        # created before the stream's retention window.
+        deliver_policy="all",
+    )
+]
+
 ORDERS_EVENT_SUBJECTS: list[str] = ["orders.order"]
 ORDERS_EVENT_DURABLE_BASE = "forms-orders-order-consumer"
 

@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 
 _users_broker: UnifiedMessageBroker | None = None
 _orders_broker: UnifiedMessageBroker | None = None
+_taxonomy_broker: UnifiedMessageBroker | None = None
 _relay_task: asyncio.Task | None = None
 _handlers_registered = False
 
@@ -58,7 +59,7 @@ def _orders_consumers() -> list[JetStreamConsumer]:
 
 async def start_all() -> None:
     """Start every messaging consumer + the outbox relay for the service."""
-    global _users_broker, _orders_broker, _relay_task, _handlers_registered
+    global _users_broker, _orders_broker, _taxonomy_broker, _relay_task, _handlers_registered
 
     if not _handlers_registered:
         register_handlers()
@@ -110,6 +111,18 @@ async def start_all() -> None:
     )
     await _orders_broker.start()
 
+    _taxonomy_broker = UnifiedMessageBroker(
+        subjects=[],
+        service_name=settings.SERVICE_NAME,
+        url=settings.NATS_URL,
+        enable_durable=settings.JETSTREAM_ENABLED,
+        # No stream_name/stream_subjects: itq_taxonomy owns TAXONOMY (estate:AD-13).
+        consumers=contract.TAXONOMY_CATEGORY_CONSUMERS,
+        pull_batch=settings.JETSTREAM_PULL_BATCH,
+        pull_timeout=settings.JETSTREAM_PULL_TIMEOUT,
+    )
+    await _taxonomy_broker.start()
+
     forms_messaging = get_messaging()
     if forms_messaging is None:
         raise RuntimeError("FORMS messaging client unavailable; cannot start outbox relay")
@@ -124,11 +137,11 @@ async def start_all() -> None:
         name="outbox-relay",
     )
 
-    logger.info("Messaging runtime started: forms+users+orders+relay")
+    logger.info("Messaging runtime started: forms+users+orders+taxonomy+relay")
 
 
 async def stop_all() -> None:
-    global _users_broker, _orders_broker, _relay_task
+    global _users_broker, _orders_broker, _taxonomy_broker, _relay_task
 
     if _relay_task is not None:
         _relay_task.cancel()
@@ -139,6 +152,13 @@ async def stop_all() -> None:
         except Exception:
             logger.exception("Error stopping outbox relay")
         _relay_task = None
+
+    if _taxonomy_broker is not None:
+        try:
+            await _taxonomy_broker.stop()
+        except Exception:
+            logger.exception("Error stopping taxonomy broker")
+        _taxonomy_broker = None
 
     if _orders_broker is not None:
         try:

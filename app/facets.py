@@ -3,10 +3,12 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from django.conf import settings
 from django.db.models import Count, Max, Min, QuerySet
 
 from app.schema_common import CategoryFacetNodeGQL, CategoryTranslationFacetGQL, PriceRangeFacetGQL
 from taxonomy.models import Category
+from taxonomy.projection import PATH_SEP
 
 
 def build_price_range_facet(
@@ -40,7 +42,8 @@ def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id
     """
     Build a nested category tree with item counts from a filtered queryset.
 
-    Returns ALL categories. Categories with no matching items get count=0.
+    Returns every live category of the projected tree. Categories with no
+    matching items get count=0.
     """
     # 1. Count items per category from the filtered queryset
     counts_qs = (
@@ -50,8 +53,12 @@ def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id
     )
     count_map = {str(row[category_fk]): row["count"] for row in counts_qs}
 
-    # 2. Fetch ALL categories with translations
-    categories = Category.objects.all().prefetch_related("translations")
+    # 2. Fetch every live category of the projected tree, with translations.
+    #    Tombstoned rows are excluded: a deleted category must stop appearing in
+    #    facets even though its row survives as the projection's watermark.
+    categories = Category.live(
+        tree_id=getattr(settings, "CATEGORY_TREE_ID", None) or None
+    ).prefetch_related("translations")
 
     # 3. Build nodes (count=0 for categories without items)
     nodes: dict[str, CategoryFacetNodeGQL] = {}
@@ -85,7 +92,8 @@ def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id
             roots.append(node)
             continue
 
-        sep = " / "
+        # Taxonomy joins ancestry with dots, not " / ".
+        sep = PATH_SEP
         if sep in node.path_text:
             parent_path = node.path_text.rsplit(sep, 1)[0]
             parent = path_to_node.get(parent_path)

@@ -206,6 +206,16 @@ JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
 JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
 
+# The one taxonomy tree this service projects. Categories from any other
+# tree are ignored. Minting the tree is a deploy prerequisite: until this is
+# set, taxonomy CategoryCreated events are dropped with an error log.
+CATEGORY_TREE_ID = (os.environ.get("CATEGORY_TREE_ID") or "").strip()
+
+# Read-only base URL for itq_taxonomy's REST API, used ONLY by the one-off
+# `seed_categories` command (CAP-3 first fill). Nothing serving a request may
+# call taxonomy: the projection is the read path.
+TAXONOMY_API_URL = (os.environ.get("TAXONOMY_API_URL") or "").strip().rstrip("/")
+
 OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
 OUTBOX_POLL_INTERVAL = float(os.environ.get("OUTBOX_POLL_INTERVAL", "0.5"))
 OUTBOX_BATCH_SIZE = int(os.environ.get("OUTBOX_BATCH_SIZE", "50"))

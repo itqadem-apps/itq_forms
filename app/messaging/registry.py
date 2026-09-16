@@ -7,6 +7,7 @@ from .handlers.auth_events import AuthEventSubscriber
 from .handlers.external_reference_events import ExternalReferenceEventSubscriber
 from .handlers.order_events import OrderEventSubscriber
 from .handlers.recommendable_events import RecommendableEventSubscriber
+from .handlers.taxonomy_events import TaxonomyCategoryEventSubscriber
 from .handlers.users_child_events import UsersChildEventSubscriber
 
 
@@ -22,6 +23,7 @@ def register_handlers() -> None:
     recommendable_subscriber = RecommendableEventSubscriber()
     users_child_subscriber = UsersChildEventSubscriber()
     order_subscriber = OrderEventSubscriber()
+    taxonomy_subscriber = TaxonomyCategoryEventSubscriber()
 
     register_handler("auth.UserRegistered", auth_subscriber.handle_message)
 
@@ -36,3 +38,6 @@ def register_handlers() -> None:
 
     for subject in contract.ORDERS_EVENT_SUBJECTS:
         register_handler(_to_pattern(subject), order_subscriber.handle_message)
+
+    for subject in contract.TAXONOMY_CATEGORY_SUBJECTS:
+        register_handler(_to_pattern(subject), taxonomy_subscriber.handle_message)
