@@ -65,6 +65,10 @@ class SurveyMutations:
     ) -> SurveyPayload:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
 
+        # The owning organization is bound from the caller's auth context, never
+        # taken from client input — see SPEC-forms-permission-gates CAP-1.
+        data['organization_id'] = info.context.auth_context.organization_id.value
+
         if input.category_id is not UNSET and input.category_id is not None:
             try:
                 data['category'] = Category.objects.get(category_id=input.category_id)

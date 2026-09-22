@@ -194,7 +194,7 @@ class SurveyTranslationUpdateInput:
     pass  # auto (all optional): id, language, title, description, short_description, slug
 
 
-@strawberry_django.input(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit"])
+@strawberry_django.input(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit", "organization_id"])
 class SurveyCreateInput:
     # Manual fields that cannot use auto:
     category_id: Optional[str] = UNSET
@@ -204,7 +204,7 @@ class SurveyCreateInput:
     prices: Optional[List[PriceNestedInput]] = UNSET
 
 
-@strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit"])
+@strawberry_django.partial(Survey, exclude=["status", "category", "created_at", "updated_at", "time_limit", "organization_id"])
 class SurveyUpdateInput:
     # id is required for update (overrides auto-optional behavior)
     id: int
