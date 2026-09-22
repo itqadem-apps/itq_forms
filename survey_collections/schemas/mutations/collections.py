@@ -7,6 +7,7 @@ from django.utils.timezone import now
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
+from app.platform import ensure_in_org
 from app.schema_common import RequireAuth, OperationResult
 from pricing.services import upsert_prices_for_parent
 from survey_collections.inputs import SurveyCollectionInput
@@ -77,6 +78,10 @@ class SurveyCollectionMutations:
     ) -> SurveyCollectionType:
         id = as_pk(id)
         collection = SurveyCollection.objects.get(pk=id)
+        # SPEC-forms-permission-gates CAP-2: holding the key is not enough — the
+        # row must belong to the caller's organization. `check_permission` has
+        # already guaranteed an auth context here.
+        ensure_in_org(collection, info.context.auth_context)
 
         for field, value in input_to_dict(input, exclude=['category_id', 'translations', 'prices']).items():
             setattr(collection, field, value)
@@ -120,6 +125,7 @@ class SurveyCollectionMutations:
     ) -> OperationResult:
         id = as_pk(id)
         collection = SurveyCollection.objects.get(pk=id)
+        ensure_in_org(collection, info.context.auth_context)
         collection.deleted_at = now()
         collection.save()
         return OperationResult(success=True)
@@ -138,6 +144,10 @@ class SurveyCollectionMutations:
         survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
+        # Both sides are gated: membership joins two rows, so either one being
+        # another organization's is a cross-tenant write.
+        ensure_in_org(collection, info.context.auth_context)
+        ensure_in_org(survey, info.context.auth_context)
         collection.assessments.add(survey)
         return collection
 
@@ -155,5 +165,9 @@ class SurveyCollectionMutations:
         survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
+        # Both sides are gated: membership joins two rows, so either one being
+        # another organization's is a cross-tenant write.
+        ensure_in_org(collection, info.context.auth_context)
+        ensure_in_org(survey, info.context.auth_context)
         collection.assessments.remove(survey)
         return collection

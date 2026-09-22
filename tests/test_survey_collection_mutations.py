@@ -10,6 +10,8 @@ import uuid
 import django
 import pytest
 
+from conftest import TEST_ORG_ID
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 django.setup()
 
@@ -33,8 +35,9 @@ class _Identity:
 
 #: `create_survey_collection` binds the owning organization from the auth
 #: context (SPEC-forms-permission-gates CAP-1), so the stub has to carry one the
-#: way the GraphQL layer does.
-ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+#: way the GraphQL layer does — and the same one the shared `collection`
+#: fixture is owned by, or CAP-2's row-scope gate refuses it.
+ORG = TEST_ORG_ID
 
 
 class _Context:
