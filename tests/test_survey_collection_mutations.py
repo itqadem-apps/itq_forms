@@ -15,6 +15,7 @@ django.setup()
 
 import surveys.schemas.schema  # noqa: F401  (resolves the mutation import cycle)
 from django.core.exceptions import ObjectDoesNotExist
+from pkg_auth.authorization import AuthContext, OrgId, UserId
 
 from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.models import SurveyCollection
@@ -30,9 +31,21 @@ class _Identity:
         self.last_name = ""
 
 
+#: `create_survey_collection` binds the owning organization from the auth
+#: context (SPEC-forms-permission-gates CAP-1), so the stub has to carry one the
+#: way the GraphQL layer does.
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
+
 class _Context:
     def __init__(self, user):
         self.identity = _Identity(user)
+        self.auth_context = AuthContext(
+            user_id=UserId(user.id),
+            organization_id=OrgId(ORG),
+            role_names=frozenset({"org-admin"}),
+            perms=frozenset({"collections:create", "collections:update"}),
+        )
 
 
 class _Info:

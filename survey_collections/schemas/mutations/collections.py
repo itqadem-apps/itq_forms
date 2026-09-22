@@ -33,6 +33,19 @@ class SurveyCollectionMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
+
+        # The owning organization is bound from the caller's auth context, never
+        # taken from client input — the same contract create_survey follows, see
+        # SPEC-forms-permission-gates CAP-1. Unlike the survey mutations there is
+        # no check_permission here to have proven an org context already, and
+        # RequireAuth only proves identity, so it is checked explicitly: a
+        # null-owned row is exactly what the CAP-2 row gate refuses to serve
+        # back, and what migration 0040 had to repair.
+        auth_ctx = getattr(info.context, "auth_context", None)
+        if auth_ctx is None:
+            raise PermissionError("Missing X-Organization-Id header")
+        data['organization_id'] = auth_ctx.organization_id.value
+
         if input.category_id is not strawberry.UNSET and input.category_id is not None:
             try:
                 data['category'] = Category.objects.get(category_id=input.category_id)
