@@ -26,6 +26,7 @@ def _type_from_survey_id(info, survey_id, **kw):
 class SurveyCollectionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
+    @check_permission('collection', 'create')
     def create_survey_collection(
         self,
         info: Info,
@@ -36,15 +37,9 @@ class SurveyCollectionMutations:
 
         # The owning organization is bound from the caller's auth context, never
         # taken from client input — the same contract create_survey follows, see
-        # SPEC-forms-permission-gates CAP-1. Unlike the survey mutations there is
-        # no check_permission here to have proven an org context already, and
-        # RequireAuth only proves identity, so it is checked explicitly: a
-        # null-owned row is exactly what the CAP-2 row gate refuses to serve
-        # back, and what migration 0040 had to repair.
-        auth_ctx = getattr(info.context, "auth_context", None)
-        if auth_ctx is None:
-            raise PermissionError("Missing X-Organization-Id header")
-        data['organization_id'] = auth_ctx.organization_id.value
+        # SPEC-forms-permission-gates CAP-1. `check_permission` above has already
+        # refused a caller with no org context, so this cannot be None.
+        data['organization_id'] = info.context.auth_context.organization_id.value
 
         if input.category_id is not strawberry.UNSET and input.category_id is not None:
             try:
@@ -72,6 +67,7 @@ class SurveyCollectionMutations:
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
+    @check_permission('collection', 'update')
     def update_survey_collection(
         self,
         info: Info,
@@ -115,6 +111,7 @@ class SurveyCollectionMutations:
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
+    @check_permission('collection', 'delete')
     def delete_survey_collection(
         self,
         info: Info,

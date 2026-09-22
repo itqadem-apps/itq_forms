@@ -48,8 +48,12 @@ class Permission(enum.Enum):
     SUBMISSION_READ = 'submissions:read'
 
 
-# Assessment type constants (matching Survey.ASSESSMENT_TYPES)
-AssessmentType = Literal['survey', 'assessment', 'curriculum', 'exam', 'form']
+# Assessment type constants (matching Survey.ASSESSMENT_TYPES), plus
+# 'collection'. A collection is not an assessment kind — it groups them, and no
+# `Survey.survey_type` ever holds it — but this map is the one place a
+# permission key is resolved from a kind, so the collection axis lives here
+# rather than growing a second lookup beside it.
+AssessmentType = Literal['survey', 'assessment', 'curriculum', 'exam', 'form', 'collection']
 ActionType = Literal['create', 'read', 'update', 'delete']
 
 # Map assessment types to their permissions
@@ -83,6 +87,12 @@ PERMISSION_MAP: dict[AssessmentType, dict[ActionType, Permission]] = {
         'read': Permission.FORM_READ,
         'update': Permission.FORM_UPDATE,
         'delete': Permission.FORM_DELETE,
+    },
+    'collection': {
+        'create': Permission.COLLECTION_CREATE,
+        'read': Permission.COLLECTION_READ,
+        'update': Permission.COLLECTION_UPDATE,
+        'delete': Permission.COLLECTION_DELETE,
     },
 }
 
