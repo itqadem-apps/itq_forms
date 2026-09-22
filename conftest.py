@@ -8,12 +8,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 os.environ["DATABASE_ENGINE"] = "django.db.backends.sqlite3"
 os.environ["DATABASE_NAME"] = ":memory:"
 
-#: The organization shared fixtures belong to. Rows carry an owner since
-#: SPEC-forms-permission-gates CAP-1 bound it on write, and the CAP-2 row-scope
-#: gate refuses a null-owned row — so a fixture with no owner is unreachable by
-#: any caller. Test contexts acting on these fixtures use the same value.
-TEST_ORG_ID = uuid.UUID("11111111-1111-1111-1111-111111111111")
-
 
 @pytest.fixture(autouse=True)
 def _use_db(db):
@@ -136,7 +130,6 @@ def collection(db):
     from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
     c = SurveyCollection.objects.create(
         status=SurveyCollection.STATUS_PUBLISHED,
-        organization_id=TEST_ORG_ID,
     )
     SurveyCollectionTranslation.objects.create(
         collection=c,
