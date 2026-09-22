@@ -8,6 +8,7 @@ from strawberry.types import Info
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
+from app.platform import ensure_in_org
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
@@ -130,6 +131,7 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
         survey = Survey.objects.get(pk=input.id)
+        ensure_in_org(survey, info.context.auth_context)
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
         for field, value in data.items():
@@ -179,6 +181,7 @@ class SurveyMutations:
     ) -> OperationResult:
         id = as_pk(id)
         survey = Survey.objects.get(pk=id)
+        ensure_in_org(survey, info.context.auth_context)
         payload = build_survey_payload_or_log(survey, "SurveyDeleted")
         if payload is not None:
             publish(SurveyDeleted(
@@ -201,6 +204,7 @@ class SurveyMutations:
     ) -> SurveyPayload:
         id = as_pk(id)
         original = Survey.objects.get(pk=id)
+        ensure_in_org(original, info.context.auth_context)
 
         new_survey = clone_instance(original)
 
@@ -277,6 +281,7 @@ class SurveyMutations:
     ) -> SurveyType:
         id = as_pk(id)
         survey = Survey.objects.get(pk=id)
+        ensure_in_org(survey, info.context.auth_context)
         old_status = survey.status
         survey.status = status
         survey.save(update_fields=["status"])
