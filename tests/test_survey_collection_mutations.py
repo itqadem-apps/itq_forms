@@ -44,9 +44,7 @@ class _Context:
             user_id=UserId(user.id),
             organization_id=OrgId(ORG),
             role_names=frozenset({"org-admin"}),
-            perms=frozenset(
-                {"collections:create", "collections:update", "collections:delete"}
-            ),
+            perms=frozenset({"collections:create", "collections:update"}),
         )
 
 

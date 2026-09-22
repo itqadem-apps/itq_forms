@@ -27,10 +27,6 @@ from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.models import SurveyCollection
 from survey_collections.schemas.mutations.collections import SurveyCollectionMutations
 
-COLLECTION_KEYS = frozenset(
-    f"collections:{action}" for action in ("create", "read", "update", "delete")
-)
-
 ORG_A = uuid.UUID("11111111-1111-1111-1111-111111111111")
 ORG_B = uuid.UUID("22222222-2222-2222-2222-222222222222")
 
@@ -54,7 +50,7 @@ class _Context:
                 user_id=UserId(user.id),
                 organization_id=OrgId(organization_id),
                 role_names=frozenset({"org-admin"}),
-                perms=COLLECTION_KEYS,
+                perms=frozenset({"collections:create", "collections:update"}),
             )
         )
 
@@ -115,9 +111,9 @@ def test_create_overrides_an_organization_supplied_by_the_client(user):
 
 
 def test_create_without_an_organization_context_is_refused(user):
-    """RequireAuth proves identity only; `check_permission` is what turns a
-    missing org context into a refusal. Creating a null-owned row instead would
-    strand it behind the CAP-2 gate."""
+    """RequireAuth proves identity only, and there is no check_permission on
+    this resolver to have proven an org context. Creating a null-owned row
+    instead would strand it behind the CAP-2 gate."""
     with pytest.raises(PermissionError):
         _create(user, None)
 
