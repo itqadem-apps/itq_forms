@@ -26,9 +26,7 @@ class SurveysQuery:
         # Cheap CASE, added unconditionally so the sort handler can order by it
         # without the pipeline having to know which sort was asked for.
         qs = annotate_status_rank(Survey.objects.filter(deleted_at__isnull=True))
-        qs = scope_listing_to_caller(
-            qs, getattr(info.context, "auth_context", None), Survey.STATUS_PUBLISHED
-        )
+        qs = scope_listing_to_caller(qs, getattr(info.context, "auth_context", None))
         if has_any_under_prefix(paths, ("items", "contentType")):
             qs = qs.select_related("content_type")
 

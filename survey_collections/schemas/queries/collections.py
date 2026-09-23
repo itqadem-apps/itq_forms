@@ -31,9 +31,7 @@ class CollectionsQuery:
         # See the surveys resolver: annotated unconditionally so `status` sorting
         # needs nothing from the pipeline.
         qs = annotate_status_rank(SurveyCollection.objects.filter(deleted_at__isnull=True))
-        qs = scope_listing_to_caller(
-            qs, getattr(info.context, "auth_context", None), SurveyCollection.STATUS_PUBLISHED
-        )
+        qs = scope_listing_to_caller(qs, getattr(info.context, "auth_context", None))
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
 
         if filters_input.has_discount is not None:

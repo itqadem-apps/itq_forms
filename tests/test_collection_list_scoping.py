@@ -4,10 +4,12 @@
 closed single-row access; the listing still returned every organization's rows
 to every caller.
 
-The scope is a union rather than plain org ownership: this one resolver serves
-both the admin listing and the public catalog page, and the forms GraphQL proxy
-forwards `x-organization-id` on every operation, so plain ownership would empty
-the catalog for any signed-in shopper. Published rows are already public.
+The scope is plain org ownership. A union arm ("or anyone's published row") was
+tried first, to keep the public catalog populated for a signed-in visitor; in
+production it showed a tenant owning nothing all 40 of another organization's
+published rows, which is the opposite of the intended behaviour. The catalog
+page sends `status: published` itself, so the arm only ever carried the
+cross-organization half.
 """
 import os
 import uuid
@@ -117,10 +119,10 @@ def test_the_caller_sees_its_own_rows_whatever_their_status(rows):
     assert rows["a_published"].pk in ids
 
 
-def test_the_caller_still_sees_other_organizations_published_rows(rows):
-    """The catalog must not collapse for a signed-in shopper — the proxy sends
-    the org header on the storefront query too."""
-    assert rows["b_published"].pk in _list(ORG_A)[0]
+def test_another_organizations_published_row_is_not_listed(rows):
+    """Content belongs to the organization that published it: a tenant that
+    owns nothing sees nothing, catalog page included."""
+    assert rows["b_published"].pk not in _list(ORG_A)[0]
 
 
 def test_platform_sees_everything(rows):

@@ -5,6 +5,9 @@ import django
 import pytest
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
+# These are also set in tests_env.py, which pytest.ini loads with -p so they
+# apply before pytest-django configures Django. Kept here so importing this
+# conftest directly (outside pytest) still gets a sane database.
 os.environ["DATABASE_ENGINE"] = "django.db.backends.sqlite3"
 os.environ["DATABASE_NAME"] = ":memory:"
 

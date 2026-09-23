@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 import environ
+from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,10 +40,24 @@ def _env_list(key: str, default: str = "") -> list[str]:
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^nxt4$0#3gdm)^66&gp1ddrh3+%nf4*9$6w7$8r#-d-@=l+xk4'
+# Supplied by the environment. There is deliberately NO fallback: a default
+# here is what let the `startproject` placeholder reach production and stay
+# there, and a committed signing key is not a secret at all. Failing to boot
+# is the honest outcome — a pod signing with a public key is worse than one
+# that does not start.
+SECRET_KEY = (os.environ.get("DJANGO_SECRET_KEY") or "").strip()
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is not set. Supply it from the pod environment "
+        "(the itq-forms secret); there is no default."
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Off unless the environment explicitly turns it on. An absent variable must
+# mean off: when this was a hardcoded True, the pod served Django's technical
+# 404/500 pages publicly, and the 500 page prints DATABASE_URL and
+# ACL_DATABASE_URL in clear (Django's masking is name-based and misses both).
+DEBUG = _env_bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS.extend(filter(None, os.environ.get('ALLOWED_HOSTS', '').split(',')))

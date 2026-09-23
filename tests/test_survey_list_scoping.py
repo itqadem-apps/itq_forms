@@ -1,13 +1,15 @@
-"""The surveys listing does not hand out another organization's unpublished rows.
+"""The surveys listing hands out only the caller organization's own rows.
 
 `SPEC-forms-permission-gates` CAP-3, the surveys half. The row-scope gate
 (CAP-2) already refuses single-row access, but the listing still returned every
 organization's rows to every caller — verified in production 2026-09-23, where
 a tenant saw all 142 surveys and could open only its own 133.
 
-Same union as the collections listing, and for the same reason: this resolver
-serves both the admin listing and the public catalog page, and the forms
-GraphQL proxy forwards `x-organization-id` on every operation.
+Same plain-ownership scope as the collections listing. A union arm ("or
+anyone's published row") shipped first and was measured in production showing a
+tenant that owns no surveys all 40 of another organization's published rows;
+educational resources belong to the organization that published them, so the
+arm was removed.
 """
 import os
 import uuid
@@ -117,10 +119,10 @@ def test_the_caller_sees_its_own_rows_whatever_their_status(rows):
     assert rows["a_published"].pk in ids
 
 
-def test_the_caller_still_sees_other_organizations_published_rows(rows):
-    """The catalog must not collapse for a signed-in shopper — the proxy sends
-    the org header on the storefront query too."""
-    assert rows["b_published"].pk in _list(ORG_A)[0]
+def test_another_organizations_published_row_is_not_listed(rows):
+    """Content belongs to the organization that published it: a tenant that
+    owns nothing sees nothing, catalog page included."""
+    assert rows["b_published"].pk not in _list(ORG_A)[0]
 
 
 def test_platform_sees_everything(rows):
