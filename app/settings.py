@@ -221,6 +221,19 @@ JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
 JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
 
+# Per-step budget for the ASGI lifespan shutdown (app/messaging/runtime.py).
+# Stopping a broker drains its subscriptions, and a drain against a connection
+# that has already gone away can block forever. Uvicorn waits for
+# lifespan.shutdown.complete with no deadline of its own, so an unbounded stop
+# keeps the worker — and the pod — alive until Kubernetes force-kills it, which
+# fails the rollout: see deploy-forms-r825n, "1 old replicas are pending
+# termination" for five minutes on an otherwise healthy v0.0.64.
+#
+# Five steps at 5s is a 25s worst case, inside gunicorn's 30s graceful timeout,
+# so a hung broker costs the deploy seconds instead of the pod's whole
+# termination grace period.
+MESSAGING_STOP_TIMEOUT = float(os.environ.get("MESSAGING_STOP_TIMEOUT", "5.0"))
+
 # The one taxonomy tree this service projects. Categories from any other
 # tree are ignored. Minting the tree is a deploy prerequisite: until this is
 # set, taxonomy CategoryCreated events are dropped with an error log.

@@ -140,43 +140,70 @@ async def start_all() -> None:
     logger.info("Messaging runtime started: forms+users+orders+taxonomy+relay")
 
 
+def _stop_timeout() -> float:
+    return getattr(settings, "MESSAGING_STOP_TIMEOUT", 5.0)
+
+
+async def _bounded(label: str, awaitable) -> None:
+    """Wait for one shutdown step, but never longer than the budget.
+
+    Every step here drains a NATS subscription, and a drain against a
+    connection that has already gone away blocks rather than failing. The
+    lifespan handler in ``app/asgi.py`` is what uvicorn waits on before a
+    worker exits, and uvicorn imposes no deadline of its own, so one blocked
+    drain kept the pod alive until Kubernetes force-killed it — long enough
+    for ``kubectl rollout status`` to call the deploy failed while the new
+    version was already serving (deploy-forms-r825n, v0.0.64).
+
+    Deliberately ``asyncio.wait`` rather than ``asyncio.wait_for``: on timeout
+    ``wait_for`` cancels the inner task and then *awaits* the cancellation, so
+    a step that does not honour cancellation would hang anyway — which is the
+    exact failure this is here to bound. Here the cancel is best-effort and
+    unawaited, so the step returns inside the budget whatever it is doing.
+
+    A shutdown step has nothing left to protect — the process is going away
+    either way — so a timeout is logged and stepped over, never raised.
+    """
+    task = asyncio.ensure_future(awaitable)
+    done, _ = await asyncio.wait({task}, timeout=_stop_timeout())
+    if not done:
+        task.cancel()  # best effort; not awaited, or we are back to hanging
+        logger.warning(
+            "Timed out after %ss stopping %s; abandoning it and continuing shutdown",
+            _stop_timeout(),
+            label,
+        )
+        return
+    if task.cancelled():
+        # ``Task.exception()`` re-raises for a cancelled task, and
+        # CancelledError is a BaseException that would sail straight through
+        # the lifespan handler's ``except Exception``. The relay task is always
+        # cancelled by the time it gets here, so this is the normal path.
+        return
+    exc = task.exception()
+    if exc is not None:
+        logger.error("Error stopping %s", label, exc_info=exc)
+
+
 async def stop_all() -> None:
     global _users_broker, _orders_broker, _taxonomy_broker, _relay_task
 
     if _relay_task is not None:
         _relay_task.cancel()
-        try:
-            await _relay_task
-        except asyncio.CancelledError:
-            pass
-        except Exception:
-            logger.exception("Error stopping outbox relay")
+        # Bounded like the rest: a task that swallows CancelledError would
+        # hang the shutdown exactly as a stuck broker does.
+        await _bounded("outbox relay", _relay_task)
         _relay_task = None
 
-    if _taxonomy_broker is not None:
-        try:
-            await _taxonomy_broker.stop()
-        except Exception:
-            logger.exception("Error stopping taxonomy broker")
-        _taxonomy_broker = None
+    for label, broker in (
+        ("taxonomy broker", _taxonomy_broker),
+        ("orders broker", _orders_broker),
+        ("users broker", _users_broker),
+    ):
+        if broker is not None:
+            await _bounded(label, broker.stop())
+    _taxonomy_broker = _orders_broker = _users_broker = None
 
-    if _orders_broker is not None:
-        try:
-            await _orders_broker.stop()
-        except Exception:
-            logger.exception("Error stopping orders broker")
-        _orders_broker = None
-
-    if _users_broker is not None:
-        try:
-            await _users_broker.stop()
-        except Exception:
-            logger.exception("Error stopping users broker")
-        _users_broker = None
-
-    try:
-        await stop_messaging()
-    except Exception:
-        logger.exception("Error stopping forms broker")
+    await _bounded("forms broker", stop_messaging())
 
     logger.info("Messaging runtime stopped")
