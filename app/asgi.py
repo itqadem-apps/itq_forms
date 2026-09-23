@@ -8,6 +8,7 @@ they don't connect to NATS.
 
 import logging
 import os
+import time
 
 from django.core.asgi import get_asgi_application
 
@@ -32,12 +33,24 @@ async def application(scope, receive, send):
                     return
                 await send({"type": "lifespan.startup.complete"})
             elif message["type"] == "lifespan.shutdown":
+                # Logged on entry, not just on success. Without this line a pod
+                # that never receives SIGTERM and one that hangs on the first
+                # step of stop_all() produce byte-identical logs — silence —
+                # and the rollout failures of v0.0.64/v0.0.65 ("1 old replicas
+                # are pending termination") could not be told apart from
+                # outside the cluster.
+                logger.info("lifespan: shutdown signal received, stopping messaging")
+                started = time.monotonic()
                 try:
                     await stop_all()
                 except Exception as exc:
                     logger.exception("Messaging runtime failed to stop cleanly")
                     await send({"type": "lifespan.shutdown.failed", "message": str(exc)})
                     return
+                logger.info(
+                    "lifespan: shutdown complete in %.1fs",
+                    time.monotonic() - started,
+                )
                 await send({"type": "lifespan.shutdown.complete"})
                 return
         return

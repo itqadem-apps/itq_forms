@@ -164,6 +164,11 @@ async def _bounded(label: str, awaitable) -> None:
     A shutdown step has nothing left to protect — the process is going away
     either way — so a timeout is logged and stepped over, never raised.
     """
+    # One line per step, on entry. The next step's line timestamps how long
+    # this one took, and "shutdown complete in Xs" in the lifespan handler
+    # bounds the whole sequence — enough to locate a slow step from the pod
+    # log alone, which is the only view available without cluster access.
+    logger.info("Stopping %s", label)
     task = asyncio.ensure_future(awaitable)
     done, _ = await asyncio.wait({task}, timeout=_stop_timeout())
     if not done:
