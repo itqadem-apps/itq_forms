@@ -19,39 +19,8 @@ from app.facets import build_category_tree_facet, build_price_range_facet
 from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from survey_collections.models import SurveyCollection
 from app.graphql_ids import as_pk
-from app.platform import is_platform_context
+from app.platform import scope_listing_to_caller
 from app.status_sort import annotate_status_rank
-
-
-def _scope_to_caller(qs, auth_ctx):
-    """Keep another organization's unpublished collections out of the listing.
-
-    SPEC-forms-permission-gates CAP-3, collections only. The row-scope gate
-    (CAP-2) closed single-row access; this closes the listing, which was
-    returning every organization's rows to every caller.
-
-    The scope is a union, not plain org ownership, because this resolver serves
-    two callers at once: `AdminCollections` (the admin listing) and
-    `Collections` (the public catalog page at
-    `/educational-resources/[type]`), and the forms GraphQL proxy forwards
-    `x-organization-id` on *every* operation
-    (`frontend/lyr-surveys/server/api/forms/graphql.post.ts:17`). Scoping to
-    plain ownership would therefore empty the catalog for any signed-in
-    shopper. A published collection is already public — anonymous callers see
-    it today — so including other organizations' published rows discloses
-    nothing new, while drafts and the rest stay with their owner.
-
-    Anonymous callers are left exactly as they were. Whether this listing
-    should be a published-only public catalog is the open question CAP-3 is
-    blocked on, and narrowing the anonymous path here would settle it by
-    accident.
-    """
-    if auth_ctx is None or is_platform_context(auth_ctx):
-        return qs
-    return qs.filter(
-        Q(organization_id=auth_ctx.organization_id.value)
-        | Q(status=SurveyCollection.STATUS_PUBLISHED)
-    )
 
 
 @strawberry.type
@@ -62,7 +31,9 @@ class CollectionsQuery:
         # See the surveys resolver: annotated unconditionally so `status` sorting
         # needs nothing from the pipeline.
         qs = annotate_status_rank(SurveyCollection.objects.filter(deleted_at__isnull=True))
-        qs = _scope_to_caller(qs, getattr(info.context, "auth_context", None))
+        qs = scope_listing_to_caller(
+            qs, getattr(info.context, "auth_context", None), SurveyCollection.STATUS_PUBLISHED
+        )
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
 
         if filters_input.has_discount is not None:

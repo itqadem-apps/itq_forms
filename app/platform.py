@@ -67,3 +67,38 @@ def ensure_in_org(entity, auth_ctx, *, allow_platform_bypass: bool = True) -> No
     entity_org = getattr(entity, "organization_id", None)
     if entity_org is None or entity_org != auth_ctx.organization_id.value:
         raise PermissionError("Resource belongs to another organization")
+
+
+def scope_listing_to_caller(qs, auth_ctx, published_status: str):
+    """Keep another organization's unpublished rows out of a listing.
+
+    SPEC-forms-permission-gates CAP-3. ``ensure_in_org`` closed single-row
+    access; this closes the listings, which were returning every
+    organization's rows to every caller.
+
+    The scope is a union, not plain org ownership, because these resolvers
+    serve two callers at once: the admin listings and the public catalog page
+    at ``/educational-resources/[type]``, and the forms GraphQL proxy forwards
+    ``x-organization-id`` on *every* operation
+    (``frontend/lyr-surveys/server/api/forms/graphql.post.ts:17``). Scoping to
+    plain ownership would empty the catalog for any signed-in shopper. A
+    published row is already public — anonymous callers see it today — so
+    including other organizations' published rows discloses nothing new, while
+    drafts and the rest stay with their owner.
+
+    A null ``organization_id`` belongs to nobody and is excluded, matching
+    ``ensure_in_org``'s refusal of the same rows rather than inventing a
+    second policy for the listing.
+
+    Anonymous callers are left exactly as they were. Whether these listings
+    should be published-only public catalogs is the open question CAP-3 is
+    blocked on, and narrowing the anonymous path here would settle it by
+    accident.
+    """
+    from django.db.models import Q
+
+    if auth_ctx is None or is_platform_context(auth_ctx):
+        return qs
+    return qs.filter(
+        Q(organization_id=auth_ctx.organization_id.value) | Q(status=published_status)
+    )
