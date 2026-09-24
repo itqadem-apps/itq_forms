@@ -29,8 +29,24 @@ def rows(db):
     stranded = Survey.objects.create(survey_type="assessment", organization_id=None)
     SurveyCollection.objects.create(organization_id=None)
     child = Child.objects.create(id="child-1", name="A child")
+    # Three null owners, and only one of them is a defect. The blank role is
+    # kept because the projection writes `""` when the event carries no role.
     ChildGuardian.objects.create(
         id="guardian-1", child=child, user_id="keycloak-test", organization_id=None
+    )
+    ChildGuardian.objects.create(
+        id="guardian-2",
+        child=child,
+        user_id="keycloak-parent",
+        role="guardian",
+        organization_id=None,
+    )
+    ChildGuardian.objects.create(
+        id="guardian-3",
+        child=child,
+        user_id="keycloak-specialist",
+        role="supervisor",
+        organization_id=None,
     )
     return {"owned": owned, "stranded": stranded}
 
@@ -60,6 +76,24 @@ def test_it_breaks_surveys_down_by_type_and_status(rows):
 
 def test_it_names_the_guardian_table_as_not_repairable_here(rows):
     assert "do not repair here" in _run()
+
+
+def test_it_splits_the_guardian_nulls_by_role(rows):
+    """The bare null count is not a defect count, and reading it as one sends
+    the repair at the wrong table.
+
+    A `guardian` row is meant to carry no organization — a parent's relation to
+    their child is not organization-scoped — and `supervised_child_ids_for_org`
+    filters on `role="supervisor"` anyway, so those nulls never reach the query
+    they would under-grant. Only the supervisor row is evidence of anything.
+    """
+    output = _run()
+
+    assert "role=supervisor" in output
+    assert "under-grants submissions:read" in output
+    assert "role=guardian" in output
+    assert "not org-scoped" in output
+    assert "role=(blank)" in output
 
 
 def test_it_flags_rows_outside_the_gap_window(rows):

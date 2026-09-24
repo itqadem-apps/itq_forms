@@ -39,6 +39,10 @@ it is the supervision source `user_surveys.child_projection` reads to scope
 `submissions:read`. Attributing a guardian row grants that organization's
 `submissions:read` holders supervision over that child's whole submission
 history — the outcome the CAP-2 story explicitly forbids.
+
+Its count is broken out by role, because the total is not a defect count: most
+null owners there are `guardian` rows, where null is correct. See the comment
+at that line.
 """
 
 
@@ -88,11 +92,35 @@ class Command(BaseCommand):
         # Reported apart, and deliberately not summed with the rows above: this
         # table is a projection that rewrites itself, and repairing it changes
         # who can read a child's submissions. See the module docstring.
+        #
+        # Broken down by role, because the bare null count is not the defect
+        # number and reading it as one sends the repair at the wrong table.
+        # A `guardian` row is *meant* to carry no organization: a parent's
+        # relation to their child is not organization-scoped, and itq_users'
+        # `ChildGuardian.create_parent` hardcodes null. `supervised_child_ids_for_org`
+        # filters on `role="supervisor"` as well as organization, so those
+        # nulls never reach the query they would under-grant.
+        #
+        # The number that matters is a `supervisor` row with no organization.
+        # Every itq_users path that can create one validates the organization
+        # is present first (`assign_guardian.py:55`,
+        # `approve_guardian_request.py:67`, `create_child_profile.py:111`;
+        # `respond_to_invitation.py` only ever creates `guardian`), so a
+        # non-zero count here is not the publisher omitting the field — it is
+        # a row those paths did not produce, and wants explaining before
+        # anything is re-emitted.
         guardians = ChildGuardian.objects.filter(organization_id__isnull=True)
         self.stdout.write(
             f"{'accounts_childguardian':40} {guardians.count():>7} null of "
             f"{ChildGuardian.objects.count():>7}  — projection, do not repair here"
         )
+        notes = {
+            "supervisor": "  <- the defect number: under-grants submissions:read",
+            "guardian": "  expected: a parent relation is not org-scoped",
+        }
+        for row in guardians.values("role").annotate(n=Count("id")).order_by("-n"):
+            label = "  role=" + (row["role"] or "(blank)")
+            self.stdout.write(f"{label:40} {row['n']:>7}{notes.get(row['role'], '')}")
 
         if surveys.exists():
             self.stdout.write("\nNull-owned surveys by type and status:")
