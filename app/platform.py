@@ -12,6 +12,11 @@ from __future__ import annotations
 from pkg_auth.authorization import OrgId
 from pkg_auth.authorization import is_platform_context as _pkg_is_platform
 
+#: The one status an unscoped caller may see. Spelled as a literal rather
+#: than imported, because this module is loaded from ``AppConfig.ready()``
+#: and both ``Survey`` and ``SurveyCollection`` define the same value.
+PUBLIC_STATUS = "published"
+
 _platform_org_id: OrgId | None = None
 _org_repo = None
 _org_slug: str = "platform"
@@ -96,12 +101,29 @@ def scope_listing_to_caller(qs, auth_ctx):
     ``ensure_in_org``'s refusal of the same rows rather than inventing a
     second policy for the listing.
 
-    Anonymous callers are left exactly as they were, which means a signed-out
-    visitor still sees every organization's rows. Scoping them needs the
-    organization to come from the unauthenticated request header rather than
-    an ``AuthContext``, and that is a separate decision (see the header-trust
-    defect) rather than something to settle here by accident.
+    A caller with no ``AuthContext`` gets the **public set**: published rows,
+    any organization. Ruled 2026-09-24, closing CAP-3's open question. Note
+    what this does and does not fix. It removes the real leak — drafts,
+    pending, suspended and archived rows of every organization were being
+    handed to anyone who asked. It does *not* make the public view narrower
+    than a member's: a signed-out visitor sees every organization's published
+    rows, while a member of org A sees org A's rows alone, so signing in
+    narrows the catalog. That tension is deliberate and known; it reopens the
+    question the removed union arm above answered the other way, and settling
+    it properly needs the org to come from the unauthenticated request header,
+    which is the separate header-trust defect.
+
+    ``None`` here covers more than "anonymous". ``OptionalAuthContextMiddleware``
+    also produces it for an authenticated caller whose context failed to
+    resolve — a stale ``organization-id`` cookie naming an org the user has
+    left, an unknown org, or a user row the projection has not created yet.
+    Ruled the same day: such a caller reads no more than an anonymous one, so
+    they land here too rather than on the unscoped queryset they used to get.
+    That path is the one that inverted the gate, handing a departed member
+    strictly more than a current one; the middleware logs it.
     """
-    if auth_ctx is None or is_platform_context(auth_ctx):
+    if auth_ctx is None:
+        return qs.filter(status=PUBLIC_STATUS)
+    if is_platform_context(auth_ctx):
         return qs
     return qs.filter(organization_id=auth_ctx.organization_id.value)

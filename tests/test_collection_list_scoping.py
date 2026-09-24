@@ -66,7 +66,8 @@ def platform_org():
 
 @pytest.fixture
 def rows(db):
-    """One draft and one published row per organization, plus a null-owned row."""
+    """One draft and one published row per organization, and the same pair
+    null-owned — the Apr-Sep 2026 backfill gap left both statuses behind."""
     return {
         "a_draft": SurveyCollection.objects.create(
             organization_id=ORG_A, status=SurveyCollection.STATUS_DRAFT
@@ -82,6 +83,9 @@ def rows(db):
         ),
         "orphan_draft": SurveyCollection.objects.create(
             organization_id=None, status=SurveyCollection.STATUS_DRAFT
+        ),
+        "orphan_published": SurveyCollection.objects.create(
+            organization_id=None, status=SurveyCollection.STATUS_PUBLISHED
         ),
     }
 
@@ -107,9 +111,16 @@ def test_another_organizations_draft_is_not_listed(rows):
     assert total == len(ids)
 
 
-def test_a_null_owned_draft_is_not_listed(rows):
-    """The Apr-Sep 2026 backfill gap: a null owner belongs to nobody."""
-    assert rows["orphan_draft"].pk not in _list(ORG_A)[0]
+def test_a_null_owned_row_is_not_listed(rows):
+    """The Apr-Sep 2026 backfill gap: a null owner belongs to nobody.
+
+    Status does not enter into it — a null-owned *published* row is no more
+    org A's than a draft is — which is what separates this gate from the
+    unscoped public set below, where the same row is visible."""
+    ids = _list(ORG_A)[0]
+
+    assert rows["orphan_draft"].pk not in ids
+    assert rows["orphan_published"].pk not in ids
 
 
 def test_the_caller_sees_its_own_rows_whatever_their_status(rows):
@@ -129,7 +140,47 @@ def test_platform_sees_everything(rows):
     assert _list(PLATFORM_ORG)[0] == {row.pk for row in rows.values()}
 
 
-def test_an_anonymous_caller_is_left_alone(rows):
-    """Whether this listing should be published-only is the open question CAP-3
-    is blocked on; narrowing the anonymous path would settle it by accident."""
-    assert _list(None)[0] == {row.pk for row in rows.values()}
+def test_an_unscoped_caller_sees_only_published_rows(rows):
+    """Ruled 2026-09-24, closing the open question CAP-3 was blocked on: a
+    caller with no ``AuthContext`` gets the **public set** — published rows,
+    any organization.
+
+    This test asserted the opposite until that ruling, on the grounds that
+    narrowing the path would settle the question by accident. It is settled
+    now, deliberately.
+
+    ``orphan_published`` is in the expected set as a *consequence* of the
+    ruling, not as a policy ruled on its own: a row with a null owner is
+    published, so the public set takes it. That is what production does today
+    too, and it is the odd corner where a row no tenant can reach is
+    nonetheless publicly listed. Repairing those owners is task 107, not this
+    gate's job.
+    """
+    assert _list(None)[0] == {
+        rows["a_published"].pk,
+        rows["b_published"].pk,
+        rows["orphan_published"].pk,
+    }
+
+
+def test_an_unscoped_caller_sees_no_drafts(rows):
+    """The read half of the inverted gate, from
+    ``stories/estate/forms-unresolved-context-is-unscoped.md``.
+
+    ``OptionalAuthContextMiddleware`` yields ``None`` for *authenticated*
+    callers too — a stale ``organization-id`` cookie naming an org the user has
+    left reaches this through the ordinary UI, because the forms proxy forwards
+    the cookie on every operation. Such a caller used to read every
+    organization's rows in every status: strictly more than a current member of
+    either org.
+
+    There is deliberately no second branch to exercise. The middleware hands
+    the resolver the same ``None`` an anonymous caller produces, which is the
+    point — one path, so the unresolved case cannot drift back above the
+    anonymous one.
+    """
+    ids = _list(None)[0]
+
+    assert rows["a_draft"].pk not in ids
+    assert rows["b_draft"].pk not in ids
+    assert rows["orphan_draft"].pk not in ids

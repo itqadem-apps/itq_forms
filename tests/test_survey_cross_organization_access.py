@@ -160,11 +160,43 @@ def test_a_survey_with_no_organization_is_refused(user, db):
         _read(user, ORG_A, orphan)
 
 
-def test_the_anonymous_read_path_is_untouched(org_b_survey):
-    """No auth context — the detail read keeps its current behaviour. Whether
-    it is a public catalog endpoint is the CAP-3 open question."""
+# --- an unscoped caller reads the public set and nothing else --------------
 
-    class _Anon:
-        context = type("C", (), {"auth_context": None, "identity": None})()
+class _Anon:
+    """No auth context at all.
 
-    assert SurveyQuery().survey(_Anon(), id=str(org_b_survey.pk)).pk == org_b_survey.pk
+    `OptionalAuthContextMiddleware` produces this for an anonymous caller and
+    for three *authenticated* ones whose context failed to resolve — most
+    sharply, a stale `organization-id` cookie naming an org the user has left,
+    which the forms proxy keeps forwarding. One class stands for both here
+    because the resolver sees one value; see
+    `stories/estate/forms-unresolved-context-is-unscoped.md`.
+    """
+
+    context = type("C", (), {"auth_context": None, "identity": None})()
+
+
+def test_an_unscoped_caller_reads_a_published_row(db):
+    """Ruled 2026-09-24: the detail endpoint IS a public catalog read, and the
+    public set is the published one — the same answer `scope_listing_to_caller`
+    got, so the listing and the detail page agree on what is public."""
+    published = Survey.objects.create(
+        survey_type="survey",
+        organization_id=ORG_B,
+        status=Survey.STATUS_PUBLISHED,
+    )
+
+    assert SurveyQuery().survey(_Anon(), id=str(published.pk)).pk == published.pk
+
+
+def test_an_unscoped_caller_cannot_read_a_draft(org_b_survey):
+    """`org_b_survey` is a draft (the model's default). This path used to
+    return any row by id to anyone, which is the read half of the exposure the
+    story describes: an unresolved caller reached strictly more than a member.
+
+    `None` rather than a raise, matching the `DoesNotExist` arm of the
+    resolver: a caller who may not see the row cannot tell it from one that
+    does not exist.
+    """
+    assert org_b_survey.status == Survey.STATUS_DRAFT
+    assert SurveyQuery().survey(_Anon(), id=str(org_b_survey.pk)) is None

@@ -100,6 +100,22 @@ class OptionalAuthContextMiddleware:
     ``None`` and the request continues. Schema-level permissions
     (``RequireAuth`` / ``RequireAuthContext``) gate the writes that
     actually need identity or org membership.
+
+    Soft failure used to *escalate* on the read path, because every scope
+    gate read ``None`` as "do not scope": a caller who presented a valid
+    token and named an org they were not a member of was handed every
+    organization's rows in every status — strictly more than they saw as a
+    member. That is closed at the gates rather than here
+    (``app.platform.scope_listing_to_caller`` gives a ``None`` caller the
+    published set, not the unscoped one), because raising here would take
+    the logged-out catalog down, which is the whole reason this middleware
+    exists.
+
+    Three of the failures below are *authenticated* callers, and they are
+    worth seeing in the log for the same reason
+    ``LoggingIdentityMiddleware`` exists above: silently degrading an
+    authenticated request to the anonymous path makes a stale
+    ``organization-id`` cookie indistinguishable from a logged-out visit.
     """
 
     sync_capable = False
@@ -136,6 +152,12 @@ class OptionalAuthContextMiddleware:
                 assert registry.resolve_user is not None
                 user = await registry.resolve_user.execute(sub=identity.subject_str)
         except UserNotProvisioned:
+            logger.warning(
+                "auth_context unresolved: identity %s has no local user row "
+                "(org header %s); read falls back to the public set.",
+                identity.subject_str,
+                raw,
+            )
             return await self.get_response(request)
 
         try:
@@ -143,11 +165,29 @@ class OptionalAuthContextMiddleware:
         except (ValueError, AttributeError):
             org = await registry.organization_repo.get_by_slug(raw)
         if org is None:
+            logger.warning(
+                "auth_context unresolved: organization %r not found for "
+                "identity %s; read falls back to the public set.",
+                raw,
+                identity.subject_str,
+            )
             return await self.get_response(request)
 
         try:
             request.auth_context = await registry.resolve_auth.execute(user.id, org.id)
-        except (NotAMember, UnknownOrganization):
+        except (NotAMember, UnknownOrganization) as exc:
+            # The sharpest of the three, and reachable through the ordinary
+            # UI: the frontend proxy sends `x-organization-id` from the
+            # `organization-id` cookie, so a user who has left an org (or was
+            # removed from one) keeps sending its id until something rewrites
+            # the cookie.
+            logger.warning(
+                "auth_context unresolved (%s): user %s is not a member of "
+                "organization %r; read falls back to the public set.",
+                type(exc).__name__,
+                user.id,
+                raw,
+            )
             request.auth_context = None
 
         return await self.get_response(request)
