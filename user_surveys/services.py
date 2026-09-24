@@ -110,6 +110,11 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     a wrong title and a dead link with no one able to correct it. Deleting the
     catalog row nulls the FK and the frozen copy takes over, so the card
     survives. ``UserMaterial`` carries the full ruling.
+
+    Step 7 is the one conditional step: a survey with ``use_actions`` off
+    snapshots no score bands and no materials, because evaluation can never
+    match one. The reasoning, including what it changes for a client, is at
+    that step.
     """
     # `forms:AD-1`: one definition of the primary locale, stored on the survey
     # and read by the admin builder over GraphQL. It decides which language key
@@ -270,15 +275,49 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         )
 
     # ── 7. Actions ───────────────────────────────────────────────────
-    for a in survey.actions.prefetch_related("translations", "materials__recommendable").all():
-        ua = UserAction.objects.create(
-            origin_id=a.id,
-            user_survey=user_survey,
-            upper_limit=a.upper_limit,
-            lower_limit=a.lower_limit,
-            translations=_build_translations(a.translations.all(), ["title", "description"], source=a, primary_lang=primary_lang),
-        )
-        _snapshot_materials(a, ua, user_survey)
+    # Gated on the flag evaluation reads. `evaluate_assessment` matches a band
+    # only `if user_survey.use_actions and user_survey.use_score` (below, and
+    # the same pair gates `pdf_service.py:121`), so with actions switched off
+    # nothing this step writes is ever reachable — a row per band, and since
+    # the materials work landed, a `UserMaterial` per entry pinned behind each
+    # of them.
+    #
+    # The gate covers `UserAction` as well as `UserMaterial`, deliberately.
+    # Skipping the materials alone would be invisible — they render only
+    # through `UserActionType.materials`, which returns rows for the matched
+    # band, and there is no matched band — but it would leave a band row
+    # carrying nothing, which reads exactly like a band an admin pinned nothing
+    # to. Skipping both is the state that reads truthfully: the survey does not
+    # use bands, so it snapshots none.
+    #
+    # That is an API change for such a survey: `userSurvey.actions` returns an
+    # empty list where it used to return every band. No client renders
+    # differently, because each already gates on the flag before reading the
+    # list — `app/composables/solve/useResultsData.ts:54` and
+    # `server/utils/survey-report/build-html.ts:328` in `lyr-surveys`, and the
+    # server-side PDF at `pdf_service.py:121`. "Every band is returned so a
+    # client can show the scale" (`user_surveys/types/user_survey.py:265`)
+    # is about a survey that HAS a scale; one with `use_actions` off has none.
+    #
+    # `user_survey.use_actions`, not `survey.use_actions`: the frozen copy is
+    # what evaluation will consult, so reading it here is what keeps the write
+    # side and the read side from ever disagreeing. The one caller copies it
+    # off the survey moments earlier, so today the two are the same value.
+    #
+    # Not narrowed to `use_actions and use_score`, evaluation's full condition.
+    # Bands on a survey that acts but does not score are equally unmatchable,
+    # but there the client is at least configured for bands and could mean to
+    # show them; that narrowing is a separate ruling this story did not make.
+    if user_survey.use_actions:
+        for a in survey.actions.prefetch_related("translations", "materials__recommendable").all():
+            ua = UserAction.objects.create(
+                origin_id=a.id,
+                user_survey=user_survey,
+                upper_limit=a.upper_limit,
+                lower_limit=a.lower_limit,
+                translations=_build_translations(a.translations.all(), ["title", "description"], source=a, primary_lang=primary_lang),
+            )
+            _snapshot_materials(a, ua, user_survey)
 
     # ── 8. Randomization ─────────────────────────────────────────────
     if user_survey.randomize_questions:

@@ -473,3 +473,72 @@ def test_enrolment_does_not_scale_inserts_with_material_count(
     user_action = UserAction.objects.get(user_survey=many, origin_id=band.id)
     assert UserMaterial.objects.filter(user_action=user_action).count() == 8
     assert hits == baseline, "material count must not move the INSERT count"
+
+
+# ── Bands a survey does not use ──────────────────────────────────────
+
+@pytest.fixture
+def unused_band(survey):
+    """The same band and pinning, on a survey with `use_actions` off.
+
+    Nothing stops an admin from building bands and then switching the feature
+    off — or from switching it off on a survey that already had them — so the
+    rows exist and the snapshot used to copy them.
+    """
+    assert survey.use_actions is False
+    action = Action.objects.create(survey=survey, lower_limit=36, upper_limit=45)
+    ActionTranslation.objects.create(
+        action=action, language="en", title="Strong", description="Well done"
+    )
+    Material.objects.create(action=action, recommendable=_recommendable("101"))
+    return action
+
+
+def test_a_survey_with_actions_off_snapshots_no_bands(user, survey, unused_band, options):
+    """`evaluate_assessment` can never match a band here, so none is written.
+
+    The gate covers the band as well as its materials. Skipping only the
+    materials would be invisible to a client — an unmatched band delivers
+    nothing either way — but it would leave a band row carrying nothing,
+    indistinguishable from one an admin pinned nothing to.
+    """
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+
+    assert UserAction.objects.filter(user_survey=user_survey).count() == 0
+    assert UserMaterial.objects.filter(user_survey=user_survey).count() == 0
+    assert survey.actions.count() == 1, "the admin's own band is untouched"
+
+
+def test_a_survey_with_actions_on_still_snapshots_them(user, scored_survey, band, options):
+    """The other direction: the gate must not cost a survey that does act."""
+    Material.objects.create(action=band, recommendable=_recommendable("101"))
+    Material.objects.create(action=band, recommendable=_recommendable("102", "Advanced Stats"))
+
+    user_survey, _ = enroll_user_in_assessment(user, scored_survey.id)
+
+    assert UserAction.objects.filter(user_survey=user_survey).count() == 1
+    assert UserMaterial.objects.filter(user_survey=user_survey).count() == 2
+
+
+def test_the_result_page_returns_no_bands_for_such_a_survey(user, survey, unused_band, options):
+    """The client-visible half of the gate, asserted rather than assumed.
+
+    `userSurvey.actions` returns every snapshotted band, not just the matched
+    one, so skipping the write changes this list from one entry to none. Both
+    clients gate on `useActions` before reading it
+    (`lyr-surveys/app/composables/solve/useResultsData.ts:54`,
+    `lyr-surveys/server/utils/survey-report/build-html.ts:328`), as does the
+    server-side PDF (`user_surveys/pdf_service.py:121`), so nothing renders
+    differently — but the API response does change, and that is the half worth
+    pinning.
+    """
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    user_survey.submitted_at = now()
+    user_survey.save(update_fields=["submitted_at"])
+    evaluate_assessment(user_survey)
+    user_survey.refresh_from_db()
+
+    assert user_survey.evaluated_at is not None, "the list gates on evaluation"
+    payload = _results(user, user_survey)
+    assert payload["actionId"] is None
+    assert payload["actions"] == []
