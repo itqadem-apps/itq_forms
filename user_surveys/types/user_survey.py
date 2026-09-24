@@ -5,6 +5,7 @@ from typing import List, Optional
 import strawberry
 import strawberry_django
 from strawberry import auto
+from strawberry.scalars import JSON
 from strawberry.types import Info
 
 from surveys.usage_access import (
@@ -20,6 +21,7 @@ from user_surveys.models import (
     UserAnswerOption,
     UserAnswerSchema,
     UserClassification,
+    UserMaterial,
     UserQuestion,
     UserRecommendation,
     UserSection,
@@ -220,6 +222,26 @@ class UserRecommendationType:
         )
 
 
+@strawberry_django.type(UserMaterial)
+class UserMaterialType:
+    """A catalog entry recommended by a matched score band.
+
+    Carries enough to render and route without calling the originating
+    service. ``data`` is the live catalog payload, falling back to the copy
+    frozen at enrolment once the catalog row is gone — see ``UserMaterial``.
+    """
+
+    id: auto
+    origin_id: auto
+    source_service: auto
+    source_model: auto
+    source_id: auto
+
+    @strawberry.field
+    def data(self) -> JSON:
+        return self.payload
+
+
 @strawberry_django.type(UserAction)
 class UserActionType:
     id: auto
@@ -233,6 +255,14 @@ class UserActionType:
             getattr(self, "translations", None) or {},
             ActionTranslationContent,
             ActionTranslation,
+        )
+
+    @strawberry.field
+    def materials(self) -> List[UserMaterialType]:
+        # select_related: `data` reads through the FK, so without it a band
+        # with N materials costs N extra queries on the result page.
+        return list(
+            UserMaterial.objects.filter(user_action_id=self.id).select_related("recommendable")
         )
 
 

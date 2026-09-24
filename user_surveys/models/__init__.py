@@ -7,6 +7,7 @@ from .user_classification import UserClassification
 from .user_answer_option import UserAnswerOption
 from .user_recommendation import UserRecommendation
 from .user_action import UserAction
+from .user_material import UserMaterial
 from .user_answer import UserAnswer
 from .through_models import UserSurveyClassification, UserSurveyRecommendation
 from .tab_switch_event import TabSwitchEvent
@@ -19,6 +20,7 @@ __all__ = [
     "UserAnswerOption",
     "UserAnswerSchema",
     "UserClassification",
+    "UserMaterial",
     "UserQuestion",
     "UserRecommendation",
     "UserSection",

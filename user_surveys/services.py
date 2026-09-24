@@ -15,6 +15,7 @@ from .models import (
     UserAnswerOption,
     UserAnswerSchema,
     UserClassification,
+    UserMaterial,
     UserQuestion,
     UserRecommendation,
     UserSection,
@@ -53,6 +54,28 @@ def _build_translations(qs, fields, source=None, primary_lang=None):
     return result
 
 
+def _snapshot_materials(action, user_action, user_survey) -> None:
+    """Freeze which catalog entries an action recommends, at enrolment time.
+
+    The set is frozen; the payload is not. See ``UserMaterial`` for the full
+    ruling — the FK is what keeps a retitled course rendering correctly, and
+    the copied columns are what keeps the card standing once the catalog row
+    is deleted.
+    """
+    for material in action.materials.all():
+        recommendable = material.recommendable
+        UserMaterial.objects.create(
+            origin_id=material.id,
+            user_survey=user_survey,
+            user_action=user_action,
+            recommendable=recommendable,
+            source_service=recommendable.source_service,
+            source_model=recommendable.source_model,
+            source_id=recommendable.source_id,
+            data=recommendable.data or {},
+        )
+
+
 def check_time_expired(user_survey: UserSurvey) -> bool:
     """Return True if the timed assessment has exceeded its time limit."""
     if (
@@ -65,7 +88,22 @@ def check_time_expired(user_survey: UserSurvey) -> bool:
 
 
 def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
-    """Deep-copy the full survey tree into user_surveys models."""
+    """Deep-copy the full survey tree into user_surveys models.
+
+    Everything written here is frozen at enrolment: an admin editing the survey
+    afterwards does not reach a learner already in progress. Translations are
+    flattened into a ``JSONField`` on each row rather than left as live rows,
+    for the same reason.
+
+    Materials (step 7) are the one documented split. The *set* of materials a
+    band recommends is frozen like everything else, but each row keeps a FK to
+    the ``Recommendable`` it came from and renders that row's live ``data``.
+    The catalog is maintained by the event consumer, not by an admin, so a
+    course retitled or moved upstream would otherwise leave the learner holding
+    a wrong title and a dead link with no one able to correct it. Deleting the
+    catalog row nulls the FK and the frozen copy takes over, so the card
+    survives. ``UserMaterial`` carries the full ruling.
+    """
     first_translation = survey.translations.first()
     primary_lang = first_translation.language if first_translation else "default"
 
@@ -216,14 +254,15 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         )
 
     # ── 7. Actions ───────────────────────────────────────────────────
-    for a in survey.actions.prefetch_related("translations").all():
-        UserAction.objects.create(
+    for a in survey.actions.prefetch_related("translations", "materials__recommendable").all():
+        ua = UserAction.objects.create(
             origin_id=a.id,
             user_survey=user_survey,
             upper_limit=a.upper_limit,
             lower_limit=a.lower_limit,
             translations=_build_translations(a.translations.all(), ["title", "description"], source=a, primary_lang=primary_lang),
         )
+        _snapshot_materials(a, ua, user_survey)
 
     # ── 8. Randomization ─────────────────────────────────────────────
     if user_survey.randomize_questions:
