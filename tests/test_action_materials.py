@@ -347,6 +347,41 @@ def test_reversing_the_backfill_keeps_rows_the_snapshot_wrote(
     assert UserMaterial.objects.filter(user_survey=user_survey).count() == 1
 
 
+# ── Band scope ───────────────────────────────────────────────────────
+
+def test_an_unmatched_band_delivers_nothing(user, scored_survey, band, options):
+    """A learner reads the advice for the band they landed in, and no other.
+
+    Every band is still returned — a client shows the whole scale — but the
+    recommendations belong to the matched one. Otherwise someone in the bottom
+    band reads what the top band advises.
+    """
+    Material.objects.create(action=band, recommendable=_recommendable("101", "Matched"))
+    other = Action.objects.create(survey=scored_survey, lower_limit=0, upper_limit=10)
+    Material.objects.create(action=other, recommendable=_recommendable("202", "Unmatched"))
+
+    user_survey = _enrol_and_score(user, scored_survey, options, 41)
+
+    payload = _results(user, user_survey)
+    delivered = {
+        a["id"]: [m["data"]["title"] for m in a["materials"]] for a in payload["actions"]
+    }
+    assert len(delivered) == 2, "both bands are still returned"
+    assert delivered.pop(str(payload["actionId"])) == ["Matched"]
+    assert list(delivered.values()) == [[]], "the band they did not match stays silent"
+
+
+def test_a_score_matching_no_band_delivers_nothing(user, scored_survey, band, options):
+    """Bands are gapped and unvalidated (G6), so no match is a real state."""
+    Material.objects.create(action=band, recommendable=_recommendable("101"))
+
+    user_survey = _enrol_and_score(user, scored_survey, options, 12)
+
+    assert user_survey.action_id is None, "12 falls outside the only band"
+    payload = _results(user, user_survey)
+    assert payload["actions"], "the band is still snapshotted"
+    assert all(a["materials"] == [] for a in payload["actions"])
+
 # ── Query cost ───────────────────────────────────────────────────────
 
 def _material_queries(user, user_survey):
@@ -388,5 +423,7 @@ def test_the_result_page_does_not_scale_queries_with_band_count(
 
     payload, hits = _material_queries(user, five_bands)
     assert len(payload["actions"]) == 5, "all five bands are snapshotted"
-    assert sum(len(a["materials"]) for a in payload["actions"]) == 13
+    # Only the matched band delivers, so this is the one 36-45 material and
+    # not the twelve pinned to the bands the learner did not land in.
+    assert sum(len(a["materials"]) for a in payload["actions"]) == 1
     assert hits == baseline, "band count must not move the query count"

@@ -260,13 +260,21 @@ class UserActionType:
 
     @strawberry.field
     def materials(self) -> List[UserMaterialType]:
-        # `UserSurveyType.actions` prefetches these, so the whole result page
-        # costs one materials query rather than one per band. Reached any other
-        # way there is no prefetch, and select_related still matters because
-        # `data` reads through the FK.
+        """Empty unless this is the band the learner's score matched.
+
+        Every band is returned so a client can show the scale, but only the
+        matched one carries recommendations: otherwise a learner in the bottom
+        band reads what the top band advises.
+        """
+        # `UserSurveyType.actions` prefetches these already filtered to the
+        # matched band, so the whole result page costs one materials query
+        # rather than one per band. Reached any other way there is no prefetch,
+        # and the match has to be looked up.
         cache = getattr(self, "_prefetched_objects_cache", None) or {}
         if "materials" in cache:
             return list(cache["materials"])
+        if self.user_survey.action_id != self.id:
+            return []
         return list(self.materials.select_related("recommendable").all())
 
 
@@ -409,11 +417,18 @@ class UserSurveyType:
         # Prefetch here, not in `UserActionType.materials`: resolving per band
         # made the result page cost 1 + N queries, and this list is unbounded
         # in the number of bands a survey has.
+        #
+        # Filtered to the matched band, so the unmatched ones resolve to an
+        # empty prefetch cache rather than to another band's advice. `action_id`
+        # is None until evaluation and for a score that fell in no band at all;
+        # both cases correctly match nothing.
         return list(
             UserAction.objects.filter(user_survey_id=self.id).prefetch_related(
                 Prefetch(
                     "materials",
-                    queryset=UserMaterial.objects.select_related("recommendable"),
+                    queryset=UserMaterial.objects.filter(
+                        user_action_id=self.action_id
+                    ).select_related("recommendable"),
                 )
             )
         )
