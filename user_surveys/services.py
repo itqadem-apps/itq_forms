@@ -104,8 +104,17 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     catalog row nulls the FK and the frozen copy takes over, so the card
     survives. ``UserMaterial`` carries the full ruling.
     """
-    first_translation = survey.translations.first()
-    primary_lang = first_translation.language if first_translation else "default"
+    # `forms:AD-1`: one definition of the primary locale, stored on the survey
+    # and read by the admin builder over GraphQL. It decides which language key
+    # the source models' legacy columns fall back into on every row below, so
+    # deriving it a second way here would file one language's text under
+    # another language's key — silently, and differently per survey. That this
+    # is a stored value and not a derived one is what makes it safe to freeze:
+    # everything written below is frozen, so a primary that moved after
+    # enrolment would leave the learner holding a permanent mislabel.
+    # `Survey.primary_locale` also supplies the "default" this used to spell
+    # out inline.
+    primary_lang = survey.primary_locale
 
     # ── 1. Classifications ───────────────────────────────────────────
     classification_map = {}  # original_id -> UserClassification

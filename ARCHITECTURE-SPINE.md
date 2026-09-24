@@ -7,7 +7,7 @@ paradigm: 'a Django project, unlike its ports-and-adapters siblings'
 scope: 'invariants binding the forms service'
 status: draft
 created: '2026-08-28'
-updated: '2026-08-28'
+updated: '2026-09-24'
 binds: []
 sources: []
 companions: []
@@ -37,10 +37,52 @@ surface, not a local override.
 
 ## Invariants & Rules
 
-None yet. This spine was scaffolded on 2026-08-28 as a container only: nothing has been ruled for
-the `forms` namespace, and an invariant invented at scaffold time is a guess wearing a
-citation. Numbering starts at one when the first decision is actually made, and is never reused
-or renumbered after that.
+### AD-1 — A survey's primary locale is stored on the survey, never derived
+
+- **Binds:** `backend/itq_forms`, `frontend/layers/lyr-surveys`
+- **Prevents:** the backend and the authoring UI each deciding for themselves which language a
+  survey is "really" written in, and disagreeing. Every translatable row keeps its own legacy
+  column beside its translation rows, and at enrolment `_build_translations`
+  (`user_surveys/services.py`) merges that column into **one** language's key — whichever the
+  backend calls primary — wherever the translation for it is null or empty. The admin builder
+  mirrors the same legacy columns from whichever language **it** calls primary. Where the two
+  names differ, a learner reading language X is served text written in language Y under X's key:
+  no error, no empty field, nothing to notice. It was reachable because the backend derived the
+  primary from `survey.translations.first()` — `ORDER BY id` over a `uuid4` primary key, which
+  names a language nobody chose and a different one per survey.
+- **Rule:** the primary locale is the value of **`Survey.primary_language`**, falling back to
+  `Survey.PRIMARY_LANGUAGE_FALLBACK` (`"default"`) where it is unset. Backend: read it through
+  `Survey.primary_locale`, the single accessor every consumer routes through — the snapshot, the
+  GraphQL type and `Survey.title`/`Survey.language` all go via it, and nothing queries the
+  translations to answer this question. Frontend: read `Survey.primaryLanguage` over GraphQL. Do
+  **not** derive a primary client-side, not even by a rule that matches the backend's today. No
+  second derivation anywhere.
+- **Why stored and not derived:** a derived primary — the alphabetically first authored language,
+  say — moves the moment an author adds an earlier one, and that is not self-healing here.
+  `create_survey_snapshot` deep-copies the survey into each learner's own rows at enrolment and
+  **freezes** them; no later edit to the survey reaches a learner already enrolled. So between a
+  move and a re-save of every affected row, each new enrolment permanently files the old
+  language's body text under the new language's key, unreachable by any later fix. Both sides
+  deriving the value identically does not help: at snapshot time they agree on the label and the
+  text is still the other language's. The repair that would have closed the window is not
+  available either — `SectionTranslation`, `QuestionTranslation` and `AnswerSchemaOptionTranslation`
+  have no rows at all today (that absence is the gap the surveys builder exists to close), so
+  mirroring the legacy columns "from the new primary's translation" would have been a no-op for
+  exactly the rows at risk. A stored value moves only when someone moves it, which makes the move
+  an act that can be paired with a repair.
+- **Accepted costs:** one column and two migrations rather than a `Meta.ordering` line, and a
+  write path that has to keep the column honest — `SurveyTranslation.save()` claims it for the
+  first language authored, and a `bulk_create` bypasses that and must set it itself. Existing
+  rows were backfilled (`surveys/migrations/0041`) with the language the old
+  `.first()`/`ORDER BY id` selector already returned, so the migration is behaviour-preserving by
+  construction: no survey's primary moves as it lands. `tools/audit_primary_locale.sql` states
+  that selector in SQL.
+- **History:** first ruled the other way — `ordering = ["language"]` on the eight `*Translation`
+  models, taking mutability as an acceptable cost because no translation model carries a
+  `created_at` to order by instead. Reversed on 2026-09-24 once the interaction with frozen
+  snapshots was spelled out: a mutable primary is not merely inconvenient for a value that gets
+  copied into per-learner records and never revisited. Recorded here so the decision is not
+  re-litigated from the implementation-cost angle alone, which is the angle that got it wrong.
 
 ## Deferred
 

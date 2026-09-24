@@ -58,6 +58,11 @@ class Survey(models.Model):
         (STATUS_ENDED, _("Ended")),
     )
 
+    #: What :attr:`primary_locale` answers for a survey whose primary language
+    #: has never been set — the value `_build_translations` has always used for
+    #: a survey with no translations at all.
+    PRIMARY_LANGUAGE_FALLBACK = "default"
+
     class Meta:
         ordering = ["-created_at"]
 
@@ -147,17 +152,66 @@ class Survey(models.Model):
     cover_id = models.CharField(max_length=255, null=True, blank=True)
     thumb_id = models.CharField(max_length=255, null=True, blank=True)
 
+    primary_language = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        verbose_name=_("Primary Language"),
+        help_text=_(
+            "The language this survey's body text is authored in. Read it through "
+            "Survey.primary_locale, never directly. It decides which language key "
+            "the legacy title/description/text columns fall back into when a "
+            "learner enrols, so changing it on a survey that already has content "
+            "mislabels that content until every row is re-saved."
+        ),
+    )
+
+    @property
+    def primary_locale(self) -> str:
+        """The survey's primary locale: the language its body text is authored
+        in. `forms:AD-1`.
+
+        Every consumer of "the primary language" goes through here rather than
+        writing its own query. There were three separate expressions of the
+        idea before — this property, :attr:`language`, and the enrolment
+        snapshot — each a chance for the service to hold two answers at once,
+        which is the whole failure this pins shut. The surveys admin builder
+        reads this value over GraphQL as ``Survey.primaryLanguage``; it must
+        not derive one of its own, because a second derivation is a second
+        definition however carefully it is written.
+
+        This reads a stored column rather than deriving a value from the
+        translations that happen to exist. A derived primary moves the moment
+        an author adds a translation, and `create_survey_snapshot` freezes the
+        primary into each learner's own records at enrolment — so a move would
+        permanently mislabel every learner who enrolled between the move and a
+        re-save of the body text, with no later edit able to reach them. The
+        column does not move unless someone moves it.
+
+        Falls back to :attr:`PRIMARY_LANGUAGE_FALLBACK` where the column is
+        unset, which is what the snapshot has always done for a survey with no
+        translations.
+        """
+        return self.primary_language or self.PRIMARY_LANGUAGE_FALLBACK
+
     @property
     def title(self):
-        """Convenience accessor: returns the title from the first translation."""
-        t = self.translations.first()
+        """The title in the survey's primary locale — see :attr:`primary_locale`.
+
+        ``None`` where the survey has no translation in that locale, including
+        the case where it has no translations at all.
+        """
+        t = self.translations.filter(language=self.primary_locale).first()
         return t.title if t else None
 
     @property
     def language(self):
-        """Convenience accessor: returns the language from the first translation."""
-        t = self.translations.first()
-        return t.language if t else None
+        """The survey's primary locale, or ``None`` where it has never been set.
+
+        Differs from :attr:`primary_locale` only in that case: this one reports
+        the absence rather than substituting ``PRIMARY_LANGUAGE_FALLBACK``.
+        """
+        return self.primary_language or None
 
     def __str__(self):
         return str(self.title or self.pk)

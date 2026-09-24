@@ -72,6 +72,25 @@ class SurveyType:
     def sections(self) -> List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]:
         return list(self.sections.filter(deleted_at__isnull=True))
 
+    @strawberry.field(
+        description=(
+            "The survey's primary locale: the language its body text is "
+            "authored in, or `default` where none has been set. Every other "
+            "locale falls back to it — at enrolment the snapshot files each "
+            "section, question and option's legacy column under this language's "
+            "key, so an editor mirroring those columns must mirror them from "
+            "this locale and no other. Read this value; do not derive one "
+            "client-side from the authored language codes. It is stored, not "
+            "computed, precisely so that it does not move when a translation is "
+            "added — snapshots freeze it per learner, and a primary that moved "
+            "would mislabel them permanently. A derived answer would disagree "
+            "with this one the moment an author adds an earlier language. "
+            "See `forms:AD-1`."
+        )
+    )
+    def primary_language(self) -> str:
+        return self.primary_locale
+
     @strawberry.field
     def collection_id(self) -> Optional[int]:
         collection = self.collections.first()
