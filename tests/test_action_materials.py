@@ -427,3 +427,42 @@ def test_the_result_page_does_not_scale_queries_with_band_count(
     # not the twelve pinned to the bands the learner did not land in.
     assert sum(len(a["materials"]) for a in payload["actions"]) == 1
     assert hits == baseline, "band count must not move the query count"
+
+
+def _enrolment_material_inserts(user, survey):
+    """Count INSERTs against the usermaterial table for one enrolment."""
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    with CaptureQueriesContext(connection) as captured:
+        user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    hits = [
+        q
+        for q in captured.captured_queries
+        if "usermaterial" in q["sql"].lower() and q["sql"].lstrip().lower().startswith("insert")
+    ]
+    return user_survey, len(hits)
+
+
+def test_enrolment_does_not_scale_inserts_with_material_count(
+    user, scored_survey, band, options
+):
+    """The snapshot writes one INSERT per band, not one per material.
+
+    A band's material count is admin-controlled and unbounded, and enrolment
+    runs inside the snapshot transaction, so a row-at-a-time write puts the
+    admin in charge of how long every learner's enrolment takes.
+    """
+    Material.objects.create(action=band, recommendable=_recommendable("0"))
+    one_material, baseline = _enrolment_material_inserts(user, scored_survey)
+    assert baseline == 1
+
+    for i in range(1, 8):
+        Material.objects.create(action=band, recommendable=_recommendable(str(i)))
+
+    one_material.delete()
+    many, hits = _enrolment_material_inserts(user, scored_survey)
+
+    user_action = UserAction.objects.get(user_survey=many, origin_id=band.id)
+    assert UserMaterial.objects.filter(user_action=user_action).count() == 8
+    assert hits == baseline, "material count must not move the INSERT count"

@@ -62,18 +62,25 @@ def _snapshot_materials(action, user_action, user_survey) -> None:
     the copied columns are what keeps the card standing once the catalog row
     is deleted.
     """
+    rows = []
     for material in action.materials.all():
         recommendable = material.recommendable
-        UserMaterial.objects.create(
-            origin_id=material.id,
-            user_survey=user_survey,
-            user_action=user_action,
-            recommendable=recommendable,
-            source_service=recommendable.source_service,
-            source_model=recommendable.source_model,
-            source_id=recommendable.source_id,
-            data=recommendable.data or {},
+        rows.append(
+            UserMaterial(
+                origin_id=material.id,
+                user_survey=user_survey,
+                user_action=user_action,
+                recommendable=recommendable,
+                source_service=recommendable.source_service,
+                source_model=recommendable.source_model,
+                source_id=recommendable.source_id,
+                data=recommendable.data or {},
+            )
         )
+    # One INSERT per band rather than one per material: a band's material
+    # count is admin-controlled and unbounded, and the reads are already
+    # prefetched at the `actions` level.
+    UserMaterial.objects.bulk_create(rows)
 
 
 def check_time_expired(user_survey: UserSurvey) -> bool:
