@@ -247,9 +247,16 @@ def test_the_snapshot_writes_one_row_per_material(user, scored_survey, band, opt
 def _run_backfill():
     """Run 0023's `forwards` against the live app registry.
 
-    pytest.ini passes `--no-migrations`, so the migration is never exercised by
-    the suite otherwise. The historical models it asks for are identical to the
+    These cover the backfill's *semantics* cheaply, with the fixtures the rest
+    of this module uses: the historical models it asks for are identical to the
     current ones, so the real registry stands in for them.
+
+    They are deliberately not the only coverage. `migrate` never runs here —
+    pytest.ini passes `--no-migrations` — so no ordering, no atomic block and no
+    historical registry is exercised by this path.
+    `tests/test_user_materials_migration.py` applies 0022 and 0023 for real, in
+    a child process, and is where a mismatch between the live and historical
+    registries would surface.
     """
     import importlib
 
