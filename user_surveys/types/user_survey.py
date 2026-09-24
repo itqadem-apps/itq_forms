@@ -5,6 +5,7 @@ from typing import List, Optional
 import strawberry
 import strawberry_django
 from strawberry import auto
+from django.db.models import Prefetch
 from strawberry.scalars import JSON
 from strawberry.types import Info
 
@@ -259,11 +260,14 @@ class UserActionType:
 
     @strawberry.field
     def materials(self) -> List[UserMaterialType]:
-        # select_related: `data` reads through the FK, so without it a band
-        # with N materials costs N extra queries on the result page.
-        return list(
-            UserMaterial.objects.filter(user_action_id=self.id).select_related("recommendable")
-        )
+        # `UserSurveyType.actions` prefetches these, so the whole result page
+        # costs one materials query rather than one per band. Reached any other
+        # way there is no prefetch, and select_related still matters because
+        # `data` reads through the FK.
+        cache = getattr(self, "_prefetched_objects_cache", None) or {}
+        if "materials" in cache:
+            return list(cache["materials"])
+        return list(self.materials.select_related("recommendable").all())
 
 
 @strawberry_django.type(UserQuestion)
@@ -402,7 +406,17 @@ class UserSurveyType:
     def actions(self) -> List[UserActionType]:
         if not self.evaluated_at:
             return []
-        return list(UserAction.objects.filter(user_survey_id=self.id))
+        # Prefetch here, not in `UserActionType.materials`: resolving per band
+        # made the result page cost 1 + N queries, and this list is unbounded
+        # in the number of bands a survey has.
+        return list(
+            UserAction.objects.filter(user_survey_id=self.id).prefetch_related(
+                Prefetch(
+                    "materials",
+                    queryset=UserMaterial.objects.select_related("recommendable"),
+                )
+            )
+        )
 
     @strawberry.field
     def survey_classifications(self) -> List[UserSurveyClassificationType]:

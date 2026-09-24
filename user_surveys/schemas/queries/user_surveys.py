@@ -25,6 +25,13 @@ from ..common import RequireAuth
 from app.graphql_ids import as_pk
 
 
+# Each returned submission resolves its own bands, and each band its own
+# materials, so page size multiplies backend work rather than just response
+# size. The input carries no cap of its own (default 20), so a client asking
+# for 500 used to be honoured.
+MAX_PAGE_SIZE = 100
+
+
 def _holds_submissions_read(auth_ctx) -> bool:
     try:
         auth_ctx.require(Permission.SUBMISSION_READ.value)
@@ -105,9 +112,12 @@ class UserSurveyQuery:
                 continue
             filters_data[name] = getattr(filters_input, name, None)
 
+        limit = max(0, min(user_surveys_list_input.limit, MAX_PAGE_SIZE))
+        offset = max(0, user_surveys_list_input.offset)
+
         spec = UserSurveySpec(
-            limit=user_surveys_list_input.limit,
-            offset=user_surveys_list_input.offset,
+            limit=limit,
+            offset=offset,
             projection=UserSurveyProjection(),
             filters=UserSurveyFilters(**filters_data),
             sort=user_survey_sort_input_to_spec(user_surveys_list_input.sort),
@@ -121,10 +131,5 @@ class UserSurveyQuery:
             base_qs = base_qs.order_by("-submitted_at")
 
         total = base_qs.count()
-        items = list(
-            base_qs[
-                user_surveys_list_input.offset : user_surveys_list_input.offset
-                + user_surveys_list_input.limit
-            ]
-        )
+        items = list(base_qs[offset : offset + limit])
         return UserSurveysResultsGQL(items=items, total=total)

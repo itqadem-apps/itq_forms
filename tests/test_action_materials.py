@@ -299,3 +299,94 @@ def test_backfill_does_not_double_write(user, scored_survey, band, options):
     _run_backfill()
 
     assert UserMaterial.objects.count() == 1
+
+
+def test_a_rerun_cannot_hand_an_enrolled_learner_a_later_pinning(
+    user, user2, scored_survey, band, options
+):
+    """The freeze rule survives a rollback-and-replay.
+
+    Guarding on "which user_actions already have rows" let this through: a band
+    with no materials at enrolment writes none, so it was absent from that set
+    and a re-run backfilled it from whatever the admin had pinned since. The
+    guard is now the whole table, so a re-run is a no-op.
+    """
+    user_survey, _ = enroll_user_in_assessment(user, scored_survey.id)
+    assert UserMaterial.objects.count() == 0, "the band had nothing pinned"
+
+    # A later enrolment writes rows, so the table is no longer empty — and an
+    # admin pins to the band after our learner has already enrolled.
+    Material.objects.create(action=band, recommendable=_recommendable("777", "Pinned Later"))
+    enroll_user_in_assessment(user2, scored_survey.id)
+
+    _run_backfill()
+
+    assert not UserMaterial.objects.filter(user_survey=user_survey).exists()
+
+
+def test_reversing_the_backfill_keeps_rows_the_snapshot_wrote(
+    user, scored_survey, band, options
+):
+    """`backwards` is a no-op, because it cannot tell whose rows these are.
+
+    `migrate user_surveys 0022` reverses this migration without dropping the
+    table, so deleting here would permanently take every material a learner has
+    been given since deploy.
+    """
+    import importlib
+
+    from django.apps import apps as live_apps
+
+    Material.objects.create(action=band, recommendable=_recommendable("101"))
+    user_survey, _ = enroll_user_in_assessment(user, scored_survey.id)
+    assert UserMaterial.objects.count() == 1
+
+    migration = importlib.import_module("user_surveys.migrations.0023_backfill_user_materials")
+    migration.backwards(live_apps, None)
+
+    assert UserMaterial.objects.filter(user_survey=user_survey).count() == 1
+
+
+# ── Query cost ───────────────────────────────────────────────────────
+
+def _material_queries(user, user_survey):
+    """Count queries against the usermaterial table for one result page."""
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    with CaptureQueriesContext(connection) as captured:
+        payload = _results(user, user_survey)
+    hits = [q for q in captured.captured_queries if "usermaterial" in q["sql"].lower()]
+    return payload, len(hits)
+
+
+def test_the_result_page_does_not_scale_queries_with_band_count(
+    user, scored_survey, band, options
+):
+    """Materials are prefetched at the `actions` level, not per band.
+
+    Resolving per band made the page cost one materials query per band, and a
+    survey's band count is unbounded — as is the number of submissions the
+    list query returns at once.
+    """
+    Material.objects.create(action=band, recommendable=_recommendable("0-0"))
+    one_band = _enrol_and_score(user, scored_survey, options, 41)
+    _, baseline = _material_queries(user, one_band)
+    assert baseline == 1
+
+    # Four more bands, three materials each, on a fresh enrolment.
+    for i in range(1, 5):
+        extra = Action.objects.create(
+            survey=scored_survey, lower_limit=i * 100, upper_limit=i * 100 + 9
+        )
+        for j in range(3):
+            Material.objects.create(action=extra, recommendable=_recommendable(f"{i}-{j}"))
+
+    UserMaterial.objects.all().delete()
+    one_band.delete()
+    five_bands = _enrol_and_score(user, scored_survey, options, 41)
+
+    payload, hits = _material_queries(user, five_bands)
+    assert len(payload["actions"]) == 5, "all five bands are snapshotted"
+    assert sum(len(a["materials"]) for a in payload["actions"]) == 13
+    assert hits == baseline, "band count must not move the query count"
