@@ -32,6 +32,18 @@ class UserMaterial(models.Model):
     class Meta:
         ordering = ["id"]
 
+    # int4, pointing at an int8 primary key (`recommendations.Material.id`),
+    # and the same is true of the seven sibling `User*.origin_id` columns.
+    # Asked on 2026-09-24 whether to widen them: **no, not now** — and if
+    # ever, all eight together. The verdict, the reasoning and the threshold
+    # that reverses it are in `tools/audit_snapshot_origin_id_headroom.sql`,
+    # which also measures both sides of it. The short form: widening the
+    # column alone would not lift the ceiling, because `origin_id` is served
+    # as GraphQL `Int` and the spec fixes that at 32 bits — it would only move
+    # the failure from a refused INSERT at enrolment to a serialisation error
+    # on the learner's result page. And what spends the range is authoring,
+    # not enrolment: every one of the eight points at an admin-authored row,
+    # while the per-learner tables' own keys are already int8.
     origin_id = models.IntegerField(null=True, blank=True, db_index=True)
     user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE, related_name="materials")
     user_action = models.ForeignKey(UserAction, on_delete=models.CASCADE, related_name="materials")

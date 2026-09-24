@@ -6,6 +6,9 @@ from .user_survey import UserSurvey
 
 
 class UserAnswerSchema(models.Model):
+    # int4 against an int8 source pk. Deliberate, not an oversight: the
+    # ruling and its measurements are on `UserMaterial.origin_id` and in
+    # `tools/audit_snapshot_origin_id_headroom.sql`, and bind all eight.
     origin_id = models.IntegerField(null=True, blank=True, db_index=True)
     user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE, related_name="answer_schemas")
     section = models.ForeignKey(UserSection, on_delete=models.CASCADE, null=True, blank=True)
