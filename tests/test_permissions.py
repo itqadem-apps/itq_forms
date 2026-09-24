@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -14,19 +14,21 @@ def _info_with_auth(require_should_raise: bool):
     return info
 
 
-@patch("app.permissions.is_platform_context", return_value=True)
-def test_check_permission_bypasses_for_platform_context(_mock):
-    @check_permission("survey", "create")
-    def view(self, info, **kw):
-        return "ok"
+def test_check_permission_enforces_regardless_of_platform_context():
+    """CAP-5: platform-org membership no longer substitutes for a key.
 
-    info = _info_with_auth(require_should_raise=True)
-    assert view(None, info) == "ok"
-    assert info.context.auth_context.require.call_count == 0
+    This gate used to return early on `is_platform_context`, so any member of
+    the platform org passed every mutation whatever their role held — which
+    made the permission catalog meaningless for platform staff. Platform scope
+    is a row-axis concession and lives at `ensure_in_org`; here a platform
+    caller is asked for the key like anyone else.
 
+    There used to be two tests either side of that branch, and they are one
+    test now because the branch is gone: `app.permissions` no longer imports
+    `is_platform_context`, so a platform caller is not a distinguishable case
+    at this gate and there is nothing left to patch to construct one.
+    """
 
-@patch("app.permissions.is_platform_context", return_value=False)
-def test_check_permission_enforces_for_non_platform_context(_mock):
     @check_permission("survey", "create")
     def view(self, info, **kw):
         return "ok"
@@ -37,8 +39,7 @@ def test_check_permission_enforces_for_non_platform_context(_mock):
     info.context.auth_context.require.assert_called_once_with("surveys:create")
 
 
-@patch("app.permissions.is_platform_context", return_value=False)
-def test_check_permission_passes_through_when_perm_granted(_mock):
+def test_check_permission_passes_through_when_perm_granted():
     @check_permission("assessment", "delete")
     def view(self, info, **kw):
         return "deleted"

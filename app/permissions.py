@@ -4,8 +4,6 @@ from typing import Literal, Callable, Any, Union
 
 from pkg_auth.authorization import MissingPermission
 
-from app.platform import is_platform_context
-
 
 class Permission(enum.Enum):
     # Survey permissions
@@ -139,9 +137,20 @@ def check_permission(assessment_type: Union[str, Callable], action: ActionType) 
                     raise PermissionError("Authentication required")
                 raise PermissionError("Missing X-Organization-Id header")
 
-            if is_platform_context(auth_ctx):
-                return func(self, info, *args, **kwargs)
-
+            # There is deliberately NO platform bypass here. Platform scope is a
+            # *row*-axis concession — it says which organizations' rows a caller
+            # may reach — and it belongs at that gate, in `app.platform`'s
+            # `ensure_in_org` and `scope_listing_to_caller`. Letting it stand in
+            # for holding a key as well made the permission catalog meaningless
+            # for platform staff: any member of the platform org passed every
+            # mutation whatever their role actually held.
+            # SPEC-forms-permission-gates CAP-5.
+            #
+            # Removing it locks nobody out. Measured 2026-09-24 against the live
+            # ACL, the platform org's roles carry all 24 `forms:*` keys
+            # explicitly, so they were never relying on this branch. No role is
+            # re-granted to compensate — the spec's non-goals forbid it — and no
+            # platform exception is added elsewhere in its place.
             if callable(assessment_type):
                 resolved_type = assessment_type(info, **kwargs)
             else:
