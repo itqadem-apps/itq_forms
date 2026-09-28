@@ -90,7 +90,10 @@ class Command(BaseCommand):
                 "MEDIA_LIBRARY_URL/MEDIA_LIBRARY_TENANT_ID not configured"
             )
         try:
-            results = client.policies.sync_policies(POLICIES)
+            # Never delete_stale: the media-library tenant is shared across
+            # services, so pruning "stale" policies deactivates the others'.
+            # The client defaults it to True from 0.16 on.
+            results = client.policies.sync_policies(POLICIES, delete_stale=False)
         finally:
             client.close()
         self.stdout.write(self.style.SUCCESS(f"Synced {len(results)} policies"))
