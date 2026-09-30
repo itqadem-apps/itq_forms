@@ -13,6 +13,10 @@ exactly as it is: an unmatched category is a ruling for a person, and the one
 thing this command must never do is drop a row whose SET_NULL foreign keys would
 silently strip the category off live surveys and collections.
 
+When a legacy row and its counterpart name the same topic in different wording,
+pair them with ``--map LEGACY_ID=TARGET_ID`` (repeatable). A mapped row skips the
+key match entirely; every pair is validated before anything is written.
+
 Run after `seed_categories` (or after the projection has caught up), and only
 once -- a reconciled legacy row is deleted, so a second run finds nothing to do.
 """
@@ -45,6 +49,28 @@ def _keys(category: Category) -> set[str]:
     return keys
 
 
+def _parse_map(
+    pairs: list[str], *, legacy_ids: set[UUID], target_by_id: dict[UUID, Category]
+) -> dict[UUID, Category]:
+    explicit: dict[UUID, Category] = {}
+    for pair in pairs:
+        legacy_raw, sep, target_raw = pair.partition("=")
+        try:
+            if not sep:
+                raise ValueError
+            legacy_id, target_id = UUID(legacy_raw.strip()), UUID(target_raw.strip())
+        except ValueError:
+            raise CommandError(f"--map {pair!r}: expected LEGACY_ID=TARGET_ID, both UUIDs.")
+        if legacy_id not in legacy_ids:
+            raise CommandError(f"--map {pair!r}: {legacy_id} is not a live legacy category.")
+        if target_id not in target_by_id:
+            raise CommandError(f"--map {pair!r}: {target_id} is not a live category of the tree.")
+        if legacy_id in explicit:
+            raise CommandError(f"--map {pair!r}: {legacy_id} is mapped twice.")
+        explicit[legacy_id] = target_by_id[target_id]
+    return explicit
+
+
 class Command(BaseCommand):
     help = "Repoint legacy forms categories onto their counterparts in the configured tree."
 
@@ -54,6 +80,13 @@ class Command(BaseCommand):
             "--dry-run",
             action="store_true",
             help="Report the matches and the repointing without writing anything.",
+        )
+        parser.add_argument(
+            "--map",
+            action="append",
+            default=[],
+            metavar="LEGACY_ID=TARGET_ID",
+            help="Pair a legacy category with its tree counterpart when the wording differs. Repeatable.",
         )
 
     def handle(self, *args, **options):
@@ -81,6 +114,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("No legacy categories left; nothing to do."))
             return
 
+        explicit = _parse_map(
+            options["map"],
+            legacy_ids={c.category_id for c in legacy},
+            target_by_id={c.category_id: c for c in target},
+        )
+
         # Build the lookup, and refuse to guess when two target categories answer
         # to the same key -- an ambiguous match is a ruling, not a coin flip.
         by_key: dict[str, list[Category]] = defaultdict(list)
@@ -93,6 +132,9 @@ class Command(BaseCommand):
         ambiguous: list[tuple[Category, list[Category]]] = []
 
         for row in legacy:
+            if row.category_id in explicit:
+                matched.append((row, explicit[row.category_id]))
+                continue
             candidates: list[Category] = []
             for key in _keys(row):
                 for candidate in by_key.get(key, []):
@@ -106,7 +148,8 @@ class Command(BaseCommand):
                 matched.append((row, candidates[0]))
 
         for row, target_row in matched:
-            self.stdout.write(f"  match  {row.name!r}  {row.category_id} -> {target_row.category_id}")
+            label = "map" if row.category_id in explicit else "match"
+            self.stdout.write(f"  {label}  {row.name!r}  {row.category_id} -> {target_row.category_id}")
         for row, candidates in ambiguous:
             names = ", ".join(str(c.category_id) for c in candidates)
             self.stdout.write(
