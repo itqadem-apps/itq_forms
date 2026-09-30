@@ -152,11 +152,11 @@ class Survey(models.Model):
     cover_id = models.CharField(max_length=255, null=True, blank=True)
     thumb_id = models.CharField(max_length=255, null=True, blank=True)
 
-    #: What a survey that names no language of its own is authored in. A survey
-    #: created without translations used to leave the column null, which read
-    #: back as `PRIMARY_LANGUAGE_FALLBACK` — a string naming no locale any admin
-    #: can select, so the builder could never offer per-language body text on it.
-    PRIMARY_LANGUAGE_DEFAULT = "en"
+    #: What a survey that names no language of its own is authored in: Arabic,
+    #: by business ruling (2026-09-29, `forms:AD-1`). A null column reads back
+    #: as `PRIMARY_LANGUAGE_FALLBACK` — a string naming no locale any admin can
+    #: select, so the builder could never offer per-language body text on it.
+    PRIMARY_LANGUAGE_DEFAULT = "ar"
 
     primary_language = models.CharField(
         max_length=10,

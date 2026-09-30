@@ -61,6 +61,7 @@ def _status(survey, status_str):
 
 def _create_survey(title, description=None, **kwargs):
     """Create a Survey and its primary translation."""
+    kwargs.setdefault("primary_language", "en")
     survey = Survey.objects.create(**kwargs)
     SurveyTranslation.objects.create(
         survey=survey,

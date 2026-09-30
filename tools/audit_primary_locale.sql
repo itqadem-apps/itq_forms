@@ -65,3 +65,56 @@ WHERE s.primary_language IS DISTINCT FROM (
          WHERE t.survey_id = s.id ORDER BY t.id LIMIT 1
       )
 ORDER BY s.id;
+
+-- ── D/E: what 0044 moves to `ar`, and what it leaves ─────────────────
+-- Ruled 2026-09-29 (`forms:AD-1`): every survey no learner has enrolled in
+-- moves to `ar`; a survey with any `UserSurvey` keeps its primary, because
+-- each enrolment froze it into that learner's snapshot. Run this before the
+-- release to record the counts, and again after it: D should then be empty,
+-- and E unchanged.
+--
+-- `languages` is every translation language; `titled` those with a title. A
+-- survey in D with no `ar` in `titled` reads `Survey.title` as NULL once it
+-- moves — the accepted cost of moving all of them.
+
+\echo '== D. unenrolled surveys not on `ar`: 0044 moves these =='
+SELECT
+    s.id,
+    s.status,
+    s.created_at,
+    s.primary_language,
+    string_agg(t.language, ',' ORDER BY t.language) AS languages,
+    string_agg(t.language, ',' ORDER BY t.language)
+        FILTER (WHERE nullif(btrim(t.title), '') IS NOT NULL) AS titled
+FROM surveys_survey s
+LEFT JOIN surveys_surveytranslation t ON t.survey_id = s.id
+WHERE s.primary_language IS DISTINCT FROM 'ar'
+  AND NOT EXISTS (SELECT 1 FROM user_surveys_usersurvey us WHERE us.survey_id = s.id)
+GROUP BY s.id, s.status, s.created_at, s.primary_language
+ORDER BY s.id;
+
+\echo '== E. enrolled surveys not on `ar`: 0044 leaves these, each needs a ruling =='
+SELECT
+    s.id,
+    s.status,
+    s.created_at,
+    s.primary_language,
+    (SELECT string_agg(t.language, ',' ORDER BY t.language)
+       FROM surveys_surveytranslation t WHERE t.survey_id = s.id) AS languages,
+    (SELECT count(*) FROM user_surveys_usersurvey us WHERE us.survey_id = s.id) AS enrolments
+FROM surveys_survey s
+WHERE s.primary_language IS DISTINCT FROM 'ar'
+  AND EXISTS (SELECT 1 FROM user_surveys_usersurvey us WHERE us.survey_id = s.id)
+ORDER BY s.id;
+
+\echo '== F. counts =='
+SELECT
+    CASE WHEN EXISTS (SELECT 1 FROM user_surveys_usersurvey us WHERE us.survey_id = s.id)
+         THEN 'enrolled — stays' ELSE 'not enrolled — moves' END AS split,
+    coalesce(s.primary_language, '(null)') AS primary_language,
+    count(*) AS surveys,
+    count(*) FILTER (WHERE s.status = 'published') AS published
+FROM surveys_survey s
+WHERE s.primary_language IS DISTINCT FROM 'ar'
+GROUP BY 1, 2
+ORDER BY 1, 2;

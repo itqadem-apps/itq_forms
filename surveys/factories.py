@@ -56,6 +56,8 @@ class SurveyFactory:
         language = overrides.pop("language", None)
         if language is None:
             language = _pick_choice(getattr(settings, "LANGUAGES", None), default=settings.LANGUAGE_CODE)
+        # Mirrors create_survey: the survey's primary is the language it is authored in.
+        overrides.setdefault("primary_language", language)
 
         title = overrides.pop("title", None)
         if title is None:

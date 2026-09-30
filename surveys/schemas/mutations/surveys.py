@@ -98,6 +98,19 @@ class SurveyMutations:
                 )
             target_collection = ref.collection
 
+        # The column default pre-empts SurveyTranslation.save's claim, so set the
+        # primary here, in the same INSERT, so it never has to move (forms:AD-1).
+        # Arabic wins whenever it is authored: the admin form sends translations
+        # in locale order, [en, ar], so "the first one" would file every
+        # bilingual survey under English.
+        if not data.get('primary_language'):
+            languages = [t.language for t in input.translations or []]
+            data['primary_language'] = (
+                Survey.PRIMARY_LANGUAGE_DEFAULT
+                if not languages or Survey.PRIMARY_LANGUAGE_DEFAULT in languages
+                else languages[0]
+            )
+
         survey = Survey.objects.create(**data)
 
         if target_collection is not None:

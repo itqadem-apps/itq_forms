@@ -70,9 +70,17 @@ surface, not a local override.
   mirroring the legacy columns "from the new primary's translation" would have been a no-op for
   exactly the rows at risk. A stored value moves only when someone moves it, which makes the move
   an act that can be paired with a repair.
+- **Default and create rule (ruled 2026-09-29):** the column defaults to **`ar`**
+  (`Survey.PRIMARY_LANGUAGE_DEFAULT`, ORM-level only, `surveys/migrations/0043`). `create_survey`
+  sets the primary in the same INSERT: an explicit `primary_language` wins; else `ar` if the
+  create carries an `ar` translation; else the first translation's language; else `ar`. Not the
+  first translation alone — the admin form sends `[en, ar]` in locale order. `0044` moved every
+  survey with no `UserSurvey` to `ar`; a survey with any enrolment keeps its primary, and the
+  enrolled non-`ar` ones await a per-survey ruling (`tools/audit_primary_locale.sql` E).
 - **Accepted costs:** one column and two migrations rather than a `Meta.ordering` line, and a
-  write path that has to keep the column honest — `SurveyTranslation.save()` claims it for the
-  first language authored, and a `bulk_create` bypasses that and must set it itself. Existing
+  write path that has to keep the column honest — `create_survey` sets it by the rule above,
+  `SurveyTranslation.save()` claims only a column left explicitly null, and a `bulk_create`
+  bypasses both and must set it itself. Existing
   rows were backfilled (`surveys/migrations/0041`) with the language the old
   `.first()`/`ORDER BY id` selector already returned, so the migration is behaviour-preserving by
   construction: no survey's primary moves as it lands. `tools/audit_primary_locale.sql` states
@@ -83,6 +91,9 @@ surface, not a local override.
   snapshots was spelled out: a mutable primary is not merely inconvenient for a value that gets
   copied into per-learner records and never revisited. Recorded here so the decision is not
   re-litigated from the implementation-cost angle alone, which is the angle that got it wrong.
+  On 2026-09-28 (`0042`, v0.0.69) an `en` column default pre-empted the save-time claim, so every
+  builder-created survey was filed under `en` whatever it was written in; replaced on 2026-09-29
+  by the Arabic default and create rule above.
 
 ## Deferred
 

@@ -28,13 +28,16 @@ class SurveyTranslation(models.Model):
         """Claim the survey's primary language for the first language authored.
 
         `forms:AD-1` stores the primary on `Survey.primary_language` instead of
-        deriving it, and existing rows were given one by the 0041 backfill. A
-        survey created after that migration starts with the column null, and a
-        null primary would send the snapshot's legacy-column fallback to
-        ``"default"`` — filing English body text under a key no learner reads.
-        So the first translation to be saved sets it, and no later one moves it:
-        the value's whole purpose is to not move, because enrolment snapshots
-        freeze it per learner.
+        deriving it. A null primary sends the snapshot's legacy-column fallback
+        to ``"default"`` — filing body text under a key no learner reads. So the
+        first translation saved onto a survey whose column is null sets it, and
+        no later one moves it: the value's whole purpose is to not move, because
+        enrolment snapshots freeze it per learner.
+
+        The column has an ORM default (``"ar"`` since 0043), so a survey created
+        through the ORM is never null and this claim does not fire;
+        `create_survey` sets the primary from its translations instead. The
+        claim remains for a survey whose column was explicitly left null.
 
         Only `save` claims it. `bulk_create` does not call this, so a bulk
         import must set `Survey.primary_language` itself.

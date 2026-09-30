@@ -44,6 +44,7 @@ def user2(db):
 def survey(db):
     from surveys.models import Survey, SurveyTranslation
     s = Survey.objects.create(
+        primary_language="en",
         survey_type=Survey.ASSESSMENT_TYPE_SURVEY,
         display_option=Survey.DISPLAY_OPTION_BY_QUESTION,
         evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
