@@ -33,6 +33,8 @@ from pkg_auth.integrations.django import IdentityMiddleware as _BaseIdentityMidd
 from pkg_auth.integrations.django.install import get_registry
 from pkg_auth.integrations.django.middleware import _extract_token
 
+from pricing.currency import SHOP_CURRENCY
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,8 +59,9 @@ class _ContextProxy:
 
 class AuthedGraphQLView(GraphQLView):
     def get_context(self, request, response):
-        currency = request.META.get("HTTP_X_CURRENCY")
-        return _ContextProxy(request, currency=currency)
+        # X-Currency is ignored: old mobile builds still send a cached geo
+        # currency, and every price is EGP (estate:AD-17).
+        return _ContextProxy(request, currency=SHOP_CURRENCY)
 
 
 class LoggingIdentityMiddleware(_BaseIdentityMiddleware):

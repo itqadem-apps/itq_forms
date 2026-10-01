@@ -5,12 +5,18 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 from app.auth_utils import with_django_user
 from app.schema_common import RequireAuth, OperationResult
+from pricing.currency import SHOP_CURRENCY, is_shop_currency
 from pricing.inputs import PriceInput, PriceUpdateInput
 from pricing.models import Price
 from pricing.signals import backfill_zero_prices
 from pricing.types import PriceType
 from surveys.schemas.utils import input_to_dict
 from app.graphql_ids import as_pk
+
+
+def _require_shop_currency(currency) -> None:
+    if not is_shop_currency(currency):
+        raise ValueError(f"unsupported_currency: {currency} (prices are EGP only)")
 
 
 @strawberry.type
@@ -24,7 +30,11 @@ class PriceMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> PriceType:
         data = input_to_dict(input)
-        price = Price.objects.create(**data)
+        _require_shop_currency(data.pop("currency", None))
+        parent = {k: data.pop(k, None) for k in ("survey_id", "collection_id")}
+        price, _ = Price.objects.update_or_create(
+            currency=SHOP_CURRENCY, **parent, defaults=data
+        )
         backfill_zero_prices(survey=price.survey, collection=price.collection)
         return price
 
@@ -39,7 +49,10 @@ class PriceMutations:
     ) -> PriceType:
         id = as_pk(id)
         price = Price.objects.get(pk=id)
-        for field, value in input_to_dict(input).items():
+        data = input_to_dict(input)
+        if "currency" in data:
+            _require_shop_currency(data.pop("currency"))
+        for field, value in data.items():
             setattr(price, field, value)
         price.save()
         backfill_zero_prices(survey=price.survey, collection=price.collection)

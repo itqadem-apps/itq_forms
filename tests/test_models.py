@@ -298,32 +298,36 @@ class TestUsageModel:
 
 
 # ── Price model ─────────────────────────────────────────────────
+def _egp_price(*, amount_cents, **parent):
+    # Saving the parent already padded an EGP 0 row; there is one per parent.
+    price, _ = Price.objects.update_or_create(
+        currency="EGP", **parent, defaults={"amount_cents": amount_cents}
+    )
+    return price
+
+
 class TestPriceModel:
     def test_create_price_for_survey(self, survey):
-        p = Price.objects.create(
-            survey=survey, currency="USD", amount_cents=1000,
-        )
+        p = _egp_price(survey=survey, amount_cents=1000)
         assert p.amount_cents == 1000
-        assert p.currency == "USD"
+        assert p.currency == "EGP"
         assert p.survey_id == survey.pk
         assert p.collection_id is None
 
     def test_create_price_for_collection(self, collection):
-        p = Price.objects.create(
-            collection=collection, currency="SAR", amount_cents=500,
-        )
+        p = _egp_price(collection=collection, amount_cents=500)
         assert p.collection_id == collection.pk
         assert p.survey_id is None
 
     def test_price_str(self, survey):
-        p = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
-        assert str(p) == "USD 1000"
+        p = _egp_price(survey=survey, amount_cents=1000)
+        assert str(p) == "EGP 1000"
 
 
 # ── Discount model ─────────────────────────────────────────────
 class TestDiscountModel:
     def test_create_discount(self, survey):
-        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        price = _egp_price(survey=survey, amount_cents=1000)
         d = Discount.objects.create(
             price=price, type=Discount.DISCOUNT_TYPE_PERCENTAGE, value=20,
         )
@@ -332,7 +336,7 @@ class TestDiscountModel:
         assert d.redemption_count == 0
 
     def test_discount_fixed_amount(self, survey):
-        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        price = _egp_price(survey=survey, amount_cents=1000)
         d = Discount.objects.create(
             price=price, type=Discount.DISCOUNT_TYPE_FIXED_AMOUNT, value=250,
         )
@@ -340,7 +344,7 @@ class TestDiscountModel:
         assert d.value == 250
 
     def test_discount_with_code(self, survey):
-        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        price = _egp_price(survey=survey, amount_cents=1000)
         d = Discount.objects.create(
             price=price, type=Discount.DISCOUNT_TYPE_PERCENTAGE, value=10,
             code="SAVE10", max_redemptions=100,
@@ -349,7 +353,7 @@ class TestDiscountModel:
         assert d.max_redemptions == 100
 
     def test_discount_relationship(self, survey):
-        price = Price.objects.create(survey=survey, currency="USD", amount_cents=1000)
+        price = _egp_price(survey=survey, amount_cents=1000)
         Discount.objects.create(price=price, type="percentage", value=10)
         Discount.objects.create(price=price, type="fixed_amount", value=50)
         assert price.discounts.count() == 2

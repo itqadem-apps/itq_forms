@@ -21,6 +21,7 @@ from survey_collections.models import SurveyCollection
 from app.graphql_ids import as_pk
 from app.platform import scope_listing_to_caller
 from app.status_sort import annotate_status_rank
+from pricing.currency import SHOP_CURRENCY
 
 
 @strawberry.type
@@ -46,7 +47,7 @@ class CollectionsQuery:
                     prices__compare_at_amount_cents__gt=F("prices__amount_cents"),
                 )
         if filters_input.currency is not None:
-            qs = qs.filter(prices__currency=filters_input.currency)
+            qs = qs.filter(prices__currency=SHOP_CURRENCY)
         if filters_input.is_free is not None:
             free_filter = Q(prices__amount_cents=0) | Q(prices__isnull=True)
             if filters_input.is_free:

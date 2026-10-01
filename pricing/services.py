@@ -8,6 +8,7 @@ import strawberry
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 
+from pricing.currency import SHOP_CURRENCY, is_shop_currency
 from pricing.inputs import DiscountNestedInput, PriceNestedInput
 from pricing.models import Discount, Price
 
@@ -79,20 +80,23 @@ def _upsert_price(parent: Model, inp: PriceNestedInput) -> Price:
                 f"Price {inp.id} not found on this {parent.__class__.__name__.lower()}"
             )
         _set_fields(price, {
-            "currency": inp.currency,
             "amount_cents": inp.amount_cents,
             "compare_at_amount_cents": inp.compare_at_amount_cents,
         })
         price.save()
     else:
-        if inp.currency is UNSET or inp.amount_cents is UNSET:
-            raise ValueError("Price create requires 'currency' and 'amount_cents'.")
-        price = Price.objects.create(
-            currency=inp.currency,
-            amount_cents=inp.amount_cents,
-            compare_at_amount_cents=inp.compare_at_amount_cents
-            if inp.compare_at_amount_cents is not UNSET else None,
+        if inp.amount_cents is UNSET:
+            raise ValueError("Price create requires 'amount_cents'.")
+        # One EGP price per parent: a create for a parent that already has one
+        # updates it rather than adding a duplicate.
+        price, _ = Price.objects.update_or_create(
+            currency=SHOP_CURRENCY,
             **parent_filter,
+            defaults={
+                "amount_cents": inp.amount_cents,
+                "compare_at_amount_cents": inp.compare_at_amount_cents
+                if inp.compare_at_amount_cents is not UNSET else None,
+            },
         )
 
     if inp.discounts is not UNSET and inp.discounts:
@@ -113,4 +117,11 @@ def upsert_prices_for_parent(
     """
     if not prices:
         return []
-    return [_upsert_price(parent, p) for p in prices]
+    # Older admin forms send one entry per currency; only the EGP one (or one
+    # naming no currency) is a price now. Coercing the rest onto the EGP row
+    # would let the last foreign amount win (estate:AD-17).
+    return [
+        _upsert_price(parent, p)
+        for p in prices
+        if p.currency in (UNSET, None) or is_shop_currency(p.currency)
+    ]

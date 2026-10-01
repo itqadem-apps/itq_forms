@@ -12,6 +12,18 @@ class Price(models.Model):
                 ),
                 name="price_exactly_one_parent",
             ),
+            # estate:AD-17: one price per parent, in EGP.
+            models.CheckConstraint(condition=Q(currency="EGP"), name="price_currency_egp"),
+            models.UniqueConstraint(
+                fields=["survey", "currency"],
+                condition=Q(survey__isnull=False),
+                name="price_one_per_survey_currency",
+            ),
+            models.UniqueConstraint(
+                fields=["collection", "currency"],
+                condition=Q(collection__isnull=False),
+                name="price_one_per_collection_currency",
+            ),
         ]
 
     survey = models.ForeignKey(
@@ -28,7 +40,7 @@ class Price(models.Model):
         null=True,
         blank=True,
     )
-    currency = models.CharField(max_length=3)
+    currency = models.CharField(max_length=3, default="EGP")
     amount_cents = models.IntegerField()
     compare_at_amount_cents = models.IntegerField(null=True, blank=True)
 

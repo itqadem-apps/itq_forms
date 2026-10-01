@@ -5,26 +5,22 @@ from django.dispatch import receiver
 from survey_collections.models import SurveyCollection
 from surveys.models import Survey
 
+from .currency import SHOP_CURRENCY
 from .models import Price
 
 
 def backfill_zero_prices(*, survey=None, collection=None) -> None:
-    currencies = getattr(settings, "AVAILABLE_CURRENCIES", []) or []
-    if not currencies:
+    # A deployed AVAILABLE_CURRENCIES may still list USD/EUR/SAR; padding those
+    # would recreate the rows the EGP-only migration removed (estate:AD-17).
+    if not getattr(settings, "AVAILABLE_CURRENCIES", None):
         return
 
-    qs = Price.objects.filter(survey=survey, collection=collection)
-    existing = set(qs.values_list("currency", flat=True))
-
-    missing = [c for c in currencies if c and c not in existing]
-    if not missing:
+    qs = Price.objects.filter(survey=survey, collection=collection, currency=SHOP_CURRENCY)
+    if qs.exists():
         return
 
-    Price.objects.bulk_create(
-        [
-            Price(survey=survey, collection=collection, currency=currency, amount_cents=0)
-            for currency in missing
-        ]
+    Price.objects.create(
+        survey=survey, collection=collection, currency=SHOP_CURRENCY, amount_cents=0
     )
 
 
