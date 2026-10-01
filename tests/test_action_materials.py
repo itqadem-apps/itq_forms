@@ -542,3 +542,83 @@ def test_the_result_page_returns_no_bands_for_such_a_survey(user, survey, unused
     payload = _results(user, user_survey)
     assert payload["actionId"] is None
     assert payload["actions"] == []
+
+
+# ── The manual action override follows the gate ──────────────────────
+
+EVALUATE = """
+mutation Evaluate($us: ID!, $score: Int, $action: Int) {
+  evaluateManualAssessment(userSurveyId: $us, scoreOverride: $score, actionIdOverride: $action) {
+    __typename
+    ... on FinishAssessmentResult { score }
+    ... on OperationInfo { messages { message } }
+  }
+}
+"""
+
+
+def _evaluate(user, user_survey, score=None, action=None):
+    from surveys import schema as schema_module
+
+    result = schema_module.schema.execute_sync(
+        EVALUATE,
+        variable_values={"us": str(user_survey.id), "score": score, "action": action},
+        context_value=_Context(user),
+    )
+    assert result.errors is None, result.errors
+    return result.data["evaluateManualAssessment"]
+
+
+def _submitted(user, survey):
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    user_survey.submitted_at = now()
+    user_survey.save(update_fields=["submitted_at"])
+    return user_survey
+
+
+def test_an_action_override_is_refused_by_name_when_bands_are_off(
+    user, survey, unused_band, options
+):
+    """The gate wrote no band, so there is nothing to override to. The refusal
+    names that reason rather than reporting the id as missing, and the score
+    sent in the same call is saved regardless."""
+    user_survey = _submitted(user, survey)
+
+    payload = _evaluate(user, user_survey, score=7, action=unused_band.id)
+
+    assert payload["__typename"] == "OperationInfo", payload
+    assert "Score bands are off" in payload["messages"][0]["message"]
+    user_survey.refresh_from_db()
+    assert user_survey.score == 7
+    assert user_survey.evaluated_at is not None
+    assert user_survey.action_id is None
+
+
+def test_a_valid_action_override_still_applies_when_bands_are_on(
+    user, scored_survey, band, options
+):
+    """The other direction: the gate must not cost a survey that does act."""
+    user_survey = _submitted(user, scored_survey)
+    user_action = UserAction.objects.get(user_survey=user_survey, origin_id=band.id)
+
+    payload = _evaluate(user, user_survey, score=5, action=user_action.id)
+
+    assert payload == {"__typename": "FinishAssessmentResult", "score": 5}
+    user_survey.refresh_from_db()
+    assert user_survey.action_id == user_action.id
+
+
+def test_a_wrong_action_id_is_still_not_found_and_keeps_the_score(
+    user, scored_survey, band, options
+):
+    """"Not found" stays for a genuinely wrong id on a survey with bands, and
+    that rejection does not roll the score back either."""
+    user_survey = _submitted(user, scored_survey)
+
+    payload = _evaluate(user, user_survey, score=5, action=999999)
+
+    assert payload["__typename"] == "OperationInfo", payload
+    assert payload["messages"][0]["message"] == "Action not found for this assessment."
+    user_survey.refresh_from_db()
+    assert user_survey.score == 5
+    assert user_survey.action_id is None

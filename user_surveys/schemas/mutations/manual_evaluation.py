@@ -117,6 +117,9 @@ class ManualEvaluationMutation:
         2. If score_override is provided, replaces the aggregated score.
         3. If action_id_override is provided, uses that action instead of
            score-range matching.
+
+        A refused action override is reported after the rest has been saved:
+        it never rolls back the evaluation or a score_override in the same call.
         """
         user_survey_id = as_pk(user_survey_id)
         user_survey = UserSurvey.objects.filter(id=user_survey_id).first()
@@ -124,6 +127,24 @@ class ManualEvaluationMutation:
             raise ValidationError("Assessment not found.")
         if not user_survey.submitted_at:
             raise ValidationError("Assessment has not been submitted yet.")
+
+        # The frozen `user_survey.use_actions`, not the survey's: it is the flag
+        # the snapshot gated on, so with it off there are no bands to pick from
+        # and a lookup could only report a missing id.
+        action = refusal = None
+        if action_id_override is not None:
+            if not user_survey.use_actions:
+                refusal = (
+                    "Score bands are off for this survey, so its action cannot be "
+                    "overridden. The rest of the evaluation was saved."
+                )
+            else:
+                action = UserAction.objects.filter(
+                    id=action_id_override,
+                    user_survey=user_survey,
+                ).first()
+                if not action:
+                    refusal = "Action not found for this assessment."
 
         with transaction.atomic():
             # Run standard evaluation (aggregates scores, classifications, etc.)
@@ -134,17 +155,14 @@ class ManualEvaluationMutation:
             if score_override is not None:
                 user_survey.score = score_override
                 update_fields.append("score")
-            if action_id_override is not None:
-                action = UserAction.objects.filter(
-                    id=action_id_override,
-                    user_survey=user_survey,
-                ).first()
-                if not action:
-                    raise ValidationError("Action not found for this assessment.")
+            if action is not None:
                 user_survey.action = action
                 update_fields.append("action")
             if update_fields:
                 user_survey.save(update_fields=update_fields)
+
+        if refusal:
+            raise ValidationError(refusal)
 
         user_survey.refresh_from_db()
         return FinishAssessmentResult(
