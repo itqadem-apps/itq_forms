@@ -36,7 +36,7 @@ from surveys.models import (
 )
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
-from ..utils import input_to_dict, clone_instance
+from ..utils import coerce_duration, input_to_dict, clone_instance
 from app.graphql_ids import as_pk
 
 
@@ -65,6 +65,8 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
+        if 'time_limit' in data:
+            data['time_limit'] = coerce_duration(data['time_limit'])
 
         # The owning organization is bound from the caller's auth context, never
         # taken from client input — see SPEC-forms-permission-gates CAP-1.
@@ -147,6 +149,8 @@ class SurveyMutations:
         ensure_in_org(survey, info.context.auth_context)
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
+        if 'time_limit' in data:
+            data['time_limit'] = coerce_duration(data['time_limit'])
         for field, value in data.items():
             setattr(survey, field, value)
 

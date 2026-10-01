@@ -1,8 +1,11 @@
 import dataclasses
+import datetime
 from typing import Any
 
 import strawberry
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.dateparse import parse_duration
 
 
 def input_to_dict(input_obj: Any, exclude: list[str] | None = None) -> dict[str, Any]:
@@ -34,3 +37,25 @@ def clone_instance(instance: models.Model, **overrides) -> models.Model:
     }
     data.update(overrides)
     return instance.__class__.objects.create(**data)
+
+
+def coerce_duration(value: Any) -> datetime.timedelta | None:
+    """
+    Turn a client duration string into a timedelta, or None for "no limit".
+
+    `Survey.time_limit` is a DurationField, which GraphQL cannot express, so the
+    input declares it as a plain `"H:MM:SS"` string. Postgres has a native
+    interval column and would cast such a string itself, which is why the raw
+    value reached the column unconverted for as long as it did -- but the same
+    assignment raises on sqlite (the test database), and nothing validated the
+    string, so a typo was stored as a silent cast error rather than a field
+    error the admin could see.
+    """
+    if value in (None, ''):
+        return None
+    if isinstance(value, datetime.timedelta):
+        return value
+    parsed = parse_duration(value)
+    if parsed is None:
+        raise ValidationError({'time_limit': f'Not a duration: {value!r}. Expected "H:MM:SS".'})
+    return parsed
