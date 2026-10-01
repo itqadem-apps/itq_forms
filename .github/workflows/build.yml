@@ -227,6 +227,7 @@ jobs:
             "$DISCORD_WEBHOOK_URL"
 
       - name: Trigger Tekton Deploy
+        if: needs.build-and-push-ghcr.result == 'success'
         run: |
           PAYLOAD='{"repository":"${{ github.repository }}","tag":"${{ needs.tag-and-release.outputs.new_tag }}","branch":"${{ github.ref_name }}","image_name":"${{ needs.build-and-push-ghcr.outputs.image_name }}"}'
           SIGNATURE=$(echo -n "${PAYLOAD}" | openssl dgst -sha256 -hmac "${{ secrets.TEKTON_WEBHOOK_SECRET }}" | cut -d' ' -f2)
