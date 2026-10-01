@@ -24,6 +24,7 @@ jobs:
     outputs:
       new_tag: ${{ steps.bump_version.outputs.new_tag }}
       latest_tag: ${{ steps.bump_version.outputs.latest_tag }}
+      already_released: ${{ steps.existing_release.outputs.already_released }}
 
     steps:
       - name: Checkout Repository
@@ -39,8 +40,22 @@ jobs:
       - name: Fetch All Tags
         run: git fetch --tags --force
 
+      - name: Check For Existing Release
+        id: existing_release
+        run: |
+          # GitHub can deliver one push twice; a push run must not release a
+          # commit that already carries a tag. workflow_dispatch still can.
+          existing=$(git tag --points-at "${{ github.sha }}" --list 'v*' | tr '\n' ' ')
+          if [[ "${{ github.event_name }}" == "push" && -n "$existing" ]]; then
+            echo "::notice::${{ github.sha }} is already released as ${existing}- skipping"
+            echo "already_released=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_released=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Determine Next Release Version
         id: bump_version
+        if: steps.existing_release.outputs.already_released != 'true'
         run: |
           branch_name="${GITHUB_REF#refs/heads/}"
           manual_version="${{ github.event.inputs.release_version }}"
@@ -73,12 +88,13 @@ jobs:
           echo "latest_tag=$latest_tag_alias" >> $GITHUB_OUTPUT
 
       - name: Create and Push Git Tag
+        if: steps.existing_release.outputs.already_released != 'true'
         run: |
           git tag -a ${{ env.new_tag }} ${{ github.sha }} -m "Release ${{ env.new_tag }}"
           git push origin ${{ env.new_tag }}
 
       - name: Create GitHub Release
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && steps.existing_release.outputs.already_released != 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.new_tag }}
@@ -89,6 +105,7 @@ jobs:
 
   build-and-push-ghcr:
     needs: tag-and-release
+    if: needs.tag-and-release.outputs.already_released != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -136,7 +153,7 @@ jobs:
   notify:
     needs: [tag-and-release, build-and-push-ghcr]
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && needs.tag-and-release.outputs.already_released != 'true'
     steps:
       - name: Notify Discord
         env:
