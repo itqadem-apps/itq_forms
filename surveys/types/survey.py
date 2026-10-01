@@ -72,6 +72,12 @@ class SurveyType:
     def sections(self) -> List[Annotated["SectionType", strawberry.lazy("surveys.types.content")]]:
         return list(self.sections.filter(deleted_at__isnull=True))
 
+    @strawberry.field
+    def recommendations(self) -> List[Annotated["RecommendationType", strawberry.lazy("recommendations.types.recommendation")]]:
+        """Same soft-delete exclusion as `classifications` above, and missing for the
+        same reason it was missing on the option rows."""
+        return list(self.recommendations.filter(deleted_at__isnull=True))
+
     @strawberry.field(
         description=(
             "The survey's primary locale: the language its body text is "
