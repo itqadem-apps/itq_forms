@@ -62,7 +62,7 @@ Load-bearing in this scope — the rest bind without shaping anything below:
 
 | Inherited | From parent | Binds here |
 | --- | --- | --- |
-| `estate:AD-2` | estate spine | A decision binding only `itq_forms` is an `AD` here, reviewed with this repo's code and pinned at its ref. A decision `itq_forms` and `itq_surveys` must *agree* on is an estate call — see the surfaced conflict in `forms:AD-4`. |
+| `estate:AD-2` | estate spine | A decision binding only `itq_forms` is an `AD` here, reviewed with this repo's code and pinned at its ref. A decision `itq_forms` and `itq_surveys` must *agree* on is an estate call — the ordering scope in `forms:AD-4` was one, and is pinned as `estate:AD-19`. |
 | `estate:AD-3` | estate spine | Every citation here is namespaced. Every spine in the estate reaches its own first decision, so a bare id is unresolvable. |
 | `estate:AD-8` | estate spine | Two ACL database roles: SELECT-only at runtime, write-capable only at deploy. `itq_forms` routes the ACL database in `app/db_routers.py`, so a flow evaluation may not write through that connection. |
 | `estate:AD-14` | estate spine | N>1 replicas. Flow evaluation holds no in-process state — see `forms:AD-17`. |
@@ -183,11 +183,13 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   provenance and its carve-outs, in `handoffs/forms-to-estate-question-ordering-scope.md` at the
   estate root.
 
-  **What the ruling does not yet bind.** The `surveys:AD-9` amendment has not landed in
-  `itq_surveys`, and the estate `AD` that `estate:AD-2` requires for a decision binding two repos
-  has not been written — so no pinned, reviewed decision yet holds `itq_surveys` to this. The
-  ordering backfill (`forms:AD-14`'s second migration) ships only after the amendment; the
-  `Section.is_hidden` retirement ahead of it is not held.
+  The ruling is pinned as `estate:AD-19`, which is where `estate:AD-2` puts a decision binding two
+  repos, and which also names the three things the ruling deliberately did not decide.
+
+  **What is still outstanding.** The `surveys:AD-9` amendment has not landed in `itq_surveys`, so
+  the decision binds without yet being enacted there. The ordering backfill (`forms:AD-14`'s
+  second migration) ships only after the amendment; the `Section.is_hidden` retirement ahead of it
+  is not held.
 
 ### AD-5 — An edge is forward-only, enforced by one predicate at every write
 
@@ -453,14 +455,13 @@ sequenceDiagram
 ## Deferred
 
 - **The ordering-scope conflict with `itq_surveys`** — ruled 2026-10-04 in favour of this spine's
-  scope (`itq_surveys` adopts survey-wide), so the decision is closed; the consequences are not.
-  See `forms:AD-4` and `handoffs/forms-to-estate-question-ordering-scope.md`. Still open: the
-  `surveys:AD-9` amendment has not landed, the estate `AD` that `estate:AD-2` requires has not been
-  written, and the ruling deliberately did not decide two things it creates — the cutover ordering
-  of the backfill relative to `itq_surveys`' first question mutation, and which writer wins when one
-  survey is renumbered under both scopes in sequence under `surveys:AD-7` and `surveys:AD-11`, which
-  is where `forms:AD-5`'s forward-only predicate is exposed. The ordering migration waits on the
-  amendment.
+  scope and pinned as `estate:AD-19`, so the decision is closed; the consequences are not. See
+  `forms:AD-4` and `handoffs/forms-to-estate-question-ordering-scope.md`. Still open: the
+  `surveys:AD-9` amendment has not landed, and `estate:AD-19` deliberately left three things
+  undecided — the cutover ordering of the backfill relative to `itq_surveys`' first question
+  mutation, which writer wins when one survey is renumbered under both scopes in sequence under
+  `surveys:AD-7` and `surveys:AD-11` (where `forms:AD-5`'s forward-only predicate is exposed), and
+  the `itq_surveys` owner's own review. The ordering migration waits on the amendment.
 - **What a routing terminate emits.** `SurveyResponseSubmitted` (`user_surveys/events.py`) fires
   on any submission, carries `score`, and is consumed by `itq_courses` for quiz-lesson progress.
   `forms:AD-7` creates a new terminal path and `forms:AD-10` changes what `score` means; whether
