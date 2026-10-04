@@ -25,9 +25,10 @@ ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 @pytest.fixture
 def rows(db):
+    # Surveys and collections can no longer be null-owned (#168, NOT NULL), so
+    # only the guardian projection has nulls left to count.
     owned = Survey.objects.create(survey_type="survey", organization_id=ORG)
-    stranded = Survey.objects.create(survey_type="assessment", organization_id=None)
-    SurveyCollection.objects.create(organization_id=None)
+    SurveyCollection.objects.create(organization_id=ORG)
     child = Child.objects.create(id="child-1", name="A child")
     # Three null owners, and only one of them is a defect. The blank role is
     # kept because the projection writes `""` when the event carries no role.
@@ -48,7 +49,7 @@ def rows(db):
         role="supervisor",
         organization_id=None,
     )
-    return {"owned": owned, "stranded": stranded}
+    return {"owned": owned}
 
 
 def _run(**kwargs):
@@ -57,21 +58,12 @@ def _run(**kwargs):
     return out.getvalue()
 
 
-def test_it_counts_the_stranded_rows(rows):
+def test_it_counts_the_null_owned_rows(rows):
     output = _run()
 
-    assert "surveys_survey" in output
-    assert "1 null of       2" in output
-    assert "survey_collections_surveycollection" in output
-    assert "accounts_childguardian" in output
-
-
-def test_it_breaks_surveys_down_by_type_and_status(rows):
-    output = _run()
-
-    # The stranded row is the assessment; the owned survey must not appear.
-    assert "assessment" in output
-    assert "survey       " not in output.split("by type and status:")[1]
+    assert "surveys_survey                                 0 null of       1" in output
+    assert "survey_collections_surveycollection            0 null of       1" in output
+    assert "accounts_childguardian                         3 null of       3" in output
 
 
 def test_it_names_the_guardian_table_as_not_repairable_here(rows):
@@ -94,20 +86,6 @@ def test_it_splits_the_guardian_nulls_by_role(rows):
     assert "role=guardian" in output
     assert "not org-scoped" in output
     assert "role=(blank)" in output
-
-
-def test_it_flags_rows_outside_the_gap_window(rows):
-    """A null owner created after the CAP-1 binding is a second source, and the
-    history in the docstring does not explain it."""
-    Survey.objects.create(
-        survey_type="survey", organization_id=None, created_at="2027-01-01T00:00:00Z"
-    )
-
-    assert "OUTSIDE the gap window" in _run()
-
-
-def test_by_month_groups_by_creation_month(rows):
-    assert "by month" in _run(by_month=True)
 
 
 def test_it_writes_nothing(rows):

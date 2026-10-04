@@ -34,6 +34,8 @@ from user_surveys.services import (
     finish_assessment,
 )
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
 User = get_user_model()
 
 
@@ -91,12 +93,12 @@ class TestEnrollment:
         assert us.collection == collection
 
     def test_enroll_child_required(self, user):
-        survey = Survey.objects.create(is_for_child=True)
+        survey = Survey.objects.create(organization_id=ORG, is_for_child=True)
         with pytest.raises(ValueError, match="child is required"):
             enroll_user_in_assessment(user, survey.id)
 
     def test_enroll_child_survey_with_child(self, user):
-        survey = Survey.objects.create(is_for_child=True)
+        survey = Survey.objects.create(organization_id=ORG, is_for_child=True)
         child = Child.objects.create(id="child-abc", name="Alice")
         us, created = enroll_user_in_assessment(user, survey.id, child=child)
         assert created is True
@@ -131,6 +133,7 @@ class TestEvaluation:
     def scored_survey(self):
         """Survey with score, classifications, and recommendations enabled."""
         return Survey.objects.create(
+            organization_id=ORG,
             evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
             use_score=True,
             use_classifications=True,
@@ -268,7 +271,7 @@ class TestEvaluation:
         assert recs.first().recommendation == urec1
 
     def test_evaluate_no_score_when_disabled(self, user):
-        survey = Survey.objects.create(use_score=False)
+        survey = Survey.objects.create(organization_id=ORG, use_score=False)
         section = Section.objects.create(survey=survey, title="S")
         q, schema = _make_mcq_question(survey, section, "Q")
         opt = AnswerSchemaOption.objects.create(
@@ -316,6 +319,7 @@ class TestFinishAssessment:
 
     def test_finish_auto_evaluate(self, user):
         survey = Survey.objects.create(
+            organization_id=ORG,
             use_score=True,
             evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,
         )
@@ -341,6 +345,7 @@ class TestFinishAssessment:
 
     def test_finish_manual_no_auto_evaluate(self, user):
         survey = Survey.objects.create(
+            organization_id=ORG,
             use_score=True,
             evaluation_type=Survey.EVALUATION_TYPE_MANUAL_EVALUATION,
         )
@@ -488,17 +493,17 @@ class TestSurveyFactory:
 
     def test_factory_create(self):
         from surveys.factories import SurveyFactory
-        s = SurveyFactory.create()
+        s = SurveyFactory.create(organization_id=ORG)
         assert s.pk is not None
 
     def test_factory_create_batch(self):
         from surveys.factories import SurveyFactory
-        batch = SurveyFactory.create_batch(3)
+        batch = SurveyFactory.create_batch(3, organization_id=ORG)
         assert len(batch) == 3
         assert all(s.pk is not None for s in batch)
 
     def test_factory_with_overrides(self):
         from surveys.factories import SurveyFactory
-        s = SurveyFactory.create(title="Custom Title", is_timed=True)
+        s = SurveyFactory.create(organization_id=ORG, title="Custom Title", is_timed=True)
         assert s.title == "Custom Title"  # via translation property
         assert s.is_timed is True

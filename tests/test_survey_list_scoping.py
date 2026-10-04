@@ -65,8 +65,7 @@ def platform_org():
 
 @pytest.fixture
 def rows(db):
-    """One draft and one published row per organization, and the same pair
-    null-owned — the Apr-Sep 2026 backfill gap left both statuses behind."""
+    """One draft and one published row per organization."""
     return {
         "a_draft": Survey.objects.create(
             organization_id=ORG_A, status=Survey.STATUS_DRAFT
@@ -79,12 +78,6 @@ def rows(db):
         ),
         "b_published": Survey.objects.create(
             organization_id=ORG_B, status=Survey.STATUS_PUBLISHED
-        ),
-        "orphan_draft": Survey.objects.create(
-            organization_id=None, status=Survey.STATUS_DRAFT
-        ),
-        "orphan_published": Survey.objects.create(
-            organization_id=None, status=Survey.STATUS_PUBLISHED
         ),
     }
 
@@ -108,19 +101,6 @@ def test_another_organizations_draft_is_not_listed(rows):
 
     assert rows["b_draft"].pk not in ids
     assert total == len(ids)
-
-
-def test_a_null_owned_row_is_not_listed(rows):
-    """The May-Jun 2026 gap: a null owner belongs to nobody. Nine such rows
-    exist in production and `ensure_in_org` already refuses them on read.
-
-    Status does not enter into it — a null-owned *published* row is no more
-    org A's than a draft is — which is what separates this gate from the
-    unscoped public set below, where the same row is visible."""
-    ids = _list(ORG_A)[0]
-
-    assert rows["orphan_draft"].pk not in ids
-    assert rows["orphan_published"].pk not in ids
 
 
 def test_the_caller_sees_its_own_rows_whatever_their_status(rows):
@@ -148,18 +128,10 @@ def test_an_unscoped_caller_sees_only_published_rows(rows):
     This test asserted the opposite until that ruling, on the grounds that
     narrowing the path would settle the question by accident. It is settled
     now, deliberately.
-
-    ``orphan_published`` is in the expected set as a *consequence* of the
-    ruling, not as a policy ruled on its own: a row with a null owner is
-    published, so the public set takes it. That is what production does today
-    too, and it is the odd corner where a row no tenant can reach is
-    nonetheless publicly listed. Repairing those owners is task 107, not this
-    gate's job.
     """
     assert _list(None)[0] == {
         rows["a_published"].pk,
         rows["b_published"].pk,
-        rows["orphan_published"].pk,
     }
 
 
@@ -183,4 +155,3 @@ def test_an_unscoped_caller_sees_no_drafts(rows):
 
     assert rows["a_draft"].pk not in ids
     assert rows["b_draft"].pk not in ids
-    assert rows["orphan_draft"].pk not in ids

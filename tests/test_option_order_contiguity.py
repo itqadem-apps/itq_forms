@@ -9,9 +9,12 @@ because nothing in the authoring screens can produce it. The same absence made
 survivors rather than reading the highest order.
 """
 
+import uuid
 import pytest
 
 from surveys.models import AnswerSchemaOption, Question, Section, Survey
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 
 def _orders(schema):
@@ -20,7 +23,7 @@ def _orders(schema):
 
 @pytest.fixture
 def schema(db):
-    survey = Survey.objects.create()
+    survey = Survey.objects.create(organization_id=ORG)
     section = Section.objects.create(survey=survey, title="S", description="")
     question = section.questions.first()  # a signal seeds one
     question.type = Question.QUESTION_TYPE_RADIO_MCQ

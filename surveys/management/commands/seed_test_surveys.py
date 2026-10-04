@@ -2,10 +2,11 @@
 Seed 10 test surveys covering all solve/evaluate workflows end-to-end.
 
 Usage:
-    python manage.py seed_test_surveys
-    python manage.py seed_test_surveys --truncate   # delete existing test surveys first
+    python manage.py seed_test_surveys --organization-id <uuid>
+    python manage.py seed_test_surveys --organization-id <uuid> --truncate   # delete existing test surveys first
 """
 
+import uuid
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -139,8 +140,9 @@ def _survey_translation(survey, lang, title, description=None, short_description
 # ─────────────────────────────────────────────────────────────────────
 # Survey 1: Basic Scored Exam — full anti-cheat, timed, auto-eval
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_1():
+def create_survey_1(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Basic Scored Exam",
         description="Timed exam with full anti-cheat, scoring, and locked answers.",
         survey_type="exam",
@@ -182,8 +184,9 @@ def create_survey_1():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 2: Classification + Recommendation Personality Assessment
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_2():
+def create_survey_2(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Personality Assessment",
         description="Classification-based assessment with recommendations.",
         survey_type="assessment",
@@ -236,8 +239,9 @@ def create_survey_2():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 3: Score-Range Actions (Form, Full Form)
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_3():
+def create_survey_3(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Score-Range Actions",
         description="Form with score-based actions and mixed question types.",
         survey_type="form",
@@ -274,8 +278,9 @@ def create_survey_3():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 4: Grid Questions Exam
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_4():
+def create_survey_4(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Grid Questions Exam",
         description="Exam with radio grid and checkbox grid questions.",
         survey_type="exam",
@@ -317,8 +322,9 @@ def create_survey_4():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 5: Ending Option Early Termination
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_5():
+def create_survey_5(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Ending Option Termination",
         description="Assessment with ending option early termination (in-row).",
         survey_type="assessment",
@@ -346,8 +352,9 @@ def create_survey_5():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 6: Manual Evaluation (Essay + File + Date types)
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_6():
+def create_survey_6(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Manual Evaluation Portfolio",
         description="Curriculum with manual evaluation and file/text/date questions.",
         survey_type="curriculum",
@@ -374,8 +381,9 @@ def create_survey_6():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 7: Child Assessment (is_for_child + classifications)
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_7():
+def create_survey_7(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Child Developmental Milestones",
         description="Child assessment with classifications.",
         survey_type="survey",
@@ -415,8 +423,9 @@ def create_survey_7():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 8: Section Navigation with Jump
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_8():
+def create_survey_8(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Section Jump Navigation",
         description="Form demonstrating section jump navigation.",
         survey_type="form",
@@ -446,8 +455,9 @@ def create_survey_8():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 9: Anti-Cheat OFF Contrast Test (timed, but no anti-cheat)
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_9():
+def create_survey_9(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Anti-Cheat OFF Contrast",
         description="Timed exam with anti-cheat disabled — contrast test for Survey 1.",
         survey_type="exam",
@@ -487,8 +497,9 @@ def create_survey_9():
 # ─────────────────────────────────────────────────────────────────────
 # Survey 10: Multi-Language Survey (English + Arabic)
 # ─────────────────────────────────────────────────────────────────────
-def create_survey_10():
+def create_survey_10(organization_id):
     survey = _create_survey(
+        organization_id=organization_id,
         title=f"{TAG}Multi-Language Survey",
         description="Survey with English and Arabic translations.",
         survey_type="survey",
@@ -574,6 +585,12 @@ class Command(BaseCommand):
             action="store_true",
             help=f'Delete existing test surveys (translation title starts with "{TAG}") before seeding.',
         )
+        parser.add_argument(
+            "--organization-id",
+            type=uuid.UUID,
+            required=True,
+            help="Organization that owns the created rows (a survey needs one).",
+        )
 
     def handle(self, *args, **options):
         with transaction.atomic():
@@ -585,7 +602,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"Deleted {deleted} existing test survey objects."))
 
             for label, creator_fn in CREATORS:
-                survey = creator_fn()
+                survey = creator_fn(options["organization_id"])
                 self.stdout.write(self.style.SUCCESS(f"  [{survey.id}] {label}"))
 
         self.stdout.write(self.style.SUCCESS(f"\nDone — {len(CREATORS)} test surveys created."))

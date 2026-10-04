@@ -129,10 +129,16 @@ def handle_course_created(payload: dict[str, Any]) -> ExternalReference | None:
         logger.info("courses.course.created reuse source_id=%s collection_id=%s", source_id, ref.collection_id)
         return ref
 
+    organization_id = _organization_id(payload)
+    if not organization_id:
+        # A collection must have an owner (#168); retrying cannot supply one.
+        logger.warning("courses.course.created skip reason=missing_organization_id source_id=%s", source_id)
+        return None
+
     collection = SurveyCollection.objects.create(
         type="exam",
         status=SurveyCollection.STATUS_DRAFT,
-        organization_id=_organization_id(payload),
+        organization_id=organization_id,
     )
     _apply_translations(collection, payload)
 

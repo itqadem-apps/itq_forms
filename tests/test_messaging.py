@@ -4,6 +4,8 @@ from surveys.messaging import build_survey_payload_or_log, serialize_survey
 
 
 def test_serialize_survey_returns_none_when_survey_org_missing(survey):
+    survey.organization_id = None  # in memory only: the column is NOT NULL
+
     payload = serialize_survey(survey)
 
     assert payload["organization_id"] is None
@@ -29,6 +31,8 @@ def test_serialize_survey_translations_match_orders_contract(survey):
 
 
 def test_build_survey_payload_or_log_skips_when_org_missing(survey, caplog):
+    survey.organization_id = None  # in memory only: the column is NOT NULL
+
     with caplog.at_level("WARNING"):
         payload = build_survey_payload_or_log(survey, "SurveyPublished")
 

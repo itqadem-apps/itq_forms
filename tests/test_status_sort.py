@@ -11,6 +11,7 @@ environment does not have (every test in ``test_queries.py`` fails on it). The
 pipeline is the whole of the sorting behaviour — the resolver only annotates the
 queryset and hands it over.
 """
+import uuid
 from dataclasses import fields as dc_fields
 
 import pytest
@@ -33,6 +34,8 @@ from surveys.filters import (
 )
 from surveys.inputs import SortDirection, SurveyFilters, SurveySortInput
 from surveys.models import Survey
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 pytestmark = pytest.mark.django_db
 
@@ -61,29 +64,29 @@ def _sorted_survey_statuses(direction):
 
 def test_surveys_status_sort_puts_published_first():
     for status in CREATE_ORDER:
-        Survey.objects.create(status=status)
+        Survey.objects.create(organization_id=ORG, status=status)
 
     assert _sorted_survey_statuses(SortDirection.ASC) == PUBLISHED_FIRST
 
 
 def test_surveys_status_sort_desc_reverses():
     for status in CREATE_ORDER:
-        Survey.objects.create(status=status)
+        Survey.objects.create(organization_id=ORG, status=status)
 
     assert _sorted_survey_statuses(SortDirection.DESC) == list(reversed(PUBLISHED_FIRST))
 
 
 def test_unknown_status_sorts_last_rather_than_raising():
     """A row in a state the vocabulary has not caught up with must not break the query."""
-    Survey.objects.create(status="published")
-    Survey.objects.create(status="some_new_state")
+    Survey.objects.create(organization_id=ORG, status="published")
+    Survey.objects.create(organization_id=ORG, status="some_new_state")
 
     assert _sorted_survey_statuses(SortDirection.ASC) == ["published", "some_new_state"]
 
 
 def test_collections_status_sort_puts_published_first():
     for status in CREATE_ORDER:
-        SurveyCollection.objects.create(status=status)
+        SurveyCollection.objects.create(organization_id=ORG, status=status)
 
     qs = annotate_status_rank(SurveyCollection.objects.filter(deleted_at__isnull=True))
     spec = SurveyCollectionSpec(

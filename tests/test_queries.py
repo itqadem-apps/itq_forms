@@ -18,6 +18,8 @@ from taxonomy.models import Category, CategoryTranslation
 from user_surveys.models import UserAnswer, UserSurvey
 from user_surveys.services import enroll_user_in_assessment
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
 
 def _gql(client, query, variables=None):
     """Helper: POST a GraphQL query and return parsed JSON."""
@@ -66,7 +68,7 @@ class TestSurveysQuery:
 
     def test_surveys_pagination(self):
         for i in range(5):
-            Survey.objects.create()
+            Survey.objects.create(organization_id=ORG)
 
         client = Client()
         status, data = _gql(client, """
@@ -84,7 +86,7 @@ class TestSurveysQuery:
 
     def test_surveys_offset(self):
         for i in range(5):
-            Survey.objects.create()
+            Survey.objects.create(organization_id=ORG)
 
         client = Client()
         status, data = _gql(client, """
@@ -99,7 +101,7 @@ class TestSurveysQuery:
         assert len(data["data"]["surveys"]["items"]) == 2
 
     def test_surveys_with_facets(self, category):
-        Survey.objects.create(survey_type="survey", status="published", category=category)
+        Survey.objects.create(organization_id=ORG, survey_type="survey", status="published", category=category)
 
         client = Client()
         status, data = _gql(client, """
@@ -122,8 +124,8 @@ class TestSurveysQuery:
         CategoryTranslation.objects.create(category=root, language="ar", name="علم النفس", slug="psychology")
         CategoryTranslation.objects.create(category=child, language="ar", name="سريري", slug="clinical")
 
-        Survey.objects.create(survey_type="survey", category=child)
-        Survey.objects.create(survey_type="survey", category=root)
+        Survey.objects.create(organization_id=ORG, survey_type="survey", category=child)
+        Survey.objects.create(organization_id=ORG, survey_type="survey", category=root)
 
         client = Client()
         status, data = _gql(client, """
@@ -159,9 +161,9 @@ class TestSurveysQuery:
 
     def test_surveys_search(self):
         from surveys.models import SurveyTranslation
-        s1 = Survey.objects.create()
+        s1 = Survey.objects.create(organization_id=ORG)
         SurveyTranslation.objects.create(survey=s1, language="en", title="Psychology Assessment")
-        s2 = Survey.objects.create()
+        s2 = Survey.objects.create(organization_id=ORG)
         SurveyTranslation.objects.create(survey=s2, language="en", title="Math Exam")
 
         client = Client()
@@ -182,8 +184,8 @@ class TestSurveysQuery:
         assert "Psychology" in result["items"][0]["translations"][0]["title"]
 
     def test_surveys_filter_by_type(self):
-        Survey.objects.create(survey_type="survey")
-        Survey.objects.create(survey_type="exam")
+        Survey.objects.create(organization_id=ORG, survey_type="survey")
+        Survey.objects.create(organization_id=ORG, survey_type="exam")
         client = Client()
         status, data = _gql(client, """
             query {
@@ -308,7 +310,7 @@ class TestCollectionsQuery:
     def test_collections_pagination(self):
         from survey_collections.models import SurveyCollectionTranslation
         for i in range(5):
-            c = SurveyCollection.objects.create()
+            c = SurveyCollection.objects.create(organization_id=ORG)
             SurveyCollectionTranslation.objects.create(
                 collection=c, language="en", title=f"Collection {i}",
             )

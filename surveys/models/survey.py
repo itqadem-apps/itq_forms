@@ -144,8 +144,6 @@ class Survey(models.Model):
         verbose_name=_("Sponsor"),
     )
     organization_id = models.UUIDField(
-        null=True,
-        blank=True,
         db_index=True,
         verbose_name=_("Organization ID"),
     )

@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -11,8 +13,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.epilog = (
             "Examples:\n"
-            "  python manage.py seed_surveys --count 50\n"
-            "  python manage.py seed_surveys --truncate --count 10 --status published\n"
+            "  python manage.py seed_surveys --organization-id <uuid> --count 50\n"
+            "  python manage.py seed_surveys --organization-id <uuid> --truncate --count 10 --status published\n"
         )
         parser.add_argument("--count", type=int, default=25, help="Number of surveys to create")
         parser.add_argument(
@@ -36,6 +38,12 @@ class Command(BaseCommand):
             action="store_true",
             help="Force is_timed=True",
         )
+        parser.add_argument(
+            "--organization-id",
+            type=uuid.UUID,
+            required=True,
+            help="Organization that owns the created rows (a survey needs one).",
+        )
 
     def handle(self, *args, **options):
         count = options["count"]
@@ -43,7 +51,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Nothing to do: --count must be > 0"))
             return
 
-        overrides = {}
+        overrides = {"organization_id": options["organization_id"]}
         if options["status"]:
             overrides["status"] = options["status"]
         if options["assignable"]:

@@ -1,3 +1,5 @@
+import uuid
+
 from asgiref.sync import async_to_sync
 
 from app.messaging.handlers.courses_events import handle_courses_event
@@ -9,6 +11,7 @@ from external_references.courses import (
 from external_references.models import ExternalReference
 from survey_collections.models import SurveyCollection
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 def _payload(course_id="course-1", *, title="Algebra 101", **extra):
     """Build a courses-service event envelope (matches the service contract)."""
@@ -18,6 +21,7 @@ def _payload(course_id="course-1", *, title="Algebra 101", **extra):
         "aggregate_id": course_id,
         "course": {
             "id": course_id,
+            "organization_id": str(ORG),
             "title": title,
             "language": "en",
             "description": "Intro algebra course",
@@ -37,6 +41,7 @@ def test_course_created_creates_collection_and_reference():
     assert ref.collection is not None
     assert ref.collection.type == "exam"
     assert ref.collection.status == SurveyCollection.STATUS_DRAFT
+    assert ref.collection.organization_id == ORG
     assert ref.data["aggregate_id"] == "course-1"
     assert ref.data["course"]["title"] == "Algebra 101"
     translation = ref.collection.translations.get(language="en")
@@ -44,7 +49,7 @@ def test_course_created_creates_collection_and_reference():
 
 
 def test_course_created_accepts_flat_payload_without_envelope():
-    handle_course_created({"id": "flat-1", "title": "Flat Course"})
+    handle_course_created({"id": "flat-1", "title": "Flat Course", "organization_id": str(ORG)})
 
     ref = ExternalReference.objects.get(source_id="flat-1")
     assert ref.collection.translations.get(language="en").title == "Flat Course"
@@ -117,3 +122,13 @@ def test_dispatch_ignores_unrelated_subject():
 def test_missing_id_is_skipped():
     handle_course_created({"course": {"title": "no id"}})
     assert ExternalReference.objects.count() == 0
+
+
+def test_missing_organization_is_skipped():
+    """A collection cannot be created without an owner, and a redelivery
+    cannot supply one, so the event is skipped rather than raising."""
+    payload = _payload()
+    del payload["course"]["organization_id"]
+    assert handle_course_created(payload) is None
+    assert ExternalReference.objects.count() == 0
+    assert SurveyCollection.objects.count() == 0

@@ -8,12 +8,15 @@ it does to already-correct rows matters as much as what it does to the broken
 ones.
 """
 
+import uuid
 import importlib
 
 import pytest
 from django.apps import apps as django_apps
 
 from surveys.models import Survey
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 normalize = importlib.import_module(
     "surveys.migrations.0039_normalize_survey_type"
@@ -30,14 +33,14 @@ def db_(db):
 
 
 def test_route_slug_becomes_the_canonical_type(db_):
-    survey = Survey.objects.create(survey_type="forms")
+    survey = Survey.objects.create(organization_id=ORG, survey_type="forms")
     _run()
     survey.refresh_from_db()
     assert survey.survey_type == Survey.ASSESSMENT_TYPE_FORM
 
 
 def test_smart_form_becomes_the_canonical_type(db_):
-    survey = Survey.objects.create(survey_type="smart_form")
+    survey = Survey.objects.create(organization_id=ORG, survey_type="smart_form")
     _run()
     survey.refresh_from_db()
     assert survey.survey_type == Survey.ASSESSMENT_TYPE_FORM
@@ -45,7 +48,7 @@ def test_smart_form_becomes_the_canonical_type(db_):
 
 def test_valid_types_are_left_alone(db_):
     kept = {
-        t: Survey.objects.create(survey_type=t)
+        t: Survey.objects.create(organization_id=ORG, survey_type=t)
         for t, _label in Survey.ASSESSMENT_TYPES
     }
     _run()
@@ -55,7 +58,7 @@ def test_valid_types_are_left_alone(db_):
 
 
 def test_a_clean_database_is_unchanged(db_):
-    Survey.objects.create(survey_type=Survey.ASSESSMENT_TYPE_SURVEY)
+    Survey.objects.create(organization_id=ORG, survey_type=Survey.ASSESSMENT_TYPE_SURVEY)
     before = list(Survey.objects.order_by("id").values_list("id", "survey_type"))
     _run()
     assert list(Survey.objects.order_by("id").values_list("id", "survey_type")) == before
@@ -63,7 +66,7 @@ def test_a_clean_database_is_unchanged(db_):
 
 def test_every_row_ends_on_a_declared_choice(db_):
     for survey_type in ("forms", "smart_form", "survey", "curriculum"):
-        Survey.objects.create(survey_type=survey_type)
+        Survey.objects.create(organization_id=ORG, survey_type=survey_type)
     _run()
     declared = {t for t, _label in Survey.ASSESSMENT_TYPES}
     assert set(Survey.objects.values_list("survey_type", flat=True)) <= declared

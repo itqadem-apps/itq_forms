@@ -1,3 +1,4 @@
+import uuid
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -5,6 +6,8 @@ from django.test import TestCase
 
 from surveys.messaging import build_survey_payload_or_log
 from surveys.models import Survey
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 
 class SurveyEventsSmokeTest(TestCase):
@@ -21,7 +24,8 @@ class SurveyEventsSmokeTest(TestCase):
         self.assertEqual(payload["organization_id"], str(org_id))
 
     def test_missing_org_uuid_skips_publishing_and_logs_reason(self):
-        survey = Survey.objects.create(status=Survey.STATUS_PUBLISHED)
+        survey = Survey.objects.create(organization_id=ORG, status=Survey.STATUS_PUBLISHED)
+        survey.organization_id = None  # in memory only: the column is NOT NULL
 
         with patch("app.messaging.publisher._outbox.add") as outbox_add:
             with self.assertLogs("surveys.messaging", level="WARNING") as logs:

@@ -34,9 +34,12 @@ from surveys.models import (
 from user_surveys.models import UserSection
 from user_surveys.services import enroll_user_in_assessment
 
+ORG = UUID("11111111-1111-1111-1111-111111111111")
+
 
 def _new_survey(**fields):
     return Survey.objects.create(
+        organization_id=ORG,
         survey_type=Survey.ASSESSMENT_TYPE_SURVEY,
         display_option=Survey.DISPLAY_OPTION_BY_QUESTION,
         evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,

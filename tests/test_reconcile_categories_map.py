@@ -17,6 +17,8 @@ from django.core.management.base import CommandError
 from surveys.models import Survey
 from taxonomy.models import Category, CategoryTranslation
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
 TREE = uuid.UUID("11111111-1111-1111-1111-111111111111")
 LEGACY_TREE = uuid.UUID("99999999-9999-9999-9999-999999999999")
 
@@ -33,7 +35,7 @@ def rows(db):
     reworded = _category(TREE, "التعليم الشامل", "inclusive-education")
     legacy_same = _category(LEGACY_TREE, "التوحد", "التوحد")
     legacy_reworded = _category(LEGACY_TREE, "التعليم الدمجي", "التعليم-الدمجي")
-    survey = Survey.objects.create(survey_type="survey", category=legacy_reworded)
+    survey = Survey.objects.create(organization_id=ORG, survey_type="survey", category=legacy_reworded)
     return locals()
 
 

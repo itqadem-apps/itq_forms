@@ -7,8 +7,11 @@ which names no field (the FK is `schema`), so every call raised FieldError
 before it reached the media client; and question covers were never collected at
 all, so they were never granted to a buyer nor promoted on publish.
 """
+import uuid
 from surveys.media_access import _collect_restricted_asset_ids
 from surveys.models import Survey, Section, Question, AnswerSchemaOption
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 
 def test_collects_section_question_and_option_assets(survey, section, question):
@@ -47,7 +50,7 @@ def test_ignores_null_assets(survey, question):
 
 
 def test_scopes_to_the_named_survey(survey, question):
-    other = Survey.objects.create()
+    other = Survey.objects.create(organization_id=ORG)
     other_section = Section.objects.create(survey=other, title="Elsewhere")
     other_question = other_section.questions.first()
     other_question.cover_asset_id = "elsewhere"

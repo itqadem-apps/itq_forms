@@ -6,12 +6,15 @@ output — so what it does to a *clean* schema matters as much as what it does t
 a broken one.
 """
 
+import uuid
 import importlib
 
 import pytest
 from django.apps import apps as django_apps
 
 from surveys.models import AnswerSchemaOption, Question, Section, Survey
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 close_holes = importlib.import_module(
     "surveys.migrations.0038_close_option_order_holes"
@@ -38,7 +41,7 @@ def _schema(survey, title):
 
 @pytest.fixture
 def survey(db):
-    return Survey.objects.create()
+    return Survey.objects.create(organization_id=ORG)
 
 
 def test_a_hole_is_closed(survey):

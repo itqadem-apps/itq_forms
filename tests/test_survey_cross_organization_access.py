@@ -150,16 +150,6 @@ def test_platform_deletes_any_organizations_survey(user, org_b_survey):
 
 # --- a row with no owner is not reachable by a tenant ----------------------
 
-def test_a_survey_with_no_organization_is_refused(user, db):
-    """`organization_id` is nullable and rows predating the CAP-1 binding can
-    be null; the ported gate treats a null owner as a refusal, exactly as the
-    itq_courses reference does."""
-    orphan = Survey.objects.create(survey_type="survey", organization_id=None)
-
-    with pytest.raises(PermissionError):
-        _read(user, ORG_A, orphan)
-
-
 # --- an unscoped caller reads the public set and nothing else --------------
 
 class _Anon:

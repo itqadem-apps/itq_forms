@@ -9,6 +9,7 @@ thing that produces that payload, and `create_survey_snapshot` used to write
 one whenever a source section fell outside the survey's own section list.
 """
 
+import uuid
 import pytest
 from django.core.management import call_command
 from django.utils.timezone import now
@@ -17,6 +18,8 @@ from io import StringIO
 from surveys.models import Question, Section
 from user_surveys.models import UserQuestion
 from user_surveys.services import enroll_user_in_assessment
+
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
 
 
 RESULTS_QUERY = """
@@ -95,6 +98,7 @@ def test_a_section_outside_the_surveys_own_list_still_links(user, survey, sectio
     from surveys.models import Survey
 
     other_survey = Survey.objects.create(
+        organization_id=ORG,
         survey_type=Survey.ASSESSMENT_TYPE_SURVEY,
         display_option=Survey.DISPLAY_OPTION_BY_QUESTION,
         evaluation_type=Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION,

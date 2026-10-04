@@ -39,6 +39,8 @@ from user_surveys.models import (
     UserSurveyRecommendation,
 )
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
 User = get_user_model()
 
 
@@ -65,7 +67,7 @@ class TestSurveyModel:
         assert survey.survey_type == Survey.ASSESSMENT_TYPE_SURVEY
 
     def test_survey_defaults(self):
-        s = Survey.objects.create()
+        s = Survey.objects.create(organization_id=ORG)
         assert s.display_option == Survey.DISPLAY_OPTION_BY_QUESTION
         assert s.evaluation_type == Survey.EVALUATION_TYPE_AUTOMATIC_EVALUATION
         assert s.use_score is True
@@ -76,8 +78,8 @@ class TestSurveyModel:
         assert str(survey) == "Test Survey"
 
     def test_survey_ordering(self):
-        s1 = Survey.objects.create()
-        s2 = Survey.objects.create()
+        s1 = Survey.objects.create(organization_id=ORG)
+        s2 = Survey.objects.create(organization_id=ORG)
         surveys = list(Survey.objects.all())
         assert surveys[0].pk == s2.pk  # -created_at ordering
 
@@ -89,12 +91,12 @@ class TestSurveyModel:
 
     def test_survey_all_types(self):
         for type_val, _ in Survey.ASSESSMENT_TYPES:
-            s = Survey.objects.create(survey_type=type_val)
+            s = Survey.objects.create(organization_id=ORG, survey_type=type_val)
             assert s.survey_type == type_val
 
     def test_survey_all_display_options(self):
         for opt_val, _ in Survey.DISPLAY_OPTIONS:
-            s = Survey.objects.create(display_option=opt_val)
+            s = Survey.objects.create(organization_id=ORG, display_option=opt_val)
             assert s.display_option == opt_val
 
     def test_survey_properties(self, survey):
@@ -117,7 +119,7 @@ class TestSurveyStatus:
 
     def test_status_all_choices(self):
         for status_val, label in Survey.STATUS_CHOICES:
-            s = Survey.objects.create(status=status_val)
+            s = Survey.objects.create(organization_id=ORG, status=status_val)
             assert s.status == status_val
             assert s.get_status == str(label)
 
@@ -382,7 +384,7 @@ class TestUserSurveyModel:
         assert us.translations["en"]["title"] == "Test Survey"
 
     def test_user_survey_with_child(self, user):
-        survey = Survey.objects.create(is_for_child=True)
+        survey = Survey.objects.create(organization_id=ORG, is_for_child=True)
         child = Child.objects.create(id="child-x", name="Child")
         from user_surveys.services import enroll_user_in_assessment
         us, _ = enroll_user_in_assessment(user, survey.id, child=child)

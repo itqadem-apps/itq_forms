@@ -4,6 +4,8 @@ import uuid
 import django
 import pytest
 
+ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 # These are also set in tests_env.py, which pytest.ini loads with -p so they
 # apply before pytest-django configures Django. Kept here so importing this
@@ -44,6 +46,7 @@ def user2(db):
 def survey(db):
     from surveys.models import Survey, SurveyTranslation
     s = Survey.objects.create(
+        organization_id=ORG,
         primary_language="en",
         survey_type=Survey.ASSESSMENT_TYPE_SURVEY,
         display_option=Survey.DISPLAY_OPTION_BY_QUESTION,
@@ -133,6 +136,7 @@ def category(db):
 def collection(db):
     from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
     c = SurveyCollection.objects.create(
+        organization_id=ORG,
         status=SurveyCollection.STATUS_PUBLISHED,
     )
     SurveyCollectionTranslation.objects.create(

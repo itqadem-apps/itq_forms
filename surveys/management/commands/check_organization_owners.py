@@ -21,6 +21,9 @@ Where the nulls come from, from the history:
   caller's auth context. Before that the GraphQL write path never set the
   column and the frontend never sent it, so **every row created through the API
   in those five months is null-owned**.
+* 2026-10-04 (#168, surveys 0045 / survey_collections 0015) made both columns
+  NOT NULL once those rows were assigned, so their counts read 0 and the
+  survey breakdowns below cannot fire. Only the guardian projection keeps nulls.
 
 That window is the one to expect rows in. Anything outside it wants explaining
 before it is repaired — in particular the legacy loader sets the column

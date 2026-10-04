@@ -4,7 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand, CommandError
@@ -91,6 +91,12 @@ class Command(BaseCommand):
             "--dry-run",
             action="store_true",
             help="Validate and report without writing data.",
+        )
+        parser.add_argument(
+            "--organization-id",
+            type=UUID,
+            required=True,
+            help="Organization that owns the imported surveys and collections.",
         )
 
     def handle(self, *args, **options):
@@ -477,6 +483,7 @@ class Command(BaseCommand):
             surveys.append(
                 Survey(
                     id=item["pk"],
+                    organization_id=options["organization_id"],
                     survey_type=fields.get("assessment_type"),
                     display_option=fields.get("display_option"),
                     is_timed=fields.get("is_timed", False),
@@ -674,6 +681,7 @@ class Command(BaseCommand):
                 short_description = next(iter(short_map.values()))
 
             collection = SurveyCollection(
+                organization_id=options["organization_id"],
                 status=fields.get("status"),
                 created_at=parse_dt(fields.get("created_at")),
                 updated_at=parse_dt(fields.get("updated_at")),
