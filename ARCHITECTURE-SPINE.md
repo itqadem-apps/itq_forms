@@ -170,11 +170,24 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   **One function owns the renumber** — `renumber_questions(survey_id)` — and the save path, the
   reorder mutation and the backfill migration all call it. Its key is deterministic:
   `(section.order nulls last, question.order, id)`. No other code assigns `order`.
-- **Surfaced conflict, not resolved here.** `surveys:AD-9` rules that `itq_surveys` renumbers
-  questions across `section_id`, not `survey_id`, deliberately replicating `itq_forms`' present
-  scope because under `surveys:AD-2` the persisted rows are the contract. The two services would
-  then write different `order` sets for the same input. Per `estate:AD-2` this is an estate call,
-  not `itq_forms`' to make alone: it needs a handoff before the ordering migration ships.
+- **Cross-service conflict, ruled 2026-10-04; the amendment has not landed.** `surveys:AD-9` ruled
+  that `itq_surveys` renumbers questions across `section_id`, not `survey_id`, deliberately
+  replicating `itq_forms`' present scope because under `surveys:AD-2` the persisted rows are the
+  contract — so the two services would write different `order` sets for the same input, and
+  `surveys:AD-13`'s differential harness would report it as a divergence. Per `estate:AD-2` that
+  was an estate call, not `itq_forms`' to make alone.
+
+  **The estate ruled that `itq_surveys` adopts survey-wide scope**, on the grounds that section
+  scope existed to replicate `itq_forms`' *present* behaviour and this decision is what changes
+  that behaviour, so the reason for the replication expires with the migration. Recorded, with its
+  provenance and its carve-outs, in `handoffs/forms-to-estate-question-ordering-scope.md` at the
+  estate root.
+
+  **What the ruling does not yet bind.** The `surveys:AD-9` amendment has not landed in
+  `itq_surveys`, and the estate `AD` that `estate:AD-2` requires for a decision binding two repos
+  has not been written — so no pinned, reviewed decision yet holds `itq_surveys` to this. The
+  ordering backfill (`forms:AD-14`'s second migration) ships only after the amendment; the
+  `Section.is_hidden` retirement ahead of it is not held.
 
 ### AD-5 — An edge is forward-only, enforced by one predicate at every write
 
@@ -439,8 +452,15 @@ sequenceDiagram
 
 ## Deferred
 
-- **The ordering-scope conflict with `itq_surveys`** — surfaced in `forms:AD-4`, not resolved. It
-  needs a handoff and an estate-level call before the ordering migration ships.
+- **The ordering-scope conflict with `itq_surveys`** — ruled 2026-10-04 in favour of this spine's
+  scope (`itq_surveys` adopts survey-wide), so the decision is closed; the consequences are not.
+  See `forms:AD-4` and `handoffs/forms-to-estate-question-ordering-scope.md`. Still open: the
+  `surveys:AD-9` amendment has not landed, the estate `AD` that `estate:AD-2` requires has not been
+  written, and the ruling deliberately did not decide two things it creates — the cutover ordering
+  of the backfill relative to `itq_surveys`' first question mutation, and which writer wins when one
+  survey is renumbered under both scopes in sequence under `surveys:AD-7` and `surveys:AD-11`, which
+  is where `forms:AD-5`'s forward-only predicate is exposed. The ordering migration waits on the
+  amendment.
 - **What a routing terminate emits.** `SurveyResponseSubmitted` (`user_surveys/events.py`) fires
   on any submission, carries `score`, and is consumed by `itq_courses` for quiz-lesson progress.
   `forms:AD-7` creates a new terminal path and `forms:AD-10` changes what `score` means; whether
