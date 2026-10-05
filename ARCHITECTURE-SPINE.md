@@ -404,7 +404,7 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   sectionless question its own step, rendering only on-path questions as answers land. The
   existing `SolveQuestions` query, which has no caller, is not the basis.
 
-### AD-19 — Every answered branch is kept until submit; the current path is walked, and submit deletes what is off it
+### AD-19 — Every answered branch is kept until the attempt ends; the current path is walked, and the end deletes answers off it
 
 - **Binds:** the answer write, going back, forced termination, submission, `forms:AD-17`.
 - **Prevents:** a learner losing answers by peeking down a branch and coming back; two
