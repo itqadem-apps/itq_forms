@@ -221,7 +221,10 @@ class SectionInput:
     title: Optional[str] = UNSET
     description: Optional[str] = UNSET
     order: Optional[int] = UNSET
-    is_hidden: Optional[bool] = UNSET
+    is_hidden: Optional[bool] = strawberry.field(
+        default=UNSET,
+        deprecation_reason="Retired (forms:AD-9): a section hides nothing. Ignored on write.",
+    )
     cover_asset_id: Optional[str] = UNSET
     submit_action: Optional[str] = UNSET
     submit_action_target_id: Optional[int] = UNSET

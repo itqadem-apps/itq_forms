@@ -145,7 +145,9 @@ class UserSectionType:
     id: auto
     origin_id: auto
     order: auto
-    is_hidden: auto
+    is_hidden: auto = strawberry_django.field(
+        deprecation_reason="Retired (forms:AD-9): a section hides nothing. Do not filter on it.",
+    )
     cover_asset_id: auto
     submit_action: auto
     submit_action_target_id: auto

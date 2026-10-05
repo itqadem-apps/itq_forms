@@ -95,15 +95,11 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
     # Calculate max possible score from all MCQ options
     max_score = 0
     if show_score:
-        # Hidden sections are excluded, as they are on the results page
-        # (`useResultsData`) and in the solver, which never showed their
-        # questions to the learner. Counting them here inflated the denominator
-        # of `score_pct` below, so the PDF reported a lower percentage than the
-        # same submission showed on screen. `exclude` rather than
-        # `filter(is_hidden=False)` because `section` is nullable.
+        # Every snapshot question counts, whatever its section: `Section.is_hidden` hides nothing
+        # (`forms:AD-9`). Excluding hidden sections emptied the denominator of a survey built with
+        # a hidden wrapper section, and `score_pct` below rendered it at 0%.
         questions = list(
             UserQuestion.objects.filter(user_survey=user_survey)
-            .exclude(section__is_hidden=True)
             .select_related("answer_schema")
             .order_by("section__order", "order")
         )

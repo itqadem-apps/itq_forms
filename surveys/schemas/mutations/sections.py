@@ -54,7 +54,9 @@ class SectionMutations:
         survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
-        data = input_to_dict(input, exclude=['submit_action_target_id', 'translations'])
+        # `is_hidden` is not authorable (`forms:AD-9`); it is ignored, not refused, because the
+        # admin's duplicate-section flow still sends the source section's value.
+        data = input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'is_hidden'])
         data['survey'] = survey
 
         section = Section.objects.create(**data)
@@ -88,7 +90,8 @@ class SectionMutations:
 
         # `order` is ignored: a section is placed by its first question, and moves only through
         # `reorder_sections` (`forms:AD-4`).
-        for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'order']).items():
+        # `is_hidden` is ignored for the same reason as in `create_section` (`forms:AD-9`).
+        for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'order', 'is_hidden']).items():
             setattr(section, field, value)
         if input.submit_action_target_id is None:
             section.submit_action_target = None

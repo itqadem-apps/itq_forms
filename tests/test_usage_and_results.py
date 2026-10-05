@@ -285,40 +285,55 @@ def test_hidden_sections_are_returned_and_flagged_rather_than_dropped(user, surv
     assert [item["isHidden"] for item in sections] == [True]
 
 
-def test_pdf_max_score_excludes_hidden_sections(user, survey, section):
-    """The PDF's score denominator must match what the learner could answer.
+def _score_the_only_option(sec, value):
+    from surveys.models import AnswerSchemaOption
 
-    A hidden section's questions are never rendered — the solver and the results
-    page both drop them — but the PDF built ``max_score`` from every snapshot
-    question, so the same submission showed one percentage on screen and a lower
-    one in the download.
-    """
-    from surveys.models import AnswerSchemaOption, Section
-    from user_surveys.pdf_service import _build_context
+    q = sec.questions.first()
+    q.type = "radio"
+    q.save(update_fields=["type"])
+    q.answer_schema.options.all().delete()
+    AnswerSchemaOption.objects.create(
+        survey=sec.survey, section=sec, question=q,
+        schema=q.answer_schema, score=value,
+    )
 
-    def score_the_only_option(sec, value):
-        q = sec.questions.first()
-        q.type = "radio"
-        q.save(update_fields=["type"])
-        q.answer_schema.options.all().delete()
-        AnswerSchemaOption.objects.create(
-            survey=sec.survey, section=sec, question=q,
-            schema=q.answer_schema, score=value,
-        )
 
-    score_the_only_option(section, 5)
-    hidden_source = Section.objects.create(survey=survey, title="Hidden")
-    score_the_only_option(hidden_source, 100)
-
-    user_survey, _ = enroll_user_in_assessment(user, survey.id)
-    snapshot_hidden = user_survey.sections.get(origin_id=hidden_source.id)
-    snapshot_hidden.is_hidden = True
-    snapshot_hidden.save(update_fields=["is_hidden"])
-
-    user_survey.score = 5
+def _hide_and_submit(user_survey, sections, score):
+    for snapshot in sections:
+        snapshot.is_hidden = True
+        snapshot.save(update_fields=["is_hidden"])
+    user_survey.score = score
     user_survey.submitted_at = now()
     user_survey.save(update_fields=["score", "submitted_at"])
 
+
+def test_pdf_max_score_counts_hidden_sections(user, survey, section):
+    """Story survey-flow 1.4: `Section.is_hidden` hides nothing (`forms:AD-9`), so a hidden
+    section's questions count toward the PDF's denominator like any other."""
+    from surveys.models import Section
+    from user_surveys.pdf_service import _build_context
+
+    _score_the_only_option(section, 5)
+    hidden_source = Section.objects.create(survey=survey, title="Hidden")
+    _score_the_only_option(hidden_source, 100)
+
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    _hide_and_submit(user_survey, [user_survey.sections.get(origin_id=hidden_source.id)], score=5)
+
     context = _build_context(user_survey)
-    assert context["max_score"] == 5
-    assert context["score_pct"] == 100
+    assert context["max_score"] == 105
+    assert context["score_pct"] == 5
+
+
+def test_pdf_of_an_all_hidden_assessment_renders_its_real_score(user, survey, section):
+    """The 9 published assessments built with a hidden wrapper section rendered at 0%: excluding
+    every question left `max_score` at 0, and `score_pct` falls back to 0 on a zero denominator."""
+    from user_surveys.pdf_service import _build_context
+
+    _score_the_only_option(section, 10)
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    _hide_and_submit(user_survey, list(user_survey.sections.all()), score=7)
+
+    context = _build_context(user_survey)
+    assert context["max_score"] == 10
+    assert context["score_pct"] == 70
