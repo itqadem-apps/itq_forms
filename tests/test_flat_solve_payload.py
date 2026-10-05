@@ -36,7 +36,7 @@ query Solve($input: UserSurveysListInput!) {
 PREVIEW_QUERY = """
 query Preview($id: ID!) {
   survey(id: $id) {
-    questions { id sectionId section { id } }
+    questions { id sectionId section { id } nextQuestionId prevQuestionId }
   }
 }
 """
@@ -233,13 +233,37 @@ def test_author_preview_flat_list_in_survey_wide_order(survey, tree):
 
     payload = _execute(PREVIEW_QUERY, {"id": str(survey.id)})["survey"]["questions"]
     assert [int(q["id"]) for q in payload] == [q.id for q in questions]
-
-    # A soft-deleted section takes its (still live) questions out of the preview.
-    Section.objects.filter(pk=c.pk).update(deleted_at=now())
-    payload = _execute(PREVIEW_QUERY, {"id": str(survey.id)})["survey"]["questions"]
-    assert [int(q["id"]) for q in payload] == [q.id for q in questions if q.section_id != c.id]
+    _assert_walk(payload)
     for q in payload:
         if int(q["id"]) in b_ids:
             assert q["sectionId"] is None and q["section"] is None
         else:
             assert q["section"] is not None and q["section"]["id"] == q["sectionId"]
+
+    # A soft-deleted section takes its (still live) questions out of the preview.
+    Section.objects.filter(pk=c.pk).update(deleted_at=now())
+    payload = _execute(PREVIEW_QUERY, {"id": str(survey.id)})["survey"]["questions"]
+    assert [int(q["id"]) for q in payload] == [q.id for q in questions if q.section_id != c.id]
+    _assert_walk(payload)
+
+
+def _assert_walk(payload):
+    ids = [int(q["id"]) for q in payload]
+    for i, q in enumerate(payload):
+        assert q["nextQuestionId"] == (ids[i + 1] if i + 1 < len(ids) else None)
+        assert q["prevQuestionId"] == (ids[i - 1] if i > 0 else None)
+
+
+def test_author_next_prev_unchanged_without_sectionless_questions(survey, tree):
+    """No sectionless question: the author walk is today's `(section.order, order)` walk."""
+    survey.status = PUBLIC_STATUS
+    survey.save(update_fields=["status"])
+    legacy = list(
+        Question.objects.filter(survey=survey, section__isnull=False, deleted_at__isnull=True)
+        .order_by("section__order", "order")
+        .values_list("id", flat=True)
+    )
+
+    payload = _execute(PREVIEW_QUERY, {"id": str(survey.id)})["survey"]["questions"]
+    assert [int(q["id"]) for q in payload] == legacy
+    _assert_walk(payload)

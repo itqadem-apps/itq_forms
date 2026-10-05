@@ -7,10 +7,8 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from django.db.models import Q
-
 from surveys.models import Survey, Usage
-from surveys.question_order import in_flat_order
+from surveys.question_order import in_flat_order, live_survey_questions
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
 from survey_collections.types.collection import SurveyCollectionType
@@ -79,11 +77,7 @@ class SurveyType:
     def questions(self) -> List[Annotated["QuestionType", strawberry.lazy("surveys.types.content")]]:
         """Every live question in survey-wide order, sectionless included, each with its
         section or none — the admin preview's flat list (`forms:AD-18`)."""
-        return in_flat_order(
-            self.questions.filter(deleted_at__isnull=True).filter(
-                Q(section__isnull=True) | Q(section__deleted_at__isnull=True)
-            )
-        )
+        return in_flat_order(live_survey_questions(self.id))
 
     @strawberry.field
     def recommendations(self) -> List[Annotated["RecommendationType", strawberry.lazy("recommendations.types.recommendation")]]:

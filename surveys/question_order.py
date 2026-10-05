@@ -18,7 +18,7 @@ section only if that order is below the section's first). A set with no sectionl
 always gets the legacy key, so its output is unchanged.
 """
 
-from django.db.models import Case, IntegerField, QuerySet, Value, When
+from django.db.models import Case, IntegerField, Q, QuerySet, Value, When
 
 
 def flat_question_ids(questions: QuerySet) -> list[int]:
@@ -58,3 +58,13 @@ def in_flat_order(questions: QuerySet) -> QuerySet:
         output_field=IntegerField(),
     )
     return questions.order_by(position, "id")
+
+
+def live_survey_questions(survey_id) -> QuerySet:
+    """The author-side set the admin preview lists and steps through: not soft-deleted, and not
+    under a soft-deleted section."""
+    from surveys.models import Question
+
+    return Question.objects.filter(survey_id=survey_id, deleted_at__isnull=True).filter(
+        Q(section__isnull=True) | Q(section__deleted_at__isnull=True)
+    )

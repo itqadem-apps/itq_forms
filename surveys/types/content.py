@@ -10,6 +10,7 @@ from strawberry.types import Info
 from app.auth_utils import get_django_user
 from user_surveys.models import UserAnswer, UserQuestion, UserSection, UserSurvey
 from surveys.models import Question, Section
+from surveys.question_order import flat_question_ids, live_survey_questions
 from .translations import QuestionTranslationType, SectionTranslationType
 from .answer_schema import AnswerSchemaType
 from user_surveys.types import UserAnswerType
@@ -61,12 +62,7 @@ class QuestionType:
         survey_id = self.survey_id or (self.section.survey_id if self.section_id else None)
         if not survey_id:
             return None
-        ids = list(
-            Question.objects.filter(survey_id=survey_id, section__isnull=False,
-                                    deleted_at__isnull=True)
-            .order_by("section__order", "order")
-            .values_list("id", flat=True)
-        )
+        ids = flat_question_ids(live_survey_questions(survey_id))
         if not ids:
             return None
         try:
@@ -80,12 +76,7 @@ class QuestionType:
         survey_id = self.survey_id or (self.section.survey_id if self.section_id else None)
         if not survey_id:
             return None
-        ids = list(
-            Question.objects.filter(survey_id=survey_id, section__isnull=False,
-                                    deleted_at__isnull=True)
-            .order_by("section__order", "order")
-            .values_list("id", flat=True)
-        )
+        ids = flat_question_ids(live_survey_questions(survey_id))
         if not ids:
             return None
         try:
