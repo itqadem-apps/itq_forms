@@ -35,7 +35,8 @@ class Question(models.Model):
     )
 
     class Meta:
-        ordering = ["section__order", "order"]
+        # Survey-wide position (`forms:AD-4`), unique per survey since the story 1.6 backfill.
+        ordering = ["order"]
 
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

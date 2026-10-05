@@ -252,3 +252,67 @@ def test_allow_render_change_needs_apply_and_a_survey(tied):
     with pytest.raises(CommandError):
         _run("--apply", "--allow-render-change")
 
+
+
+# ── The migration, the key switch and Meta.ordering ────────────
+
+
+def _migration():
+    import importlib
+
+    return importlib.import_module("surveys.migrations.0047_backfill_survey_wide_order")
+
+
+def test_the_migration_runs_the_same_backfill(survey, legacy):
+    before = _rendered(Question.objects.filter(survey=survey))
+    submitted = _snapshot_orders(legacy["submitted"])
+
+    _migration().forwards(None, None)
+
+    assert _by_order(Question.objects.filter(survey=survey)) == before
+    assert _snapshot_orders(legacy["submitted"]) == submitted
+    assert "surveys: 1 scanned, 0 renumbered" in _run("--dry-run")
+
+
+def test_the_migration_fails_the_release_on_a_refused_survey(tied, legacy):
+    with pytest.raises(RuntimeError, match="refused"):
+        _migration().forwards(None, None)
+
+
+def test_the_migration_is_reversible_and_flips_meta_ordering():
+    migration = _migration().Migration
+    run_python, alter = migration.operations
+    assert run_python.reversible
+    assert alter.options == {"ordering": ["order"]}
+    assert migration.atomic is False
+
+
+def test_after_the_backfill_the_default_ordering_is_the_rendered_order(survey, legacy):
+    _run("--apply")
+    assert list(Question.objects.filter(survey=survey).values_list("id", flat=True)) == _rendered(
+        Question.objects.filter(survey=survey)
+    )
+
+
+def test_renumber_keys_on_order_once_orders_are_survey_wide(survey):
+    from surveys.question_order import renumber_questions
+
+    a = Section.objects.create(survey=survey, title="A")
+    b = Section.objects.create(survey=survey, title="B")
+    a1 = a.questions.get().id
+    b1 = b.questions.get().id
+    # Unique, contiguous orders that disagree with `Section.order`: (order, id) wins.
+    Question.objects.filter(pk=a1).update(order=1)
+    Question.objects.filter(pk=b1).update(order=2)
+    Section.objects.filter(pk=a.pk).update(order=2)
+    Section.objects.filter(pk=b.pk).update(order=1)
+
+    assert renumber_questions(survey.id) == [a1, b1]
+    assert list(Section.objects.filter(survey=survey).order_by("order").values_list("id", flat=True)) == [a.id, b.id]
+
+
+def test_renumber_falls_back_to_the_legacy_key_while_orders_collide(survey, legacy):
+    from surveys.question_order import renumber_questions
+
+    before = _rendered(Question.objects.filter(survey=survey))
+    assert renumber_questions(survey.id) == before

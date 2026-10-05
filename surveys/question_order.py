@@ -4,7 +4,7 @@ Shared by the author tree and the learner snapshot (`forms:AD-18`): both models 
 `section` (nullable), `section.order` and `order`.
 
 The default is the legacy key `(section.order nulls last, order nulls last, id)` — what
-`Meta.ordering` produces on Postgres today. It is departed from in one case only: the set holds
+`Meta.ordering` produced on Postgres before story 1.6. It is departed from in one case only: the set holds
 a sectionless question, every `order` is present and unique, and ordering by `(order, id)` keeps
 the sectioned questions in exactly their legacy relative order without splitting any section's
 run. Then the orders are survey-wide (`forms:AD-4`) and the only difference is where the
@@ -17,8 +17,12 @@ A single-section set can, and then its sectionless question sits by its own `ord
 section only if that order is below the section's first). A set with no sectionless question
 always gets the legacy key, so its output is unchanged.
 
-`renumber_questions` writes that order back as 1..N across the survey (`forms:AD-4`); it is the
-only code that assigns `Question.order`, and it derives `Section.order` from it.
+`renumber_questions` writes the order back as 1..N across the survey (`forms:AD-4`); it is the
+only code that assigns `Question.order`, and it derives `Section.order` from it. Since story 1.6
+its own key is `(order, id)`, and `Question.Meta.ordering` is `["order"]`; after the backfill the
+legacy key and `(order, id)` agree on every survey. The legacy key stays here as the reader's
+default because submitted snapshots were never renumbered and still hold section-scoped or
+shuffled orders.
 """
 
 from collections.abc import Iterable, Mapping
@@ -84,8 +88,10 @@ def renumber_questions(survey_id, sequence: list[int] | None = None, section_ran
     """Assign every question of `survey_id` its survey-wide position 1..N, then rank the sections
     by their first question (`forms:AD-4`). Returns the question ids in their new order.
 
-    Without `sequence` the order is `flat_question_ids` over the whole survey: the legacy key
-    until story 1.6, so a survey without sectionless questions keeps its rendered order. A newly
+    Without `sequence` the key is `(order, id)` (story 1.6). On a survey whose orders still
+    collide or would split a section — one the backfill has not reached, or rows written around
+    this function — it falls back to the legacy key (`flat_question_ids`), so a save can never
+    scramble a survey that is not yet survey-wide. A newly
     saved question (`order` null) lands at the end of its section, or of the survey when it has
     none — appended to the order the others already hold, so it cannot unseat a sectionless
     question from between two sections. A reorder passes the
@@ -101,7 +107,7 @@ def renumber_questions(survey_id, sequence: list[int] | None = None, section_ran
     questions = Question.objects.filter(survey_id=survey_id)
     rows = {pk: (section_id, order) for pk, section_id, order in questions.order_by().values_list("id", "section_id", "order")}
     if sequence is None:
-        sequence = _appended(flat_question_ids(questions.filter(order__isnull=False)), rows)
+        sequence = _appended(_placed_order(questions.filter(order__isnull=False)), rows)
     elif len(sequence) != len(rows) or set(sequence) != set(rows):
         raise ValueError("A renumber sequence must name every question of the survey exactly once.")
 
@@ -124,6 +130,14 @@ def renumber_questions(survey_id, sequence: list[int] | None = None, section_ran
     if ranked:
         Section.objects.bulk_update(ranked, ["order"])
     return sequence
+
+
+def _placed_order(questions: QuerySet) -> list[int]:
+    rows = list(questions.order_by().values_list("id", "section_id", "section__order", "order"))
+    wide = [r[0] for r in sorted(rows, key=lambda r: (r[3], r[0]))]
+    if len({r[3] for r in rows}) == len(rows) and not split_sections(wide, {r[0]: r[1] for r in rows}):
+        return wide
+    return flat_order(rows)
 
 
 def _appended(sequence: list[int], rows: Mapping[int, tuple]) -> list[int]:

@@ -2,9 +2,9 @@
 
 `renumber_questions(survey_id)` assigns `order` 1..N across the survey (`forms:AD-4`) and ranks the
 sections by their first question. The save path, `reorderQuestions`, `reorderSections` and
-`reorderSurveyQuestions` all reach the order through it. Until story 1.6 its key is the legacy
-`(section.order nulls last, order, id)`, so a survey without sectionless questions keeps its
-rendered order. `assert_forward_only` (`forms:AD-5`) is wired into every reorder and passes
+`reorderSurveyQuestions` all reach the order through it. Its key is `(order, id)` since story 1.6,
+falling back to the legacy `(section.order nulls last, order, id)` on a survey whose orders still
+collide (the section-scoped shape these tests build), so such a survey keeps its rendered order. `assert_forward_only` (`forms:AD-5`) is wired into every reorder and passes
 trivially, since no survey carries an edge yet.
 
 Sectionless rows are produced with `.update(section=None)`, which keeps these tests independent of
@@ -122,8 +122,8 @@ def test_existing_survey_keeps_its_rendered_order(survey, tree):
     assert [pk for pk, _ in _orders(survey)] == before
 
 
-def test_meta_ordering_is_unchanged_until_story_1_6():
-    assert Question._meta.ordering == ["section__order", "order"]
+def test_meta_ordering_is_survey_wide_since_story_1_6():
+    assert Question._meta.ordering == ["order"]
 
 
 def test_sections_are_ranked_by_their_first_question_and_empty_ones_go_last(survey, tree):
