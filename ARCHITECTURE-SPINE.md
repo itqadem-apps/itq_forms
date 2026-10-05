@@ -386,8 +386,7 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   changing branch; and a learner's path depending on which replica served the request.
 - **Rule:** reachedness is `UserQuestion.on_path`, stored on the learner's own row and
   **recalculated on every answer write** for the questions downstream of the one written, by the
-  walk `forms:AD-19` defines — including the first question, the frontier question the walk stops
-  at, and every calculation it passes. `forms:AD-10`'s basis reads only those flags; no code
+  walk `forms:AD-19` defines — including the first question and every calculation it passes. `forms:AD-10`'s basis reads only those flags; no code
   replays the flow at scoring time. Evaluation is otherwise a pure function of the stored snapshot
   and the answer being written — no cursor, cache or partial path held in process between
   requests.
@@ -411,15 +410,19 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   implementations disagreeing on which answers count; and answers from an abandoned branch leaking
   into a submitted result.
 - **Rule:** nothing is deleted while an attempt is open. The **current path** is the walk from the
-  first question in snapshot order, following each answered option's `flow_action`/`flow_target`
-  (`fall_through` per `forms:AD-8`), passing through calculations, and stopping at the first
-  unanswered question — the frontier. Questions on that walk carry `on_path = true`, everything
-  else `false`; one function owns the walk and both the answer write and submit call it. A learner
-  may go back to any on-path question and re-answer it; answers on the branch they leave stay
-  stored but off-path. **At every terminal transition** — submit, `routing_terminate`,
-  `ending_threshold`, `force_terminated`, `fallthrough_complete` — the same function prunes:
-  answers on questions with `on_path = false` are deleted; the `UserQuestion` rows and every
-  calculation result are kept. A forced termination prunes against the current path.
+  first question in snapshot order to the end of the snapshot. At each question an answered option
+  whose `flow_action` is `go_to` continues at its `flow_target`, and one whose `flow_action` is
+  `terminate` ends the path there; **every other case falls through** to the next question in
+  snapshot order (`forms:AD-8`) — a `fall_through` option, a question left blank (required or not,
+  routing options or not), a question with no options, and a calculation. A blank question never
+  stops the walk, so a survey carrying no flow has every question on its path, as today
+  (`forms:AD-16`). Questions on that walk carry `on_path = true`, everything else `false`; one
+  function owns the walk and both the answer write and submit call it. A learner may go back to any
+  on-path question and re-answer it; answers on the branch they leave stay stored but off-path.
+  **At every terminal transition** — submit, `routing_terminate`, `ending_threshold`,
+  `force_terminated`, `fallthrough_complete` — the same function prunes: answers on questions with
+  `on_path = false` are deleted; the `UserQuestion` rows and every calculation result are kept. A
+  forced termination prunes against the current path.
 
   The advance result (`forms:AD-6`) is the walk's own output: the next on-path question after the
   one just written (already answered or not), or the ended marker when the path ends there. The
