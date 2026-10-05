@@ -9,6 +9,8 @@ from io import BytesIO
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 
+from surveys.question_order import flat_question_ids
+
 from .models import (
     UserAction,
     UserAnswer,
@@ -168,11 +170,18 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
 
     # ── Answers ──
     answers_data = []
-    all_answers = list(
+    # Snapshot order, sectionless questions included (`forms:AD-18`).
+    position = {
+        pk: i
+        for i, pk in enumerate(
+            flat_question_ids(UserQuestion.objects.filter(user_survey=user_survey))
+        )
+    }
+    all_answers = sorted(
         UserAnswer.objects.filter(user_survey=user_survey)
         .select_related("question", "question__answer_schema")
-        .prefetch_related("selected_options", "question__answer_schema__options")
-        .order_by("question__section__order", "question__order")
+        .prefetch_related("selected_options", "question__answer_schema__options"),
+        key=lambda a: (position.get(a.question_id, len(position)), a.id),
     )
 
     for idx, answer in enumerate(all_answers, start=1):

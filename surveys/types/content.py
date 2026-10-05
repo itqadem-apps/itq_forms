@@ -39,7 +39,7 @@ class QuestionType:
     description: auto
     survey_id: auto
     section_id: auto
-    section: "SectionType"
+    section: Optional["SectionType"]
     order: auto
     is_required: auto
     type: auto

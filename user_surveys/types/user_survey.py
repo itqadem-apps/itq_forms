@@ -9,6 +9,7 @@ from django.db.models import Prefetch
 from strawberry.scalars import JSON
 from strawberry.types import Info
 
+from surveys.question_order import flat_question_ids, in_flat_order
 from surveys.usage_access import (
     FREE_ATTEMPTS,
     resolve_usage_limit,
@@ -312,12 +313,8 @@ class UserQuestionType:
 
     @strawberry.field
     def next_question_id(self) -> Optional[int]:
-        ids = list(
-            UserQuestion.objects.filter(
-                user_survey_id=self.user_survey_id, section__isnull=False
-            )
-            .order_by("section__order", "order")
-            .values_list("id", flat=True)
+        ids = flat_question_ids(
+            UserQuestion.objects.filter(user_survey_id=self.user_survey_id)
         )
         if not ids:
             return None
@@ -329,12 +326,8 @@ class UserQuestionType:
 
     @strawberry.field
     def prev_question_id(self) -> Optional[int]:
-        ids = list(
-            UserQuestion.objects.filter(
-                user_survey_id=self.user_survey_id, section__isnull=False
-            )
-            .order_by("section__order", "order")
-            .values_list("id", flat=True)
+        ids = flat_question_ids(
+            UserQuestion.objects.filter(user_survey_id=self.user_survey_id)
         )
         if not ids:
             return None
@@ -393,7 +386,12 @@ class UserSurveyType:
 
     # related snapshot data
     sections: List[UserSectionType]
-    questions: List[UserQuestionType]
+
+    @strawberry_django.field
+    def questions(self) -> List[UserQuestionType]:
+        """The flat solve list (`forms:AD-18`): every question in snapshot order, sectionless
+        included; `sections` carries heading data only."""
+        return in_flat_order(self.questions.all())
 
     @strawberry.field
     def time_limit(self) -> Optional[str]:
