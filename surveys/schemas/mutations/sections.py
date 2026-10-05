@@ -23,6 +23,18 @@ def _type_from_section_id(info, id, **kw):
     return Section.objects.select_related('survey').get(pk=id).survey.survey_type
 
 
+def _refuse_legacy_jump(input: SectionInput) -> None:
+    """forms:AD-15: the solver does not honour a section jump, so it must not be
+    authorable. The columns stay; only the API refuses a value for them."""
+    errors = {}
+    if input.submit_action == Section.SUBMIT_ACTION_JUMP:
+        errors['submit_action'] = 'Section jumps are no longer supported; use question-level flow instead.'
+    if input.submit_action_target_id not in (strawberry.UNSET, None):
+        errors['submit_action_target'] = 'Section jump targets are no longer supported and must be null.'
+    if errors:
+        raise ValidationError(errors)
+
+
 @strawberry.type
 class SectionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -36,13 +48,12 @@ class SectionMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionType:
         """Create a new section in a survey"""
+        _refuse_legacy_jump(input)
         survey_id = as_pk(survey_id)
         survey = Survey.objects.get(pk=survey_id)
 
         data = input_to_dict(input, exclude=['submit_action_target_id', 'translations'])
         data['survey'] = survey
-        if input.submit_action_target_id is not strawberry.UNSET:
-            data['submit_action_target'] = Section.objects.get(pk=input.submit_action_target_id, survey=survey)
 
         section = Section.objects.create(**data)
 
@@ -69,13 +80,14 @@ class SectionMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionType:
         """Update an existing section"""
+        _refuse_legacy_jump(input)
         id = as_pk(id)
         section = Section.objects.select_related('survey').get(pk=id)
 
         for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations']).items():
             setattr(section, field, value)
-        if input.submit_action_target_id is not strawberry.UNSET:
-            section.submit_action_target = Section.objects.get(pk=input.submit_action_target_id, survey=section.survey)
+        if input.submit_action_target_id is None:
+            section.submit_action_target = None
 
         section.save()
 
