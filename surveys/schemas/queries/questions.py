@@ -6,6 +6,7 @@ from pkg_filters.integrations.django import DjangoQueryContext
 from app.auth_utils import with_django_user
 from surveys.filters import QuestionProjection, QuestionSpec, questions_pipeline
 from surveys.inputs import QuestionsFilters, QuestionsFiltersInput
+from surveys.question_order import in_flat_order
 from surveys.types import QuestionsFiltersGQL, QuestionsResultsGQL
 from user_surveys.models import UserAnswer, UserQuestion, UserSurvey
 from ..common import RequireAuth
@@ -33,10 +34,8 @@ class QuestionsQuery:
         if not user_survey:
             raise ValueError("Assessment not found.")
 
-        qs = UserQuestion.objects.filter(
-            user_survey=user_survey,
-            section__isnull=False,
-        )
+        # Every snapshot question, sectionless included (`forms:AD-13`).
+        qs = UserQuestion.objects.filter(user_survey=user_survey)
         filters_input = filters or QuestionsFiltersInput()
         if filters_input.question_ids:
             qs = qs.filter(id__in=filters_input.question_ids)
@@ -68,7 +67,7 @@ class QuestionsQuery:
                 base_qs = base_qs.exclude(id__in=answered_ids)
 
         total = base_qs.count()
-        questions = list(base_qs.order_by("section__order", "order")[offset : offset + limit])
+        questions = list(in_flat_order(base_qs)[offset : offset + limit])
         for question in questions:
             question._user_survey_id = user_survey.id
         filters_out = QuestionsFiltersGQL(

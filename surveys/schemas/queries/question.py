@@ -3,6 +3,7 @@ from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 
 from app.auth_utils import with_django_user
+from surveys.question_order import flat_question_ids, in_flat_order
 from surveys.types import QuestionType
 from user_surveys.models import UserQuestion, UserSurvey
 from ..common import RequireAuth
@@ -29,10 +30,8 @@ class QuestionQuery:
         if user_survey.submitted_at:
             raise ValueError("This assessment is already submitted.")
 
-        qs = UserQuestion.objects.filter(
-            user_survey=user_survey,
-            section__isnull=False,
-        )
+        # Every snapshot question, sectionless included, in snapshot order (`forms:AD-13`, `forms:AD-18`).
+        qs = UserQuestion.objects.filter(user_survey=user_survey)
 
         if question_id is not None:
             question = qs.filter(id=question_id).first()
@@ -41,10 +40,7 @@ class QuestionQuery:
             return question
 
         if user_survey.last_question_id:
-            ids = list(
-                qs.order_by("section__order", "order")
-                .values_list("id", flat=True)
-            )
+            ids = flat_question_ids(qs)
             if ids:
                 try:
                     idx = ids.index(user_survey.last_question_id)
@@ -58,7 +54,7 @@ class QuestionQuery:
                     return question
             return None
 
-        question = qs.order_by("section__order", "order").first()
+        question = in_flat_order(qs).first()
         if question:
             question._user_survey_id = user_survey.id
         return question

@@ -479,9 +479,8 @@ class UserSurveyType:
             return 0
         if django_user.id != self.user_id:
             return 0
-        total = UserQuestion.objects.filter(
-            user_survey_id=self.id, section__isnull=False
-        ).count()
+        # Total and answered range over the same questions, sectionless included (`forms:AD-13`).
+        total = UserQuestion.objects.filter(user_survey_id=self.id).count()
         if total == 0:
             return 0
         answered = (

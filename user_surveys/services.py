@@ -321,7 +321,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
 
     # ── 8. Randomization ─────────────────────────────────────────────
     if user_survey.randomize_questions:
-        uqs = list(UserQuestion.objects.filter(user_survey=user_survey, section__isnull=False))
+        uqs = list(UserQuestion.objects.filter(user_survey=user_survey))
         random.shuffle(uqs)
         for i, uq in enumerate(uqs, start=1):
             uq.order = i
@@ -445,7 +445,8 @@ def evaluate_assessment(user_survey: UserSurvey) -> None:
     all_classifications = []
     all_recommendations = []
 
-    answers = list(user_survey.useranswer_set.exclude(question__section__isnull=True))
+    # Scoped to the question, never to section membership (`forms:AD-13`).
+    answers = list(user_survey.useranswer_set.all())
     for answer in answers:
         score, classifications, recommendations = _evaluate_answer(user_survey, answer)
 
@@ -517,7 +518,7 @@ def finish_assessment(
 ) -> None:
     # Skip required-question validation for forced terminations
     if reason == UserSurvey.TERMINATION_COMPLETED:
-        required_questions = user_survey.questions.filter(is_required=True, section__isnull=False)
+        required_questions = user_survey.questions.filter(is_required=True)
         if required_questions.exists():
             required_ids = set(required_questions.values_list("id", flat=True))
             answered_ids = set(

@@ -113,9 +113,8 @@ class QuestionType:
         user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
         if not user_survey:
             return None
-        total = UserQuestion.objects.filter(
-            user_survey=user_survey, section__isnull=False
-        ).count()
+        # Total and answered range over the same questions, sectionless included (`forms:AD-13`).
+        total = UserQuestion.objects.filter(user_survey=user_survey).count()
         if total == 0:
             return 0
         answered = (

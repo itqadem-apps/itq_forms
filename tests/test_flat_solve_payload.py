@@ -8,8 +8,8 @@ Until story 1.6's backfill, question orders are section-scoped, so the order is 
 `(section.order nulls last, order, id)` and a sectionless question sorts last. Once orders are
 survey-wide, a sectionless question sits where its `order` puts it, between sections.
 
-Sectionless rows are produced with `.update(section=None)`: the author save path cannot create one
-yet (`AnswerSchema.section` is NOT NULL until story 1.3).
+Sectionless rows are produced with `.update(section=None)`, which keeps these tests independent of
+the story 1.3 author path.
 """
 
 import pytest

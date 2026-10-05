@@ -4,7 +4,7 @@ from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from typing import List
+from typing import List, Optional
 from datetime import timedelta
 
 from app.auth_utils import with_django_user
@@ -34,6 +34,12 @@ from app.graphql_ids import as_pk
 
 def _type_from_section_id(info, section_id, **kw):
     return Section.objects.select_related('survey').get(pk=section_id).survey.survey_type
+
+
+def _type_for_new_question(info, section_id=None, survey_id=None, **kw):
+    if section_id is not None:
+        return _type_from_section_id(info, section_id)
+    return _type_from_survey_id(info, survey_id)
 
 
 def _type_from_question_id(info, id, **kw):
@@ -71,21 +77,32 @@ def _placed_sequence(survey_id, live_sequence, section_of):
 class QuestionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
-    @check_permission(_type_from_section_id, 'update')
+    @check_permission(_type_for_new_question, 'update')
     def create_question(
         self,
         info: Info,
-        section_id: strawberry.ID,
         input: QuestionInput,
+        section_id: Optional[strawberry.ID] = None,
+        survey_id: Optional[strawberry.ID] = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
-        """Create a new question in a section"""
-        section_id = as_pk(section_id)
-        section = Section.objects.select_related('survey').get(pk=section_id)
+        """Create a question at the end of a section, or — given `surveyId` and no `sectionId` — a
+        sectionless one at the end of the survey (`forms:AD-9`)."""
+        section_id, survey_id = as_pk(section_id), as_pk(survey_id)
+        if section_id is not None:
+            section = Section.objects.select_related('survey').get(pk=section_id)
+            if survey_id is not None and survey_id != section.survey_id:
+                raise ValidationError({'survey_id': 'The section is not in this survey.'})
+            survey = section.survey
+        elif survey_id is not None:
+            section = None
+            survey = Survey.objects.get(pk=survey_id)
+        else:
+            raise ValidationError({'section_id': 'Name the section, or the survey for a question with no section.'})
 
         # `order` is not the client's to write: `renumber_questions` places the question (`forms:AD-4`).
         data = input_to_dict(input, exclude=['answer_time', 'translations', 'order'])
-        data['survey'] = section.survey
+        data['survey'] = survey
         data['section'] = section
         if input.answer_time is not strawberry.UNSET:
             try:
@@ -308,9 +325,6 @@ class QuestionMutations:
         for pk, sid in section_of.items():
             if sid is not None and sid not in sections:
                 errors.append(f"Section {sid} is not a section of this survey.")
-            elif sid is None and live[pk] is not None:
-                # Until sections are optional end to end, a question's answer schema needs one.
-                errors.append(f"Question {pk} cannot leave its section yet.")
         split = split_sections(live_sequence, section_of)
         errors += [
             f"The questions of section \"{sections.get(sid) or sid}\" must sit together, with nothing between them."

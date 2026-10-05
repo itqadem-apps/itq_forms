@@ -13,7 +13,9 @@ class AnswerSchemaOption(models.Model):
         ordering = ["order"]
 
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    # Nullable for a sectionless question (`forms:AD-9`), and SET_NULL so removing a section can
+    # never cascade away the schema of a question that no longer sits in it.
+    section = models.ForeignKey(Section, on_delete=models.SET_NULL, null=True, blank=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     schema = models.ForeignKey(AnswerSchema, on_delete=models.CASCADE, related_name="options")
     text = models.TextField(null=True, blank=True)

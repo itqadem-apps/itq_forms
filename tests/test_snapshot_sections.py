@@ -10,7 +10,6 @@ one whenever a source section fell outside the survey's own section list.
 """
 
 import uuid
-import pytest
 from django.core.management import call_command
 from django.utils.timezone import now
 from io import StringIO
@@ -125,18 +124,24 @@ def test_a_section_outside_the_surveys_own_list_still_links(user, survey, sectio
     assert {item["id"] for item in payload["questions"]} == sectioned
 
 
-def test_a_source_question_cannot_be_left_without_a_section(user, survey, section):
-    """The other shape that would empty a section is unreachable: the answer
-    schema created alongside every question requires a section, so a
-    sectionless question cannot be written in the first place. Worth pinning —
-    if this constraint is ever relaxed, the flat `questions` list becomes the
-    only complete one and the clients need a new rule."""
-    from django.db.utils import IntegrityError
+def test_a_sectionless_source_question_reaches_only_the_flat_list(user, survey, section, question):
+    """Story survey-flow 1.3 made a sectionless question writable (`forms:AD-9`): its answer schema
+    no longer requires a section. The flat `questions` list (`forms:AD-18`) is the complete one; a
+    sectionless question belongs to no entry of `sections`, and its snapshot is not an orphan."""
+    loose = Question.objects.create(
+        survey=survey, section=None, title="Sectionless", type=Question.QUESTION_TYPE_TEXT
+    )
+    assert loose.answer_schema.section_id is None
 
-    with pytest.raises(IntegrityError):
-        Question.objects.create(
-            survey=survey, section=None, title="Sectionless", type=Question.QUESTION_TYPE_TEXT
-        )
+    user_survey = _submit(enroll_user_in_assessment(user, survey.id)[0])
+    snapshot = UserQuestion.objects.get(user_survey=user_survey, origin_id=loose.id)
+    assert snapshot.section_id is None
+
+    payload = _results(user, user_survey)
+    flat = {int(item["id"]) for item in payload["questions"]}
+    sectioned = {int(item["id"]) for group in payload["sections"] for item in group["questions"]}
+    assert snapshot.id in flat and snapshot.id not in sectioned
+    assert flat - sectioned == {snapshot.id}
 
 
 def test_repair_command_relinks_a_recoverable_orphan(user, survey, section, question):

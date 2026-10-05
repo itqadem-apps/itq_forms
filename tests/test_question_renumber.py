@@ -7,8 +7,8 @@ sections by their first question. The save path, `reorderQuestions`, `reorderSec
 rendered order. `assert_forward_only` (`forms:AD-5`) is wired into every reorder and passes
 trivially, since no survey carries an edge yet.
 
-Sectionless rows are produced with `.update(section=None)`: the author save path cannot create one
-until story 1.3.
+Sectionless rows are produced with `.update(section=None)`, which keeps these tests independent of
+the story 1.3 author path.
 """
 
 import pytest
@@ -356,14 +356,18 @@ def test_a_destination_must_be_a_section_of_the_survey(survey, tree):
     _refused(survey, [(a1, foreign.id), (a2, a.id), (b1, b.id), (b2, b.id), (c1, c.id)])
 
 
-def test_a_question_cannot_leave_its_section_before_story_1_3(survey, tree):
-    """`AnswerSchema.section` is NOT NULL until story 1.3; moving to none would orphan it."""
+def test_a_question_can_leave_its_section_and_takes_its_schema_with_it(survey, tree):
+    """Story 1.3 lifted the refusal: the schema and option columns are nullable (`forms:AD-9`)."""
     a, b, c = tree
     a1, a2 = _ids(a)
     b1, b2 = _ids(b)
     (c1,) = _ids(c)
 
-    _refused(survey, [(a1, a.id), (a2, a.id), (b1, b.id), (b2, b.id), (c1, None)])
+    _place(survey, [(a1, a.id), (a2, a.id), (b1, b.id), (b2, b.id), (c1, None)])
+
+    assert Question.objects.get(pk=c1).section_id is None
+    assert AnswerSchema.objects.get(question_id=c1).section_id is None
+    assert not AnswerSchemaOption.objects.filter(question_id=c1, section__isnull=False).exists()
 
 
 # ── assert_forward_only ─────────────────────────────────────────
