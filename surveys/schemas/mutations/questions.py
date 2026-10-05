@@ -9,8 +9,15 @@ from datetime import timedelta
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.inputs import QuestionInput
-from surveys.types import QuestionType
+from surveys.inputs import QuestionInput, QuestionPlacementInput
+from surveys.question_order import (
+    assert_forward_only,
+    flat_question_ids,
+    live_survey_questions,
+    renumber_questions,
+    split_sections,
+)
+from surveys.types import QuestionType, SurveyType
 from surveys.models import (
     Survey,
     Section,
@@ -33,6 +40,33 @@ def _type_from_question_id(info, id, **kw):
     return Question.objects.select_related('survey').get(pk=id).survey.survey_type
 
 
+def _type_from_survey_id(info, survey_id, **kw):
+    return Survey.objects.values_list('survey_type', flat=True).get(pk=survey_id)
+
+
+def _positions(sequence):
+    return {pk: i for i, pk in enumerate(sequence, start=1)}
+
+
+def _placed_sequence(survey_id, live_sequence, section_of):
+    """The whole survey's sequence for a reorder of its live questions: each question the author
+    cannot see (soft-deleted, or under a soft-deleted section) follows the last live question of
+    its own section, so it never splits a run; one with no such run goes at the end."""
+    hidden = [pk for pk in flat_question_ids(Question.objects.filter(survey_id=survey_id)) if pk not in section_of]
+    hidden_section = dict(Question.objects.filter(pk__in=hidden).values_list('id', 'section_id'))
+    last_of = {section_of[pk]: pk for pk in live_sequence if section_of[pk] is not None}
+    after: dict[int, list[int]] = {}
+    tail = []
+    for pk in hidden:
+        anchor = last_of.get(hidden_section[pk])
+        (after.setdefault(anchor, []) if anchor is not None else tail).append(pk)
+    sequence = []
+    for pk in live_sequence:
+        sequence.append(pk)
+        sequence.extend(after.get(pk, ()))
+    return sequence + tail
+
+
 @strawberry.type
 class QuestionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -49,7 +83,8 @@ class QuestionMutations:
         section_id = as_pk(section_id)
         section = Section.objects.select_related('survey').get(pk=section_id)
 
-        data = input_to_dict(input, exclude=['answer_time', 'translations'])
+        # `order` is not the client's to write: `renumber_questions` places the question (`forms:AD-4`).
+        data = input_to_dict(input, exclude=['answer_time', 'translations', 'order'])
         data['survey'] = section.survey
         data['section'] = section
         if input.answer_time is not strawberry.UNSET:
@@ -92,7 +127,8 @@ class QuestionMutations:
         id = as_pk(id)
         question = Question.objects.select_related('survey', 'section').get(pk=id)
 
-        for field, value in input_to_dict(input, exclude=['answer_time', 'translations']).items():
+        # `order` is ignored: a question moves only through the reorder mutations (`forms:AD-4`).
+        for field, value in input_to_dict(input, exclude=['answer_time', 'translations', 'order']).items():
             setattr(question, field, value)
         if input.answer_time is not strawberry.UNSET:
             try:
@@ -206,6 +242,7 @@ class QuestionMutations:
     @strawberry.mutation(permission_classes=[RequireAuth])
     @with_django_user
     @check_permission(_type_from_section_id, 'update')
+    @transaction.atomic
     def reorder_questions(
         self,
         info: Info,
@@ -213,21 +250,84 @@ class QuestionMutations:
         question_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> List[QuestionType]:
-        """Reorder questions in a section"""
+        """Reorder questions within a section, which stays where it is in the survey. Questions of
+        the section left out of `question_ids` follow the listed ones in their current order."""
         section_id = as_pk(section_id)
         section = Section.objects.select_related('survey').get(pk=section_id)
+        survey = Survey.objects.select_for_update().get(pk=section.survey_id)
 
         # Validate all question IDs belong to the section
         questions = Question.objects.filter(id__in=question_ids, section=section)
         if questions.count() != len(question_ids):
             raise ValueError("Some question IDs are invalid or don't belong to this section")
 
-        # Update order
-        question_map = {question.id: question for question in questions}
-        for order, question_id in enumerate(question_ids, start=1):
-            question = question_map.get(question_id)
-            if question:
-                question.order = order
-                question.save(update_fields=['order'])
+        current = flat_question_ids(Question.objects.filter(survey_id=survey.id))
+        members = set(Question.objects.filter(section=section).values_list('id', flat=True))
+        listed = set(question_ids)
+        run = iter(list(question_ids) + [pk for pk in current if pk in members and pk not in listed])
+        sequence = [next(run) if pk in members else pk for pk in current]
+
+        assert_forward_only(survey, _positions(sequence), field='question_ids')
+        renumber_questions(survey.id, sequence)
 
         return list(Question.objects.filter(section=section).order_by('order'))
+
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
+    @with_django_user
+    @check_permission(_type_from_survey_id, 'update')
+    @transaction.atomic
+    def reorder_survey_questions(
+        self,
+        info: Info,
+        survey_id: strawberry.ID,
+        placements: List[QuestionPlacementInput],
+        django_user: strawberry.Private[AbstractBaseUser] = None,
+    ) -> SurveyType:
+        """Lay out every live question of a survey in one survey-wide order (`forms:AD-4`).
+
+        `placements` lists each live question exactly once, in its new order, naming the section
+        it ends up in (or null for none) — a question listed under another section moves there.
+        A layout that leaves any section's questions non-contiguous is refused on `placements`.
+        """
+        survey_id = as_pk(survey_id)
+        survey = Survey.objects.select_for_update().get(pk=survey_id)
+
+        live = dict(live_survey_questions(survey.id).values_list('id', 'section_id'))
+        sections = dict(
+            Section.objects.filter(survey=survey, deleted_at__isnull=True).values_list('id', 'title')
+        )
+
+        if any(p.section_id is strawberry.UNSET for p in placements):
+            raise ValidationError({'placements': 'Every placement must name its section, or null for none.'})
+        live_sequence = [as_pk(p.question_id) for p in placements]
+        if len(live_sequence) != len(live) or set(live_sequence) != set(live):
+            raise ValidationError({'placements': 'Placements must list every question of the survey exactly once.'})
+
+        section_of = {as_pk(p.question_id): as_pk(p.section_id) for p in placements}
+        errors = []
+        for pk, sid in section_of.items():
+            if sid is not None and sid not in sections:
+                errors.append(f"Section {sid} is not a section of this survey.")
+            elif sid is None and live[pk] is not None:
+                # Until sections are optional end to end, a question's answer schema needs one.
+                errors.append(f"Question {pk} cannot leave its section yet.")
+        split = split_sections(live_sequence, section_of)
+        errors += [
+            f"The questions of section \"{sections.get(sid) or sid}\" must sit together, with nothing between them."
+            for sid in split
+        ]
+        if errors:
+            raise ValidationError({'placements': errors})
+
+        sequence = _placed_sequence(survey.id, live_sequence, section_of)
+        assert_forward_only(survey, _positions(sequence), field='placements')
+
+        moved = {pk: sid for pk, sid in section_of.items() if live[pk] != sid}
+        for sid in set(moved.values()):
+            ids = [pk for pk, dest in moved.items() if dest == sid]
+            Question.objects.filter(pk__in=ids).update(section_id=sid)
+            AnswerSchema.objects.filter(question_id__in=ids).update(section_id=sid)
+            AnswerSchemaOption.objects.filter(question_id__in=ids).update(section_id=sid)
+        renumber_questions(survey.id, sequence)
+
+        return survey

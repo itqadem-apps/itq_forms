@@ -123,6 +123,8 @@ class Question(models.Model):
                 )
 
     def save(self, *args, **kwargs):
-        if not self.pk and self.section_id:
-            self.order = self.section.questions.count() + 1
+        # A new question has no position until `renumber_questions` gives it one (`forms:AD-4`):
+        # a null `order` sorts last in its section, so it lands at the end of it.
+        if not self.pk and self.survey_id:
+            self.order = None
         super().save(*args, **kwargs)

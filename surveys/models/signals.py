@@ -5,6 +5,7 @@ from .answer_schema import AnswerSchema
 from .answer_schema_option import AnswerSchemaOption
 from .question import Question
 from .section import Section
+from surveys.question_order import renumber_questions
 
 
 @receiver(post_save, sender=Section)
@@ -81,29 +82,20 @@ def _create_answer_schema_first_option(sender, instance: AnswerSchema, created: 
 @receiver(post_save, sender=Section)
 @receiver(post_delete, sender=Section)
 def _update_sections_order(sender, instance: Section, **kwargs):
-    sections = Section.objects.filter(survey_id=instance.survey_id).order_by("order", "id")
-    sections_order = list(sections.values_list("order", flat=True))
-
-    if all(order == idx + 1 for idx, order in enumerate(sections_order)):
-        return
-
-    for idx, section in enumerate(sections):
-        section.order = idx + 1
-    Section.objects.bulk_update(sections, ["order"])
+    """`Section.order` is derived by `renumber_questions` from the sections' first questions."""
+    renumber_questions(instance.survey_id)
+    if kwargs.get("signal") is post_save:
+        instance.order = Section.objects.values_list("order", flat=True).get(pk=instance.pk)
 
 
 @receiver(post_save, sender=Question)
 @receiver(post_delete, sender=Question)
 def _update_question_order(sender, instance: Question, **kwargs):
-    questions = Question.objects.filter(section_id=instance.section_id).order_by("order", "id")
-    questions_order = list(questions.values_list("order", flat=True))
-
-    if all(order == idx + 1 for idx, order in enumerate(questions_order)):
-        return
-
-    for idx, question in enumerate(questions):
-        question.order = idx + 1
-    Question.objects.bulk_update(questions, ["order"])
+    """Every create, delete and save reaches the order through `renumber_questions`
+    (`forms:AD-4`); the saved instance is handed back its new position."""
+    sequence = renumber_questions(instance.survey_id)
+    if kwargs.get("signal") is post_save and instance.pk in sequence:
+        instance.order = sequence.index(instance.pk) + 1
 
 
 @receiver(post_save, sender=AnswerSchemaOption)

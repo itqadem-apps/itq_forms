@@ -3,13 +3,15 @@ import strawberry_django
 from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from typing import List
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from surveys.inputs import SectionInput
 from surveys.types import SectionType
-from surveys.models import Survey, Section, SectionTranslation
+from surveys.models import Survey, Section, SectionTranslation, Question
+from surveys.question_order import assert_forward_only, flat_question_ids, renumber_questions
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
 from app.graphql_ids import as_pk
@@ -84,7 +86,9 @@ class SectionMutations:
         id = as_pk(id)
         section = Section.objects.select_related('survey').get(pk=id)
 
-        for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations']).items():
+        # `order` is ignored: a section is placed by its first question, and moves only through
+        # `reorder_sections` (`forms:AD-4`).
+        for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'order']).items():
             setattr(section, field, value)
         if input.submit_action_target_id is None:
             section.submit_action_target = None
@@ -123,6 +127,7 @@ class SectionMutations:
     @strawberry.mutation(permission_classes=[RequireAuth])
     @with_django_user
     @check_permission(_type_from_survey_id, 'update')
+    @transaction.atomic
     def reorder_sections(
         self,
         info: Info,
@@ -130,21 +135,44 @@ class SectionMutations:
         section_ids: List[int],
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> List[SectionType]:
-        """Reorder sections in a survey"""
+        """Reorder sections in a survey. Each section's questions move with it; a sectionless
+        question keeps its place between sections. Sections left out follow the listed ones."""
         survey_id = as_pk(survey_id)
-        survey = Survey.objects.get(pk=survey_id)
+        survey = Survey.objects.select_for_update().get(pk=survey_id)
 
         # Validate all section IDs belong to the survey
         sections = Section.objects.filter(id__in=section_ids, survey=survey)
         if sections.count() != len(section_ids):
             raise ValueError("Some section IDs are invalid or don't belong to this survey")
 
-        # Update order
-        section_map = {section.id: section for section in sections}
-        for order, section_id in enumerate(section_ids, start=1):
-            section = section_map.get(section_id)
-            if section:
-                section.order = order
-                section.save(update_fields=['order'])
+        listed = set(section_ids)
+        rank = list(section_ids) + [
+            sid for sid in Section.objects.filter(survey=survey).order_by('order', 'id').values_list('id', flat=True)
+            if sid not in listed
+        ]
+
+        # The survey as units — a section's questions together, or one sectionless question — so
+        # the sections can be permuted among the slots they hold without touching the rest.
+        current = flat_question_ids(Question.objects.filter(survey_id=survey.id))
+        section_of = dict(Question.objects.filter(survey_id=survey.id).values_list('id', 'section_id'))
+        blocks: dict[int, list[int]] = {}
+        units: list = []
+        for pk in current:
+            sid = section_of[pk]
+            if sid is None:
+                units.append(pk)
+            elif sid not in blocks:
+                blocks[sid] = [pk]
+                units.append(None)
+            else:
+                blocks[sid].append(pk)
+        ranked = set(rank)
+        moving = iter([sid for sid in rank if sid in blocks] + [sid for sid in blocks if sid not in ranked])
+        sequence = []
+        for unit in units:
+            sequence.extend(blocks[next(moving)] if unit is None else [unit])
+
+        assert_forward_only(survey, {pk: i for i, pk in enumerate(sequence, start=1)}, field='section_ids')
+        renumber_questions(survey.id, sequence, section_rank=rank)
 
         return list(Section.objects.filter(survey=survey).order_by('order'))

@@ -241,6 +241,15 @@ class QuestionInput:
     translations: Optional[List[QuestionTranslationInput]] = UNSET
 
 
+@strawberry.input(description="One question's place in a survey-wide reorder, in the order it is listed.")
+class QuestionPlacementInput:
+    question_id: strawberry.ID
+    section_id: Optional[strawberry.ID] = strawberry.field(
+        default=UNSET,
+        description="The section the question ends up in, or null for none. Required: a move names its destination.",
+    )
+
+
 # Answer Schema Inputs
 @strawberry.input
 class AnswerSchemaOptionInput:

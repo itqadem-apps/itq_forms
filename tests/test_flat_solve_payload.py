@@ -116,6 +116,10 @@ def test_section_scoped_orders_put_a_sectionless_question_last(user, survey, tre
     """Pre-backfill: orders are 1..k per section, so they collide and give no survey-wide
     position — the legacy key holds and the sectionless question is delivered last."""
     a, b, c = tree
+    # A survey no author has saved since story 1.2 still holds section-scoped orders.
+    for sec in (a, b, c):
+        for i, pk in enumerate(sec.questions.order_by("order", "id").values_list("id", flat=True), start=1):
+            Question.objects.filter(pk=pk).update(order=i)
     user_survey = _snapshot(user, survey)
     moved = UserQuestion.objects.filter(user_survey=user_survey, section__origin_id=b.id).order_by("order").first()
     UserQuestion.objects.filter(pk=moved.pk).update(section=None)
