@@ -28,8 +28,12 @@ from django.db.models import Case, IntegerField, Q, QuerySet, Value, When
 
 
 def flat_question_ids(questions: QuerySet) -> list[int]:
-    rows = list(questions.order_by().values_list("id", "section_id", "section__order", "order"))
+    return flat_order(list(questions.order_by().values_list("id", "section_id", "section__order", "order")))
 
+
+def flat_order(rows: list[tuple]) -> list[int]:
+    """`flat_question_ids` over `(id, section_id, section_order, order)` rows already in memory, so
+    a dry run can ask what an order it has not written would render as."""
     legacy = sorted(
         rows,
         key=lambda r: (r[2] is None, r[2] or 0, r[3] is None, r[3] or 0, r[0]),
