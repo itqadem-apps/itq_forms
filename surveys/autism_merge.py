@@ -110,3 +110,107 @@ def describe(p):
     else:
         lines.append(f"items that would move: {moving}")
     return lines
+
+
+# --- Apply release (estate:AD-20). The plan below is the report read from Loki on 2026-10-06
+# (forms-migrate-75d668b56f, surveys.0053), saved as the undo record in
+# .agent/implementation/spec-autism-merge-1-1-repoint-forms.md. The apply moves exactly these ids
+# or nothing.
+APPLY_SOURCE = "7878f298-ee3c-40ba-88f3-9cecfe841b14"
+APPLY_TARGET = "6684c538-b347-446a-b4fe-993176be6335"
+APPLY_SURVEYS = frozenset({"189", "5"})
+APPLY_COLLECTIONS = frozenset({"1", "2", "3", "4", "5", "6", "7"})
+
+
+class PlanMismatch(RuntimeError):
+    """Live data no longer matches the reported plan; the apply writes nothing."""
+
+
+def _ids(qs):
+    return {str(i) for i in qs.values_list("id", flat=True)}
+
+
+def _check(source, target, on_source):
+    problems = []
+    for label, cat in (("source", source), ("target", target)):
+        if cat is None:
+            problems.append(f"{label} category missing")
+        elif cat.deleted_at is not None:
+            problems.append(f"{label} {cat.category_id} is tombstoned")
+    if source is not None and target is not None and source.tree_id != target.tree_id:
+        problems.append(f"source tree {source.tree_id} != target tree {target.tree_id}")
+    if source is not None and source.path_text:
+        children = sorted(
+            str(c)
+            for c in Category.objects.filter(
+                tree_id=source.tree_id, path_text__startswith=source.path_text + PATH_SEP
+            ).values_list("category_id", flat=True)
+        )
+        if children:
+            problems.append(f"source has children {children}")
+    for kind, planned in (("surveys", APPLY_SURVEYS), ("collections", APPLY_COLLECTIONS)):
+        live = on_source[kind]
+        if live != planned:
+            problems.append(
+                f"{kind} on source differ from the report: extra {sorted(live - planned)} "
+                f"missing {sorted(planned - live)}"
+            )
+    return problems
+
+
+def apply(echo=print):
+    """Move the reported surveys and collections from APPLY_SOURCE to APPLY_TARGET, or raise.
+
+    Writes item rows' category only, never Category / CategoryTranslation (`estate:AD-15`). Callers
+    run it inside the migration's transaction, so a raise leaves every row as it was.
+    """
+    from survey_collections.models import SurveyCollection
+    from surveys.models import Survey
+
+    kinds = {"surveys": Survey, "collections": SurveyCollection}
+    planned = {"surveys": APPLY_SURVEYS, "collections": APPLY_COLLECTIONS}
+    source = Category.objects.filter(category_id=APPLY_SOURCE).first()
+    target = Category.objects.filter(category_id=APPLY_TARGET).first()
+
+    if source is None and target is None:
+        # Neither category was ever projected here (a fresh or non-prod database). Prod holds both:
+        # the projection tombstones, it never deletes rows.
+        echo(f"source {APPLY_SOURCE} and target {APPLY_TARGET} not in this database: nothing to move")
+        echo("moved: 0")
+        return 0
+
+    on_source = {k: _ids(m.objects.filter(category_id=APPLY_SOURCE)) for k, m in kinds.items()}
+    if not any(on_source.values()) and target is not None and target.deleted_at is None:
+        on_target = {k: _ids(m.objects.filter(category_id=APPLY_TARGET)) for k, m in kinds.items()}
+        if all(planned[k] <= on_target[k] for k in kinds):
+            echo(f"already applied: every reported item is on {APPLY_TARGET} and none on {APPLY_SOURCE}")
+            echo("moved: 0")
+            return 0
+
+    problems = _check(source, target, on_source)
+    if problems:
+        for p in problems:
+            echo(f"MISMATCH {p}")
+        raise PlanMismatch("autism-merge apply refused, nothing written: " + "; ".join(problems))
+
+    moved = 0
+    for kind, model in kinds.items():
+        ids = sorted(planned[kind], key=int)
+        n = model.objects.filter(category_id=APPLY_SOURCE, id__in=ids).update(category_id=APPLY_TARGET)
+        if n != len(ids):
+            raise PlanMismatch(f"autism-merge apply: {kind} moved {n}, expected {len(ids)}")
+        echo(f"{kind} moved {APPLY_SOURCE} -> {APPLY_TARGET}: {n} {ids}")
+        moved += n
+
+    _republish({"survey": [int(i) for i in APPLY_SURVEYS], "collection": [int(i) for i in APPLY_COLLECTIONS]})
+    echo(f"republished: surveys {len(APPLY_SURVEYS)}, collections {len(APPLY_COLLECTIONS)}")
+    echo(f"moved: {moved}")
+    return moved
+
+
+def _republish(changed):
+    # Survey and collection events carry category_id; consumers (search, orders) refresh from them.
+    # Same events an admin edit emits, through the egp_only migration's republish.
+    from importlib import import_module
+
+    import_module("pricing.migrations.0005_egp_only")._republish(changed)
