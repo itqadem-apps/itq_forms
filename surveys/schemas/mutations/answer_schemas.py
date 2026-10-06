@@ -8,7 +8,7 @@ from django.db import transaction
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.flow import assert_survey_forward, validate_edge
+from surveys.flow import assert_survey_forward, check_type_change, validate_edge
 from surveys.inputs import AnswerSchemaInput, AnswerSchemaOptionInput
 from surveys.types import AnswerSchemaType, AnswerSchemaOptionType
 from surveys.models import (
@@ -50,6 +50,7 @@ class AnswerSchemaMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_schema_id, 'update')
+    @transaction.atomic
     def update_answer_schema(
         self,
         info: Info,
@@ -60,6 +61,9 @@ class AnswerSchemaMutations:
         """Update an answer schema"""
         id = as_pk(id)
         schema = AnswerSchema.objects.select_related('survey', 'question').get(pk=id)
+        if input.type is not strawberry.UNSET and input.type != schema.type:
+            Survey.objects.select_for_update().filter(pk=schema.survey_id).first()
+            check_type_change(schema.question_id, input.type)
 
         for field, value in input_to_dict(input).items():
             setattr(schema, field, value)

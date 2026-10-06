@@ -61,6 +61,22 @@ def check_display_option(survey, display_option) -> None:
         ]})
 
 
+def check_type_change(question_id, new_type) -> None:
+    """`forms:AD-3`: a question that routes may not become one that admits several options (its
+    edges would stay, and one answer would no longer yield one edge) or none (its options, and
+    with them the routing, would be deleted without notice)."""
+    if new_type in SINGLE_SELECT_TYPES:
+        return
+    if AnswerSchemaOption.objects.filter(
+        question_id=question_id, flow_action__in=(FlowAction.GO_TO, FlowAction.TERMINATE)
+    ).exists():
+        raise ValidationError({"type": [
+            f"This question routes answers (go_to or terminate), and only a single-choice question "
+            f"(radio or dropdown) can route (forms:AD-3), so it cannot become \"{new_type}\". "
+            f"Remove its go_to and terminate options first."
+        ]})
+
+
 def assert_survey_forward(survey, field: str = "flow_target_id") -> None:
     positions = {pk: i for i, pk in enumerate(flat_question_ids(Question.objects.filter(survey_id=survey.pk)), start=1)}
     assert_forward_only(survey, positions, field=field)

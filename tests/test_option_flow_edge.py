@@ -12,7 +12,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
-from surveys.inputs import AnswerSchemaOptionInput, QuestionPlacementInput
+from surveys.inputs import AnswerSchemaInput, AnswerSchemaOptionInput, QuestionInput, QuestionPlacementInput
 from surveys.models import AnswerSchemaOption, FlowAction, Question, Section, Survey
 from surveys.question_order import renumber_questions
 from surveys.schemas.mutations.answer_schemas import AnswerSchemaMutations
@@ -221,3 +221,91 @@ def test_a_duplicated_survey_points_its_edges_at_its_own_questions(survey, tree,
     assert edge.flow_target.survey_id == copy.id
     assert edge.flow_target.title == "b"
     assert edge.question.title == "a"
+
+
+# ── A routing question keeps a type that can route ──────────────
+
+
+def _update_question(question, **fields):
+    with transaction.atomic():
+        return _resolver(QuestionMutations, "update_question")(
+            QuestionMutations(), None, id=question.id, input=QuestionInput(**fields), django_user=None
+        )
+
+
+def _update_schema(question, **fields):
+    with transaction.atomic():
+        return _resolver(AnswerSchemaMutations, "update_answer_schema")(
+            AnswerSchemaMutations(), None, id=question.answer_schema.id, input=AnswerSchemaInput(**fields), django_user=None
+        )
+
+
+def _shape(question):
+    q = Question.objects.select_related("answer_schema").get(pk=question.pk)
+    edges = set(AnswerSchemaOption.objects.filter(question=q).values_list("flow_action", "flow_target_id"))
+    return q.type, q.answer_schema.type, AnswerSchemaOption.objects.filter(question=q).count(), edges
+
+
+def _type_change_refused(change, question, new_type):
+    before = _shape(question)
+    with pytest.raises(ValidationError) as err:
+        change(question, type=new_type)
+    assert "type" in err.value.message_dict
+    assert "go_to and terminate options" in err.value.message_dict["type"][0]
+    assert _shape(question) == before
+
+
+def test_a_routing_radio_cannot_become_a_checkbox(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _type_change_refused(_update_question, tree["a"], Question.QUESTION_TYPE_CHECKBOX_MCQ)
+
+
+def test_a_routing_radio_cannot_become_a_checkbox_through_its_schema(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _type_change_refused(_update_schema, tree["a"], Question.QUESTION_TYPE_CHECKBOX_MCQ)
+
+
+def test_a_terminate_option_counts_as_routing(tree):
+    _update(_option(tree["a"]), flow_action="terminate")
+    _type_change_refused(_update_question, tree["a"], Question.QUESTION_TYPE_CHECKBOX_MCQ)
+
+
+@pytest.mark.parametrize("new_type", [Question.QUESTION_TYPE_TEXT, Question.QUESTION_TYPE_RADIO_GRID])
+def test_a_routing_radio_cannot_become_a_type_that_drops_its_options(tree, new_type):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _type_change_refused(_update_question, tree["a"], new_type)
+
+
+def test_a_routing_radio_can_become_a_dropdown(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _update_question(tree["a"], type=Question.QUESTION_TYPE_DROPDOWN_MCQ)
+    assert _shape(tree["a"]) == ("dropdown", "dropdown", 1, {("go_to", tree["b"].id)})
+
+
+def test_a_radio_that_does_not_route_can_become_a_checkbox(tree):
+    _update_question(tree["a"], type=Question.QUESTION_TYPE_CHECKBOX_MCQ)
+    assert _shape(tree["a"])[:2] == ("checkbox", "checkbox")
+
+
+def test_a_radio_whose_edges_were_removed_can_become_a_checkbox(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _update(_option(tree["a"]), flow_action="fall_through", flow_target_id=None)
+    _update_question(tree["a"], type=Question.QUESTION_TYPE_CHECKBOX_MCQ)
+    assert _shape(tree["a"]) == ("checkbox", "checkbox", 1, {("fall_through", None)})
+
+
+def test_an_update_that_leaves_the_type_alone_is_allowed(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _update_question(tree["a"], title="renamed")
+    assert Question.objects.get(pk=tree["a"].pk).title == "renamed"
+    assert _shape(tree["a"]) == ("radio", "radio", 1, {("go_to", tree["b"].id)})
+
+
+def test_a_routing_radio_can_become_a_dropdown_through_its_schema(tree):
+    _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))
+    _update_schema(tree["a"], type=Question.QUESTION_TYPE_DROPDOWN_MCQ)
+    assert AnswerSchemaOption.objects.filter(question=tree["a"]).count() == 1
+    assert set(AnswerSchemaOption.objects.filter(question=tree["a"]).values_list("flow_action", "flow_target_id")) == {
+        ("go_to", tree["b"].id)
+    }
+    assert Question.objects.get(pk=tree["a"].pk).answer_schema.type == "dropdown"

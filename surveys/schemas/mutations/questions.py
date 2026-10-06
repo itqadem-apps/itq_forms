@@ -9,6 +9,7 @@ from datetime import timedelta
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
+from surveys.flow import check_type_change
 from surveys.inputs import QuestionInput, QuestionPlacementInput
 from surveys.question_order import (
     assert_forward_only,
@@ -134,6 +135,7 @@ class QuestionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_question_id, 'update')
+    @transaction.atomic
     def update_question(
         self,
         info: Info,
@@ -144,6 +146,9 @@ class QuestionMutations:
         """Update an existing question"""
         id = as_pk(id)
         question = Question.objects.select_related('survey', 'section').get(pk=id)
+        if input.type is not strawberry.UNSET and input.type != question.type:
+            Survey.objects.select_for_update().filter(pk=question.survey_id).first()
+            check_type_change(question.pk, input.type)
 
         # `order` is ignored: a question moves only through the reorder mutations (`forms:AD-4`).
         for field, value in input_to_dict(input, exclude=['answer_time', 'translations', 'order']).items():
