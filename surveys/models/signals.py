@@ -1,4 +1,4 @@
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 
 from .answer_schema import AnswerSchema
@@ -124,3 +124,12 @@ def _update_answer_schema_option_order(sender, instance: AnswerSchemaOption, **k
     for idx, option in enumerate(options):
         option.order = idx + 1
     AnswerSchemaOption.objects.bulk_update(options, ["order"])
+
+
+@receiver(pre_delete, sender=Question)
+def _clear_edges_into_deleted_question(sender, instance: Question, **kwargs):
+    """An edge whose target is deleted falls through rather than keeping go_to with no target
+    (`forms:AD-3`)."""
+    from surveys.flow import clear_edges_into
+
+    clear_edges_into([instance.pk])

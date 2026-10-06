@@ -26,6 +26,7 @@ from surveys.models import (
     AnswerSchema,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
+    FlowAction,
 )
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
@@ -244,6 +245,9 @@ class QuestionMutations:
                 option.section = new_question.section
                 option.question = new_question
                 option.schema = new_schema
+                # A copy starts with no flow: the original's edge led on from the original.
+                option.flow_action = FlowAction.FALL_THROUGH
+                option.flow_target = None
                 option.save()
 
                 # Duplicate option translations

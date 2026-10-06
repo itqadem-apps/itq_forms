@@ -33,6 +33,7 @@ from surveys.models import (
     QuestionTranslation,
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
+    FlowAction,
 )
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
@@ -234,7 +235,11 @@ class SurveyMutations:
                 slug=f"{t.slug}-copy" if t.slug else None,
             )
 
-        # Duplicate sections → questions → schemas → options (with all translations)
+        # Duplicate sections → questions → schemas → options (with all translations). An edge is
+        # re-pointed at the copy's own question once every question exists; one whose target was
+        # not copied falls through (`forms:AD-3`).
+        question_map: dict[int, Question] = {}
+        routed: list[tuple[AnswerSchemaOption, int]] = []
         for section in original.sections.all():
             new_section = clone_instance(section, survey=new_survey)
 
@@ -243,6 +248,7 @@ class SurveyMutations:
 
             for question in Question.objects.filter(section=section):
                 new_question = clone_instance(question, survey=new_survey, section=new_section)
+                question_map[question.pk] = new_question
 
                 for t in QuestionTranslation.objects.filter(question=question):
                     clone_instance(t, question=new_question)
@@ -262,9 +268,19 @@ class SurveyMutations:
                             section=new_section,
                             question=new_question,
                             schema=new_schema,
+                            flow_target=None,
+                            flow_action=FlowAction.FALL_THROUGH if option.flow_action == FlowAction.GO_TO else option.flow_action,
                         )
+                        if option.flow_action == FlowAction.GO_TO and option.flow_target_id:
+                            routed.append((new_option, option.flow_target_id))
                         for t in AnswerSchemaOptionTranslation.objects.filter(option=option):
                             clone_instance(t, option=new_option)
+
+        for new_option, old_target in routed:
+            if old_target in question_map:
+                new_option.flow_action = FlowAction.GO_TO
+                new_option.flow_target = question_map[old_target]
+                new_option.save(update_fields=["flow_action", "flow_target"])
 
         # Duplicate classifications
         for classification in original.classifications.all():

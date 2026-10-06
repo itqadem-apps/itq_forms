@@ -49,4 +49,6 @@ class AnswerSchemaOptionType:
     is_column: auto
     ending_option: auto
     order: auto
+    flow_action: str
+    flow_target_id: Optional[strawberry.ID]
     translations: List[AnswerSchemaOptionTranslationType]

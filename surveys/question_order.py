@@ -183,6 +183,12 @@ def assert_forward_only(owner, positions: Mapping[int, int], field: str) -> None
 
 
 def _edges(owner) -> Iterable[tuple[int, int]]:
-    """(source question id, target question id) for every edge on `owner`. No survey carries an
-    edge until epic 2 adds them, so there is nothing to check yet."""
-    return ()
+    """(source question id, target question id) for every go_to edge on `owner` (`forms:AD-3`)."""
+    from surveys.models import AnswerSchemaOption, FlowAction, Survey
+    from user_surveys.models import UserAnswerOption
+
+    if isinstance(owner, Survey):
+        options = AnswerSchemaOption.objects.filter(survey=owner)
+    else:
+        options = UserAnswerOption.objects.filter(user_survey=owner, question__isnull=False)
+    return options.filter(flow_action=FlowAction.GO_TO, flow_target__isnull=False).values_list("question_id", "flow_target_id")

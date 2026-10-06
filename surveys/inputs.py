@@ -265,6 +265,14 @@ class AnswerSchemaOptionInput:
     ending_option: Optional[bool] = UNSET
     order: Optional[int] = UNSET
     translations: Optional[List[AnswerSchemaOptionTranslationInput]] = UNSET
+    flow_action: Optional[str] = strawberry.field(
+        default=UNSET,
+        description="Where answering this option sends the learner: fall_through (the next question), go_to (flow_target_id) or terminate.",
+    )
+    flow_target_id: Optional[strawberry.ID] = strawberry.field(
+        default=UNSET,
+        description="The question a go_to edge leads to: any later question of the survey. Null for any other action.",
+    )
 
 
 @strawberry.input

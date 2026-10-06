@@ -10,7 +10,7 @@ from .question import Question
 from .question_translation import QuestionTranslation
 from .answer_schema import AnswerSchema
 from .answer_schema_translation import AnswerSchemaTranslation
-from .answer_schema_option import AnswerSchemaOption
+from .answer_schema_option import AnswerSchemaOption, FlowAction
 from .answer_schema_option_translation import AnswerSchemaOptionTranslation
 from .usage import Usage
 from .legacy import LEGACY_MODELS_SOURCE

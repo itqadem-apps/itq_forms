@@ -26,4 +26,14 @@ class UserAnswerOption(models.Model):
     is_column = models.BooleanField(default=None, null=True, blank=True)
     ending_option = models.BooleanField(default=None, null=True, blank=True)
     order = models.IntegerField(default=1)
+    # The enrolment copy of the author's edge (`forms:AD-3`), targeting the learner's own question.
+    flow_action = models.CharField(
+        max_length=16,
+        choices=[("fall_through", "Fall through"), ("go_to", "Go to"), ("terminate", "Terminate")],
+        default="fall_through",
+        db_default="fall_through",  # the previous image's enrolment copy inserts without it
+    )
+    flow_target = models.ForeignKey(
+        UserQuestion, on_delete=models.SET_NULL, null=True, blank=True, related_name="incoming_edges"
+    )
     translations = models.JSONField(default=dict, blank=True)
