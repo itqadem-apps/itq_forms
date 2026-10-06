@@ -1,11 +1,13 @@
 """Shared facet utilities for building category tree and price range facets."""
 from __future__ import annotations
 
+import math
 from typing import List, Optional
 
 from django.conf import settings
 from django.db.models import Count, Max, Min, QuerySet
 
+from app.price_filter import CENTS_PER_UNIT
 from app.schema_common import CategoryFacetNodeGQL, CategoryTranslationFacetGQL, PriceRangeFacetGQL
 from taxonomy.models import Category
 from taxonomy.projection import PATH_SEP
@@ -17,7 +19,10 @@ def build_price_range_facet(
     price_relation: str = "prices",
 ) -> PriceRangeFacetGQL:
     """
-    Compute min/max amount_cents from the prices related to the filtered queryset.
+    Compute the min/max price, in EGP, of the prices related to the filtered queryset.
+
+    The bounds are what a visitor types into the price filter, so they share its
+    unit. min is floored and max ceiled so the range covers every listed price.
 
     Args:
         base_qs: The already-filtered queryset (Survey, SurveyCollection, etc.)
@@ -33,8 +38,8 @@ def build_price_range_facet(
         max_price=Max(f"{price_relation}__amount_cents"),
     )
     return PriceRangeFacetGQL(
-        min=agg["min_price"] or 0,
-        max=agg["max_price"] or 0,
+        min=math.floor((agg["min_price"] or 0) / CENTS_PER_UNIT),
+        max=math.ceil((agg["max_price"] or 0) / CENTS_PER_UNIT),
     )
 
 

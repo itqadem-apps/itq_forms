@@ -2,6 +2,7 @@
 Custom price range filter handler that treats items with no prices as free (0).
 
 When gte is 0 (or not set), items without any prices are included in the results.
+Bounds arrive in EGP (what a visitor types) and are compared with amount_cents.
 """
 from __future__ import annotations
 
@@ -12,6 +13,12 @@ from django.db.models import Q, QuerySet
 from pkg_filters.core import BaseRangeFilterHandler
 from pkg_filters.core.specs.range import RangeFilterVO
 from pkg_filters.integrations.django import DjangoQueryContext
+
+CENTS_PER_UNIT = 100
+
+
+def _to_cents(value):
+    return None if value is None else round(value * CENTS_PER_UNIT)
 
 
 class DjangoPriceRangeFilterHandler(BaseRangeFilterHandler):
@@ -28,6 +35,13 @@ class DjangoPriceRangeFilterHandler(BaseRangeFilterHandler):
         self._field = field
 
     def apply_to_stmt(self, stmt: QuerySet, ctx: Any, rf: RangeFilterVO) -> QuerySet:
+        rf = RangeFilterVO(
+            eq=_to_cents(rf.eq),
+            gt=_to_cents(rf.gt),
+            gte=_to_cents(rf.gte),
+            lt=_to_cents(rf.lt),
+            lte=_to_cents(rf.lte),
+        )
         no_prices = Q(prices__isnull=True)
         price_q = Q()
 
