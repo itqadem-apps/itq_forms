@@ -14,12 +14,12 @@ from surveys.question_order import flat_question_ids
 from .models import (
     UserAction,
     UserAnswer,
-    UserAnswerOption,
     UserQuestion,
     UserSurvey,
     UserSurveyClassification,
     UserSurveyRecommendation,
 )
+from .services import max_score as compute_max_score, option_scores_by_question, question_max_score
 
 
 # ── Colour helpers ──────────────────────────────────────────────────────
@@ -92,28 +92,14 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
     # ── Score ring ──
     show_score = user_survey.use_score and user_survey.score is not None
 
-    # Calculate max possible score from all MCQ options
-    max_score = 0
-    if show_score:
-        # Every snapshot question counts, whatever its section: `Section.is_hidden` hides nothing
-        # (`forms:AD-9`). Excluding hidden sections emptied the denominator of a survey built with
-        # a hidden wrapper section, and `score_pct` below rendered it at 0%.
-        questions = list(
-            UserQuestion.objects.filter(user_survey=user_survey)
-            .select_related("answer_schema")
-            .order_by("section__order", "order")
-        )
-        for q in questions:
-            if q.type in UserQuestion.SINGLE_SELECT_TYPES:
-                opts = UserAnswerOption.objects.filter(schema__question=q)
-                scores = [o.score or 0 for o in opts]
-                max_score += max(scores) if scores else 0
-            elif q.type in UserQuestion.MULTI_SELECT_TYPES + UserQuestion.GRID_TYPES:
-                opts = UserAnswerOption.objects.filter(schema__question=q)
-                max_score += sum(max(0, o.score or 0) for o in opts)
+    # One rule for every surface: the basis-aware max (`forms:AD-10`). `Section.is_hidden` hides
+    # nothing from it (`forms:AD-9`).
+    option_scores = option_scores_by_question(user_survey) if show_score else {}
+    max_score = compute_max_score(user_survey, option_scores) if show_score else 0
 
     score = user_survey.score or 0
-    score_pct = round(score / max_score * 100) if max_score > 0 else 0
+    # Capped: a legacy attempt's stored score may predate the basis and exceed today's max.
+    score_pct = min(100, round(score / max_score * 100)) if max_score > 0 else 0
 
     # SVG ring math: r=54, circumference = 2*pi*54
     circumference = round(2 * math.pi * 54, 2)
@@ -201,14 +187,7 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
 
         # Score display
         if show_score and answer.score is not None:
-            # Determine max for this question
-            q_max = 0
-            if q.type in UserQuestion.SINGLE_SELECT_TYPES:
-                opts = list(UserAnswerOption.objects.filter(schema__question=q))
-                q_max = max((o.score or 0 for o in opts), default=0)
-            elif q.type in UserQuestion.MULTI_SELECT_TYPES + UserQuestion.GRID_TYPES:
-                opts = list(UserAnswerOption.objects.filter(schema__question=q))
-                q_max = sum(max(0, o.score or 0) for o in opts)
+            q_max = question_max_score(q, option_scores.get(q.id, []))
 
             item["score_display"] = f"{answer.score}/{q_max} Points"
             if q_max > 0:

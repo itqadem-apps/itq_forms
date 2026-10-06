@@ -54,6 +54,7 @@ class SurveyType:
     randomize_questions: auto
     randomize_options: auto
     shuffle_scope: auto
+    score_basis: auto
     category_id: auto
     category: Optional[CategoryType]
     sponsor: auto

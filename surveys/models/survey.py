@@ -14,6 +14,16 @@ class ShuffleScope(models.TextChoices):
     UNTOUCHED = "untouched", _("Only questions no edge touches")
 
 
+class ScoreBasis(models.TextChoices):
+    """What an assessment's max score counts (`forms:AD-10`). The score itself counts only on-path
+    answers under every basis; the basis picks the denominator. Without a flow every question is on
+    the path, so `reached` and `all` coincide (`forms:AD-16`)."""
+
+    ANSWERED = "answered", _("Answered questions")
+    REACHED = "reached", _("Reached questions")
+    ALL = "all", _("All questions")
+
+
 class Survey(models.Model):
     DISPLAY_OPTION_BY_QUESTION = "by_question"
     DISPLAY_OPTION_BY_SECTION = "by_section"
@@ -129,6 +139,13 @@ class Survey(models.Model):
         default=ShuffleScope.UNTOUCHED,
         db_default=ShuffleScope.UNTOUCHED,
         verbose_name=_("Shuffle Scope"),
+    )
+    score_basis = models.CharField(
+        max_length=16,
+        choices=ScoreBasis.choices,
+        default=ScoreBasis.REACHED,
+        db_default=ScoreBasis.REACHED,
+        verbose_name=_("Score Basis"),
     )
 
     allow_update_answer_options_scores_based_on_classification = models.BooleanField(

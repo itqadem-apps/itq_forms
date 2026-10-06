@@ -1,6 +1,6 @@
 import logging
 import random
-from collections import Counter
+from collections import Counter, defaultdict
 from uuid import uuid4
 
 from django.db import transaction
@@ -23,7 +23,7 @@ from .models import (
     UserSurveyClassification,
     UserSurveyRecommendation,
 )
-from surveys.models import FlowAction, Survey
+from surveys.models import FlowAction, ScoreBasis, Survey
 from surveys.question_order import assert_forward_only, flat_order, flat_question_ids
 from survey_collections.models import SurveyCollection
 from user_surveys.flow import recalculate_on_path
@@ -455,6 +455,7 @@ def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id
             randomize_questions=survey.randomize_questions,
             randomize_options=survey.randomize_options,
             shuffle_scope=survey.shuffle_scope,
+            score_basis=survey.score_basis,
             session_token=uuid4() if survey.enable_anti_cheat else None,
             cover_id=survey.cover_id,
             thumb_id=survey.thumb_id,
@@ -497,14 +498,58 @@ def _evaluate_answer(user_survey: UserSurvey, answer: UserAnswer) -> tuple[int, 
     return score, classifications, recommendations
 
 
+def option_scores_by_question(user_survey: UserSurvey) -> dict[int, list[int]]:
+    """Every snapshot option score of the attempt, keyed by question, in one query."""
+    scores = defaultdict(list)
+    for question_id, score in UserAnswerOption.objects.filter(user_survey=user_survey).values_list(
+        "schema__question_id", "score"
+    ):
+        scores[question_id].append(score or 0)
+    return dict(scores)
+
+
+def question_max_score(question: UserQuestion, scores: list[int] | None = None) -> int:
+    """The most one question can score: the highest option of a single-select, the positive
+    options summed for a multi-select or grid. Pass `scores` from `option_scores_by_question` to
+    avoid a query per question."""
+    if scores is None:
+        scores = [s or 0 for s in UserAnswerOption.objects.filter(schema__question=question).values_list("score", flat=True)]
+    if question.type in UserQuestion.SINGLE_SELECT_TYPES:
+        return max(scores, default=0)
+    if question.type in UserQuestion.MULTI_SELECT_TYPES + UserQuestion.GRID_TYPES:
+        return sum(max(0, s) for s in scores)
+    return 0
+
+
+def max_score(user_survey: UserSurvey, scores: dict[int, list[int]] | None = None) -> int:
+    """The attempt's denominator under its declared basis (`forms:AD-10`), read from the stored
+    `on_path` flags, never a replay (`forms:AD-17`)."""
+    questions = user_survey.questions.all()
+    if user_survey.score_basis != ScoreBasis.ALL:
+        questions = questions.filter(on_path=True)
+    if user_survey.score_basis == ScoreBasis.ANSWERED:
+        questions = questions.filter(
+            id__in=UserAnswer.objects.filter(user_survey=user_survey, selected_options__isnull=False).values("question_id")
+        )
+    if scores is None:
+        scores = option_scores_by_question(user_survey)
+    return sum(question_max_score(q, scores.get(q.id, [])) for q in questions.only("id", "type"))
+
+
 def evaluate_assessment(user_survey: UserSurvey) -> None:
     """Score, classify, recommend, and match actions for a submitted assessment."""
     total_score = 0
     all_classifications = []
     all_recommendations = []
 
-    # Scoped to the question, never to section membership (`forms:AD-13`).
-    answers = list(user_survey.useranswer_set.all())
+    # Scoped to the question, never to section membership (`forms:AD-13`). An answer the path no
+    # longer reaches never scores, under every basis (`forms:AD-10`); one whose question link is
+    # null still does, as before.
+    answers = list(user_survey.useranswer_set.exclude(question__on_path=False))
+    if user_survey.use_score:
+        # A score left from an earlier evaluation would still render beside an answer that no
+        # longer counts.
+        user_survey.useranswer_set.filter(question__on_path=False).exclude(score=None).update(score=None)
     for answer in answers:
         score, classifications, recommendations = _evaluate_answer(user_survey, answer)
 

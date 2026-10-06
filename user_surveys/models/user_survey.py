@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from surveys.models import ShuffleScope, Survey
+from surveys.models import ScoreBasis, ShuffleScope, Survey
 from survey_collections.models import SurveyCollection
 
 from accounts.models import Child
@@ -64,6 +64,9 @@ class UserSurvey(models.Model):
     randomize_options = models.BooleanField(default=False)
     shuffle_scope = models.CharField(
         max_length=16, choices=ShuffleScope.choices, default=ShuffleScope.UNTOUCHED, db_default=ShuffleScope.UNTOUCHED
+    )
+    score_basis = models.CharField(
+        max_length=16, choices=ScoreBasis.choices, default=ScoreBasis.REACHED, db_default=ScoreBasis.REACHED
     )
 
     # denormalised assets

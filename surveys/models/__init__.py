@@ -1,4 +1,4 @@
-from .survey import ShuffleScope, Survey
+from .survey import ScoreBasis, ShuffleScope, Survey
 from .survey_translation import SurveyTranslation
 from pricing.models import Price
 from .has_soft_delete import HasSoftDelete

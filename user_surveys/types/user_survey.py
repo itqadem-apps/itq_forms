@@ -371,6 +371,7 @@ class UserSurveyType:
     randomize_questions: auto
     randomize_options: auto
     shuffle_scope: auto
+    score_basis: auto
     cover_id: auto
     thumb_id: auto
     category_id_snapshot: auto
@@ -398,6 +399,15 @@ class UserSurveyType:
         """The flat solve list (`forms:AD-18`): every question in snapshot order, sectionless
         included; `sections` carries heading data only."""
         return in_flat_order(self.questions.all())
+
+    @strawberry.field
+    def max_score(self) -> Optional[int]:
+        """The denominator of `score` under the attempt's score basis (`forms:AD-10`)."""
+        if not self.use_score:
+            return None
+        from user_surveys.services import max_score
+
+        return max_score(self)
 
     @strawberry.field
     def time_limit(self) -> Optional[str]:

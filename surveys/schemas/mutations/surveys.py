@@ -35,6 +35,7 @@ from surveys.models import (
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
     FlowAction,
+    ScoreBasis,
     ShuffleScope,
 )
 from taxonomy.models import Category
@@ -47,6 +48,12 @@ def _check_shuffle_scope(data: dict) -> None:
     scope = data.get('shuffle_scope')
     if scope is not None and scope not in ShuffleScope.values:
         raise ValidationError({'shuffle_scope': [f"\"{scope}\" is not a shuffle scope; use one of {', '.join(ShuffleScope.values)}."]})
+
+
+def _check_score_basis(data: dict) -> None:
+    basis = data.get('score_basis')
+    if basis is not None and basis not in ScoreBasis.values:
+        raise ValidationError({'score_basis': [f"\"{basis}\" is not a score basis; use one of {', '.join(ScoreBasis.values)}."]})
 
 
 def _type_from_input(info, input, **kw):
@@ -75,6 +82,7 @@ class SurveyMutations:
     ) -> SurveyPayload:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
         _check_shuffle_scope(data)
+        _check_score_basis(data)
         if 'time_limit' in data:
             data['time_limit'] = coerce_duration(data['time_limit'])
 
@@ -160,6 +168,7 @@ class SurveyMutations:
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
         _check_shuffle_scope(data)
+        _check_score_basis(data)
         if 'display_option' in data:
             check_display_option(survey, data['display_option'])
         if 'time_limit' in data:
