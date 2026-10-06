@@ -1,5 +1,5 @@
 """
-Seed 10 test surveys covering all solve/evaluate workflows end-to-end.
+Seed 11 test surveys covering all solve/evaluate workflows end-to-end.
 
 Usage:
     python manage.py seed_test_surveys --organization-id <uuid>
@@ -20,6 +20,7 @@ from surveys.models import (
     AnswerSchemaOptionTranslation,
     Classification,
     ClassificationTranslation,
+    FlowAction,
     Question,
     QuestionTranslation,
     Recommendation,
@@ -29,6 +30,7 @@ from surveys.models import (
     Survey,
     SurveyTranslation,
 )
+from surveys.question_order import renumber_questions
 
 def _classification(survey, name, score=None):
     """Create a Classification and its primary translation."""
@@ -421,35 +423,65 @@ def create_survey_7(organization_id):
 
 
 # ─────────────────────────────────────────────────────────────────────
-# Survey 8: Section Navigation with Jump
+# Survey 8: Section Navigation, branched by option edges
 # ─────────────────────────────────────────────────────────────────────
+def _student_branches(survey, scores=None):
+    """Screening → Student Details (S1-S3) or Professional Details (P1) → Contact Info.
+
+    The branch rides on option edges (`forms:AD-3`), never on a section jump (`forms:AD-15`): No on
+    Q0 goes to P1, every S3 option goes to C1, and Yes falls through. With `scores`, S1, S2, P1 and
+    C1 are scored radios instead of free text, and every option carries the listed score.
+    """
+    scored = scores is not None
+    free = "radio" if scored else "text"
+
+    def options(question, *texts):
+        return [
+            _option(question, text, i, score=scores[question.title][i - 1] if scored else None)
+            for i, text in enumerate(texts, start=1)
+        ]
+
+    screening = _section(survey, "Screening", 1, submit_action="next")
+    q0 = _question(screening, "Are you a student?", "radio", 1)
+    _yes, no = options(q0, "Yes", "No")
+
+    student = _section(survey, "Student Details", 2, submit_action="next")
+    s1 = _question(student, "University name", free, 1)
+    s2 = _question(student, "Field of study", free, 2)
+    s3 = _question(student, "Year of study", "radio", 3)
+
+    professional = _section(survey, "Professional Details", 3, submit_action="next")
+    p1 = _question(professional, "Company name", free, 1)
+
+    contact = _section(survey, "Contact Info", 4, submit_action="next")
+    c1 = _question(contact, "Email address", free, 1)
+
+    if scored:
+        options(s1, "State university", "Private university", "Other")
+        options(s2, "Sciences", "Humanities")
+        options(p1, "Large enterprise", "Small business")
+        options(c1, "Provided", "Declined")
+    years = options(s3, "First", "Second", "Third", "Fourth or later")
+
+    AnswerSchemaOption.objects.filter(pk=no.pk).update(flow_action=FlowAction.GO_TO, flow_target=p1)
+    AnswerSchemaOption.objects.filter(pk__in=[o.pk for o in years]).update(flow_action=FlowAction.GO_TO, flow_target=c1)
+
+    # Survey-wide numbering (`forms:AD-4`), in the order the branches are read.
+    renumber_questions(survey.id, [q.id for q in (q0, s1, s2, s3, p1, c1)])
+    return survey
+
+
 def create_survey_8(organization_id):
     survey = _create_survey(
         organization_id=organization_id,
         title=f"{TAG}Section Jump Navigation",
-        description="Form demonstrating section jump navigation.",
+        description="Form whose screening answer routes students and professionals down different questions.",
         survey_type="form",
         display_option="by_section",
         is_evaluable=False,
     )
     _status(survey, "published")
-
-    s1 = _section(survey, "Screening", 1, submit_action="next")
-    q1 = _question(s1, "Are you a student?", "radio", 1)
-    _option(q1, "Yes", 1)
-    _option(q1, "No", 2)
-
-    # Create sections 3 and 4 first so we can reference s4 as jump target
-    s3 = _section(survey, "Professional Details", 3, submit_action="next")
-    _question(s3, "Company name", "text", 1)
-
-    s4 = _section(survey, "Contact Info", 4, submit_action="next")
-    _question(s4, "Email address", "text", 1)
-
-    s2 = _section(survey, "Student Details", 2, submit_action="jump", submit_action_target=s4)
-    _question(s2, "University name", "text", 1)
-
-    return survey
+    return _student_branches(survey)
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -559,6 +591,34 @@ def create_survey_10(organization_id):
 
 
 # ─────────────────────────────────────────────────────────────────────
+# Survey 11: Section Navigation, branched and scored
+# ─────────────────────────────────────────────────────────────────────
+def create_survey_11(organization_id):
+    survey = _create_survey(
+        organization_id=organization_id,
+        title=f"{TAG}Section Jump Navigation (Scored)",
+        description="Scored twin of Survey 8: each branch question carries a max, so the score basis shows.",
+        survey_type="assessment",
+        display_option="by_section",
+        is_evaluable=True,
+        evaluation_type="automatic_evaluation",
+        use_score=True,
+    )
+    _status(survey, "published")
+    return _student_branches(
+        survey,
+        scores={
+            "Are you a student?": [5, 3],
+            "University name": [10, 5, 0],
+            "Field of study": [10, 5],
+            "Year of study": [4, 6, 8, 10],
+            "Company name": [10, 5],
+            "Email address": [10, 0],
+        },
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────
 # Command
 # ─────────────────────────────────────────────────────────────────────
 
@@ -573,11 +633,12 @@ CREATORS = [
     ("Survey 8: Section Jump Navigation", create_survey_8),
     ("Survey 9: Anti-Cheat OFF Contrast Test", create_survey_9),
     ("Survey 10: Multi-Language (EN + AR translations)", create_survey_10),
+    ("Survey 11: Section Jump Navigation, scored", create_survey_11),
 ]
 
 
 class Command(BaseCommand):
-    help = "Seed 10 test surveys covering all solve/evaluate workflows."
+    help = "Seed 11 test surveys covering all solve/evaluate workflows."
 
     def add_arguments(self, parser):
         parser.add_argument(
