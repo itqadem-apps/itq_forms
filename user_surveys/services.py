@@ -26,7 +26,7 @@ from .models import (
 from surveys.models import FlowAction, ScoreBasis, Survey
 from surveys.question_order import assert_forward_only, flat_order, flat_question_ids
 from survey_collections.models import SurveyCollection
-from user_surveys.flow import recalculate_on_path
+from user_surveys.flow import prune_off_path, recalculate_on_path
 
 
 def _build_translations(qs, fields, source=None, primary_lang=None):
@@ -619,6 +619,16 @@ def finish_assessment(
     user_survey: UserSurvey,
     reason: str = UserSurvey.TERMINATION_COMPLETED,
 ) -> None:
+    # One transaction under a row lock, which `answer_question` also takes: no answer write can move
+    # the path between the walk and the prune. Callers in autocommit (should_terminate,
+    # auto_submit_expired) get their own transaction here; a refused submit simply rolls back.
+    with transaction.atomic():
+        locked = UserSurvey.objects.select_for_update().get(pk=user_survey.pk)
+        _finish_locked(locked, reason)
+        user_survey.refresh_from_db()
+
+
+def _finish_locked(user_survey: UserSurvey, reason: str) -> None:
     recalculate_on_path(user_survey)
     # Skip required-question validation for forced terminations; a required question the path
     # skipped is not missing (`forms:AD-19`).
@@ -634,6 +644,9 @@ def finish_assessment(
             missing = required_ids - answered_ids
             if missing:
                 raise ValueError("You must answer all required questions before finishing the assessment.")
+
+    # The walk was just refreshed, so a forced end prunes against the current path (`forms:AD-19`).
+    prune_off_path(user_survey)
 
     user_survey.last_question = None
     user_survey.submitted_at = now()

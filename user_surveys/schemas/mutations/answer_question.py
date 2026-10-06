@@ -47,7 +47,8 @@ class AnswerQuestionMutation:
         user_survey_id = as_pk(user_survey_id)
         question_id = as_pk(question_id)
         with transaction.atomic():
-            user_survey = UserSurvey.objects.filter(id=user_survey_id, user=django_user).first()
+            # Serialises with `finish_assessment`, which locks the same row (`forms:AD-19`).
+            user_survey = UserSurvey.objects.select_for_update().filter(id=user_survey_id, user=django_user).first()
             if not user_survey:
                 raise ValidationError("Assessment not found.")
             if user_survey.submitted_at:

@@ -194,13 +194,18 @@ def _low(question):
     return question.answer_schema.options.order_by("score", "id").first()
 
 
-def _no_then_back_to_yes(us, t, scored):
-    """Answer No and P1, go back, answer Yes and the student branch, then submit."""
+def _no_then_back_to_yes_open(us, t, scored):
+    """Answer No and P1, go back, answer Yes and the student branch; the attempt stays open."""
     _answer(us, t.q0, t.no)
     _answer(us, t.p1, _top(t.p1) if scored else None)
     _answer(us, t.q0, t.yes)
     for q in (t.s1, t.s2, t.s3, t.c1):
         _answer(us, q, _top(q) if (scored or q is t.s3) else None)
+
+
+def _no_then_back_to_yes(us, t, scored):
+    """`_no_then_back_to_yes_open`, then submit."""
+    _no_then_back_to_yes_open(us, t, scored)
     finish_assessment(us)
     us.refresh_from_db()
 
@@ -338,11 +343,16 @@ def test_going_back_and_switching_to_yes_puts_the_student_branch_on_the_path(use
     assert not _mine(us, s8.p1).on_path
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="story 2.9 prunes off-path answers")
 def test_the_submitted_result_holds_no_answer_from_the_abandoned_branch(user, s8):
     us = _enrol(user, s8.q0.survey)
-    _no_then_back_to_yes(us, s8, scored=False)
-    assert not UserAnswer.objects.filter(user_survey=us, question=_mine(us, s8.p1)).exists()
+    _no_then_back_to_yes_open(us, s8, scored=False)
+    p1 = UserAnswer.objects.filter(user_survey=us, question=_mine(us, s8.p1))
+    assert p1.filter(question__on_path=False).exists()
+
+    finish_assessment(us)
+
+    assert not p1.exists()
+    assert UserQuestion.objects.filter(pk=_mine(us, s8.p1).pk).exists()
 
 
 # ── Scoring the branches (survey 11) ─────────────────────────────────

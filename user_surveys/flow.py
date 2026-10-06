@@ -4,6 +4,9 @@
 `walk` is the one function that computes the path. The answer write and every terminal transition
 call it through `recalculate_on_path`; the advance result is read off its output. It is pure over
 plain rows so the on_path report migration can run it on historical models.
+
+An open attempt keeps every branch's answers so going back loses nothing; `prune_off_path`, called
+only by `finish_assessment`, drops the off-path ones once the attempt ends (`forms:AD-19`).
 """
 
 from collections.abc import Iterable, Mapping
@@ -95,6 +98,17 @@ def recalculate_on_path(user_survey) -> Walk:
     snapshot.filter(pk__in=result.path, on_path=False).update(on_path=True)
     snapshot.exclude(pk__in=result.path).filter(on_path=True).update(on_path=False)
     return result
+
+
+def prune_off_path(user_survey) -> int:
+    """`forms:AD-19`: delete this attempt's answers on questions the stored walk left off the path,
+    with their option links. Answers with no question link and every snapshot row are kept. Read
+    against the flags `recalculate_on_path` just wrote; returns how many answers it deleted."""
+    from user_surveys.models import UserAnswer
+
+    off_path = UserAnswer.objects.filter(user_survey=user_survey, question__on_path=False)
+    _, per_model = off_path.delete()
+    return per_model.get(UserAnswer._meta.label, 0)
 
 
 @dataclass(frozen=True)
