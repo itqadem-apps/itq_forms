@@ -24,6 +24,7 @@ from .models import (
     UserSurveyRecommendation,
 )
 from surveys.models import Survey
+from surveys.question_order import assert_forward_only, flat_question_ids
 from survey_collections.models import SurveyCollection
 
 
@@ -245,6 +246,13 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
         .order_by("order")
     )
     for opt in options:
+        # `forms:AD-3`: the edge lands on this learner's own question. The copy is whole-tree, so a
+        # target outside it can only be corrupt data, refused rather than stored dangling.
+        if opt.flow_target_id is not None and opt.flow_target_id not in question_map:
+            raise ValueError(
+                f"Option {opt.id} on survey {survey.id} routes to question {opt.flow_target_id}, "
+                "which is not in the survey's own question list."
+            )
         uao = UserAnswerOption.objects.create(
             origin_id=opt.id,
             user_survey=user_survey,
@@ -258,6 +266,8 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
             is_column=opt.is_column,
             ending_option=opt.ending_option,
             order=opt.order,
+            flow_action=opt.flow_action,
+            flow_target=question_map.get(opt.flow_target_id),
             translations=_build_translations(opt.translations.all(), ["text"], source=opt, primary_lang=primary_lang),
         )
         option_map[opt.id] = uao
@@ -335,6 +345,12 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
             for i, opt in enumerate(opts, start=1):
                 opt.order = i
             UserAnswerOption.objects.bulk_update(opts, ["order"])
+
+    # `forms:AD-5`'s enrolment caller: the snapshot's edges run forward in the order this learner
+    # will walk, shuffle included. A violation raises, so the enrolment rolls back whole.
+    snapshot = UserQuestion.objects.filter(user_survey=user_survey)
+    positions = {pk: i for i, pk in enumerate(flat_question_ids(snapshot), start=1)}
+    assert_forward_only(user_survey, positions, field="flow_target")
 
 
 def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id=None):
