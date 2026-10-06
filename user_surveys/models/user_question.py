@@ -37,6 +37,10 @@ class UserQuestion(models.Model):
     answer_time = models.DurationField(null=True, blank=True)
     order = models.IntegerField(default=1, null=True, blank=True)
     is_required = models.BooleanField(default=False)
+    # On the learner's current path (`forms:AD-17`, `forms:AD-19`); rewritten by
+    # `user_surveys.flow.recalculate_on_path` on every answer write. db_default keeps the old pod's
+    # inserts valid while the column lands.
+    on_path = models.BooleanField(default=True, db_default=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     cover_asset_id = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(null=True, blank=True)

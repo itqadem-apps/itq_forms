@@ -26,6 +26,7 @@ from .models import (
 from surveys.models import FlowAction, Survey
 from surveys.question_order import assert_forward_only, flat_order, flat_question_ids
 from survey_collections.models import SurveyCollection
+from user_surveys.flow import recalculate_on_path
 
 
 def _build_translations(qs, fields, source=None, primary_lang=None):
@@ -573,9 +574,11 @@ def finish_assessment(
     user_survey: UserSurvey,
     reason: str = UserSurvey.TERMINATION_COMPLETED,
 ) -> None:
-    # Skip required-question validation for forced terminations
+    recalculate_on_path(user_survey)
+    # Skip required-question validation for forced terminations; a required question the path
+    # skipped is not missing (`forms:AD-19`).
     if reason == UserSurvey.TERMINATION_COMPLETED:
-        required_questions = user_survey.questions.filter(is_required=True)
+        required_questions = user_survey.questions.filter(is_required=True, on_path=True)
         if required_questions.exists():
             required_ids = set(required_questions.values_list("id", flat=True))
             answered_ids = set(

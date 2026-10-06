@@ -217,6 +217,10 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   an ended marker carrying a reason from a single closed enum — `routing_terminate`,
   `ending_threshold`, `fallthrough_complete`, `force_terminated`. `should_terminate` returns a
   reason from that same enum. A nullable next-question field with no reason is not a legal shape.
+  On the answer mutation the result is the `advance` field of the answer it already returns, so
+  its return type does not change. The stored `termination_reason` keeps its values and the API
+  maps them onto the enum (`completed` → `fallthrough_complete`, `time_expired` →
+  `force_terminated`, `ending_option` → `ending_threshold`); `routing_terminate` is stored as is.
 
   Going back is a navigation, not a decision: the solver may return to any question the server
   has placed on the current path (`forms:AD-19`), and re-answering it is an ordinary advance whose
@@ -437,8 +441,8 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   `require_permission`, behind the `LoggingIdentityMiddleware` and `OptionalAuthContextMiddleware`
   already in `app/settings.py`, and refuses with `pkg_auth`'s 401/403. A **listing** endpoint stays
   GraphQL even when new. An existing call keeps its transport when this epic extends it: the
-  solver's load (`forms:AD-18`), the answer mutation (`forms:AD-6`) and submit (`forms:AD-19`) stay
-  GraphQL and change in place, for every survey. No new dependency (django-ninja, DRF) is adopted
+  solver's load (`forms:AD-18`), the answer mutation (`forms:AD-6`, by gaining the `advance` field on the answer it returns) and
+  submit (`forms:AD-19`) stay GraphQL and change in place, for every survey. No new dependency (django-ninja, DRF) is adopted
   without asking first. `forms:AD-6`'s result type and the named-field-error convention apply to a
   REST body unchanged.
 

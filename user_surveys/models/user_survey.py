@@ -19,10 +19,12 @@ class UserSurvey(models.Model):
     TERMINATION_COMPLETED = "completed"
     TERMINATION_TIME_EXPIRED = "time_expired"
     TERMINATION_ENDING_OPTION = "ending_option"
+    TERMINATION_ROUTING = "routing_terminate"
     TERMINATION_CHOICES = (
         (TERMINATION_COMPLETED, "Completed by user"),
         (TERMINATION_TIME_EXPIRED, "Time expired"),
         (TERMINATION_ENDING_OPTION, "Ending option threshold reached"),
+        (TERMINATION_ROUTING, "Answered option ends the attempt"),
     )
 
     class Meta:

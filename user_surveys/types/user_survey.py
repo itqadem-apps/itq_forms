@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from enum import Enum
+from typing import Annotated, List, Optional, Union
 
 import strawberry
 import strawberry_django
@@ -17,6 +18,7 @@ from surveys.usage_access import (
 )
 from app.auth_utils import get_django_user
 from accounts.models import Child
+from user_surveys import flow
 from user_surveys.models import (
     UserAction,
     UserAnswer,
@@ -288,6 +290,7 @@ class UserQuestionType:
     section_id: auto
     order: auto
     is_required: auto
+    on_path: auto
     type: auto
     cover_asset_id: auto
     created_at: auto
@@ -497,6 +500,60 @@ class UserSurveyType:
 
 
 
+@strawberry.enum(description="Why an attempt ended — one closed enum for the answer write and the poll (`forms:AD-6`).")
+class EndReason(Enum):
+    ROUTING_TERMINATE = flow.ROUTING_TERMINATE
+    ENDING_THRESHOLD = flow.ENDING_THRESHOLD
+    FALLTHROUGH_COMPLETE = flow.FALLTHROUGH_COMPLETE
+    FORCE_TERMINATED = flow.FORCE_TERMINATED
+
+
+def stored_end_reason(user_survey: UserSurvey) -> Optional[EndReason]:
+    reason = flow.STORED_TO_END_REASON.get(user_survey.termination_reason or "")
+    return EndReason(reason) if reason else None
+
+
+@strawberry.type
+class NextQuestion:
+    question_id: int
+    question: UserQuestionType
+
+
+@strawberry.type
+class AttemptEnded:
+    reason: EndReason
+
+
+AdvanceResult = Annotated[Union[NextQuestion, AttemptEnded], strawberry.union("AdvanceResult")]
+
+
+def threshold_reached(user_survey: UserSurvey) -> bool:
+    return bool(
+        user_survey.allow_end_based_on_answer_repeat
+        and user_survey.answers_count_to_end > 0
+        and user_survey.count_of_ending_options >= user_survey.answers_count_to_end
+    )
+
+
+def advance_after(user_survey: UserSurvey, question_id: int):
+    """`forms:AD-6`: the walk's output after `question_id`. A routing terminate at the end of the
+    path outranks the ending-option threshold (`forms:AD-7`); a submitted attempt reports why it
+    ended."""
+    if user_survey.submitted_at:
+        return AttemptEnded(reason=stored_end_reason(user_survey) or EndReason.FALLTHROUGH_COMPLETE)
+    result = flow.current_walk(user_survey)
+    if result.end == flow.ROUTING_TERMINATE and result.path[-1] == question_id:
+        return AttemptEnded(reason=EndReason.ROUTING_TERMINATE)
+    if threshold_reached(user_survey):
+        return AttemptEnded(reason=EndReason.ENDING_THRESHOLD)
+    snapshot = UserQuestion.objects.filter(user_survey=user_survey)
+    position = {pk: i for i, pk in enumerate(flat_question_ids(snapshot))}
+    step = flow.advance_from(result, position, question_id)
+    if step.end:
+        return AttemptEnded(reason=EndReason(step.end))
+    return NextQuestion(question_id=step.next_question_id, question=snapshot.get(pk=step.next_question_id))
+
+
 @strawberry_django.type(UserAnswer)
 class UserAnswerType:
     id: auto
@@ -509,6 +566,10 @@ class UserAnswerType:
     order: auto
     answered_at: auto
     selected_options: List[UserAnswerOptionType]
+
+    @strawberry.field(description="Where the attempt goes after this answer (`forms:AD-6`): the next on-path question, or why it ended. The solver follows it and never derives the next question itself.")
+    def advance(self) -> AdvanceResult:
+        return advance_after(self.user_survey, self.question_id)
 
     @strawberry.field
     def time_spent(self) -> Optional[str]:

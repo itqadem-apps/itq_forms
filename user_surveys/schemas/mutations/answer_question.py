@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from app.auth_utils import with_django_user
 from user_surveys.types import UserAnswerType
 from user_surveys.models import UserAnswer, UserAnswerOption, UserQuestion, UserSurvey
+from user_surveys.flow import ROUTING_TERMINATE, recalculate_on_path
 from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
 from ..common import RequireAuth
 from app.graphql_ids import as_pk
@@ -172,4 +173,9 @@ class AnswerQuestionMutation:
             user_survey.last_question = question
             user_survey.save(update_fields=update_fields)
             user_answer.save()
+
+            # `forms:AD-17`; a routing terminate ends the attempt here, on the write (`forms:AD-7`).
+            walk = recalculate_on_path(user_survey)
+            if walk.end == ROUTING_TERMINATE and walk.path[-1] == question.id:
+                finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_ROUTING)
             return user_answer
