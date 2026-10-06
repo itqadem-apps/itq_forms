@@ -279,3 +279,24 @@ def test_the_report_counts_open_attempts_whose_flags_would_change_and_writes_not
     assert f"user_survey {submitted.id}" not in out
     assert "summary: 1 open attempts carry an edge, 1 would change, 2 flags would turn false" in out
     assert not UserQuestion.objects.filter(on_path=False).exists()
+
+
+def test_the_apply_writes_what_the_report_counted_and_reverses(survey, qs, user, user2, capsys):
+    _route(_first(qs[0]), FlowAction.GO_TO, qs[3])
+    open_us = _enrol(user, survey)
+    submitted = _enrol(user2, survey)
+    for us in (open_us, submitted):
+        UserAnswer.objects.create(user_survey=us, question=_mine(us, qs[0]), user=us.user).selected_options.set(
+            [UserAnswerOption.objects.get(user_survey=us, origin_id=_first(qs[0]).id)]
+        )
+    UserSurvey.objects.filter(pk=submitted.pk).update(submitted_at="2026-10-06T00:00:00Z")
+
+    apply = importlib.import_module("user_surveys.migrations.0028_apply_on_path")
+    apply.forwards(apps, None)
+
+    assert "summary: 1 open attempts carry an edge, 1 changed, 2 flags turned false" in capsys.readouterr().out
+    assert _on_path(open_us) == {qs[0].id, qs[3].id, qs[4].id}
+    assert _on_path(submitted) == {q.id for q in qs}
+
+    apply.backwards(apps, None)
+    assert not UserQuestion.objects.filter(on_path=False).exists()
