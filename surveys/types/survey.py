@@ -7,7 +7,7 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import Survey, Usage
+from surveys.models import AnswerSchemaOption, FlowAction, Survey, Usage
 from surveys.question_order import in_flat_order, live_survey_questions
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
@@ -52,6 +52,7 @@ class SurveyType:
     lock_answers: auto
     randomize_questions: auto
     randomize_options: auto
+    shuffle_scope: auto
     category_id: auto
     category: Optional[CategoryType]
     sponsor: auto
@@ -103,6 +104,16 @@ class SurveyType:
     )
     def primary_language(self) -> str:
         return self.primary_locale
+
+    @strawberry.field(
+        description=(
+            "True when any answer option routes (go_to or terminate). Shuffle then never moves the "
+            "questions an edge touches, so shuffle_scope \"all\" behaves exactly like \"untouched\" "
+            "(`forms:AD-12`)."
+        )
+    )
+    def has_flow(self) -> bool:
+        return AnswerSchemaOption.objects.filter(survey=self).exclude(flow_action=FlowAction.FALL_THROUGH).exists()
 
     @strawberry.field
     def collection_id(self) -> Optional[int]:

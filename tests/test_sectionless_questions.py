@@ -193,7 +193,8 @@ def test_randomize_shuffles_sectionless_questions_too(user, survey, two_sections
 
     us, _ = enroll_user_in_assessment(user, survey.id)
 
-    origins = {uq.origin_id for uq in shuffled}
+    # The anchor shuffle (story 2.6) shuffles snapshot ids, one section group at a time.
+    origins = set(UserQuestion.objects.filter(pk__in=shuffled).values_list("origin_id", flat=True))
     assert loose.id in origins
     assert origins == set(Question.objects.filter(survey=survey).values_list("id", flat=True))
 

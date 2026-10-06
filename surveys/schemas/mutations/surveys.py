@@ -1,7 +1,7 @@
 import strawberry
 import strawberry_django
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from strawberry import UNSET
 from strawberry.types import Info
@@ -34,11 +34,18 @@ from surveys.models import (
     AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
     FlowAction,
+    ShuffleScope,
 )
 from taxonomy.models import Category
 from ..common import RequireAuth, OperationResult
 from ..utils import coerce_duration, input_to_dict, clone_instance
 from app.graphql_ids import as_pk
+
+
+def _check_shuffle_scope(data: dict) -> None:
+    scope = data.get('shuffle_scope')
+    if scope is not None and scope not in ShuffleScope.values:
+        raise ValidationError({'shuffle_scope': [f"\"{scope}\" is not a shuffle scope; use one of {', '.join(ShuffleScope.values)}."]})
 
 
 def _type_from_input(info, input, **kw):
@@ -66,6 +73,7 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
+        _check_shuffle_scope(data)
         if 'time_limit' in data:
             data['time_limit'] = coerce_duration(data['time_limit'])
 
@@ -150,6 +158,7 @@ class SurveyMutations:
         ensure_in_org(survey, info.context.auth_context)
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
+        _check_shuffle_scope(data)
         if 'time_limit' in data:
             data['time_limit'] = coerce_duration(data['time_limit'])
         for field, value in data.items():

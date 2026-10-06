@@ -5,6 +5,15 @@ from django.utils.translation import gettext_lazy as _
 from taxonomy.models import Category
 
 
+class ShuffleScope(models.TextChoices):
+    """Which questions `randomize_questions` moves (`forms:AD-12`). Anchors never move under either,
+    so on a survey with a flow the two coincide; on one without, there are no anchors and they
+    coincide again. The choice is kept as the author's stated intent."""
+
+    ALL = "all", _("All questions")
+    UNTOUCHED = "untouched", _("Only questions no edge touches")
+
+
 class Survey(models.Model):
     DISPLAY_OPTION_BY_QUESTION = "by_question"
     DISPLAY_OPTION_BY_SECTION = "by_section"
@@ -114,6 +123,13 @@ class Survey(models.Model):
     lock_answers = models.BooleanField(default=False, verbose_name=_("Lock Answers"))
     randomize_questions = models.BooleanField(default=False, verbose_name=_("Randomize Questions"))
     randomize_options = models.BooleanField(default=False, verbose_name=_("Randomize Options"))
+    shuffle_scope = models.CharField(
+        max_length=16,
+        choices=ShuffleScope.choices,
+        default=ShuffleScope.UNTOUCHED,
+        db_default=ShuffleScope.UNTOUCHED,
+        verbose_name=_("Shuffle Scope"),
+    )
 
     allow_update_answer_options_scores_based_on_classification = models.BooleanField(
         default=False,

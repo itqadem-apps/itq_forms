@@ -367,6 +367,7 @@ class UserSurveyType:
     lock_answers: auto
     randomize_questions: auto
     randomize_options: auto
+    shuffle_scope: auto
     cover_id: auto
     thumb_id: auto
     category_id_snapshot: auto

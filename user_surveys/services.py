@@ -23,8 +23,8 @@ from .models import (
     UserSurveyClassification,
     UserSurveyRecommendation,
 )
-from surveys.models import Survey
-from surveys.question_order import assert_forward_only, flat_question_ids
+from surveys.models import FlowAction, Survey
+from surveys.question_order import assert_forward_only, flat_order, flat_question_ids
 from survey_collections.models import SurveyCollection
 
 
@@ -331,11 +331,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
 
     # ── 8. Randomization ─────────────────────────────────────────────
     if user_survey.randomize_questions:
-        uqs = list(UserQuestion.objects.filter(user_survey=user_survey))
-        random.shuffle(uqs)
-        for i, uq in enumerate(uqs, start=1):
-            uq.order = i
-        UserQuestion.objects.bulk_update(uqs, ["order"])
+        _shuffle_questions(user_survey)
 
     if user_survey.randomize_options:
         # randomize within each answer schema
@@ -351,6 +347,50 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     snapshot = UserQuestion.objects.filter(user_survey=user_survey)
     positions = {pk: i for i, pk in enumerate(flat_question_ids(snapshot), start=1)}
     assert_forward_only(user_survey, positions, field="flow_target")
+
+
+def _shuffle_questions(user_survey: UserSurvey) -> None:
+    """`forms:AD-12`: anchors — a question an edge starts from (go_to or terminate) or lands on —
+    keep their place. Every other question moves only among the slots its own section holds (no
+    section is one group) within its gap between adjacent anchors, so what each edge skips is the
+    same for every learner and sections stay contiguous. Run once, at enrolment."""
+    rows = list(
+        UserQuestion.objects.filter(user_survey=user_survey).order_by().values_list("id", "section_id", "section__order", "order")
+    )
+    sequence = flat_order(rows)
+    section_of = {r[0]: r[1] for r in rows}
+    anchors: set[int] = set()
+    for source, target in (
+        UserAnswerOption.objects.filter(user_survey=user_survey, question__isnull=False)
+        .exclude(flow_action=FlowAction.FALL_THROUGH)
+        .values_list("question_id", "flow_target_id")
+    ):
+        anchors.add(source)
+        if target is not None:
+            anchors.add(target)
+
+    shuffled = list(sequence)
+
+    def settle(gap: list[int]) -> None:
+        groups: dict = {}
+        for i in gap:
+            groups.setdefault(section_of[sequence[i]], []).append(i)
+        for slots in groups.values():
+            ids = [sequence[i] for i in slots]
+            random.shuffle(ids)
+            for i, pk in zip(slots, ids):
+                shuffled[i] = pk
+
+    gap: list[int] = []
+    for i, pk in enumerate(sequence):
+        if pk in anchors:
+            settle(gap)
+            gap = []
+        else:
+            gap.append(i)
+    settle(gap)
+
+    UserQuestion.objects.bulk_update([UserQuestion(pk=pk, order=i) for i, pk in enumerate(shuffled, start=1)], ["order"])
 
 
 def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id=None):
@@ -413,6 +453,7 @@ def enroll_user_in_assessment(request_user, survey_id, child=None, collection_id
             lock_answers=survey.lock_answers,
             randomize_questions=survey.randomize_questions,
             randomize_options=survey.randomize_options,
+            shuffle_scope=survey.shuffle_scope,
             session_token=uuid4() if survey.enable_anti_cheat else None,
             cover_id=survey.cover_id,
             thumb_id=survey.thumb_id,
