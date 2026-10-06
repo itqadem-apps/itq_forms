@@ -24,7 +24,8 @@ def _to_cents(value):
 class DjangoPriceRangeFilterHandler(BaseRangeFilterHandler):
     """
     Range filter on prices__amount_cents that includes items with no prices
-    when the lower bound is 0 or absent.
+    when the lower bound is 0 or absent. Bounds arrive in EGP and are converted
+    to cents before comparing.
 
     Usage in a pipeline:
         DjangoPriceRangeFilterHandler("price")
