@@ -9,6 +9,7 @@ from strawberry.types import Info
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from app.platform import ensure_in_org
+from surveys.flow import check_display_option
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
@@ -159,6 +160,8 @@ class SurveyMutations:
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
         _check_shuffle_scope(data)
+        if 'display_option' in data:
+            check_display_option(survey, data['display_option'])
         if 'time_limit' in data:
             data['time_limit'] = coerce_duration(data['time_limit'])
         for field, value in data.items():

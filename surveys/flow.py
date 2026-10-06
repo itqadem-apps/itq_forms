@@ -7,7 +7,7 @@ included, against the survey's current order.
 
 from django.core.exceptions import ValidationError
 
-from surveys.models import AnswerSchemaOption, FlowAction, Question
+from surveys.models import AnswerSchemaOption, FlowAction, Question, Survey
 from surveys.question_order import assert_forward_only, flat_question_ids
 
 # A learner picks exactly one option on these, so one answer yields one edge. Every other type
@@ -35,8 +35,30 @@ def validate_edge(option: AnswerSchemaOption) -> None:
             "Only a single-choice question (radio or dropdown) can route: this one admits more than one "
             "selected option, so one answer would not yield one edge."
         )
+    if action in (FlowAction.GO_TO, FlowAction.TERMINATE) and option.survey.display_option == Survey.DISPLAY_OPTION_FULL_FORM:
+        errors.setdefault("flow_action", []).append(
+            "A full_form survey shows every question at once, so there is no next question to route to "
+            "(forms:AD-11). Change its display option first."
+        )
     if errors:
         raise ValidationError(errors)
+
+
+def has_flow(survey_id) -> bool:
+    return AnswerSchemaOption.objects.filter(survey_id=survey_id).exclude(flow_action=FlowAction.FALL_THROUGH).exists()
+
+
+def check_display_option(survey, display_option) -> None:
+    """`forms:AD-11`: switching a survey that carries a flow to full_form would leave it dormant."""
+    if (
+        display_option == Survey.DISPLAY_OPTION_FULL_FORM
+        and survey.display_option != Survey.DISPLAY_OPTION_FULL_FORM
+        and has_flow(survey.pk)
+    ):
+        raise ValidationError({"display_option": [
+            "This survey routes answers to other questions, and full_form shows every question at once, "
+            "so the routing would do nothing (forms:AD-11). Remove its go_to and terminate options first."
+        ]})
 
 
 def assert_survey_forward(survey, field: str = "flow_target_id") -> None:

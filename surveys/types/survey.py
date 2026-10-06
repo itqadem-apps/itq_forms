@@ -7,7 +7,8 @@ import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
 
-from surveys.models import AnswerSchemaOption, FlowAction, Survey, Usage
+from surveys.flow import has_flow
+from surveys.models import Survey, Usage
 from surveys.question_order import in_flat_order, live_survey_questions
 from .translations import SurveyTranslationType
 from .types_category import CategoryType
@@ -113,7 +114,7 @@ class SurveyType:
         )
     )
     def has_flow(self) -> bool:
-        return AnswerSchemaOption.objects.filter(survey=self).exclude(flow_action=FlowAction.FALL_THROUGH).exists()
+        return has_flow(self.pk)
 
     @strawberry.field
     def collection_id(self) -> Optional[int]:
