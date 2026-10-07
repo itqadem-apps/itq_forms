@@ -259,7 +259,8 @@ def test_the_pdf_shows_points_only_beside_an_answer_that_counts(user, survey, qs
     us.submitted_at = now()
     us.save(update_fields=["submitted_at"])
     displays = [a["score_display"] for a in _build_context(us)["answers"]]
-    assert displays == ["20/20 Points", ""]
+    # The off-path answer is not listed at all since the 2.9 follow-ups.
+    assert displays == ["20/20 Points"]
 
 
 def test_an_answer_without_a_question_still_scores(user, survey, qs):

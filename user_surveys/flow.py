@@ -7,6 +7,8 @@ plain rows so the on_path report migration can run it on historical models.
 
 An open attempt keeps every branch's answers so going back loses nothing; `prune_off_path`, called
 only by `finish_assessment`, drops the off-path ones once the attempt ends (`forms:AD-19`).
+`ending_count` derives the ending-option count from the same path, so it never counts an answer
+the walk left behind.
 """
 
 from collections.abc import Iterable, Mapping
@@ -109,6 +111,30 @@ def prune_off_path(user_survey) -> int:
     off_path = UserAnswer.objects.filter(user_survey=user_survey, question__on_path=False)
     _, per_model = off_path.delete()
     return per_model.get(UserAnswer._meta.label, 0)
+
+
+def ending_count(user_survey, path: list[int]) -> int:
+    """The ending-option count (`forms:AD-7`) as a pure function of the on-path answers, read in
+    path order. Total mode counts every selected ending option; in-row mode
+    (`end_based_on_answer_repeat_in_row`) resets to 0 at an option-bearing answer with none. An
+    answer with no selected option, such as free input, neither adds nor resets. Reads the walk's
+    path and does not walk again (`forms:AD-19`); one query."""
+    from user_surveys.models import UserAnswer
+
+    endings: dict[int, int] = {}
+    links = UserAnswer.selected_options.through.objects.filter(
+        useranswer__user_survey=user_survey, useranswer__question_id__in=path
+    ).values_list("useranswer__question_id", "useransweroption__ending_option")
+    for question_id, is_ending in links:
+        endings[question_id] = endings.get(question_id, 0) + (1 if is_ending else 0)
+
+    if not user_survey.end_based_on_answer_repeat_in_row:
+        return sum(endings.values())
+    count = 0
+    for pk in path:
+        if pk in endings:
+            count = count + endings[pk] if endings[pk] else 0
+    return count
 
 
 @dataclass(frozen=True)

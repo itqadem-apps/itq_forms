@@ -9,7 +9,7 @@ from django.utils.timezone import now
 from app.auth_utils import with_django_user
 from user_surveys.types import UserAnswerType
 from user_surveys.models import UserAnswer, UserAnswerOption, UserQuestion, UserSurvey
-from user_surveys.flow import ROUTING_TERMINATE, recalculate_on_path
+from user_surveys.flow import ROUTING_TERMINATE, ending_count, recalculate_on_path
 from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
 from ..common import RequireAuth
 from app.graphql_ids import as_pk
@@ -104,23 +104,12 @@ class AnswerQuestionMutation:
                     raise ValidationError("One or more option IDs are invalid.")
                 return options
 
-            def _track_ending(options_list: list[UserAnswerOption]) -> None:
-                """Update the ending-option counter if the feature is enabled."""
-                if not user_survey.allow_end_based_on_answer_repeat:
-                    return
-                ending_count = sum(1 for opt in options_list if opt.ending_option)
-                if ending_count:
-                    user_survey.count_of_ending_options += ending_count
-                elif user_survey.end_based_on_answer_repeat_in_row:
-                    user_survey.count_of_ending_options = 0
-
             Q = UserQuestion  # type constants
 
             if question.type in Q.MULTI_SELECT_TYPES:
                 require_schema()
                 option_ids = parse_ids(answer)
                 options = require_options(option_ids)
-                _track_ending(options)
                 user_answer.selected_options.set(options)
                 user_answer.answer = ", ".join([_opt_text(opt) for opt in options if _opt_text(opt)])
             elif question.type in Q.SINGLE_SELECT_TYPES:
@@ -128,7 +117,6 @@ class AnswerQuestionMutation:
                 option_ids = parse_ids(answer)
                 options = require_options(option_ids)
                 option = options[0]
-                _track_ending([option])
                 user_answer.selected_options.set([option])
                 user_answer.answer = _opt_text(option)
             elif question.type in Q.FREE_INPUT_TYPES:
@@ -141,7 +129,6 @@ class AnswerQuestionMutation:
                     flat_ids.extend(token.split("-"))
                 option_ids = parse_ids(flat_ids)
                 options = require_options(option_ids)
-                _track_ending(options)
                 user_answer.selected_options.set(options)
                 user_answer.answer = ",".join(answer)
             else:
@@ -167,7 +154,7 @@ class AnswerQuestionMutation:
                 user_answer.user_agent = request.META.get("HTTP_USER_AGENT", "")
 
             # ── update survey state ──
-            update_fields = ["last_question", "count_of_ending_options"]
+            update_fields = ["last_question"]
             if not user_survey.started_at:
                 user_survey.started_at = current_time
                 update_fields.append("started_at")
@@ -177,6 +164,12 @@ class AnswerQuestionMutation:
 
             # `forms:AD-17`; a routing terminate ends the attempt here, on the write (`forms:AD-7`).
             walk = recalculate_on_path(user_survey)
+            # Derived from the path, never accumulated, so going back or branching away uncounts it.
+            if user_survey.allow_end_based_on_answer_repeat:
+                count = ending_count(user_survey, walk.path)
+                if count != user_survey.count_of_ending_options:
+                    user_survey.count_of_ending_options = count
+                    user_survey.save(update_fields=["count_of_ending_options"])
             if walk.end == ROUTING_TERMINATE and walk.path[-1] == question.id:
                 finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_ROUTING)
             return user_answer

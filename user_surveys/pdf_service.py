@@ -159,8 +159,10 @@ def _build_context(user_survey: UserSurvey, lang: str = "default") -> dict:
             flat_question_ids(UserQuestion.objects.filter(user_survey=user_survey))
         )
     }
+    # On-path answers only, the scoring rule (`forms:AD-19`); an answer with no question is kept.
     all_answers = sorted(
         UserAnswer.objects.filter(user_survey=user_survey)
+        .exclude(question__on_path=False)
         .select_related("question", "question__answer_schema")
         .prefetch_related("selected_options", "question__answer_schema__options"),
         key=lambda a: (position.get(a.question_id, len(position)), a.id),
