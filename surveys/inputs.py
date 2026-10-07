@@ -279,8 +279,12 @@ class AnswerSchemaOptionInput:
 class AnswerSchemaInput:
     type: Optional[str] = UNSET
     with_file: Optional[bool] = UNSET
-    is_mcq: Optional[bool] = UNSET
-    is_grid: Optional[bool] = UNSET
+    is_mcq: Optional[bool] = strawberry.field(
+        default=UNSET, deprecation_reason="Follows type; set type instead. A non-null value is refused."
+    )
+    is_grid: Optional[bool] = strawberry.field(
+        default=UNSET, deprecation_reason="Follows type; set type instead. A non-null value is refused."
+    )
 
 
 # Nested/Bulk Inputs

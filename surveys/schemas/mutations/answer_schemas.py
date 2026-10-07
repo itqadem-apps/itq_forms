@@ -4,6 +4,7 @@ from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from typing import List
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from app.auth_utils import with_django_user
@@ -22,6 +23,9 @@ from surveys.models import (
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
 from app.graphql_ids import as_pk
+
+
+_QUESTION_TYPES = frozenset(value for value, _ in Question.QUESTION_TYPE_CHOICES)
 
 
 def _type_from_schema_id(info, schema_id=None, id=None, **kw):
@@ -60,15 +64,31 @@ class AnswerSchemaMutations:
     ) -> AnswerSchemaType:
         """Update an answer schema"""
         id = as_pk(id)
+        for flag in ('is_mcq', 'is_grid'):
+            if getattr(input, flag) not in (strawberry.UNSET, None):
+                raise ValidationError({flag: [
+                    f"{flag} follows the question's type and cannot be set directly; set type instead."
+                ]})
+        if input.type is not strawberry.UNSET and input.type not in _QUESTION_TYPES:
+            raise ValidationError({'type': [
+                f"Unknown question type {input.type!r}; expected one of: {', '.join(sorted(_QUESTION_TYPES))}."
+            ]})
+
         schema = AnswerSchema.objects.select_related('survey', 'question').get(pk=id)
-        if input.type is not strawberry.UNSET and input.type != schema.type:
+        question = schema.question
+        # The type is the question's: changing it here goes through the question, exactly as
+        # `update_question` does, so the schema's type, flags and options cannot drift from it.
+        if input.type is not strawberry.UNSET and (input.type != question.type or input.type != schema.type):
             Survey.objects.select_for_update().filter(pk=schema.survey_id).first()
-            check_type_change(schema.question_id, input.type)
+            check_type_change(question.pk, input.type)
+            question.type = input.type
+            question.save(update_fields=['type', 'updated_at'])
+            question.update_answer_schema()
+            schema.refresh_from_db()
 
-        for field, value in input_to_dict(input).items():
-            setattr(schema, field, value)
-
-        schema.save()
+        if input.with_file is not strawberry.UNSET:
+            schema.with_file = input.with_file
+            schema.save(update_fields=['with_file'])
         return schema
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)

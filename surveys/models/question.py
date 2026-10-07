@@ -93,7 +93,7 @@ class Question(models.Model):
                     survey_id=self.survey_id,
                     section_id=self.section_id,
                     question_id=self.id,
-                    schema_id=self.answer_schema_id,
+                    schema_id=self.answer_schema.id,
                 )
             return
 
@@ -110,7 +110,7 @@ class Question(models.Model):
                     survey_id=self.survey_id,
                     section_id=self.section_id,
                     question_id=self.id,
-                    schema_id=self.answer_schema_id,
+                    schema_id=self.answer_schema.id,
                     is_row=True,
                     is_column=False,
                 )
@@ -118,7 +118,7 @@ class Question(models.Model):
                     survey_id=self.survey_id,
                     section_id=self.section_id,
                     question_id=self.id,
-                    schema_id=self.answer_schema_id,
+                    schema_id=self.answer_schema.id,
                     is_row=False,
                     is_column=True,
                 )
