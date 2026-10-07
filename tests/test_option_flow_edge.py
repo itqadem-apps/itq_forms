@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import transaction
 
 from surveys.inputs import AnswerSchemaInput, AnswerSchemaOptionInput, QuestionInput, QuestionPlacementInput
 from surveys.models import AnswerSchemaOption, FlowAction, Question, Section, Survey
@@ -206,9 +206,6 @@ def test_a_duplicated_question_starts_with_no_flow(tree):
     assert _stored(_option(tree["a"])) == ("go_to", tree["b"].id)
 
 
-# duplicate_survey has failed since b3e6376: the post_save signals give every cloned question an
-# AnswerSchema, then the explicit clone inserts a second one. Strict, so the fix flips this red.
-@pytest.mark.xfail(raises=IntegrityError, strict=True, reason="duplicate_survey clones a schema the signal already created")
 def test_a_duplicated_survey_points_its_edges_at_its_own_questions(survey, tree, monkeypatch):
     monkeypatch.setattr("surveys.schemas.mutations.surveys.ensure_in_org", lambda *a, **k: None)
     _update(_option(tree["a"]), flow_action="go_to", flow_target_id=str(tree["b"].id))

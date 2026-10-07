@@ -3,6 +3,7 @@ import strawberry_django
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
+from django.db.models import Q
 from strawberry import UNSET
 from strawberry.types import Info
 
@@ -11,6 +12,7 @@ from app.permissions import check_permission
 from app.platform import ensure_in_org
 from surveys.flow import check_display_option
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
+from surveys.question_order import flat_question_ids, renumber_questions
 from surveys.types import SurveyType
 from surveys.types.survey import SurveyPayload
 from app.messaging import publish
@@ -27,8 +29,11 @@ from surveys.messaging import build_survey_payload_or_log
 from classifications.models import Classification, ClassificationTranslation
 from recommendations.models import Recommendation, RecommendationTranslation, Action, ActionTranslation
 from surveys.models import (
+    AnswerSchema,
+    AnswerSchemaTranslation,
     Survey,
     SurveyTranslation,
+    Section,
     SectionTranslation,
     Question,
     QuestionTranslation,
@@ -256,62 +261,114 @@ class SurveyMutations:
                 slug=f"{t.slug}-copy" if t.slug else None,
             )
 
-        # Duplicate sections → questions → schemas → options (with all translations). An edge is
-        # re-pointed at the copy's own question once every question exists; one whose target was
-        # not copied falls through (`forms:AD-3`).
-        question_map: dict[int, Question] = {}
-        routed: list[tuple[AnswerSchemaOption, int]] = []
-        for section in original.sections.all():
-            new_section = clone_instance(section, survey=new_survey)
+        # Classifications first: the copy's options are re-pointed at them as they are cloned.
+        classification_map: dict[int, Classification] = {}
+        for classification in original.classifications.all():
+            new_classification = clone_instance(classification, survey=new_survey)
+            classification_map[classification.pk] = new_classification
+            for t in ClassificationTranslation.objects.filter(classification=classification):
+                clone_instance(t, classification=new_classification)
 
+        section_map: dict[int, Section] = {}
+
+        def clone_section(section: Section) -> Section:
+            new_section = clone_instance(section, survey=new_survey, submit_action_target=None)
+            # The post_save signal gives every new section a blank question; the copy's
+            # questions are the original's, no more.
+            for blank in Question.objects.filter(section=new_section):
+                blank.delete()
             for t in SectionTranslation.objects.filter(section=section):
                 clone_instance(t, section=new_section)
+            section_map[section.pk] = new_section
+            return new_section
 
-            for question in Question.objects.filter(section=section):
-                new_question = clone_instance(question, survey=new_survey, section=new_section)
-                question_map[question.pk] = new_question
+        # Questions are cloned in the original's flat order, each unplaced (`order` null), so
+        # `renumber_questions` appends it after the questions already copied and the copy reads
+        # in the same sequence, sections contiguous and sectionless questions between them
+        # (`forms:AD-4`). A section is cloned when its first question is reached, so its blank
+        # question is gone before anything is placed around it.
+        original_questions = Question.objects.filter(Q(survey=original) | Q(section__survey=original))
+        questions_by_id = {q.pk: q for q in original_questions}
+        question_map: dict[int, Question] = {}
+        option_map: dict[int, AnswerSchemaOption] = {}
+        routed: list[tuple[AnswerSchemaOption, int]] = []
+        for question_id in flat_question_ids(original_questions):
+            question = questions_by_id[question_id]
+            new_section = None
+            if question.section_id is not None:
+                new_section = section_map.get(question.section_id) or clone_section(question.section)
+            new_question = clone_instance(question, survey=new_survey, section=new_section, order=None)
+            question_map[question.pk] = new_question
 
-                for t in QuestionTranslation.objects.filter(question=question):
-                    clone_instance(t, question=new_question)
+            for t in QuestionTranslation.objects.filter(question=question):
+                clone_instance(t, question=new_question)
 
-                if hasattr(question, 'answer_schema'):
-                    old_schema = question.answer_schema
-                    new_schema = clone_instance(
-                        old_schema,
-                        survey=new_survey,
-                        section=new_section,
-                        question=new_question,
-                    )
-                    for option in AnswerSchemaOption.objects.filter(schema=old_schema):
-                        new_option = clone_instance(
-                            option,
-                            survey=new_survey,
-                            section=new_section,
-                            question=new_question,
-                            schema=new_schema,
-                            flow_target=None,
-                            flow_action=FlowAction.FALL_THROUGH if option.flow_action == FlowAction.GO_TO else option.flow_action,
-                        )
-                        if option.flow_action == FlowAction.GO_TO and option.flow_target_id:
-                            routed.append((new_option, option.flow_target_id))
-                        for t in AnswerSchemaOptionTranslation.objects.filter(option=option):
-                            clone_instance(t, option=new_option)
+            # Reshape the schema the post_save signal made for the copy, as `duplicate_question`
+            # does: AnswerSchema.question is one-to-one, so a second insert is refused.
+            old_schema = AnswerSchema.objects.filter(question=question).first()
+            new_schema = AnswerSchema.objects.filter(question=new_question).first()
+            if new_schema is None:
+                continue
+            if old_schema is None:
+                new_schema.delete()
+                continue
+            new_schema.type = old_schema.type
+            new_schema.with_file = old_schema.with_file
+            new_schema.is_mcq = old_schema.is_mcq
+            new_schema.is_grid = old_schema.is_grid
+            new_schema.section = new_section
+            new_schema.save()
+            for t in AnswerSchemaTranslation.objects.filter(schema=old_schema):
+                clone_instance(t, schema=new_schema)
 
+            # The signal seeds a blank option (or one per classification); the copy takes the
+            # original's instead.
+            new_schema.options.all().delete()
+            for option in old_schema.options.all():
+                new_option = clone_instance(
+                    option,
+                    survey=new_survey,
+                    section=new_section,
+                    question=new_question,
+                    schema=new_schema,
+                    # A classification outside this survey is kept by id, unloaded.
+                    classification=classification_map.get(option.classification_id)
+                    or (Classification(pk=option.classification_id) if option.classification_id else None),
+                    flow_target=None,
+                    flow_action=FlowAction.FALL_THROUGH if option.flow_action == FlowAction.GO_TO else option.flow_action,
+                )
+                option_map[option.pk] = new_option
+                if option.flow_action == FlowAction.GO_TO and option.flow_target_id:
+                    routed.append((new_option, option.flow_target_id))
+                for t in AnswerSchemaOptionTranslation.objects.filter(option=option):
+                    clone_instance(t, option=new_option)
+
+        for section in original.sections.all():
+            if section.pk not in section_map:
+                clone_section(section)
+        for section in original.sections.filter(submit_action_target__isnull=False):
+            target = section_map.get(section.submit_action_target_id)
+            if target is not None:
+                Section.objects.filter(pk=section_map[section.pk].pk).update(submit_action_target=target)
+        renumber_questions(new_survey.id)
+
+        # An edge is re-pointed at the copy's own question once every question exists; one whose
+        # target was not copied falls through (`forms:AD-3`).
         for new_option, old_target in routed:
             if old_target in question_map:
                 new_option.flow_action = FlowAction.GO_TO
                 new_option.flow_target = question_map[old_target]
                 new_option.save(update_fields=["flow_action", "flow_target"])
 
-        # Duplicate classifications
-        for classification in original.classifications.all():
-            new_classification = clone_instance(classification, survey=new_survey)
-            for t in ClassificationTranslation.objects.filter(classification=classification):
-                clone_instance(t, classification=new_classification)
-
-        # Duplicate recommendations
-        for recommendation in original.recommendations.all():
-            new_recommendation = clone_instance(recommendation, survey=new_survey)
+        # Duplicate recommendations, each on the copy's own option.
+        for recommendation in Recommendation.objects.filter(Q(survey=original) | Q(option__survey=original)):
+            new_recommendation = clone_instance(
+                recommendation,
+                survey=new_survey if recommendation.survey_id is not None else None,
+                option=option_map[recommendation.option_id]
+                if recommendation.option_id in option_map
+                else recommendation.option,
+            )
             for t in RecommendationTranslation.objects.filter(recommendation=recommendation):
                 clone_instance(t, recommendation=new_recommendation)
 
