@@ -148,16 +148,16 @@ def _top_score(*questions):
 
 @pytest.fixture
 def seeded():
-    """The surveys the seed command created, by English title. Survey 10 renames its English title
-    to one without `TAG`, so a `TAG` prefix filter alone would miss it; the rows are scoped to the
-    command's own output instead, and the prefix is checked on everything else."""
+    """The surveys the seed command created, by English title, scoped to the command's own output.
+    Every English title carries `TAG`, survey 10's renamed one included, so `--truncate` reaches
+    them all."""
     before = set(Survey.objects.values_list("id", flat=True))
     call_command("seed_test_surveys", "--organization-id", str(ORG), stdout=io.StringIO())
     created = {
         t.title: t.survey
         for t in SurveyTranslation.objects.filter(language="en").exclude(survey_id__in=before).select_related("survey")
     }
-    assert {title for title in created if not title.startswith(TAG)} == {"Demographics Survey"}
+    assert created and all(title.startswith(TAG) for title in created)
     return created
 
 

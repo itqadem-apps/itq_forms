@@ -544,7 +544,7 @@ def create_survey_10(organization_id):
 
     # The _create_survey already created an "en" translation; update it and add Arabic
     en_translation = survey.translations.first()
-    en_translation.title = "Demographics Survey"
+    en_translation.title = f"{TAG}Demographics Survey"
     en_translation.description = "A short demographics survey."
     en_translation.save()
     _survey_translation(survey, "ar", "استبيان البيانات الديموغرافية", "استبيان قصير للبيانات الديموغرافية.")
