@@ -706,5 +706,8 @@ def _finish_locked(user_survey: UserSurvey, reason: str) -> None:
         user_survey_id=user_survey.id,
         respondent_user_id=user_survey.user_id,
         score=user_survey.score,
+        # The denominator under the attempt's basis (`forms:AD-10`), so a consumer grades
+        # score / max_score; null when unscored or awaiting manual evaluation.
+        max_score=max_score(user_survey) if user_survey.use_score and user_survey.score is not None else None,
         submitted_at=user_survey.submitted_at,
     ))

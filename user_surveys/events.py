@@ -36,5 +36,7 @@ class SurveyResponseSubmitted(DomainEvent):
     survey_id: int | None = None
     user_survey_id: int | None = None
     respondent_user_id: int | None = None
-    score: int | None = None  # nullable for unscored quizzes
+    score: int | None = None  # raw points; nullable for unscored quizzes
+    # The attempt's denominator under its own basis (`forms:AD-10`); null whenever `score` is.
+    max_score: int | None = None
     submitted_at: datetime | None = None
