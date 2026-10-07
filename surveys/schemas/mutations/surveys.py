@@ -49,15 +49,20 @@ from ..utils import coerce_duration, input_to_dict, clone_instance
 from app.graphql_ids import as_pk
 
 
+# A sent null is not "unset": it would reach the NOT NULL column, so it is refused like any bad value.
 def _check_shuffle_scope(data: dict) -> None:
-    scope = data.get('shuffle_scope')
-    if scope is not None and scope not in ShuffleScope.values:
+    if 'shuffle_scope' not in data:
+        return
+    scope = data['shuffle_scope']
+    if scope not in ShuffleScope.values:
         raise ValidationError({'shuffle_scope': [f"\"{scope}\" is not a shuffle scope; use one of {', '.join(ShuffleScope.values)}."]})
 
 
 def _check_score_basis(data: dict) -> None:
-    basis = data.get('score_basis')
-    if basis is not None and basis not in ScoreBasis.values:
+    if 'score_basis' not in data:
+        return
+    basis = data['score_basis']
+    if basis not in ScoreBasis.values:
         raise ValidationError({'score_basis': [f"\"{basis}\" is not a score basis; use one of {', '.join(ScoreBasis.values)}."]})
 
 

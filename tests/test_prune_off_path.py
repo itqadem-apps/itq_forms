@@ -251,6 +251,33 @@ def test_prune_off_path_counts_what_it_deletes(survey, qs, branch, user):  # noq
     assert prune_off_path(us) == 0
 
 
+def test_a_second_overlapping_finish_is_refused_under_the_lock(survey, qs, user, monkeypatch):  # noqa: F811
+    """Both callers passed their `submitted_at` check before either took the lock."""
+    us = _enrol(user, survey)
+    stale = UserSurvey.objects.get(pk=us.pk)
+    published = []
+    monkeypatch.setattr("app.messaging.publisher.publish", published.append)
+
+    finish_assessment(us, reason=UserSurvey.TERMINATION_TIME_EXPIRED)
+    with pytest.raises(services.AlreadySubmitted):
+        finish_assessment(stale)
+
+    assert len(published) == 1
+    assert UserSurvey.objects.get(pk=us.pk).termination_reason == UserSurvey.TERMINATION_TIME_EXPIRED
+
+
+def test_should_terminate_reports_the_reason_an_overlapping_finish_stored(survey, qs, user, monkeypatch):  # noqa: F811
+    us = _enrol(user, survey)
+
+    def finished_meanwhile(user_survey):
+        finish_assessment(UserSurvey.objects.get(pk=user_survey.pk), reason=UserSurvey.TERMINATION_ENDING_OPTION)
+        return True
+
+    monkeypatch.setattr("user_surveys.schemas.queries.should_terminate.check_time_expired", finished_meanwhile)
+    assert _should_terminate(us) == EndReason.ENDING_THRESHOLD
+    assert UserSurvey.objects.get(pk=us.pk).termination_reason == UserSurvey.TERMINATION_ENDING_OPTION
+
+
 def test_prune_off_path_deletes_nothing_without_a_flow(survey, qs, user):  # noqa: F811
     us = _enrol(user, survey)
     for q in qs:

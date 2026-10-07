@@ -136,6 +136,9 @@ def test_an_unknown_scope_is_refused():
     with pytest.raises(ValidationError) as err:
         _check_shuffle_scope({"shuffle_scope": "some"})
     assert "shuffle_scope" in err.value.message_dict
+    # A sent null would reach the NOT NULL column.
+    with pytest.raises(ValidationError):
+        _check_shuffle_scope({"shuffle_scope": None})
 
 
 def _has_flow(survey):

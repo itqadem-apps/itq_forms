@@ -6,7 +6,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 
 from app.auth_utils import with_django_user
 from user_surveys.models import UserSurvey
-from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
+from user_surveys.services import AlreadySubmitted, check_time_expired,finish_assessment as finish_assessment_service
 from user_surveys.types import EndReason, stored_end_reason, threshold_reached
 from ..common import RequireAuth
 from app.graphql_ids import as_pk
@@ -31,14 +31,19 @@ class ShouldTerminateQuery:
         if user_survey.submitted_at:
             return stored_end_reason(user_survey) or EndReason.FALLTHROUGH_COMPLETE
 
-        # time-based termination (auto-submits)
-        if check_time_expired(user_survey):
-            finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_TIME_EXPIRED)
-            return EndReason.FORCE_TERMINATED
+        try:
+            # time-based termination (auto-submits)
+            if check_time_expired(user_survey):
+                finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_TIME_EXPIRED)
+                return EndReason.FORCE_TERMINATED
 
-        # ending-option-based termination (auto-submits)
-        if threshold_reached(user_survey):
-            finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_ENDING_OPTION)
-            return EndReason.ENDING_THRESHOLD
+            # ending-option-based termination (auto-submits)
+            if threshold_reached(user_survey):
+                finish_assessment_service(user_survey, reason=UserSurvey.TERMINATION_ENDING_OPTION)
+                return EndReason.ENDING_THRESHOLD
+        except AlreadySubmitted:
+            # An overlapping request finished it first; report the reason that one stored.
+            user_survey.refresh_from_db()
+            return stored_end_reason(user_survey) or EndReason.FALLTHROUGH_COMPLETE
 
         return None

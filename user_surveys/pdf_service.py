@@ -55,6 +55,7 @@ _TERMINATION_LABELS = {
     UserSurvey.TERMINATION_COMPLETED: "Completed",
     UserSurvey.TERMINATION_TIME_EXPIRED: "Time expired",
     UserSurvey.TERMINATION_ENDING_OPTION: "Early termination",
+    UserSurvey.TERMINATION_ROUTING: "Ended by an answer",
 }
 
 

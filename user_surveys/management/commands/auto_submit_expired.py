@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.db.models import F
 
 from user_surveys.models import UserSurvey
-from user_surveys.services import finish_assessment
+from user_surveys.services import AlreadySubmitted, finish_assessment
 
 
 class Command(BaseCommand):
@@ -24,6 +24,8 @@ class Command(BaseCommand):
             try:
                 finish_assessment(user_survey, reason=UserSurvey.TERMINATION_TIME_EXPIRED)
                 count += 1
+            except AlreadySubmitted:
+                continue
             except Exception as e:
                 self.stderr.write(f"Failed to auto-submit survey {user_survey.id}: {e}")
 

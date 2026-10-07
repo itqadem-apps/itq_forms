@@ -92,6 +92,9 @@ def test_an_unknown_basis_is_refused():
     with pytest.raises(ValidationError) as err:
         _check_score_basis({"score_basis": "x"})
     assert "score_basis" in err.value.message_dict
+    # A sent null would reach the NOT NULL column.
+    with pytest.raises(ValidationError):
+        _check_score_basis({"score_basis": None})
 
 
 # ── The matrix ───────────────────────────────────────────────────────
@@ -244,6 +247,19 @@ def test_update_stores_a_valid_basis_and_refuses_an_invalid_one(user, survey):
     assert refused["__typename"] == "OperationInfo"
     assert refused["messages"][0]["field"] == "scoreBasis"
     assert Survey.objects.get(pk=survey.pk).score_basis == "all"
+
+
+def test_update_refuses_a_null_basis_instead_of_failing_the_write(user, survey):
+    refused = _mutate(user, "updateSurvey", "SurveyUpdateInput", {"id": survey.id, "scoreBasis": None})
+    assert refused["__typename"] == "OperationInfo"
+    assert refused["messages"][0]["field"] == "scoreBasis"
+    assert Survey.objects.get(pk=survey.pk).score_basis == "reached"
+
+
+def test_every_termination_reason_has_a_pdf_label():
+    from user_surveys.pdf_service import _TERMINATION_LABELS
+
+    assert set(_TERMINATION_LABELS) == {code for code, _ in UserSurvey.TERMINATION_CHOICES}
 
 
 # ── What each answer shows ───────────────────────────────────────────

@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from collections.abc import Iterable
 from uuid import uuid4
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
@@ -645,6 +646,14 @@ def evaluate_assessment(user_survey: UserSurvey) -> None:
                 )
 
 
+class AlreadySubmitted(ValidationError):
+    """A second finish of one attempt. Callers check `submitted_at` before the lock, so two
+    overlapping finishes both pass that check; the second learns it lost only under the lock."""
+
+    def __init__(self):
+        super().__init__("This assessment is already submitted.")
+
+
 def finish_assessment(
     user_survey: UserSurvey,
     reason: str = UserSurvey.TERMINATION_COMPLETED,
@@ -654,6 +663,8 @@ def finish_assessment(
     # auto_submit_expired) get their own transaction here; a refused submit simply rolls back.
     with transaction.atomic():
         locked = UserSurvey.objects.select_for_update().get(pk=user_survey.pk)
+        if locked.submitted_at:
+            raise AlreadySubmitted()
         _finish_locked(locked, reason)
         user_survey.refresh_from_db()
 
