@@ -75,4 +75,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl --fail http://localhost:8000/healthz || exit 1
 
 # Command to run the app
-CMD ["bash", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --workers 2 app.asgi:application --log-level info"]
+CMD ["bash", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --workers 2 --timeout 120 app.asgi:application --log-level info"]
