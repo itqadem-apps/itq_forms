@@ -405,6 +405,9 @@ class UserSurveyType:
         """The denominator of `score` under the attempt's score basis (`forms:AD-10`)."""
         if not self.use_score:
             return None
+        # A list resolver primes this in one batch (`prime_max_scores`); a lone attempt computes it.
+        if "_primed_max_score" in self.__dict__:
+            return self._primed_max_score
         from user_surveys.services import max_score
 
         return max_score(self)

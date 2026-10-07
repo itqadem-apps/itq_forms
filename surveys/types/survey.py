@@ -20,6 +20,7 @@ from surveys.usage_access import (
     resolve_usage_used,
 )
 from user_surveys.models import UserSurvey
+from user_surveys.types.max_score_priming import prime_max_scores
 
 
 @strawberry_django.type(Survey)
@@ -130,9 +131,11 @@ class SurveyType:
     def user_surveys(self, info: Info) -> List[Annotated["UserSurveyType", strawberry.lazy("user_surveys.types.user_survey")]]:
         try:
             django_user = get_django_user(info)
-            return list(self.usersurvey_set.filter(user=django_user, submitted_at__isnull=True))
+            items = list(self.usersurvey_set.filter(user=django_user, submitted_at__isnull=True))
         except ValueError:
             return []
+        prime_max_scores(items, info, ("maxScore",))
+        return items
 
     @strawberry.field
     def is_enrolled(self, info: Info) -> bool:

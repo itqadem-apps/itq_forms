@@ -1,6 +1,7 @@
 import logging
 import random
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from uuid import uuid4
 
 from django.db import transaction
@@ -522,18 +523,47 @@ def question_max_score(question: UserQuestion, scores: list[int] | None = None) 
 
 
 def max_score(user_survey: UserSurvey, scores: dict[int, list[int]] | None = None) -> int:
-    """The attempt's denominator under its declared basis (`forms:AD-10`), read from the stored
-    `on_path` flags, never a replay (`forms:AD-17`)."""
-    questions = user_survey.questions.all()
-    if user_survey.score_basis != ScoreBasis.ALL:
-        questions = questions.filter(on_path=True)
-    if user_survey.score_basis == ScoreBasis.ANSWERED:
-        questions = questions.filter(
-            id__in=UserAnswer.objects.filter(user_survey=user_survey, selected_options__isnull=False).values("question_id")
-        )
+    """The attempt's denominator under its declared basis (`forms:AD-10`); see `max_scores`."""
+    return max_scores([user_survey], {user_survey.id: scores} if scores is not None else None)[user_survey.id]
+
+
+def max_scores(
+    user_surveys: Iterable[UserSurvey], scores: dict[int, dict[int, list[int]]] | None = None
+) -> dict[int, int]:
+    """Each attempt's denominator under its own declared basis (`forms:AD-10`), read from the
+    stored `on_path` flags, never a replay (`forms:AD-17`). At most three queries however many
+    attempts: option scores (skipped when `scores`, keyed by attempt then question, is passed),
+    questions, and answered question ids (only when an attempt counts `answered`)."""
+    by_id = {us.id: us for us in user_surveys}
+    if not by_id:
+        return {}
+
     if scores is None:
-        scores = option_scores_by_question(user_survey)
-    return sum(question_max_score(q, scores.get(q.id, [])) for q in questions.only("id", "type"))
+        scores = defaultdict(lambda: defaultdict(list))
+        for us_id, question_id, score in UserAnswerOption.objects.filter(user_survey_id__in=by_id).values_list(
+            "user_survey_id", "schema__question_id", "score"
+        ):
+            scores[us_id][question_id].append(score or 0)
+
+    answering = [us_id for us_id, us in by_id.items() if us.score_basis == ScoreBasis.ANSWERED]
+    answered = set()
+    if answering:
+        answered = set(
+            UserAnswer.objects.filter(user_survey_id__in=answering, selected_options__isnull=False).values_list(
+                "user_survey_id", "question_id"
+            )
+        )
+
+    totals = dict.fromkeys(by_id, 0)
+    for question in UserQuestion.objects.filter(user_survey_id__in=by_id).only("id", "type", "on_path", "user_survey_id"):
+        us_id = question.user_survey_id
+        basis = by_id[us_id].score_basis
+        if basis != ScoreBasis.ALL and not question.on_path:
+            continue
+        if basis == ScoreBasis.ANSWERED and (us_id, question.id) not in answered:
+            continue
+        totals[us_id] += question_max_score(question, scores.get(us_id, {}).get(question.id, []))
+    return totals
 
 
 def evaluate_assessment(user_survey: UserSurvey) -> None:

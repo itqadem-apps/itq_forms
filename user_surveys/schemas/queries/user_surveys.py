@@ -21,6 +21,7 @@ from user_surveys.child_projection import supervised_child_ids_for_org
 from user_surveys.inputs import UserSurveyFilters, UserSurveyFiltersInput, UserSurveysListInput
 from user_surveys.types import UserSurveysResultsGQL
 from user_surveys.models import UserSurvey
+from user_surveys.types.max_score_priming import prime_max_scores
 from ..common import RequireAuth
 from app.graphql_ids import as_pk
 
@@ -132,4 +133,5 @@ class UserSurveyQuery:
 
         total = base_qs.count()
         items = list(base_qs[offset : offset + limit])
+        prime_max_scores(items, info, ("items", "maxScore"))
         return UserSurveysResultsGQL(items=items, total=total)
