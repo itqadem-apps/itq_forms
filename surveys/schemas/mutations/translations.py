@@ -4,8 +4,11 @@ from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from uuid import UUID
 
+from django.db import transaction
+
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
+from surveys.survey_lock import lock_survey_of_section
 from surveys.inputs import (
     SurveyTranslationInput,
     SectionTranslationInput,
@@ -139,6 +142,7 @@ class TranslationMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_section_id, 'update')
+    @transaction.atomic
     def create_section_translation(
         self,
         info: Info,
@@ -148,6 +152,8 @@ class TranslationMutations:
     ) -> SectionTranslationType:
         """Create a translation for a section"""
         section_id = as_pk(section_id)
+        # `forms:AD-25`: a section title write cannot interleave with flatten's untitled check.
+        lock_survey_of_section(section_id)
         section = Section.objects.get(pk=section_id)
         translation = SectionTranslation.objects.create(
             section=section,
@@ -160,6 +166,7 @@ class TranslationMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_section_translation_id, 'update')
+    @transaction.atomic
     def update_section_translation(
         self,
         info: Info,
@@ -168,6 +175,7 @@ class TranslationMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionTranslationType:
         """Update a section translation"""
+        lock_survey_of_section(SectionTranslation.objects.values_list('section_id', flat=True).get(pk=id))
         translation = SectionTranslation.objects.select_related('section__survey').get(pk=id)
 
         if input.language:
@@ -183,6 +191,7 @@ class TranslationMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_section_translation_id, 'update')
+    @transaction.atomic
     def delete_section_translation(
         self,
         info: Info,
@@ -190,6 +199,7 @@ class TranslationMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
         """Delete a section translation"""
+        lock_survey_of_section(SectionTranslation.objects.values_list('section_id', flat=True).get(pk=id))
         translation = SectionTranslation.objects.get(pk=id)
         translation.delete()
         return OperationResult(success=True)

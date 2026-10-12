@@ -292,7 +292,7 @@ class SurveyMutations:
         # in the same sequence, sections contiguous and sectionless questions between them
         # (`forms:AD-4`). A section is cloned when its first question is reached, so its blank
         # question is gone before anything is placed around it.
-        original_questions = Question.objects.filter(Q(survey=original) | Q(section__survey=original))
+        original_questions = Question.objects.filter(Q(survey=original) | Q(section__survey=original)).select_related('section')
         questions_by_id = {q.pk: q for q in original_questions}
         question_map: dict[int, Question] = {}
         option_map: dict[int, AnswerSchemaOption] = {}
@@ -300,7 +300,8 @@ class SurveyMutations:
         for question_id in flat_question_ids(original_questions):
             question = questions_by_id[question_id]
             new_section = None
-            if question.section_id is not None:
+            # A forward FK reads every row (`forms:AD-21`): a deleted section is not copied.
+            if question.section_id is not None and question.section.deleted_at is None:
                 new_section = section_map.get(question.section_id) or clone_section(question.section)
             new_question = clone_instance(question, survey=new_survey, section=new_section, order=None)
             question_map[question.pk] = new_question

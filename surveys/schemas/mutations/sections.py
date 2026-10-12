@@ -11,7 +11,9 @@ from app.permissions import check_permission
 from surveys.inputs import SectionInput
 from surveys.types import SectionType
 from surveys.models import Survey, Section, SectionTranslation, Question
-from surveys.question_order import assert_forward_only, flat_question_ids, renumber_questions
+from surveys.question_order import assert_forward_only, flat_question_ids, move_to_section, renumber_questions
+from surveys.soft_delete import soft_delete
+from surveys.survey_lock import lock_survey_of_section
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
 from app.graphql_ids import as_pk
@@ -23,6 +25,13 @@ def _type_from_survey_id(info, survey_id, **kw):
 
 def _type_from_section_id(info, id, **kw):
     return Section.objects.select_related('survey').get(pk=id).survey.survey_type
+
+
+def _is_untitled(section: Section) -> bool:
+    """Blank in the legacy column and in every translation (`forms:AD-23`)."""
+    if (section.title or '').strip():
+        return False
+    return not any((t or '').strip() for t in SectionTranslation.objects.filter(section=section).values_list('title', flat=True))
 
 
 def _refuse_legacy_jump(input: SectionInput) -> None:
@@ -76,6 +85,7 @@ class SectionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_section_id, 'update')
+    @transaction.atomic
     def update_section(
         self,
         info: Info,
@@ -86,6 +96,7 @@ class SectionMutations:
         """Update an existing section"""
         _refuse_legacy_jump(input)
         id = as_pk(id)
+        lock_survey_of_section(id)
         section = Section.objects.select_related('survey').get(pk=id)
 
         # `order` is ignored: a section is placed by its first question, and moves only through
@@ -115,16 +126,47 @@ class SectionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_section_id, 'update')
+    @transaction.atomic
     def delete_section(
         self,
         info: Info,
         id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Delete a section"""
+        """Soft-delete a section with its questions and their options (`forms:AD-21`). Refused on
+        `target_id` while a live option outside the section jumps into it (`forms:AD-22`)."""
         id = as_pk(id)
+        survey_id = lock_survey_of_section(id)
+        soft_delete('section', Section.objects.get(pk=id), survey_id)
+        return OperationResult(success=True)
+
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
+    @with_django_user
+    @check_permission(_type_from_section_id, 'update')
+    @transaction.atomic
+    def flatten_section(
+        self,
+        info: Info,
+        id: strawberry.ID,
+        django_user: strawberry.Private[AbstractBaseUser] = None,
+    ) -> OperationResult:
+        """Dissolve an untitled section in place (`forms:AD-23`): its questions become sectionless
+        and keep their survey-wide order, and the emptied section is soft-deleted. Refused on
+        `title` while the section has a title in any language."""
+        id = as_pk(id)
+        survey_id = lock_survey_of_section(id)
         section = Section.objects.get(pk=id)
-        section.delete()
+        if not _is_untitled(section):
+            raise ValidationError({'title': [
+                'Only a section with no title in any language can be flattened; '
+                'flattening this one would discard its title. Clear the title first.'
+            ]})
+        question_ids = list(Question.objects.filter(section=section).values_list('id', flat=True))
+        # A legacy question with no `survey_id` belonged through its section alone; it must not
+        # end with neither.
+        Question.all_objects.filter(pk__in=question_ids, survey_id__isnull=True).update(survey_id=survey_id)
+        move_to_section(question_ids, None)
+        soft_delete('section', section, survey_id)
         return OperationResult(success=True)
 
     @strawberry.mutation(permission_classes=[RequireAuth])

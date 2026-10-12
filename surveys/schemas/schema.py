@@ -9,7 +9,9 @@ schema = strawberry.Schema(
     query=Query,
     mutation=Mutation,
     extensions=[
-        DjangoOptimizerExtension,
+        # Prefetch through each model's default manager, so a soft-deleted row never reaches a
+        # relation such as `sections { questions }` (`forms:AD-21`).
+        DjangoOptimizerExtension(prefetch_custom_queryset=True),
         PrometheusExtension,
     ],
 )

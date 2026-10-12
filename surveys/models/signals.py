@@ -85,7 +85,7 @@ def _update_sections_order(sender, instance: Section, **kwargs):
     """`Section.order` is derived by `renumber_questions` from the sections' first questions."""
     renumber_questions(instance.survey_id)
     if kwargs.get("signal") is post_save:
-        instance.order = Section.objects.values_list("order", flat=True).get(pk=instance.pk)
+        instance.order = Section.all_objects.values_list("order", flat=True).get(pk=instance.pk)
 
 
 @receiver(post_save, sender=Question)
@@ -101,7 +101,11 @@ def _update_question_order(sender, instance: Question, **kwargs):
 @receiver(post_save, sender=AnswerSchemaOption)
 @receiver(post_delete, sender=AnswerSchemaOption)
 def _update_answer_schema_option_order(sender, instance: AnswerSchemaOption, **kwargs):
-    """Keep option order contiguous, the way sections and questions already are.
+    resequence_options(instance.schema_id)
+
+
+def resequence_options(schema_id) -> None:
+    """Keep a schema's live option order contiguous, the way sections and questions already are.
 
     Options were the one level of the tree without this. Deleting the third of
     four left the survey holding 1, 2, 4 for good — a hole a respondent sees as
@@ -113,12 +117,13 @@ def _update_answer_schema_option_order(sender, instance: AnswerSchemaOption, **k
 
     Both follow from the same absence, so both are fixed here rather than in
     ``save``: resequencing after a delete keeps ``count() + 1`` correct by
-    construction.
+    construction. A soft-deleted option keeps its stale ``order`` and is not
+    counted (`forms:AD-21`); ``soft_delete`` calls this directly, since a stamp
+    by ``update()`` sends no signal.
     """
-    options = AnswerSchemaOption.objects.filter(schema_id=instance.schema_id).order_by("order", "id")
-    options_order = list(options.values_list("order", flat=True))
+    options = list(AnswerSchemaOption.objects.filter(schema_id=schema_id).order_by("order", "id"))
 
-    if all(order == idx + 1 for idx, order in enumerate(options_order)):
+    if all(option.order == idx + 1 for idx, option in enumerate(options)):
         return
 
     for idx, option in enumerate(options):
@@ -128,8 +133,9 @@ def _update_answer_schema_option_order(sender, instance: AnswerSchemaOption, **k
 
 @receiver(pre_delete, sender=Question)
 def _clear_edges_into_deleted_question(sender, instance: Question, **kwargs):
-    """An edge whose target is deleted falls through rather than keeping go_to with no target
-    (`forms:AD-3`)."""
+    """An edge whose target is hard-deleted falls through rather than keeping go_to with no target
+    (`forms:AD-3`). Only the hard paths reach this (`delete_survey`); a builder delete is soft and
+    is refused while a live edge points into it (`forms:AD-22`)."""
     from surveys.flow import clear_edges_into
 
     clear_edges_into([instance.pk])

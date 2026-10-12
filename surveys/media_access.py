@@ -4,6 +4,8 @@ from __future__ import annotations
 import logging
 from typing import List
 
+from django.db.models import Q
+
 from surveys.models import Survey, Section, Question, AnswerSchemaOption
 from surveys.media_client import build_client
 
@@ -21,15 +23,21 @@ def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
     Question covers were omitted. They are stored by the same policy as section
     covers and option images (form_items/image, RESTRICTED) and belong here for
     the same reason.
+
+    Deleted rows are read too (`all_objects`): a soft-deleted section, question or option
+    (`forms:AD-21`) still shows in learner snapshots taken before the delete, so its asset is
+    granted, promoted, demoted and revoked exactly as it was before the delete.
     """
     asset_ids: list[str] = []
 
-    sections = Section.objects.filter(survey_id=survey_id).values_list("cover_asset_id", flat=True)
+    sections = Section.all_objects.filter(survey_id=survey_id).values_list("cover_asset_id", flat=True)
     asset_ids.extend(aid for aid in sections if aid)
 
     questions = (
-        Question.objects
-        .filter(section__survey_id=survey_id)
+        Question.all_objects
+        # A sectionless (or flattened) question belongs by `survey_id` (`forms:AD-23`); a legacy
+        # one with no `survey_id` still belongs through its section.
+        .filter(Q(survey_id=survey_id) | Q(section__survey_id=survey_id))
         .values_list("cover_asset_id", flat=True)
     )
     asset_ids.extend(aid for aid in questions if aid)
@@ -39,7 +47,7 @@ def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
     # (the FK is `schema`, not `answer_schema`), so every call raised FieldError
     # before it reached the media client.
     options = (
-        AnswerSchemaOption.objects
+        AnswerSchemaOption.all_objects
         .filter(survey_id=survey_id)
         .values_list("image_asset_id", flat=True)
     )

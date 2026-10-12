@@ -114,7 +114,7 @@ class Command(BaseCommand):
             section_count = 0
             for asset in section_assets:
                 sec_id = asset["section"]["id"]
-                if Section.objects.filter(id=sec_id).update(cover_asset_id=asset["uuid"]):
+                if Section.all_objects.filter(id=sec_id).update(cover_asset_id=asset["uuid"]):
                     section_count += 1
                 else:
                     self.stderr.write(f"  Section id={sec_id} not found")
@@ -124,7 +124,7 @@ class Command(BaseCommand):
             option_count = 0
             for asset in option_assets:
                 opt_id = asset["option"]["id"]
-                if AnswerSchemaOption.objects.filter(id=opt_id).update(image_asset_id=asset["uuid"]):
+                if AnswerSchemaOption.all_objects.filter(id=opt_id).update(image_asset_id=asset["uuid"]):
                     option_count += 1
                 else:
                     self.stderr.write(f"  AnswerSchemaOption id={opt_id} not found")

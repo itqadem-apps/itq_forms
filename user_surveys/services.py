@@ -180,6 +180,10 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
             return None
         if section_id in section_map:
             return section_map[section_id]
+        # A forward FK reads every row (`forms:AD-21`): a deleted section is not copied, and the
+        # row it still names lands sectionless.
+        if source.section.deleted_at is not None:
+            return None
         logger.warning(
             "%s %s on survey %s references section %s, which is not in that "
             "survey's own section list; snapshotting it so the link survives",
@@ -225,7 +229,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     schema_map = {}  # original_id -> UserAnswerSchema
     from surveys.models import AnswerSchema
 
-    schemas = list(AnswerSchema.objects.filter(survey=survey))
+    schemas = list(AnswerSchema.objects.filter(survey=survey).select_related("section"))
     for schema in schemas:
         uas = UserAnswerSchema.objects.create(
             origin_id=schema.id,
@@ -245,6 +249,7 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
 
     options = list(
         AnswerSchemaOption.objects.filter(survey=survey)
+        .select_related("section")
         .prefetch_related("translations")
         .order_by("order")
     )

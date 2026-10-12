@@ -15,9 +15,12 @@ from surveys.question_order import (
     assert_forward_only,
     flat_question_ids,
     live_survey_questions,
+    move_to_section,
     renumber_questions,
     split_sections,
 )
+from surveys.soft_delete import soft_delete
+from surveys.survey_lock import lock_survey_of_question
 from surveys.types import QuestionType, SurveyType
 from surveys.models import (
     Survey,
@@ -25,7 +28,6 @@ from surveys.models import (
     Question,
     QuestionTranslation,
     AnswerSchema,
-    AnswerSchemaOption,
     AnswerSchemaOptionTranslation,
     FlowAction,
 )
@@ -57,8 +59,9 @@ def _positions(sequence):
 
 
 def _placed_sequence(survey_id, live_sequence, section_of):
-    """The whole survey's sequence for a reorder of its live questions: each question the author
-    cannot see (soft-deleted, or under a soft-deleted section) follows the last live question of
+    """The survey's live sequence for a reorder (`renumber_questions` takes live questions only,
+    `forms:AD-21`): each live question the author cannot see — one still under a soft-deleted
+    section, which the soft-delete backfill leaves none of — follows the last listed question of
     its own section, so it never splits a run; one with no such run goes at the end."""
     hidden = [pk for pk in flat_question_ids(Question.objects.filter(survey_id=survey_id)) if pk not in section_of]
     hidden_section = dict(Question.objects.filter(pk__in=hidden).values_list('id', 'section_id'))
@@ -184,16 +187,18 @@ class QuestionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_question_id, 'update')
+    @transaction.atomic
     def delete_question(
         self,
         info: Info,
         id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Delete a question"""
+        """Soft-delete a question and its options (`forms:AD-21`). Refused on `target_id` while a
+        live option of another question jumps to it (`forms:AD-22`)."""
         id = as_pk(id)
-        question = Question.objects.get(pk=id)
-        question.delete()
+        survey_id = lock_survey_of_question(id)
+        soft_delete('question', Question.objects.get(pk=id), survey_id)
         return OperationResult(success=True)
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -347,10 +352,7 @@ class QuestionMutations:
 
         moved = {pk: sid for pk, sid in section_of.items() if live[pk] != sid}
         for sid in set(moved.values()):
-            ids = [pk for pk, dest in moved.items() if dest == sid]
-            Question.objects.filter(pk__in=ids).update(section_id=sid)
-            AnswerSchema.objects.filter(question_id__in=ids).update(section_id=sid)
-            AnswerSchemaOption.objects.filter(question_id__in=ids).update(section_id=sid)
+            move_to_section([pk for pk, dest in moved.items() if dest == sid], sid)
         renumber_questions(survey.id, sequence)
 
         return survey

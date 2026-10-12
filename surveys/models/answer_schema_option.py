@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .answer_schema import AnswerSchema
+from .has_soft_delete import LiveManager
 from classifications.models import Classification
 from .question import Question
 from .section import Section
@@ -46,6 +47,9 @@ class AnswerSchemaOption(models.Model):
         Question, on_delete=models.SET_NULL, null=True, blank=True, related_name="incoming_edges"
     )
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = LiveManager()
+    all_objects = models.Manager()
 
     def save(self, *args, **kwargs):
         if not self.pk:

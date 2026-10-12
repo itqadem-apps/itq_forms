@@ -1,5 +1,6 @@
 from django.db import models
 
+from .has_soft_delete import LiveQuestionManager
 from .question import Question
 from .section import Section
 from .survey import Survey
@@ -15,3 +16,6 @@ class AnswerSchema(models.Model):
     with_file = models.BooleanField(default=False)
     is_mcq = models.BooleanField(default=False)
     is_grid = models.BooleanField(default=False)
+
+    objects = LiveQuestionManager()
+    all_objects = models.Manager()

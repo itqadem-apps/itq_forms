@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+from .has_soft_delete import LiveManager
 from .survey import Survey
 
 
@@ -27,6 +28,9 @@ class Section(models.Model):
     created_at = models.DateTimeField(auto_created=True, default=now, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = LiveManager()
+    all_objects = models.Manager()
 
     def save(self, *args, **kwargs):
         if not self.pk:

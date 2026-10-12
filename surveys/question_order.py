@@ -76,7 +76,9 @@ def in_flat_order(questions: QuerySet) -> QuerySet:
 
 def live_survey_questions(survey_id) -> QuerySet:
     """The author-side set the admin preview lists and steps through: not soft-deleted, and not
-    under a soft-deleted section."""
+    under a soft-deleted section. The default manager already hides deleted questions, and a
+    deleted section stamps its own (`forms:AD-21`); the section filter is kept as a forward-FK
+    check on membership."""
     from surveys.models import Question
 
     return Question.objects.filter(survey_id=survey_id, deleted_at__isnull=True).filter(
@@ -95,7 +97,8 @@ def renumber_questions(survey_id, sequence: list[int] | None = None, section_ran
     saved question (`order` null) lands at the end of its section, or of the survey when it has
     none — appended to the order the others already hold, so it cannot unseat a sectionless
     question from between two sections. A reorder passes the
-    `sequence` it wants instead; it must name every question of the survey exactly once.
+    `sequence` it wants instead; it must name every live question of the survey exactly once.
+    Soft-deleted questions and sections are not read and keep their stale `order` (`forms:AD-21`).
 
     Sections holding no question go after all others, by `section_rank` (a reorder's request)
     where it names them, then by their prior `order`.
@@ -130,6 +133,21 @@ def renumber_questions(survey_id, sequence: list[int] | None = None, section_ran
     if ranked:
         Section.objects.bulk_update(ranked, ["order"])
     return sequence
+
+
+def move_to_section(question_ids, section_id) -> None:
+    """Move `question_ids` into `section_id` (or out of any section, given None) by writing
+    `Question.section`, `AnswerSchema.section` and `AnswerSchemaOption.section` together, so the
+    three never disagree (`forms:AD-23`). Deleted options move too: they follow their question.
+    Placement is the caller's: it runs `renumber_questions` once the layout is final."""
+    from surveys.models import AnswerSchema, AnswerSchemaOption, Question
+
+    ids = list(question_ids)
+    if not ids:
+        return
+    Question.all_objects.filter(pk__in=ids).update(section_id=section_id)
+    AnswerSchema.all_objects.filter(question_id__in=ids).update(section_id=section_id)
+    AnswerSchemaOption.all_objects.filter(question_id__in=ids).update(section_id=section_id)
 
 
 def _placed_order(questions: QuerySet) -> list[int]:
@@ -188,7 +206,9 @@ def _edges(owner) -> Iterable[tuple[int, int]]:
     from user_surveys.models import UserAnswerOption
 
     if isinstance(owner, Survey):
-        options = AnswerSchemaOption.objects.filter(survey=owner)
+        # Live options only (the default manager); a target can only be deleted on rows written
+        # before `forms:AD-22` refused it, and a deleted question holds no position.
+        options = AnswerSchemaOption.objects.filter(survey=owner, flow_target__deleted_at__isnull=True)
     else:
         options = UserAnswerOption.objects.filter(user_survey=owner, question__isnull=False)
     return options.filter(flow_action=FlowAction.GO_TO, flow_target__isnull=False).values_list("question_id", "flow_target_id")

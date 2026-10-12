@@ -11,6 +11,8 @@ from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from surveys.flow import assert_survey_forward, check_type_change, validate_edge
 from surveys.inputs import AnswerSchemaInput, AnswerSchemaOptionInput
+from surveys.soft_delete import soft_delete
+from surveys.survey_lock import lock_survey
 from surveys.types import AnswerSchemaType, AnswerSchemaOptionType
 from surveys.models import (
     Question,
@@ -173,16 +175,18 @@ class AnswerSchemaMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_option_id, 'update')
+    @transaction.atomic
     def delete_answer_schema_option(
         self,
         info: Info,
         id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> OperationResult:
-        """Delete an answer schema option"""
+        """Soft-delete an answer option (`forms:AD-21`). An option is an edge source, never a
+        target, so this never blocks (`forms:AD-22`)."""
         id = as_pk(id)
-        option = AnswerSchemaOption.objects.get(pk=id)
-        option.delete()
+        survey_id = lock_survey(AnswerSchemaOption.all_objects.values_list('survey_id', flat=True).get(pk=id))
+        soft_delete('option', AnswerSchemaOption.objects.get(pk=id), survey_id)
         return OperationResult(success=True)
 
     @strawberry.mutation(permission_classes=[RequireAuth])
