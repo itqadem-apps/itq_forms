@@ -4,10 +4,10 @@ type: architecture-spine
 purpose: build-substrate
 altitude: initiative
 paradigm: 'a Django project, unlike its ports-and-adapters siblings; an authored template materialised per learner at enrolment'
-scope: 'invariants binding the forms service, including the survey flow engine — answer-conditional routing, optional sections, and the scoring that branching makes ambiguous'
+scope: 'invariants binding the forms service, including the survey flow engine — answer-conditional routing, optional sections, and the scoring that branching makes ambiguous — and the builder''s authoring writes: soft delete, flatten, insert-after and import'
 status: draft
 created: '2026-08-28'
-updated: '2026-10-05'
+updated: '2026-10-12'
 binds:
   - estate:AD-2
   - estate:AD-3
@@ -270,11 +270,10 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   trap rather than a regression.
 
   Each hidden section's questions move to `section=null`. **The section rows are not deleted:**
-  `AnswerSchema.section` and `AnswerSchemaOption.survey`/`section`/`question` are NOT NULL with
-  `on_delete=CASCADE`, so dropping a `Section` row would cascade away the schemas and options of
-  the very questions the migration intends to preserve. Either those author-side foreign keys are
-  made nullable and re-pointed in the same migration, or the rows stay. The migration ships under
-  `forms:AD-14`.
+  `Question.section` is `on_delete=CASCADE`, so dropping a `Section` row would cascade away the
+  very questions the migration intends to preserve. (`AnswerSchema.section` and
+  `AnswerSchemaOption.section` are already nullable `SET_NULL` and follow the question to null.)
+  The migration ships under `forms:AD-14`.
 
 ### AD-10 — Score basis is declared per assessment; an unreached answer does not score, an unreached calculation still computes
 
@@ -446,13 +445,134 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   without asking first. `forms:AD-6`'s result type and the named-field-error convention apply to a
   REST body unchanged.
 
+  **Builder authoring calls stay GraphQL** (amended 2026-10-12). A *screen* is one admin page
+  route; the builder screen is `/build`. Every call that screen makes stays GraphQL even when it is
+  new — flatten (`forms:AD-23`), import and insert-after (`forms:AD-24`) — rather than splitting one
+  screen across both APIs. The REST rule above binds the solver's new calls and any new screen.
+
+### AD-21 — Builder deletes are soft, and the default manager sees only live rows
+
+- **Binds:** `Section`, `Question`, `AnswerSchema`, `AnswerSchemaOption`, their delete mutations,
+  `copy_question` and `duplicate_survey`, and every read of them — builder, GraphQL types, solve
+  payload (`forms:AD-18`), enrolment copy (`forms:AD-2`), `renumber_questions` and
+  `live_survey_questions` (`forms:AD-4`), `_placed_sequence`, anchors (`forms:AD-12`), media access,
+  results.
+- **Prevents:** a mistaken delete being unrecoverable — the builder autosaves, and a section's hard
+  delete cascades its questions, schemas and options — and one read forgetting a filter and serving
+  a deleted row to the builder, the solver or a new learner's copy (the enrolment copy keys schemas
+  by question, so a live schema under a dead question raises there).
+- **Rule:** deleting a section, question or answer option from the builder goes through **one
+  `soft_delete` function**: it stamps the whole group's `deleted_at` with one `update()`, then calls
+  `renumber_questions`, then resequences the live options. No builder path calls `.delete()`, except
+  these hard deletes, which stay: the options a question-type change replaces
+  (`surveys/models/question.py:80,85,102`), the seeded options `copy_question` replaces
+  inside its own transaction, and `delete_survey` (Deferred).
+
+  Each model's **default manager returns live rows only**; `AnswerSchema`'s returns rows whose
+  question is live. So `objects` and every related manager (`survey.sections`, `section.questions`,
+  `schema.options`) exclude deleted rows with no filter at the call site. The filtering manager is
+  never named `base_manager_name`: forward foreign-key access and the delete collector keep seeing
+  every row, so a forward read that decides membership, rendering or copying (`section_for`, a
+  question's `section`) checks `deleted_at` explicitly. GraphQL must not bypass it:
+  `DjangoOptimizerExtension` prefetches through `_base_manager` unless
+  `prefetch_custom_queryset=True` (`surveys/schemas/schema.py:12` sets it, or each type defines
+  `get_queryset`). Signals that re-read a row read it by pk through `all_objects`. An explicit
+  `all_objects` manager is the only way to see deleted rows; the Django admin uses it for support.
+
+  `AnswerSchemaOption` gains `deleted_at` by a schema migration. Rows already soft-deleted before
+  this release get their children stamped by a `forms:AD-14` report-then-apply data migration that
+  ships **before** the managers switch. Deletion cascades by timestamp: a deleted section stamps its
+  questions and their options with the **same** `deleted_at`; a deleted question stamps its options.
+  Deleted rows keep their stale `order` and are never renumbered. Learner snapshots are untouched:
+  they reference template rows by plain id, not foreign key.
+
+  There is no restore UI. A support restore clears one timestamp group under the survey lock
+  (`forms:AD-25`): restored rows get `order = null` and are placed by `forms:AD-24` after their old
+  neighbour; a restored `go_to` whose target is still deleted becomes `fall_through`; a question
+  whose section is still deleted comes back sectionless; then `renumber_questions` and
+  `assert_forward_only` (`forms:AD-5`) run.
+
+### AD-22 — A live jump target cannot be deleted, and the refusal names who jumps there
+
+- **Binds:** the section and question delete mutations, `forms:AD-3` edges, `clear_edges_into`
+  (`surveys/signals.py:129`).
+- **Prevents:** a delete silently rewriting another question's routing. Today `clear_edges_into`
+  turns every `go_to` into a deleted question into `fall_through` without telling the author; that
+  silent fall-through becomes a refusal. It also keeps the builder and the server from disagreeing
+  about whether a delete is safe.
+- **Rule:** after the survey lock (`forms:AD-25`), a delete is refused while any **live** option
+  outside the set being deleted has `flow_action = go_to` and a `flow_target` inside it. The refusal
+  is a named field error on `target_id` listing each referring option and its question, so the
+  builder's confirmation can list them; the admin re-points them first. Edges that start inside the
+  deleted set do not block — they go with it. Deleting an option never blocks: an option is an edge
+  source, never a target. The legacy `Section.submit_action_target` does not block: `forms:AD-15`
+  refuses writing it, and the delete nulls it.
+
+### AD-23 — Flatten unparents an untitled section's questions in place and soft-deletes the section
+
+- **Binds:** the flatten mutation, `move_to_section`, `forms:AD-4` placement, `forms:AD-21`,
+  `surveys/media_access.py`.
+- **Prevents:** flatten reordering anything, flatten silently discarding a heading the author
+  wrote, and a question's section, schema section and option sections disagreeing after a move.
+- **Rule:** flatten is allowed only on a section with no title — blank in the legacy column and in
+  every translation — checked after the survey lock (`forms:AD-25`), and is refused otherwise with
+  a named field error. Its questions keep their survey-wide `order` and become sectionless through
+  **one `move_to_section` function**, which writes `Question.section`, `AnswerSchema.section` and
+  `AnswerSchemaOption.section` together; reorder, split, flatten and copy all call it. The emptied
+  section is soft-deleted by `forms:AD-21`; then `renumber_questions` runs. Contiguity holds by
+  construction — the run sits between sections. No edge changes, so no `forms:AD-22` check applies.
+  Media access reads a survey's questions by `survey_id`, not `section__survey_id`
+  (`surveys/media_access.py:32`), before flatten ships, or flattened questions lose their image
+  grants.
+
+### AD-24 — Insert-after and import place by one rule, and every copy goes through one function
+
+- **Binds:** create question, create section, duplicate question, import question,
+  `duplicate_survey` (`surveys/schemas/mutations/surveys.py:247-340`).
+- **Prevents:** each add path computing its own position, and the import and duplicate paths
+  copying a question differently — one keeping an edge or a foreign survey's classification the
+  other drops.
+- **Rule:** an add from the builder names the card it follows; the target survey is that card's
+  survey. A new question takes the next survey-wide position after that card and joins that card's
+  section: none after a sectionless question; after a section heading it becomes that section's
+  first question, and an empty section's only one. A new section placed after a question in a
+  section **splits** it: the questions after that point move into the new section by
+  `move_to_section` (`forms:AD-23`). A new section's auto-created first question gets an explicit
+  position by the same rule. Every path runs under the survey lock (`forms:AD-25`) and ends in
+  `renumber_questions` (`forms:AD-4`).
+
+  Import copies a question from any survey in the admin's organisation they can read into the
+  target survey — an **independent copy**; nothing links the two afterwards. One function,
+  `copy_question`, serves duplicate and import: it copies the question, its answer schema, live
+  options and all translations, resets every option's edge to `fall_through` with no target, and —
+  across surveys — clears each option's `classification` and `ending_option`. [ASSUMPTION: score is
+  kept; `ending_option` is cleared across surveys because `forms:AD-7` thresholds are per survey.]
+  Permission is read on the source survey and update on the target. `duplicate_survey` copies live
+  rows only.
+
+### AD-25 — Every builder structure write locks the survey row first, then checks
+
+- **Binds:** every builder write that changes edges, section membership, `order`, `deleted_at` or
+  titles — delete, flatten, insert-after, split, import, reorder, translation edits — and a support
+  restore.
+- **Prevents:** two concurrent builder writes each passing a guard the other invalidates — a delete
+  passing `forms:AD-22` while an edge into it is written, flatten passing the untitled check while a
+  title is saved, two renumbers interleaving. Today `delete_question` and `delete_section` are
+  neither atomic nor locked, and `translations.py` takes no lock.
+- **Rule:** the write runs in one transaction and takes `select_for_update` on its `Survey` row
+  before reading anything it checks; every guard (`forms:AD-5`, `forms:AD-22`, `forms:AD-23`'s
+  untitled check) runs after the lock. This is the pattern the reorder and create mutations already
+  use (`surveys/schemas/mutations/questions.py:150,283,319`).
+
 ## Consistency Conventions
 
 | Concern | Convention |
 | --- | --- |
 | Naming | Authored models are bare (`Question`); the learner's copy is `User`-prefixed (`UserQuestion`). A flow column carries the same name on both. |
 | Ordering | `order` is 1-based and contiguous. `forms:AD-4` changes the **question** scope from `section_id` to `survey_id`; `Section.order` is derived from each section's first question. |
-| Transport | A call that does not exist today is REST; existing calls and listings stay GraphQL (`forms:AD-20`). |
+| Transport | A call that does not exist today is REST; existing calls, listings and the builder screen's calls stay GraphQL (`forms:AD-20`). |
+| Deletion | Builder deletes set `deleted_at` through `soft_delete`; the default manager hides them; `all_objects` is for support only (`forms:AD-21`). |
+| Concurrency | A builder structure write locks the `Survey` row, then checks (`forms:AD-25`). |
 | Errors | A refused flow edit returns a named field error on the offending input field, never a bare failure — the author must be told which edge or reorder was rejected and why. |
 | Enum storage | A flow action is a stored string enum with an explicit default, matching how `submit_action` and `display_option` are already stored. |
 | Migrations | Schema and data migrations are separate migrations in separate releases (`forms:AD-14`). |
@@ -476,8 +596,9 @@ once it exists.
 ## Structural Seed
 
 The flow shape. Names and relationships only — an attribute that is itself an invariant is an
-`AD` above, not a line here. Every foreign key `AnswerSchemaOption` holds to `Survey`, `Section`
-and `Question` is NOT NULL with `on_delete=CASCADE` today, which is what `forms:AD-9` turns on.
+`AD` above, not a line here. `Question.section` and `AnswerSchemaOption.question` are
+`on_delete=CASCADE`, which is what `forms:AD-9` and `forms:AD-21` turn on; `AnswerSchema.section`
+and `AnswerSchemaOption.section` are nullable `SET_NULL`.
 
 ```mermaid
 erDiagram
@@ -530,6 +651,8 @@ sequenceDiagram
 | Scoring under branching | the scoring and PDF paths | `forms:AD-10`, `forms:AD-17` |
 | Shuffle interaction | `user_surveys/services.py:323-334` | `forms:AD-12` |
 | Required validation and result inclusion | `user_surveys/services.py:448,520` | `forms:AD-13` |
+| Soft delete, the jump-target guard and flatten | the default managers in `surveys/models/`, `soft_delete`, `move_to_section`, the delete mutations in `surveys/schemas/mutations/` | `forms:AD-21`, `forms:AD-22`, `forms:AD-23`, `forms:AD-25` |
+| Insert-after, duplicate and import | `copy_question`, the create mutations, `duplicate_survey`, `renumber_questions` | `forms:AD-24`, `forms:AD-4`, `forms:AD-25` |
 | Solver sequencing | `lyr-surveys` `BySection.vue:54` — `currentSectionIndex.value++`, the single sequencing point — `ByQuestion.vue`'s previous navigation, and the dead `useSolveSteps.ts:104-122` | `forms:AD-6` (consumer contract), `forms:AD-9`, `forms:AD-18`, `forms:AD-19` |
 
 ## Deferred
@@ -545,9 +668,16 @@ sequenceDiagram
   `Section.order`) changes the persisted rows `itq_surveys` must reproduce under `surveys:AD-2`, so
   it is an estate call under `estate:AD-2`, as the scope was: it needs an amendment to
   `estate:AD-19` before the `itq_surveys` build, and is not settled by this spine alone.
+  Likewise **soft delete, flatten and insert-after/import** (`forms:AD-21`, `forms:AD-23`,
+  `forms:AD-24`) change the rows `itq_surveys` reads and writes under `surveys:AD-2` and
+  `surveys:AD-13`; that is an estate call under `estate:AD-2` before the `itq_surveys` build.
 - **REST estate-wide.** `forms:AD-20` binds this service only. The owner's rule that new calls
   are REST while existing calls and listings stay GraphQL across the estate is an estate call under `estate:AD-2`, to be
   written as an estate `AD`; until then no sibling service is bound by `forms:AD-20`.
+- **Survey deletion stays hard.** `delete_survey` still calls `.delete()` and publishes `SurveyDeleted`; `forms:AD-21` covers the builder's section, question and option deletes only.
+- **Shared asset ids on import.** `copy_question` copies a question's image reference, not the
+  file; whether a copy may keep pointing at another survey's asset is open. Revisit before import ships.
+- **A restore UI.** Ruled out 2026-10-12; restore is a support job over `all_objects`. Revisit if support restores become routine.
 - **A REST framework dependency** (django-ninja, DRF). Not adopted; ask first.
 - **An empty section's display.** `forms:AD-4` orders an empty section after all placed ones and
   the solver renders nothing for it; where the builder shows it belongs to the canvas spec.
