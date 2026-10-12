@@ -156,3 +156,15 @@ def test_a_live_go_to_into_a_deleted_question_is_reported_then_made_fall_through
 
     # The survey enrols once the apply has run (R3 refuses a dangling target).
     enroll_user_in_assessment(user, survey.id)
+
+
+def test_the_apply_migration_writes_and_logs_every_id(survey, capsys):
+    """R2: 0058 is the apply, logging the ids it writes for the manual reversal."""
+    s1, s2, q1, q2, q3 = _layout(survey)
+
+    importlib.import_module("surveys.migrations.0058_apply_soft_delete_children").forwards(None, None)
+
+    out = capsys.readouterr().out
+    assert f"deleted section {s1.id}: live question(s) [{q1.id}]" in out
+    assert "soft-delete-children: summary: 1 surveys, 1 questions, 2 options stamped" in out
+    assert _all(Question).get(pk=q1.pk).deleted_at == T1
