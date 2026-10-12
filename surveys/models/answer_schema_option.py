@@ -45,6 +45,7 @@ class AnswerSchemaOption(models.Model):
     flow_target = models.ForeignKey(
         Question, on_delete=models.SET_NULL, null=True, blank=True, related_name="incoming_edges"
     )
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
