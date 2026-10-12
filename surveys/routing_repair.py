@@ -20,7 +20,8 @@ ROUTING_ACTIONS = (FlowAction.GO_TO, FlowAction.TERMINATE)
 
 
 def _author_options():
-    multi = AnswerSchemaOption.objects.filter(flow_action__in=ROUTING_ACTIONS).exclude(
+    # `all_objects`: 0055 runs before 0056 adds the `deleted_at` the live manager filters on.
+    multi = AnswerSchemaOption.all_objects.filter(flow_action__in=ROUTING_ACTIONS).exclude(
         survey__display_option=Survey.DISPLAY_OPTION_FULL_FORM
     )
     # Either type outside single-select counts, so a question/schema drift is caught both ways.

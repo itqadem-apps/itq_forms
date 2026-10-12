@@ -253,6 +253,15 @@ class QuestionPlacementInput:
     )
 
 
+@strawberry.input(
+    description="The builder card an add follows (forms:AD-24): exactly one of the survey card, a section heading or a question."
+)
+class CardAnchorInput:
+    survey_id: Optional[strawberry.ID] = None
+    section_id: Optional[strawberry.ID] = None
+    question_id: Optional[strawberry.ID] = None
+
+
 # Answer Schema Inputs
 @strawberry.input
 class AnswerSchemaOptionInput:

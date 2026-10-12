@@ -100,6 +100,18 @@ def get_permission_for_kind(assessment_type: AssessmentType, action: ActionType)
         ) from None
 
 
+def require_permission(auth_ctx, assessment_type: AssessmentType, action: ActionType) -> None:
+    """The key check `check_permission` runs, for a resolver that must also check a second row
+    it names — import reads its source survey as well as updating its target."""
+    required_permission = get_permission_for_kind(assessment_type, action)
+    try:
+        auth_ctx.require(required_permission.value)
+    except MissingPermission:
+        raise PermissionError(
+            f"Permission denied. Required permission: {required_permission.value}"
+        ) from None
+
+
 def check_permission(assessment_type: Union[str, Callable], action: ActionType) -> Callable:
     """
     Decorator to check permissions for GraphQL mutations using pkg_auth.
@@ -156,13 +168,7 @@ def check_permission(assessment_type: Union[str, Callable], action: ActionType) 
             else:
                 resolved_type = assessment_type
 
-            required_permission = get_permission_for_kind(resolved_type, action)
-            try:
-                auth_ctx.require(required_permission.value)
-            except MissingPermission:
-                raise PermissionError(
-                    f"Permission denied. Required permission: {required_permission.value}"
-                )
+            require_permission(auth_ctx, resolved_type, action)
 
             return func(self, info, *args, **kwargs)
 

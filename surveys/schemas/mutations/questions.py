@@ -8,28 +8,29 @@ from typing import List, Optional
 from datetime import timedelta
 
 from app.auth_utils import with_django_user
-from app.permissions import check_permission
+from app.permissions import check_permission, require_permission
+from app.platform import ensure_in_org
+from surveys.card_anchor import anchor_of, anchor_survey_id, check_live, layout
 from surveys.flow import check_type_change
-from surveys.inputs import QuestionInput, QuestionPlacementInput
+from surveys.inputs import CardAnchorInput, QuestionInput, QuestionPlacementInput
+from surveys.question_copy import copy_question
 from surveys.question_order import (
     assert_forward_only,
     flat_question_ids,
+    insert_after,
     live_survey_questions,
     move_to_section,
     renumber_questions,
     split_sections,
 )
 from surveys.soft_delete import soft_delete
-from surveys.survey_lock import lock_survey_of_question
+from surveys.survey_lock import lock_survey, lock_survey_of_question, lock_survey_of_section
 from surveys.types import QuestionType, SurveyType
 from surveys.models import (
     Survey,
     Section,
     Question,
     QuestionTranslation,
-    AnswerSchema,
-    AnswerSchemaOptionTranslation,
-    FlowAction,
 )
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
@@ -40,18 +41,25 @@ def _type_from_section_id(info, section_id, **kw):
     return Section.objects.select_related('survey').get(pk=section_id).survey.survey_type
 
 
-def _type_for_new_question(info, section_id=None, survey_id=None, **kw):
+def _type_for_new_question(info, section_id=None, survey_id=None, after=None, **kw):
+    if after is not None:
+        return _type_from_anchor(info, after)
     if section_id is not None:
         return _type_from_section_id(info, section_id)
     return _type_from_survey_id(info, survey_id)
 
 
 def _type_from_question_id(info, id, **kw):
-    return Question.objects.select_related('survey').get(pk=id).survey.survey_type
+    # `all_objects`: a deleted question is refused by the resolver on `id`, not as a lookup miss here.
+    return Question.all_objects.select_related('survey').get(pk=id).survey.survey_type
 
 
 def _type_from_survey_id(info, survey_id, **kw):
     return Survey.objects.values_list('survey_type', flat=True).get(pk=survey_id)
+
+
+def _type_from_anchor(info, after, **kw):
+    return _type_from_survey_id(info, anchor_survey_id(anchor_of(after)))
 
 
 def _positions(sequence):
@@ -83,23 +91,41 @@ class QuestionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_for_new_question, 'update')
+    @transaction.atomic
     def create_question(
         self,
         info: Info,
         input: QuestionInput,
         section_id: Optional[strawberry.ID] = None,
         survey_id: Optional[strawberry.ID] = None,
+        after: Optional[CardAnchorInput] = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
-        """Create a question at the end of a section, or — given `surveyId` and no `sectionId` — a
-        sectionless one at the end of the survey (`forms:AD-9`)."""
+        """Create a question right after the card `after` names, in that card's section
+        (`forms:AD-24`); or, without `after`, at the end of a section, or — given `surveyId` and no
+        `sectionId` — a sectionless one at the end of the survey (`forms:AD-9`)."""
         section_id, survey_id = as_pk(section_id), as_pk(survey_id)
-        if section_id is not None:
+        anchor = anchor_of(after) if after is not None else None
+        if anchor is not None:
+            survey_id_locked = lock_survey(anchor_survey_id(anchor))
+            sequence, section_of = layout(survey_id_locked)
+            check_live(anchor, survey_id_locked, sequence)
+            _, anchor_section_id = insert_after(sequence, section_of, anchor, [])
+            if (survey_id is not None and survey_id != survey_id_locked) or (
+                section_id is not None and section_id != anchor_section_id
+            ):
+                raise ValidationError({'after': 'The card this follows is not in the named survey or section.'})
+            survey = Survey.objects.get(pk=survey_id_locked)
+            ensure_in_org(survey, info.context.auth_context)
+            section = Section.objects.get(pk=anchor_section_id) if anchor_section_id is not None else None
+        elif section_id is not None:
+            lock_survey_of_section(section_id)
             section = Section.objects.select_related('survey').get(pk=section_id)
             if survey_id is not None and survey_id != section.survey_id:
                 raise ValidationError({'survey_id': 'The section is not in this survey.'})
             survey = section.survey
         elif survey_id is not None:
+            lock_survey(survey_id)
             section = None
             survey = Survey.objects.get(pk=survey_id)
         else:
@@ -133,6 +159,9 @@ class QuestionMutations:
         # Signal auto-creates AnswerSchema; update it based on question type
         question.update_answer_schema()
 
+        if anchor is not None:
+            renumber_questions(survey.id, insert_after(sequence, section_of, anchor, [question.pk])[0])
+            question.refresh_from_db(fields=['order'])
         return question
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
@@ -211,64 +240,61 @@ class QuestionMutations:
         id: strawberry.ID,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> QuestionType:
-        """Duplicate a question with its answer schema and options"""
+        """Copy a question right after itself, in its section, through `copy_question`
+        (`forms:AD-24`)."""
         id = as_pk(id)
-        original_question = Question.objects.select_related('survey', 'section').get(pk=id)
+        owner = Question.all_objects.filter(pk=id).values_list('survey_id', 'section__survey_id').first()
+        if owner is None or not any(owner):
+            raise ValidationError({'id': 'The question no longer exists or belongs to no survey.'})
+        survey_id = lock_survey(owner[0] or owner[1])
+        sequence, section_of = layout(survey_id)
+        if id not in section_of:
+            raise ValidationError({'id': 'The question was deleted; reload the survey.'})
+        original = Question.objects.select_related('section').get(pk=id)
+        copy = copy_question(original, Survey.objects.get(pk=survey_id), original.section, as_duplicate=True)
+        renumber_questions(survey_id, insert_after(sequence, section_of, ('question', original.pk), [copy.pk])[0])
+        copy.refresh_from_db(fields=['order'])
+        return copy
 
-        # Duplicate question
-        new_question = Question.objects.get(pk=original_question.pk)
-        new_question.pk = None
-        new_question.title = f"{original_question.title} (Copy)" if original_question.title else None
-        new_question.save()
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
+    @with_django_user
+    @check_permission(_type_from_anchor, 'update')
+    @transaction.atomic
+    def import_question(
+        self,
+        info: Info,
+        source_question_id: strawberry.ID,
+        after: CardAnchorInput,
+        django_user: strawberry.Private[AbstractBaseUser] = None,
+    ) -> QuestionType:
+        """Insert an independent copy of a question from any survey the caller can read right
+        after the card `after` names, in that card's section (`forms:AD-24`). Needs read on the
+        source survey and update on the target; nothing links the copy to its source."""
+        anchor = anchor_of(after)
+        survey_id = lock_survey(anchor_survey_id(anchor))
+        auth_ctx = info.context.auth_context
+        target = Survey.objects.get(pk=survey_id)
+        ensure_in_org(target, auth_ctx)
 
-        # Duplicate translations
-        for translation in QuestionTranslation.objects.filter(question=original_question):
-            QuestionTranslation.objects.create(
-                question=new_question,
-                language=translation.language,
-                title=f"{translation.title} (Copy)" if translation.title else None,
-                description=translation.description,
-            )
+        source = Question.all_objects.select_related('section').filter(pk=as_pk(source_question_id)).first()
+        source_survey_id = source and (source.survey_id or (source.section.survey_id if source.section_id else None))
+        if source_survey_id is None:
+            raise ValidationError({'source_question_id': 'The question to import does not exist or belongs to no survey.'})
+        source_survey = Survey.objects.get(pk=source_survey_id)
+        # Organization and key before liveness, so a foreign row reads the same deleted or not.
+        ensure_in_org(source_survey, auth_ctx)
+        require_permission(auth_ctx, source_survey.survey_type, 'read')
+        if source.deleted_at or (source.section_id and source.section.deleted_at) or source_survey.deleted_at:
+            raise ValidationError({'source_question_id': 'The question to import no longer exists.'})
 
-        # Reshape the answer schema the post_save signal has already created for the
-        # copy. Creating a second one here violates surveys_answerschema_question_id_key
-        # -- AnswerSchema.question is a OneToOneField -- and every question has a schema,
-        # so that path was taken every time and duplication never worked at all.
-        old_schema = getattr(original_question, 'answer_schema', None)
-        new_schema = AnswerSchema.objects.filter(question=new_question).first()
-        if old_schema and new_schema:
-            new_schema.type = old_schema.type
-            new_schema.with_file = old_schema.with_file
-            new_schema.is_mcq = old_schema.is_mcq
-            new_schema.is_grid = old_schema.is_grid
-            new_schema.save()
-
-            # The signal seeds a blank option (or one per classification). Those belong
-            # to a question being created, not to a copy, which takes the original's.
-            new_schema.options.all().delete()
-
-            # Duplicate options
-            for option in old_schema.options.all():
-                old_option_id = option.id
-                option.pk = None
-                option.survey = new_question.survey
-                option.section = new_question.section
-                option.question = new_question
-                option.schema = new_schema
-                # A copy starts with no flow: the original's edge led on from the original.
-                option.flow_action = FlowAction.FALL_THROUGH
-                option.flow_target = None
-                option.save()
-
-                # Duplicate option translations
-                for trans in AnswerSchemaOptionTranslation.objects.filter(option_id=old_option_id):
-                    AnswerSchemaOptionTranslation.objects.create(
-                        option=option,
-                        language=trans.language,
-                        text=trans.text,
-                    )
-
-        return new_question
+        sequence, section_of = layout(survey_id)
+        check_live(anchor, survey_id, sequence)
+        _, section_id = insert_after(sequence, section_of, anchor, [])
+        section = Section.objects.get(pk=section_id) if section_id is not None else None
+        copy = copy_question(source, target, section, as_duplicate=False)
+        renumber_questions(survey_id, insert_after(sequence, section_of, anchor, [copy.pk])[0])
+        copy.refresh_from_db(fields=['order'])
+        return copy
 
     @strawberry.mutation(permission_classes=[RequireAuth])
     @with_django_user

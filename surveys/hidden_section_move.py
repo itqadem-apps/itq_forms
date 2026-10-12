@@ -116,7 +116,8 @@ def apply_survey(survey_id: int) -> Plan:
             return plan
         Question.objects.filter(pk__in=moving).update(section=None)
         AnswerSchema.objects.filter(question_id__in=moving).update(section=None)
-        AnswerSchemaOption.objects.filter(question_id__in=moving).update(section=None)
+        # `all_objects`: 0049 runs before 0056 adds the `deleted_at` the live manager filters on.
+        AnswerSchemaOption.all_objects.filter(question_id__in=moving).update(section=None)
         renumber_questions(survey_id, sequence=plan.before)
         if flat_question_ids(Question.objects.filter(survey_id=survey_id)) != plan.before:
             raise MoveRefused(f"survey {survey_id}: the rendered order changed after the move; rolled back")

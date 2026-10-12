@@ -174,6 +174,61 @@ def _appended(sequence: list[int], rows: Mapping[int, tuple]) -> list[int]:
     return sequence
 
 
+def insert_after(
+    sequence: list[int], section_of: Mapping[int, int | None], anchor: tuple[str, int], new_ids: list[int]
+) -> tuple[list[int], int | None]:
+    """Where an add lands (`forms:AD-24`): `sequence` with `new_ids` placed right after the card
+    `anchor` names, and the section they belong in.
+
+    `anchor` is `("survey", id)`, `("section", id)` or `("question", id)`:
+    - the survey card puts them first, sectionless;
+    - a section heading makes them the section's first questions, or, for a section holding none,
+      its only ones at the end, where an empty section ranks;
+    - a question puts them right after it, in its section (none for a sectionless one).
+    """
+    kind, pk = anchor
+    new = set(new_ids)
+    sequence = [q for q in sequence if q not in new]
+    if kind == "survey":
+        at, section_id = 0, None
+    elif kind == "section":
+        section_id = pk
+        at = next((i for i, q in enumerate(sequence) if section_of.get(q) == pk), len(sequence))
+    elif kind == "question":
+        section_id = section_of[pk]
+        at = sequence.index(pk) + 1
+    else:
+        raise ValueError(f"Unknown anchor kind {kind!r}.")
+    return sequence[:at] + list(new_ids) + sequence[at:], section_id
+
+
+def section_anchor(sequence: list[int], section_of: Mapping[int, int | None], anchor: tuple[str, int]) -> tuple[str, int]:
+    """The anchor a new section's first question is placed by: a section lands after a whole
+    heading — its last question, or the end of the survey for an empty one — and right after
+    any other card (`forms:AD-24`)."""
+    kind, pk = anchor
+    if kind != "section":
+        return anchor
+    members = [q for q in sequence if section_of.get(q) == pk]
+    if members:
+        return ("question", members[-1])
+    return ("question", sequence[-1]) if sequence else ("survey", 0)
+
+
+def split_tail(sequence: list[int], section_of: Mapping[int, int | None], question_id: int) -> list[int]:
+    """The questions after `question_id` in its section's run, which a section added after it
+    takes over (`forms:AD-24`). Empty for a sectionless or last question."""
+    section_id = section_of[question_id]
+    if section_id is None:
+        return []
+    tail = []
+    for q in sequence[sequence.index(question_id) + 1:]:
+        if section_of.get(q) != section_id:
+            break
+        tail.append(q)
+    return tail
+
+
 def split_sections(sequence: list[int], section_of: Mapping[int, int | None]) -> list[int]:
     """The sections whose questions are not one contiguous run in `sequence` (`forms:AD-4`)."""
     seen: set[int] = set()

@@ -4,16 +4,26 @@ from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from typing import List
+from typing import List, Optional
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
-from surveys.inputs import SectionInput
+from app.platform import ensure_in_org
+from surveys.card_anchor import anchor_of, anchor_survey_id, check_live, layout
+from surveys.inputs import CardAnchorInput, SectionInput
 from surveys.types import SectionType
 from surveys.models import Survey, Section, SectionTranslation, Question
-from surveys.question_order import assert_forward_only, flat_question_ids, move_to_section, renumber_questions
+from surveys.question_order import (
+    assert_forward_only,
+    flat_question_ids,
+    insert_after,
+    move_to_section,
+    renumber_questions,
+    section_anchor,
+    split_tail,
+)
 from surveys.soft_delete import soft_delete
-from surveys.survey_lock import lock_survey_of_section
+from surveys.survey_lock import lock_survey, lock_survey_of_section
 from ..common import RequireAuth, OperationResult
 from ..utils import input_to_dict
 from app.graphql_ids import as_pk
@@ -51,16 +61,31 @@ class SectionMutations:
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
     @with_django_user
     @check_permission(_type_from_survey_id, 'update')
+    @transaction.atomic
     def create_section(
         self,
         info: Info,
         survey_id: strawberry.ID,
         input: SectionInput,
+        after: Optional[CardAnchorInput] = None,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SectionType:
-        """Create a new section in a survey"""
+        """Create a section with its first question. Given `after`, it lands right after that card
+        (`forms:AD-24`): after a question inside a section it splits that section, taking the
+        questions that follow into the new one (`forms:AD-23`); after a heading it follows the
+        whole section. Without `after` it goes at the end."""
         _refuse_legacy_jump(input)
         survey_id = as_pk(survey_id)
+        lock_survey(survey_id)
+        anchor = anchor_of(after) if after is not None else None
+        if anchor is not None:
+            ensure_in_org(Survey.objects.get(pk=survey_id), info.context.auth_context)
+            if anchor_survey_id(anchor) != survey_id:
+                raise ValidationError({'after': 'The card this follows is not in this survey.'})
+            sequence, section_of = layout(survey_id)
+            check_live(anchor, survey_id, sequence)
+            anchor = section_anchor(sequence, section_of, anchor)
+            tail = split_tail(sequence, section_of, anchor[1]) if anchor[0] == 'question' else []
         survey = Survey.objects.get(pk=survey_id)
 
         # `is_hidden` is not authorable (`forms:AD-9`); it is ignored, not refused, because the
@@ -80,6 +105,12 @@ class SectionMutations:
                     description=trans_input.description,
                 )
 
+        if anchor is not None:
+            # The post_save signal gave the section its first question, appended at the end.
+            first = list(Question.objects.filter(section=section).values_list('id', flat=True))
+            move_to_section(tail, section.pk)
+            renumber_questions(survey_id, insert_after(sequence, section_of, anchor, first)[0])
+            section.refresh_from_db(fields=['order'])
         return section
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
