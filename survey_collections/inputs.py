@@ -5,7 +5,7 @@ import strawberry
 from strawberry import UNSET
 from pkg_filters.integrations.strawberry import (
     DateTimeRangeFilterInput,
-    IntRangeFilterInput,
+    DecimalRangeFilterInput,
     SortDirection,
 )
 
@@ -27,7 +27,7 @@ class SurveyCollectionFiltersInput:
     category_id: Optional[str] = None
     sponsor: Optional[int] = None
     type: Optional[str] = None
-    price: Optional[IntRangeFilterInput] = None
+    price: Optional[DecimalRangeFilterInput] = None
     has_discount: Optional[bool] = None
     is_free: Optional[bool] = None
     currency: Optional[str] = None

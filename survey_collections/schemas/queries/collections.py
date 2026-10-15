@@ -1,5 +1,5 @@
 from dataclasses import fields as dc_fields
-from typing import List
+from typing import List, Optional
 
 import strawberry
 from django.db.models import F, Q
@@ -73,9 +73,11 @@ class CollectionsQuery:
                 value = getattr(filters_input, name, None)
                 filters_data[name] = value.to_vo() if value else None
                 continue
-            # Id filters arrive as ``ID`` — strings. The specs and the ORM
-            # comparisons downstream expect the integer pk.
-            if name == "id" or name.endswith("_id"):
+            # Integer-pk filters arrive as ``ID`` — strings — and the specs and
+            # ORM comparisons downstream expect the integer pk. Switch on the
+            # declared type, not the name: ``category_id`` is a UUID
+            # (``taxonomy.Category``), so ``int()`` rejected every real one.
+            if field.type == Optional[int]:
                 filters_data[name] = as_pk(getattr(filters_input, name, None))
                 continue
             filters_data[name] = getattr(filters_input, name, None)
