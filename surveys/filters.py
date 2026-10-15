@@ -10,6 +10,7 @@ from pkg_filters.integrations.django import (
     DjangoInFilterHandler,
 )
 
+from app.category_filter import CategorySubtreeFilterHandler
 from app.price_filter import DjangoPriceRangeFilterHandler
 from app.search import PostgresSearchHandler
 from app.status_sort import STATUS_RANK_FIELD
@@ -57,6 +58,7 @@ pipeline = DjangoPipeline([
     DjangoExactFilterHandler("collection_id", lookup="collections__id"),
     # Reads the plural `survey_type_in` field but filters the singular column.
     DjangoInFilterHandler("survey_type_in", lookup="survey_type__in"),
+    CategorySubtreeFilterHandler("category_id"),
     DjangoAllExactFiltersHandler(
         excluded={
             "created_at",
@@ -70,6 +72,7 @@ pipeline = DjangoPipeline([
             "currency",
             "collection_id",
             "survey_type_in",
+            "category_id",
         }
     ),
     PostgresSearchHandler(

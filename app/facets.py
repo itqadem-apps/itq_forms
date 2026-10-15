@@ -33,7 +33,7 @@ def build_price_range_facet(
     if currency:
         lookup[f"{price_relation}__currency"] = currency
 
-    agg = base_qs.filter(**lookup).aggregate(
+    agg = _listed_items(base_qs).filter(**lookup).aggregate(
         min_price=Min(f"{price_relation}__amount_cents"),
         max_price=Max(f"{price_relation}__amount_cents"),
     )
@@ -50,11 +50,12 @@ def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id
     Returns every live category of the projected tree. Categories with no
     matching items get count=0.
     """
-    # 1. Count items per category from the filtered queryset
+    # 1. Count items per category from the filtered queryset, one row per item.
     counts_qs = (
-        base_qs.filter(**{f"{category_fk}__isnull": False})
+        _listed_items(base_qs)
+        .filter(**{f"{category_fk}__isnull": False})
         .values(category_fk)
-        .annotate(count=Count("id"))
+        .annotate(count=Count("pk"))
     )
     count_map = {str(row[category_fk]): row["count"] for row in counts_qs}
 
@@ -91,26 +92,44 @@ def build_category_tree_facet(base_qs: QuerySet, category_fk: str = "category_id
         if node.path_text:
             path_to_node[node.path_text] = node
 
+    # Taxonomy joins ancestry with dots, not " / ". Each category's own count
+    # (from count_map, never a node's running total) is added to every
+    # ancestor once, so the result does not depend on the read order.
     roots: list[CategoryFacetNodeGQL] = []
     for node in nodes.values():
-        if not node.path_text:
+        # Attach under the nearest live ancestor, so a category whose direct
+        # parent is gone still sits under the node its count is rolled into.
+        parent = _nearest_ancestor(path_to_node, node.path_text)
+        if parent is not None:
+            parent.children.append(node)
+            own = count_map.get(node.id, 0)
+            if own:
+                _bubble_count(path_to_node, node.path_text, own, PATH_SEP)
+        else:
             roots.append(node)
-            continue
-
-        # Taxonomy joins ancestry with dots, not " / ".
-        sep = PATH_SEP
-        if sep in node.path_text:
-            parent_path = node.path_text.rsplit(sep, 1)[0]
-            parent = path_to_node.get(parent_path)
-            if parent is not None:
-                parent.children.append(node)
-                parent.count += node.count
-                _bubble_count(path_to_node, parent_path, node.count, sep)
-                continue
-
-        roots.append(node)
 
     return roots
+
+
+def _listed_items(base_qs: QuerySet) -> QuerySet:
+    """The listed items as a plain queryset, one row per item.
+
+    `base_qs` may carry joins, ordering and search's per-item aggregates; a
+    facet that groups or filters it directly would regroup those. Selecting by
+    primary key leaves only the set of items.
+    """
+    return base_qs.model._base_manager.filter(pk__in=base_qs.order_by().values("pk"))
+
+
+def _nearest_ancestor(
+    path_to_node: dict[str, CategoryFacetNodeGQL], path: str | None
+) -> CategoryFacetNodeGQL | None:
+    while path and PATH_SEP in path:
+        path = path.rsplit(PATH_SEP, 1)[0]
+        ancestor = path_to_node.get(path)
+        if ancestor is not None:
+            return ancestor
+    return None
 
 
 def _bubble_count(

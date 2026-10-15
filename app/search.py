@@ -16,7 +16,7 @@ from django.contrib.postgres.search import (
     SearchVector,
     TrigramWordSimilarity,
 )
-from django.db.models import Q, QuerySet, Value
+from django.db.models import Max, Q, QuerySet, Value
 
 from pkg_filters.core import BaseExactFilterHandler
 from pkg_filters.integrations.django import DjangoQueryContext
@@ -42,7 +42,8 @@ class PostgresSearchHandler(BaseExactFilterHandler):
     2. Runs a SearchQuery with `search_type="websearch"` (supports AND, OR, "phrases").
     3. Annotates with SearchRank.
     4. If `trigram_field` is set, also annotates with TrigramWordSimilarity.
-    5. Filters rows where rank >= threshold OR similarity >= threshold.
+    5. Aggregates both per item (best matching translation) and keeps items
+       whose rank >= threshold OR similarity >= threshold, each item once.
     6. Orders by rank desc (higher relevance first).
     """
 
@@ -87,17 +88,22 @@ class PostgresSearchHandler(BaseExactFilterHandler):
 
         query = SearchQuery(term, search_type="websearch", config=self._config)
 
-        stmt = stmt.annotate(
-            search_rank=SearchRank(vector, query),
-        )
+        # The fields sit on a reverse relation with one row per language, so
+        # ranking each joined row lists an item once per matching translation
+        # and `total` counts translations (F3, confirmed on Postgres). Aggregate
+        # instead: one row per item, carrying its best rank and similarity.
+        # Annotating `stmt` itself keeps every earlier filter, and an earlier
+        # translation filter (language, title, slug) constrains the same join,
+        # so `q` must match a translation that filter kept.
+        aggregates = {"search_rank": Max(SearchRank(vector, query))}
 
         # Build filter: full-text match OR trigram similarity
         filter_q = Q(search_rank__gte=self._rank_threshold)
 
         if self._trigram_field:
-            stmt = stmt.annotate(
-                search_similarity=TrigramWordSimilarity(Value(term), self._trigram_field),
+            aggregates["search_similarity"] = Max(
+                TrigramWordSimilarity(Value(term), self._trigram_field)
             )
             filter_q = filter_q | Q(search_similarity__gte=self._similarity_threshold)
 
-        return stmt.filter(filter_q).order_by("-search_rank")
+        return stmt.annotate(**aggregates).filter(filter_q).order_by("-search_rank")

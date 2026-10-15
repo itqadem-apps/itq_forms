@@ -1,4 +1,4 @@
-from dataclasses import fields as dc_fields
+from dataclasses import fields as dc_fields, replace
 from typing import List, Optional
 
 import strawberry
@@ -17,6 +17,19 @@ from app.graphql_ids import as_pk
 from app.platform import scope_listing_to_caller
 from app.status_sort import annotate_status_rank
 from pricing.currency import SHOP_CURRENCY
+
+
+def _run_without(qs, spec, **cleared):
+    """The pipeline's result with the named filters cleared.
+
+    `qs` is the scoped, hand-filtered set `base_qs` was built from, and the
+    pipeline does not paginate, so a facet sees every matching row.
+    """
+    if spec.filters is not None:
+        present = {f.name for f in dc_fields(spec.filters)}
+        cleared = {name: value for name, value in cleared.items() if name in present}
+        spec = replace(spec, filters=replace(spec.filters, **cleared))
+    return pipeline.run(DjangoQueryContext(qs, spec)).stmt
 
 
 @strawberry.type
@@ -94,8 +107,13 @@ class SurveysQuery:
         facets = None
         if has_any_under_prefix(paths, ("facets",)):
             currency = getattr(info.context, "currency", None)
-            categories = build_category_tree_facet(base_qs)
-            price = build_price_range_facet(base_qs, currency)
+            # Each facet ignores its own filter, so a visitor can still pick
+            # another category or widen the price range; every other filter
+            # still narrows it.
+            categories = build_category_tree_facet(
+                _run_without(qs, spec, category_id=None)
+            )
+            price = build_price_range_facet(_run_without(qs, spec, price=None), currency)
             facets = SurveysFacetsGQL(categories=categories, price=price)
 
         return SurveyResultsGQL(items=items, total=total, facets=facets)
