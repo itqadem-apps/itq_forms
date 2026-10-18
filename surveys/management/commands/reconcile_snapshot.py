@@ -36,6 +36,11 @@ class Command(BaseCommand):
         parser.add_argument("--published-only", action="store_true")
         parser.add_argument("--surveys-only", action="store_true")
         parser.add_argument("--collections-only", action="store_true")
+        parser.add_argument(
+            "--live-only",
+            action="store_true",
+            help="Skip soft-deleted rows (deleted_at set).",
+        )
 
     def handle(self, **options):
         if options["surveys_only"] and options["collections_only"]:
@@ -45,10 +50,11 @@ class Command(BaseCommand):
         do_collections = not options["surveys_only"]
         dry_run = options["dry_run"]
         published_only = options["published_only"]
+        live_only = options["live_only"]
 
         if do_surveys:
             emitted, skipped = self._publish_surveys(
-                published_only=published_only, dry_run=dry_run
+                published_only=published_only, live_only=live_only, dry_run=dry_run
             )
             verb = "would emit" if dry_run else "emitted"
             self.stdout.write(
@@ -56,17 +62,21 @@ class Command(BaseCommand):
             )
         if do_collections:
             emitted, skipped = self._publish_collections(
-                published_only=published_only, dry_run=dry_run
+                published_only=published_only, live_only=live_only, dry_run=dry_run
             )
             verb = "would emit" if dry_run else "emitted"
             self.stdout.write(
                 self.style.SUCCESS(f"[collections] {verb}={emitted} skipped={skipped}")
             )
 
-    def _publish_surveys(self, *, published_only: bool, dry_run: bool) -> tuple[int, int]:
+    def _publish_surveys(
+        self, *, published_only: bool, live_only: bool, dry_run: bool
+    ) -> tuple[int, int]:
         qs = Survey.objects.all().order_by("pk")
         if published_only:
             qs = qs.filter(status=Survey.STATUS_PUBLISHED)
+        if live_only:
+            qs = qs.filter(deleted_at__isnull=True)
 
         emitted = skipped = 0
         for survey in qs.iterator():
@@ -94,10 +104,14 @@ class Command(BaseCommand):
                 emitted += 1
         return emitted, skipped
 
-    def _publish_collections(self, *, published_only: bool, dry_run: bool) -> tuple[int, int]:
+    def _publish_collections(
+        self, *, published_only: bool, live_only: bool, dry_run: bool
+    ) -> tuple[int, int]:
         qs = SurveyCollection.objects.all().order_by("pk")
         if published_only:
             qs = qs.filter(status=SurveyCollection.STATUS_PUBLISHED)
+        if live_only:
+            qs = qs.filter(deleted_at__isnull=True)
 
         emitted = skipped = 0
         for collection in qs.iterator():
