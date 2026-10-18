@@ -7,13 +7,16 @@ paradigm: 'a Django project, unlike its ports-and-adapters siblings; an authored
 scope: 'invariants binding the forms service, including the survey flow engine — answer-conditional routing, optional sections, and the scoring that branching makes ambiguous — and the builder''s authoring writes: soft delete, flatten, insert-after and import'
 status: draft
 created: '2026-08-28'
-updated: '2026-10-12'
+updated: '2026-10-18'
 binds:
   - estate:AD-2
   - estate:AD-3
   - estate:AD-8
+  - estate:AD-13
   - estate:AD-14
   - estate:AD-18
+  - estate:AD-22
+  - estate:AD-23
 sources:
   - .agent/planning/briefs/brief-itqadem-2026-10-04/brief.md
   - .agent/planning/briefs/brief-itqadem-2026-10-04/addendum.md
@@ -53,7 +56,7 @@ graph LR
 
 ## Inherited Invariants
 
-`estate:AD-1` through `estate:AD-18` bind here read-only, except `estate:AD-6`, `estate:AD-10`
+`estate:AD-1` through `estate:AD-23` bind here read-only, except `estate:AD-6`, `estate:AD-10`
 and `estate:AD-11`, which name other services. They are not re-keyed here. Where anything below
 disagrees with one of them, the inherited decision wins and the disagreement is a conflict to
 surface, not a local override. `backend` carries no decisions of its own.
@@ -65,8 +68,11 @@ Load-bearing in this scope — the rest bind without shaping anything below:
 | `estate:AD-2` | estate spine | A decision binding only `itq_forms` is an `AD` here, reviewed with this repo's code and pinned at its ref. A decision `itq_forms` and `itq_surveys` must *agree* on is an estate call — the ordering scope in `forms:AD-4` was one, and is pinned as `estate:AD-19`. |
 | `estate:AD-3` | estate spine | Every citation here is namespaced. Every spine in the estate reaches its own first decision, so a bare id is unresolvable. |
 | `estate:AD-8` | estate spine | Two ACL database roles: SELECT-only at runtime, write-capable only at deploy. `itq_forms` routes the ACL database in `app/db_routers.py`, so a flow evaluation may not write through that connection. |
-| `estate:AD-14` | estate spine | N>1 replicas. Flow evaluation holds no in-process state — see `forms:AD-17`. |
+| `estate:AD-13` | estate spine | One declarant per stream prefix: forms creates FORMS only and never declares USERS, ORDERS or TAXONOMY — `forms:AD-26`. |
+| `estate:AD-14` | estate spine | N>1 replicas. Flow evaluation holds no in-process state — see `forms:AD-17`. Relays coexist through a held `SKIP LOCKED` claim (clause 2) and streams are created if absent, never updated (clause 3) — `forms:AD-26`. |
 | `estate:AD-18` | estate spine | A story reaches the build board whole and the build reads the story; no task is derived from this spine's epics. |
+| `estate:AD-22` | estate spine | Every durable declares retry limits and the relay stamps `Nats-Msg-Id` — the precondition for running the relay and consumers apart from web, see `forms:AD-26`. |
+| `estate:AD-23` | estate spine | A multi-worker server starts no messaging runtime, which is why web runs `--workers 2` with none — `forms:AD-26`. |
 
 ## Invariants & Rules
 
@@ -564,6 +570,68 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   untitled check) runs after the lock. This is the pattern the reorder and create mutations already
   use (`surveys/schemas/mutations/questions.py:150,283,319`).
 
+### AD-26 — One image runs as three Django process roles — web, relay and consumers — with no all-in-one mode
+
+- **Binds:** every entrypoint of `itq_forms` — the ASGI app and its lifespan, the outbox relay and
+  the JetStream consumers — and the command of every Deployment built from its image.
+- **Prevents:** each pod running two relays and two consumer sets, one per gunicorn worker,
+  multiplied again by every web replica; a relay that releases its `SKIP LOCKED` claim before
+  publishing, so two relays publish one row twice; and HTTP and queue work sharing one pod's
+  limits and readiness.
+- **Rule:**
+  - **One image, three Django commands.** Web keeps today's command unchanged —
+    `gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --workers 2 --timeout 120
+    app.asgi:application`; `--timeout 120` is the CPU-throttled boot fix and stays. Relay is
+    `python manage.py relay`. Consumers is `python manage.py consume`. Both commands live in an
+    app listed in `INSTALLED_APPS` — `app` is not one, so commands there are never found. All three
+    run Django; Django-free workers wait for `itq_surveys`.
+  - **Web runs no messaging.** Its lifespan starts no broker and no relay, and there is no
+    off-switch and no all-in-one mode. This departs from `articles:AD-1`'s all-in-one default.
+    Web publishes only by writing outbox rows, and `readyz` never checks NATS.
+  - **The relay holds its claim — in forms' command, not the package.** `manage.py relay` drives
+    unimessaging's `DjangoOutboxRelay`, which needs unimessaging 0.20.0 or later to stamp
+    `Nats-Msg-Id` (`estate:AD-22`). The package runs its claim on a bare cursor, so under
+    autocommit it releases the lock at once; the forms command therefore wraps each batch in
+    `transaction.atomic()`, so the `SKIP LOCKED` claim holds across publish and mark
+    (`estate:AD-14` clause 2). The loop is forms' own, never unimessaging's `run_standalone_relay`:
+    `process_batch` calls `run_until_complete`, so it raises inside a running loop and
+    `relay_loop` would still touch the heartbeat. The command creates one event loop with
+    `new_event_loop` and `set_event_loop`, and each pass runs `close_old_connections()`, then
+    `process_batch` synchronously inside `atomic()`. It reads `SERVICE_NAME`, `NATS_URL` and
+    `OUTBOX_*` from settings — never the stock `outbox_relay` command's CLI defaults.
+    `app/messaging/relay.py` is retired.
+  - **Consumers bind everything, in one process.** `manage.py consume` registers every handler
+    and binds every durable on the FORMS, users, orders and taxonomy brokers. Shutdown is bounded
+    per step by `MESSAGING_STOP_TIMEOUT`.
+  - **The relay declares FORMS; the consumers declare nothing.** `manage.py relay` creates the FORMS
+    stream if absent from the contract's FORMS stream name and subjects before its first batch
+    (`estate:AD-14` clause 3), and binds no durable. `manage.py consume` creates no stream; it binds
+    durables only. USERS, ORDERS and TAXONOMY are never declared (`estate:AD-13`).
+  - **Each role has its own health, and a heartbeat proves work, not a live loop.** Web keeps
+    `healthz` and `readyz`. The relay touches its heartbeat only after a pass that did not raise.
+    The consumers touch theirs only when every one of the four brokers has ticked since the last
+    touch, wired into each broker directly, never from a free-running timer. Each heartbeat path
+    and max age is a setting, and the max age exceeds the longest healthy pass: a full batch of
+    publishes for the relay, one capped handler call for the consumers. Both are checked by
+    `unimessaging.outbox.healthcheck`. The worker Deployments do not use the image's
+    `curl :8000/healthz` HEALTHCHECK, since they open no port.
+  - **Replicas.** Web scales freely, and the relay runs one or two. Consumers run exactly one —
+    and roll by recreate, so no deploy surges a second — until the server's stored config shows
+    bounded `max_deliver` for every durable (`estate:AD-22`, unimessaging 0.21.0) and every
+    projection has its `estate:AD-15` replay disposition, as `articles:AD-1` gates it. This is the
+    consumers' declared gap under `estate:AD-14` clause 1; those two conditions are its exit gate.
+  - **Every release moves all three roles to one tag.** Relay and consumers roll first and web only
+    once both are ready, so no role runs a tag the schema has moved past and web never removes the
+    last consumer while a refused durable update is still failing boot.
+  - **Limits ship first.** The unimessaging 0.21.0 pin and every durable's `estate:AD-22` limits go
+    out in an earlier release on today's all-in-one shape. The split ships only on a later tag, so
+    its rollback lands on a tag whose client already stops at the server's `max_deliver`.
+  - **Cutover.** There is no all-in-one fallback, so the release is pushed only once cluster
+    operations has the relay and consumer Deployments ready for the new tag. The gap until they
+    start delays events and loses none, because the outbox and the durables hold them. Rollback is
+    the previous tag in order: web first at one replica, then the two Deployments removed. The Deployments come from a handoff stating
+    outcomes only (`estate:AD-20`), and the owner's approval is recorded in it before anyone acts.
+
 ## Consistency Conventions
 
 | Concern | Convention |
@@ -654,6 +722,7 @@ sequenceDiagram
 | Soft delete, the jump-target guard and flatten | the default managers in `surveys/models/`, `soft_delete`, `move_to_section`, the delete mutations in `surveys/schemas/mutations/` | `forms:AD-21`, `forms:AD-22`, `forms:AD-23`, `forms:AD-25` |
 | Insert-after, duplicate and import | `copy_question`, the create mutations, `duplicate_survey`, `renumber_questions` | `forms:AD-24`, `forms:AD-4`, `forms:AD-25` |
 | Solver sequencing | `lyr-surveys` `BySection.vue:54` — `currentSectionIndex.value++`, the single sequencing point — `ByQuestion.vue`'s previous navigation, and the dead `useSolveSteps.ts:104-122` | `forms:AD-6` (consumer contract), `forms:AD-9`, `forms:AD-18`, `forms:AD-19` |
+| Process roles: web, relay and consumers | `app/asgi.py`, the `relay` and `consume` management commands (in an `INSTALLED_APPS` app), `app/messaging/runtime.py`, `app/messaging_contract.py`, `Dockerfile` | `forms:AD-26` |
 
 ## Deferred
 
@@ -710,3 +779,7 @@ sequenceDiagram
 - **The rest of the service's invariants.** Beyond `forms:AD-1` and the flow engine, the gaps
   this repo knows it owes are recorded here as they are noticed — a named gap is worth more than
   silence, because it stops the next reader concluding the question was never asked.
+- **More than one consumer replica** — waits until every durable carries `estate:AD-22` limits
+  under `forms:AD-26`; revisit when that epic ships.
+- **Django-free relay and consumers** — wait for the `itq_surveys` FastAPI move, which has no
+  brief yet.
