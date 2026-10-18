@@ -64,6 +64,8 @@ RUN mkdir -p /app/static /app/media /app/staticfiles && \
     chown -R app:app /app/static /app/media /app/staticfiles && \
     chmod -R 775 /app/static /app/media /app/staticfiles
 
+RUN chmod 755 /app/start.sh
+
 # Switch to non-root user
 USER app
 
@@ -74,5 +76,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl --fail http://localhost:8000/healthz || exit 1
 
-# Command to run the app
-CMD ["bash", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --workers 2 --timeout 120 app.asgi:application --log-level info"]
+# One image, three roles (forms:AD-26): Deployments pick relay or consume via args
+ENTRYPOINT ["/app/start.sh"]
+CMD ["web"]

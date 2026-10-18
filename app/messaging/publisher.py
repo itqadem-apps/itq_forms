@@ -2,8 +2,7 @@
 
 Every call site that wants to publish a domain event calls ``publish(event)``.
 This writes one row to the ``outbox`` table inside the current DB
-transaction; the in-process relay (started by ASGI lifespan) forwards
-the row to NATS.
+transaction; ``manage.py relay`` forwards the row to NATS.
 
 The relay builds the final NATS subject as
 ``{OUTBOX_SUBJECT_PREFIX}.{aggregate_type}`` — so we stash the

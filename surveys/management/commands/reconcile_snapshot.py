@@ -2,7 +2,7 @@
 
 For every existing Survey and SurveyCollection, write one ``Created``
 event (and a ``Published`` event when its status is published) to the
-outbox. The in-process relay forwards the rows to NATS.
+outbox. ``manage.py relay`` forwards the rows to NATS.
 
 Use this once after seeding via fixtures, or to re-broadcast state to
 a new downstream consumer. Receivers must be idempotent on ``event_id``.
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = (
         "Publish Created/Published events for every Survey and SurveyCollection "
-        "to the outbox; the in-process relay forwards them to NATS."
+        "to the outbox; manage.py relay forwards them to NATS."
     )
 
     def add_arguments(self, parser):

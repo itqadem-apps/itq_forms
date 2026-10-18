@@ -1,11 +1,10 @@
 """Every durable forms binds is bounded (estate:AD-22).
 
-The enumeration runs `start_all()` against fake brokers and collects what is
+The enumeration runs `start_consumers()` against fake brokers and collects what is
 actually bound, so a durable added anywhere the runtime reaches -- a contract
 list, a builder or the runtime itself -- fails here unless it declares limits.
 """
 import asyncio
-import contextlib
 import logging
 import os
 
@@ -49,34 +48,17 @@ class _FakeBroker:
         pass
 
 
-async def _idle_relay(*_args, **_kwargs):
-    await asyncio.Event().wait()
-
-
 @pytest.fixture
-def bound_consumers(monkeypatch):
+def bound_consumers(monkeypatch, tmp_path):
     _FakeBroker.instances = []
-    forms_consumers = []
-
-    async def fake_start_messaging(*, consumers=None, **_kwargs):
-        forms_consumers.extend(consumers or [])
-
     monkeypatch.setattr(runtime, "UnifiedMessageBroker", _FakeBroker)
-    monkeypatch.setattr(runtime, "start_messaging", fake_start_messaging)
-    monkeypatch.setattr(runtime, "get_messaging", lambda: object())
-    monkeypatch.setattr(runtime, "run_relay_loop", _idle_relay)
-    monkeypatch.setattr(runtime, "_handlers_registered", True)
-    for name in ("_users_broker", "_orders_broker", "_taxonomy_broker", "_relay_task"):
-        monkeypatch.setattr(runtime, name, None)
+    monkeypatch.setattr(runtime, "_consumer_brokers", [])
 
-    async def run():
-        await runtime.start_all()
-        runtime._relay_task.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await runtime._relay_task
-        return forms_consumers + [c for b in _FakeBroker.instances for c in b.consumers]
-
-    return asyncio.run(run())
+    heartbeat = runtime.AllBrokersTicked(
+        tmp_path / "heartbeat", runtime.CONSUMER_BROKER_LABELS
+    )
+    asyncio.run(runtime.start_consumers(heartbeat))
+    return [c for b in _FakeBroker.instances for c in b.consumers]
 
 
 def test_runtime_binds_the_eleven_known_durables(bound_consumers):

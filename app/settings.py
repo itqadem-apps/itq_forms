@@ -221,17 +221,16 @@ JETSTREAM_ENABLED = _env_bool("JETSTREAM_ENABLED", True)
 JETSTREAM_PULL_BATCH = int(os.environ.get("JETSTREAM_PULL_BATCH", "10"))
 JETSTREAM_PULL_TIMEOUT = float(os.environ.get("JETSTREAM_PULL_TIMEOUT", "1.0"))
 
-# Per-step budget for the ASGI lifespan shutdown (app/messaging/runtime.py).
-# Stopping a broker drains its subscriptions, and a drain against a connection
-# that has already gone away can block forever. Uvicorn waits for
-# lifespan.shutdown.complete with no deadline of its own, so an unbounded stop
-# keeps the worker — and the pod — alive until Kubernetes force-kills it, which
+# Per-step budget for `manage.py consume` stopping its brokers on SIGTERM
+# (app/messaging/runtime.py). Stopping a broker drains its subscriptions, and a
+# drain against a connection that has already gone away can block forever. An
+# unbounded stop keeps the pod alive until Kubernetes force-kills it, which
 # fails the rollout: see deploy-forms-r825n, "1 old replicas are pending
 # termination" for five minutes on an otherwise healthy v0.0.64.
 #
-# Five steps at 5s is a 25s worst case, inside gunicorn's 30s graceful timeout,
-# so a hung broker costs the deploy seconds instead of the pod's whole
-# termination grace period.
+# Four brokers at 5s is a 20s worst case, inside Kubernetes' default 30s
+# termination grace period, so a hung broker costs the rollout seconds instead
+# of the pod's whole grace period.
 MESSAGING_STOP_TIMEOUT = float(os.environ.get("MESSAGING_STOP_TIMEOUT", "5.0"))
 
 # The one taxonomy tree this service projects. Categories from any other
@@ -247,6 +246,16 @@ TAXONOMY_API_URL = (os.environ.get("TAXONOMY_API_URL") or "").strip().rstrip("/"
 OUTBOX_SUBJECT_PREFIX = os.environ.get("OUTBOX_SUBJECT_PREFIX", "forms")
 OUTBOX_POLL_INTERVAL = float(os.environ.get("OUTBOX_POLL_INTERVAL", "0.5"))
 OUTBOX_BATCH_SIZE = int(os.environ.get("OUTBOX_BATCH_SIZE", "50"))
+
+# Heartbeats of the relay and consumers roles (forms:AD-26). Defaults live in
+# app/heartbeat.py, which `start.sh check relay|consume` runs as the liveness
+# probe, so the roles and the probe read the same env vars and defaults.
+from app import heartbeat as _heartbeat  # noqa: E402
+
+OUTBOX_RELAY_HEARTBEAT_PATH = _heartbeat.path_for("relay")
+OUTBOX_RELAY_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("relay")
+CONSUMERS_HEARTBEAT_PATH = _heartbeat.path_for("consume")
+CONSUMERS_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("consume")
 
 MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
 MEDIA_LIBRARY_TENANT_ID = os.environ.get("MEDIA_LIBRARY_TENANT_ID", "")

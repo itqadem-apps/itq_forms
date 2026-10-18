@@ -1,13 +1,13 @@
-"""Shutdown finishes on a deadline even when a broker never stops.
+"""`stop_consumers()` finishes on a deadline even when a broker never stops.
 
-A blocked `broker.stop()` used to hang the ASGI lifespan handler in
-`app/asgi.py`. Uvicorn waits for `lifespan.shutdown.complete` with no deadline
-of its own, so the worker never exited and the pod survived until Kubernetes
-force-killed it — long enough for `kubectl rollout status` to report the
-deploy failed while the new version was already serving (deploy-forms-r825n,
-v0.0.64, "1 old replicas are pending termination").
+A blocked `broker.stop()` used to hang the web lifespan shutdown, and the pod
+survived until Kubernetes force-killed it — long enough for `kubectl rollout
+status` to report the deploy failed while the new version was already serving
+(deploy-forms-r825n, v0.0.64, "1 old replicas are pending termination").
+`manage.py consume` now stops its brokers through the same bounded steps.
 """
 import asyncio
+import logging
 import os
 
 import django
@@ -53,95 +53,73 @@ def _fast_timeout():
 
 
 @pytest.fixture(autouse=True)
-def _reset_runtime():
-    previous = (
-        runtime._users_broker,
-        runtime._orders_broker,
-        runtime._taxonomy_broker,
-        runtime._relay_task,
+def _reset_runtime(monkeypatch):
+    monkeypatch.setattr(runtime, "_consumer_brokers", [])
+
+
+def _set_brokers(monkeypatch, *brokers):
+    # stop_consumers() stops in reverse start order, so list them as started.
+    monkeypatch.setattr(
+        runtime,
+        "_consumer_brokers",
+        [(label, b) for label, b in zip(runtime.CONSUMER_BROKER_LABELS, brokers)],
     )
-    yield
-    (
-        runtime._users_broker,
-        runtime._orders_broker,
-        runtime._taxonomy_broker,
-        runtime._relay_task,
-    ) = previous
 
 
 @pytest.mark.asyncio
 async def test_a_hanging_broker_does_not_hang_shutdown(monkeypatch):
     hanging = _HangingBroker()
-    monkeypatch.setattr(runtime, "_taxonomy_broker", hanging)
-    monkeypatch.setattr(runtime, "_orders_broker", None)
-    monkeypatch.setattr(runtime, "_users_broker", None)
-    monkeypatch.setattr(runtime, "_relay_task", None)
-    monkeypatch.setattr(runtime, "stop_messaging", _CleanBroker().stop)
+    _set_brokers(monkeypatch, hanging)
 
-    await asyncio.wait_for(runtime.stop_all(), timeout=5)
+    await asyncio.wait_for(runtime.stop_consumers(), timeout=5)
 
     assert hanging.stop_called
+    assert runtime._consumer_brokers == []
 
 
 @pytest.mark.asyncio
 async def test_a_hanging_broker_does_not_strand_the_ones_after_it(monkeypatch):
     """The whole point of per-step budgets: one bad broker must not stop the
-    forms broker and the others from being asked to close."""
-    hanging = _HangingBroker()
-    later = _CleanBroker()
+    others from being asked to close."""
     forms = _CleanBroker()
-    monkeypatch.setattr(runtime, "_taxonomy_broker", hanging)
-    monkeypatch.setattr(runtime, "_orders_broker", None)
-    monkeypatch.setattr(runtime, "_users_broker", later)
-    monkeypatch.setattr(runtime, "_relay_task", None)
-    monkeypatch.setattr(runtime, "stop_messaging", forms.stop)
+    later = _CleanBroker()
+    hanging = _HangingBroker()
+    _set_brokers(monkeypatch, forms, later, _CleanBroker(), hanging)
 
-    await asyncio.wait_for(runtime.stop_all(), timeout=5)
+    await asyncio.wait_for(runtime.stop_consumers(), timeout=5)
 
+    assert hanging.stop_called
     assert later.stop_called
     assert forms.stop_called
 
 
 @pytest.mark.asyncio
-async def test_a_broker_that_raises_is_logged_and_stepped_over(monkeypatch):
-    async def boom():
-        raise RuntimeError("connection already closed")
-
-    later = _CleanBroker()
-
+async def test_a_broker_that_raises_is_logged_and_stepped_over(monkeypatch, caplog):
     class _Raising:
         async def stop(self):
-            await boom()
+            raise RuntimeError("connection already closed")
 
-    monkeypatch.setattr(runtime, "_taxonomy_broker", _Raising())
-    monkeypatch.setattr(runtime, "_orders_broker", None)
-    monkeypatch.setattr(runtime, "_users_broker", None)
-    monkeypatch.setattr(runtime, "_relay_task", None)
-    monkeypatch.setattr(runtime, "stop_messaging", later.stop)
+    later = _CleanBroker()
+    _set_brokers(monkeypatch, later, _Raising())
 
-    await asyncio.wait_for(runtime.stop_all(), timeout=5)
+    with caplog.at_level(logging.ERROR, logger="app.messaging.runtime"):
+        await asyncio.wait_for(runtime.stop_consumers(), timeout=5)
 
     assert later.stop_called
+    assert any("Error stopping users consumer broker" in r.getMessage() for r in caplog.records)
 
 
 @pytest.mark.asyncio
-async def test_the_cancelled_relay_task_does_not_escape_as_cancellederror(monkeypatch):
+async def test_a_cancelled_stop_does_not_escape_as_cancellederror(monkeypatch):
     """`Task.exception()` re-raises for a cancelled task, and CancelledError is
-    a BaseException that the lifespan handler's `except Exception` would not
-    catch."""
-    async def _relay():
-        await asyncio.sleep(3600)
+    a BaseException that a caller's `except Exception` would not catch."""
+    class _Cancelled:
+        async def stop(self):
+            raise asyncio.CancelledError
 
-    task = asyncio.ensure_future(_relay())
-    await asyncio.sleep(0)
     forms = _CleanBroker()
-    monkeypatch.setattr(runtime, "_relay_task", task)
-    monkeypatch.setattr(runtime, "_taxonomy_broker", None)
-    monkeypatch.setattr(runtime, "_orders_broker", None)
-    monkeypatch.setattr(runtime, "_users_broker", None)
-    monkeypatch.setattr(runtime, "stop_messaging", forms.stop)
+    _set_brokers(monkeypatch, forms, _Cancelled())
 
-    await asyncio.wait_for(runtime.stop_all(), timeout=5)
+    await asyncio.wait_for(runtime.stop_consumers(), timeout=5)
 
-    assert task.cancelled()
     assert forms.stop_called

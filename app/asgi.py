@@ -1,14 +1,13 @@
 """ASGI config for app project.
 
-Wraps the Django ASGI application with a lifespan handler that starts
-the unified messaging runtime on server startup and shuts it down on
-exit. WSGI, management commands and tests never import this module, so
-they don't connect to NATS.
+Web serves HTTP only and runs no messaging (forms:AD-26): the lifespan
+handler acknowledges startup and shutdown and starts no broker, no relay
+and no NATS connection. ``publisher.publish`` writes outbox rows, which
+``manage.py relay`` publishes; ``manage.py consume`` binds the durables.
 """
 
 import logging
 import os
-import time
 
 from django.core.asgi import get_asgi_application
 
@@ -20,39 +19,16 @@ logger = logging.getLogger(__name__)
 
 async def application(scope, receive, send):
     if scope["type"] == "lifespan":
-        from app.messaging.runtime import start_all, stop_all
-
         while True:
             message = await receive()
             if message["type"] == "lifespan.startup":
-                try:
-                    await start_all()
-                except Exception as exc:
-                    logger.exception("Messaging runtime failed to start")
-                    await send({"type": "lifespan.startup.failed", "message": str(exc)})
-                    return
+                logger.info("lifespan: startup acknowledged; web runs no messaging")
                 await send({"type": "lifespan.startup.complete"})
             elif message["type"] == "lifespan.shutdown":
-                # Logged on entry, not just on success. Without this line a pod
-                # that never receives SIGTERM and one that hangs on the first
-                # step of stop_all() produce byte-identical logs — silence —
-                # and the rollout failures of v0.0.64/v0.0.65 ("1 old replicas
-                # are pending termination") could not be told apart from
-                # outside the cluster.
-                logger.info("lifespan: shutdown signal received, stopping messaging")
-                started = time.monotonic()
-                try:
-                    await stop_all()
-                except Exception as exc:
-                    logger.exception("Messaging runtime failed to stop cleanly")
-                    await send({"type": "lifespan.shutdown.failed", "message": str(exc)})
-                    return
-                logger.info(
-                    "lifespan: shutdown complete in %.1fs",
-                    time.monotonic() - started,
-                )
+                # Logged on entry: without it a pod that never got SIGTERM and
+                # one that hung on shutdown leave identical (silent) logs.
+                logger.info("lifespan: shutdown signal received")
                 await send({"type": "lifespan.shutdown.complete"})
                 return
-        return
 
     await _django_application(scope, receive, send)
