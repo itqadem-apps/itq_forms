@@ -20,6 +20,15 @@ from surveys.models import Usage
 logger = logging.getLogger(__name__)
 
 
+def _error_fields(exc: PydanticValidationError) -> list[str]:
+    # str(exc) embeds each failing input value, which is payload content
+    # (estate:AD-22: never log a payload on failure).
+    return [
+        f'{".".join(str(part) for part in err["loc"]) or "<root>"}:{err["type"]}'
+        for err in exc.errors(include_input=False)
+    ]
+
+
 class ExternalReferencePayload(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -174,9 +183,9 @@ async def handle_external_reference_event(payload: dict[str, Any], subject: str 
         data = ExternalReferencePayload.model_validate(payload)
     except PydanticValidationError as exc:
         logger.warning(
-            "external reference skip subject=%s reason=invalid_payload error=%s",
+            "external reference skip subject=%s reason=invalid_payload fields=%s",
             subject,
-            exc,
+            _error_fields(exc),
         )
         return
     source_service = _source_service(data.source_service, subject)
@@ -209,9 +218,9 @@ async def handle_external_enrollment_event(payload: dict[str, Any], subject: str
         data = ExternalEnrollmentPayload.model_validate(payload)
     except PydanticValidationError as exc:
         logger.warning(
-            "external enrollment skip subject=%s reason=invalid_payload error=%s",
+            "external enrollment skip subject=%s reason=invalid_payload fields=%s",
             subject,
-            exc,
+            _error_fields(exc),
         )
         return
     source_service = _source_service(data.source_service, subject)

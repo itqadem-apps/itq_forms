@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import re
 
-from unimessaging.broker.config import JetStreamConsumer
+from unimessaging.broker.config import JetStreamConsumer, RetryLimits
 
 FORMS_STREAM_NAME = "FORMS"
 FORMS_STREAM_SUBJECTS: list[str] = ["forms.>"]
+
+# estate:AD-22 defaults (max_deliver=5, ack_wait=60s, nak delays 1s/5s/30s/2m),
+# declared on every durable this service binds. No handler naks while waiting
+# for a parent event (a missing parent is skipped and acked), so none needs an
+# override. tests/test_durable_limits.py fails if a bound durable lacks them.
+DURABLE_LIMITS = RetryLimits()
 
 RECOMMENDABLE_SUBJECTS: list[str] = [
     "courses.>",
@@ -18,21 +24,25 @@ RECOMMENDABLE_CONSUMERS: list[JetStreamConsumer] = [
         label="recommendables",
         subject="courses.>",
         durable="forms-recommendables-courses-consumer",
+        limits=DURABLE_LIMITS,
     ),
     JetStreamConsumer(
         label="recommendables",
         subject="videos.>",
         durable="forms-recommendables-videos-consumer",
+        limits=DURABLE_LIMITS,
     ),
     JetStreamConsumer(
         label="recommendables",
         subject="articles.>",
         durable="forms-recommendables-articles-consumer",
+        limits=DURABLE_LIMITS,
     ),
     JetStreamConsumer(
         label="recommendables",
         subject="reservations.>",
         durable="forms-recommendables-reservations-consumer",
+        limits=DURABLE_LIMITS,
     ),
 ]
 
@@ -41,6 +51,7 @@ AUTH_CONSUMERS: list[JetStreamConsumer] = [
         label="auth",
         subject="auth.UserRegistered",
         durable="forms-auth-user-registered-consumer",
+        limits=DURABLE_LIMITS,
     )
 ]
 
@@ -52,6 +63,7 @@ EXTERNAL_REFERENCE_EVENT_CONSUMER = JetStreamConsumer(
     label="external_reference",
     subject="*.external_reference",
     durable="forms-external-reference-events-consumer",
+    limits=DURABLE_LIMITS,
 )
 EXTERNAL_REFERENCE_EVENT_CONSUMERS: list[JetStreamConsumer] = [
     EXTERNAL_REFERENCE_EVENT_CONSUMER,
@@ -59,6 +71,7 @@ EXTERNAL_REFERENCE_EVENT_CONSUMERS: list[JetStreamConsumer] = [
         label="external_reference",
         subject="*.external_enrollment",
         durable="forms-external-reference-events-consumer-enrollment",
+        limits=DURABLE_LIMITS,
     ),
 ]
 
@@ -84,6 +97,7 @@ TAXONOMY_CATEGORY_CONSUMERS: list[JetStreamConsumer] = [
         label="taxonomy",
         subject="taxonomy.category.*",
         durable="forms-taxonomy-category-consumer",
+        limits=DURABLE_LIMITS,
         # A projection wants the whole history, not just what happens next: a
         # fresh durable replays the retained stream and fills the tree by
         # itself. `manage.py seed_categories` is the fallback for categories
@@ -107,6 +121,7 @@ def build_recommendable_consumers(subjects: list[str]) -> list[JetStreamConsumer
             label="recommendables",
             subject=subject,
             durable=recommendable_durable_name(subject),
+            limits=DURABLE_LIMITS,
         )
         for subject in subjects
     ]
@@ -118,6 +133,7 @@ def build_users_child_consumers(subjects: list[str]) -> list[JetStreamConsumer]:
             label="users",
             subject=subject,
             durable=f"forms-{re.sub(r'[^a-zA-Z0-9_-]+', '-', subject).strip('-')}-consumer",
+            limits=DURABLE_LIMITS,
         )
         for subject in subjects
     ]

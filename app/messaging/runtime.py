@@ -52,6 +52,7 @@ def _orders_consumers() -> list[JetStreamConsumer]:
             label="orders",
             subject=subject,
             durable=contract.order_durable_name(subject, subjects),
+            limits=contract.DURABLE_LIMITS,
         )
         for subject in subjects
     ]
