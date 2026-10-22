@@ -1,11 +1,11 @@
 """_collect_restricted_asset_ids must return every asset the survey owns.
 
-Grant, revoke, promote and demote all act on exactly this list, so it is the
+Grant and revoke both act on exactly this list, so it is the
 single point where a restricted survey asset becomes reachable. Two defects met
 here: the option lookup walked `answer_schema__question__section__survey_id`,
 which names no field (the FK is `schema`), so every call raised FieldError
 before it reached the media client; and question covers were never collected at
-all, so they were never granted to a buyer nor promoted on publish.
+all, so they were never granted to a buyer.
 """
 import uuid
 from media.grants import _collect_restricted_asset_ids

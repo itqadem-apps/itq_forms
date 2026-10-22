@@ -402,7 +402,6 @@ class SurveyMutations:
         id = as_pk(id)
         survey = Survey.objects.get(pk=id)
         ensure_in_org(survey, info.context.auth_context)
-        old_status = survey.status
         survey.status = status
         survey.save(update_fields=["status"])
         if survey.status == Survey.STATUS_PUBLISHED:
@@ -421,12 +420,5 @@ class SurveyMutations:
                 organization_id=payload["organization_id"],
                 survey=payload,
             ))
-
-        if old_status != survey.status:
-            from media.grants import promote_survey_assets, demote_survey_assets
-            if survey.status == Survey.STATUS_PUBLISHED:
-                promote_survey_assets(survey.pk)
-            elif survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:
-                demote_survey_assets(survey.pk)
 
         return survey

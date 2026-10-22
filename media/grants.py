@@ -1,8 +1,9 @@
 """Grant/revoke media library access for restricted survey assets.
 
 Kept beside the resolve gate (media.views) while frontends still read media
-directly: the per-user grants issued from `Usage` and the visibility promote on
-publish. `client.access` is HTTP-only, so grants go through the HTTP client.
+directly: the per-user grants issued from `Usage`. `client.access` is HTTP-only,
+so grants go through the HTTP client. Visibility is never pushed to media: the
+resolve gate decides who reads a published survey's assets.
 """
 from __future__ import annotations
 
@@ -12,9 +13,8 @@ from typing import List
 from django.db.models import Q
 
 from surveys.models import Survey, Section, Question, AnswerSchemaOption
-from pkg_media import Visibility
 
-from media.client import build_client, build_http_client
+from media.client import build_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
     """Collect all non-null asset IDs from a survey's sections, questions and options.
 
-    Every caller of this -- grant, revoke, promote, demote -- acts on exactly the
-    list it returns, so an asset omitted here is never granted to a buyer, never
-    promoted on publish and never demoted on unpublish. It stays RESTRICTED with
-    nobody holding a grant, which resolves as 403 for everyone, forever.
+    Every caller of this -- grant, revoke -- acts on exactly the list it returns,
+    so an asset omitted here is never granted to a buyer. It stays RESTRICTED
+    with nobody holding a grant, which resolves as 403 for everyone read
+    directly from media.
 
     Question covers were omitted. They are uploaded under the same profile as
     section covers and option images (forms-item-image, RESTRICTED) and belong
@@ -33,7 +33,7 @@ def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
 
     Deleted rows are read too (`all_objects`): a soft-deleted section, question or option
     (`forms:AD-21`) still shows in learner snapshots taken before the delete, so its asset is
-    granted, promoted, demoted and revoked exactly as it was before the delete.
+    granted and revoked exactly as it was before the delete.
     """
     asset_ids: list[str] = []
 
@@ -79,48 +79,6 @@ def grant_survey_access(survey_id: int, user_id: str) -> None:
         "Granted media access: survey_id=%s user_id=%s granted=%s failed=%s",
         survey_id, user_id, result.granted, result.failed,
     )
-
-
-def promote_survey_assets(survey_id: int) -> None:
-    """Promote restricted survey assets to PUBLIC on publish."""
-    asset_ids = _collect_restricted_asset_ids(survey_id)
-    if not asset_ids:
-        return
-
-    client = build_client()
-    if client is None:
-        logger.warning("Media library not configured, skipping visibility promote")
-        return
-
-    try:
-        result = client.assets.bulk_update_visibility(asset_ids, Visibility.PUBLIC)
-        logger.info(
-            "Promoted assets to PUBLIC: survey_id=%s updated=%s failed=%s",
-            survey_id, result.updated, result.failed,
-        )
-    except Exception:
-        logger.exception("Failed to promote survey assets: survey_id=%s", survey_id)
-
-
-def demote_survey_assets(survey_id: int) -> None:
-    """Demote restricted survey assets to PRIVATE on unpublish."""
-    asset_ids = _collect_restricted_asset_ids(survey_id)
-    if not asset_ids:
-        return
-
-    client = build_client()
-    if client is None:
-        logger.warning("Media library not configured, skipping visibility demote")
-        return
-
-    try:
-        result = client.assets.bulk_update_visibility(asset_ids, Visibility.PRIVATE)
-        logger.info(
-            "Demoted assets to PRIVATE: survey_id=%s updated=%s failed=%s",
-            survey_id, result.updated, result.failed,
-        )
-    except Exception:
-        logger.exception("Failed to demote survey assets: survey_id=%s", survey_id)
 
 
 def revoke_survey_access(survey_id: int, user_id: str) -> None:
