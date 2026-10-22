@@ -8,7 +8,7 @@ survey lock (`forms:AD-25`), and section-title writes take the same lock.
 
 import pytest
 
-from surveys import media_access
+from media import grants as media_access
 from surveys.models import AnswerSchema, AnswerSchemaOption, Question, Section, SectionTranslation
 from surveys.question_order import renumber_questions
 from tests.test_soft_delete import detail, mutate, run, state

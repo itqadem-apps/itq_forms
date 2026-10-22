@@ -8,7 +8,7 @@ before it reached the media client; and question covers were never collected at
 all, so they were never granted to a buyer nor promoted on publish.
 """
 import uuid
-from surveys.media_access import _collect_restricted_asset_ids
+from media.grants import _collect_restricted_asset_ids
 from surveys.models import Survey, Section, Question, AnswerSchemaOption
 
 ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")

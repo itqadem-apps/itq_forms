@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from app.schema_common import RequireAuth, OperationResult
+from media.claims import ARTWORK_SLOTS, require_claimed
 from pricing.services import upsert_prices_for_parent
 from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.types import SurveyCollectionType
@@ -33,6 +34,7 @@ class SurveyCollectionMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
+        require_claimed(info, data, ARTWORK_SLOTS)
 
         # The owning organization is bound from the caller's auth context, never
         # taken from client input — the same contract create_survey follows, see
@@ -82,7 +84,9 @@ class SurveyCollectionMutations:
         id = as_pk(id)
         collection = SurveyCollection.objects.get(pk=id)
 
-        for field, value in input_to_dict(input, exclude=['category_id', 'translations', 'prices']).items():
+        data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
+        require_claimed(info, data, ARTWORK_SLOTS, collection)
+        for field, value in data.items():
             setattr(collection, field, value)
         if input.category_id is not strawberry.UNSET:
             if input.category_id:

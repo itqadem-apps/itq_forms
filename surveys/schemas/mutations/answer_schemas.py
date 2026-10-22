@@ -9,6 +9,7 @@ from django.db import transaction
 
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
+from media.claims import OPTION_SLOTS, require_claimed
 from surveys.flow import assert_survey_forward, check_type_change, validate_edge
 from surveys.inputs import AnswerSchemaInput, AnswerSchemaOptionInput
 from surveys.soft_delete import soft_delete
@@ -110,6 +111,7 @@ class AnswerSchemaMutations:
         Survey.objects.select_for_update().filter(pk=schema.survey_id).first()
 
         data = input_to_dict(input, exclude=['classification_id', 'translations', 'flow_action', 'flow_target_id'])
+        require_claimed(info, data, OPTION_SLOTS)
         data.update(survey=schema.survey, section=schema.section, question=schema.question, schema=schema)
         if input.classification_id is not strawberry.UNSET:
             data['classification'] = (
@@ -148,7 +150,9 @@ class AnswerSchemaMutations:
         option = AnswerSchemaOption.objects.select_related('survey', 'schema').get(pk=id)
         Survey.objects.select_for_update().filter(pk=option.survey_id).first()
 
-        for field, value in input_to_dict(input, exclude=['classification_id', 'translations', 'flow_action', 'flow_target_id']).items():
+        data = input_to_dict(input, exclude=['classification_id', 'translations', 'flow_action', 'flow_target_id'])
+        require_claimed(info, data, OPTION_SLOTS, option)
+        for field, value in data.items():
             setattr(option, field, value)
         if input.classification_id is not strawberry.UNSET:
             option.classification = (

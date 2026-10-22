@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "recommendations",
     "external_references",
     "user_surveys",
+    "media",
     "unimessaging.outbox_django",
 ]
 
@@ -204,8 +205,7 @@ else:
 # Compute API client id from service/app name
 KEYCLOAK_CLIENT_ID = f"{SERVICE_NAME}-api"
 KEYCLOAK_AUDIENCE = os.environ.get("KEYCLOAK_AUDIENCE") or KEYCLOAK_CLIENT_ID
-# forms-api's own secret: the identity forms calls media as once
-# MEDIA_LIBRARY_TOKEN is unset (surveys/media_client.py).
+# forms-api's own secret: the identity forms calls media as (media/client.py).
 KEYCLOAK_CLIENT_SECRET = os.environ.get("KEYCLOAK_CLIENT_SECRET")
 
 PLATFORM_ORG_SLUG = os.environ.get("PLATFORM_ORG_SLUG", "platform")
@@ -260,9 +260,12 @@ OUTBOX_RELAY_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("relay")
 CONSUMERS_HEARTBEAT_PATH = _heartbeat.path_for("consume")
 CONSUMERS_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("consume")
 
+# Media is called as forms-api (KEYCLOAK_CLIENT_SECRET) over MEDIA_TRANSPORT
+# (grpc or http). MEDIA_LIBRARY_URL is the HTTP address: the deprecated
+# HTTP-only client.access / client.policies always use it.
+MEDIA_TRANSPORT = os.environ.get("MEDIA_TRANSPORT", "grpc")
+MEDIA_GRPC_TARGET = os.environ.get("MEDIA_GRPC_TARGET", "media-grpc-svc.itqadem.svc:50051")
 MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
-MEDIA_LIBRARY_TENANT_ID = os.environ.get("MEDIA_LIBRARY_TENANT_ID", "")
-MEDIA_LIBRARY_TOKEN = os.environ.get("MEDIA_LIBRARY_TOKEN", "")
 
 # Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
 LOGGING = {

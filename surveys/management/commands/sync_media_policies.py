@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from django.core.management.base import BaseCommand, CommandError
-from saas_media_library import AssetKind, Visibility
+from pkg_media import AssetKind, Visibility
 
-from surveys.media_client import build_client
+from media.client import build_http_client
 
 IMAGE_MIME = {"image/jpeg", "image/png", "image/webp"}
 ZIP_MIME = {"application/zip", "application/x-zip-compressed"}
@@ -84,16 +84,13 @@ class Command(BaseCommand):
     help = "Upsert media library resource policies (init container entry point)."
 
     def handle(self, *args, **options):
-        client = build_client()
+        # client.policies is deprecated and HTTP-only.
+        client = build_http_client()
         if client is None:
             raise CommandError(
-                "MEDIA_LIBRARY_URL/MEDIA_LIBRARY_TENANT_ID not configured"
+                "MEDIA_LIBRARY_URL or forms-api's Keycloak credentials not configured"
             )
-        try:
-            # Never delete_stale: the media-library tenant is shared across
-            # services, so pruning "stale" policies deactivates the others'.
-            # The client defaults it to True from 0.16 on.
-            results = client.policies.sync_policies(POLICIES, delete_stale=False)
-        finally:
-            client.close()
+        # Never delete_stale: the media-library tenant is shared across
+        # services, so pruning "stale" policies deactivates the others'.
+        results = client.policies.sync_policies(POLICIES, delete_stale=False)
         self.stdout.write(self.style.SUCCESS(f"Synced {len(results)} policies"))

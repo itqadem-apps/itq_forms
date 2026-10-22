@@ -10,6 +10,7 @@ from strawberry.types import Info
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from app.platform import ensure_in_org
+from media.claims import ARTWORK_SLOTS, require_claimed
 from surveys.flow import check_display_option
 from surveys.inputs import SurveyCreateInput, SurveyUpdateInput
 from surveys.question_order import flat_question_ids, renumber_questions
@@ -91,6 +92,7 @@ class SurveyMutations:
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyPayload:
         data = input_to_dict(input, exclude=['category_id', 'translations', 'external_reference', 'prices'])
+        require_claimed(info, data, ARTWORK_SLOTS)
         _check_shuffle_scope(data)
         _check_score_basis(data)
         if 'time_limit' in data:
@@ -177,6 +179,7 @@ class SurveyMutations:
         ensure_in_org(survey, info.context.auth_context)
 
         data = input_to_dict(input, exclude=['id', 'category_id', 'translations', 'prices'])
+        require_claimed(info, data, ARTWORK_SLOTS, survey)
         _check_shuffle_scope(data)
         _check_score_basis(data)
         if 'display_option' in data:
@@ -420,7 +423,7 @@ class SurveyMutations:
             ))
 
         if old_status != survey.status:
-            from surveys.media_access import promote_survey_assets, demote_survey_assets
+            from media.grants import promote_survey_assets, demote_survey_assets
             if survey.status == Survey.STATUS_PUBLISHED:
                 promote_survey_assets(survey.pk)
             elif survey.status in {Survey.STATUS_DRAFT, Survey.STATUS_ARCHIVED, Survey.STATUS_SUSPENDED}:

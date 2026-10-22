@@ -15,6 +15,7 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     postgresql-client \
+    git \
     gettext \
     libmagic-dev \
     build-essential \

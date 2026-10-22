@@ -517,7 +517,7 @@ Load-bearing in this scope — the rest bind without shaping anything below:
 ### AD-23 — Flatten unparents an untitled section's questions in place and soft-deletes the section
 
 - **Binds:** the flatten mutation, `move_to_section`, `forms:AD-4` placement, `forms:AD-21`,
-  `surveys/media_access.py`.
+  `media/grants.py` (was `surveys/media_access.py`).
 - **Prevents:** flatten reordering anything, flatten silently discarding a heading the author
   wrote, and a question's section, schema section and option sections disagreeing after a move.
 - **Rule:** flatten is allowed only on a section with no title — blank in the legacy column and in
@@ -528,7 +528,7 @@ Load-bearing in this scope — the rest bind without shaping anything below:
   section is soft-deleted by `forms:AD-21`; then `renumber_questions` runs. Contiguity holds by
   construction — the run sits between sections. No edge changes, so no `forms:AD-22` check applies.
   Media access reads a survey's questions by `survey_id`, not `section__survey_id`
-  (`surveys/media_access.py:32`), before flatten ships, or flattened questions lose their image
+  (`media/grants.py:47`, and `media/access.py`), before flatten ships, or flattened questions lose their image
   grants.
 
 ### AD-24 — Insert-after and import place by one rule, and every copy goes through one function

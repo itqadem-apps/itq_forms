@@ -9,6 +9,7 @@ from typing import List, Optional
 from app.auth_utils import with_django_user
 from app.permissions import check_permission
 from app.platform import ensure_in_org
+from media.claims import SECTION_SLOTS, require_claimed
 from surveys.card_anchor import anchor_of, anchor_survey_id, check_live, layout
 from surveys.inputs import CardAnchorInput, SectionInput
 from surveys.types import SectionType
@@ -91,6 +92,7 @@ class SectionMutations:
         # `is_hidden` is not authorable (`forms:AD-9`); it is ignored, not refused, because the
         # admin's duplicate-section flow still sends the source section's value.
         data = input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'is_hidden'])
+        require_claimed(info, data, SECTION_SLOTS)
         data['survey'] = survey
 
         section = Section.objects.create(**data)
@@ -133,7 +135,9 @@ class SectionMutations:
         # `order` is ignored: a section is placed by its first question, and moves only through
         # `reorder_sections` (`forms:AD-4`).
         # `is_hidden` is ignored for the same reason as in `create_section` (`forms:AD-9`).
-        for field, value in input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'order', 'is_hidden']).items():
+        data = input_to_dict(input, exclude=['submit_action_target_id', 'translations', 'order', 'is_hidden'])
+        require_claimed(info, data, SECTION_SLOTS, section)
+        for field, value in data.items():
             setattr(section, field, value)
         if input.submit_action_target_id is None:
             section.submit_action_target = None

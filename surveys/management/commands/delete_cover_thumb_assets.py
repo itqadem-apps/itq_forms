@@ -5,7 +5,7 @@ from pathlib import Path
 
 from django.core.management import BaseCommand, CommandError
 
-from surveys.media_client import build_client
+from media.client import build_client
 
 DEFAULT_MAPPING = Path(__file__).resolve().parent.parent / "data" / "asset_mapping.json"
 
@@ -52,21 +52,18 @@ class Command(BaseCommand):
 
         client = build_client()
         if client is None:
-            raise CommandError("MEDIA_LIBRARY_URL/MEDIA_LIBRARY_TENANT_ID not configured")
+            raise CommandError("Media library or forms-api's Keycloak credentials not configured")
 
         deleted = 0
         failed = 0
-        try:
-            for a in to_delete:
-                asset_id = a["uuid"]
-                try:
-                    client.assets.delete(asset_id)
-                    deleted += 1
-                    self.stdout.write(f"  Deleted: {asset_id}")
-                except Exception as e:
-                    failed += 1
-                    self.stderr.write(f"  Failed: {asset_id} — {e}")
-        finally:
-            client.close()
+        for a in to_delete:
+            asset_id = a["uuid"]
+            try:
+                client.assets.delete(asset_id)
+                deleted += 1
+                self.stdout.write(f"  Deleted: {asset_id}")
+            except Exception as e:
+                failed += 1
+                self.stderr.write(f"  Failed: {asset_id} — {e}")
 
         self.stdout.write(self.style.SUCCESS(f"Done. Deleted: {deleted}, Failed: {failed}"))

@@ -64,9 +64,14 @@ def _submissions_visible_to(info: Info, django_user) -> QuerySet:
     relation stops granting access only once ``GuardianRelationEnded`` has
     been consumed.
     """
-    own = Q(user=django_user)
+    return visible_submissions(getattr(info.context, "auth_context", None), django_user.pk)
 
-    auth_ctx = getattr(info.context, "auth_context", None)
+
+def visible_submissions(auth_ctx, user_id) -> QuerySet:
+    """`_submissions_visible_to` for a caller given as its auth context and
+    user id; also the reviewer rule of forms' media resolve (`media.access`)."""
+    own = Q(user_id=user_id)
+
     if auth_ctx is None:
         return UserSurvey.objects.filter(own)
     if is_platform_context(auth_ctx):

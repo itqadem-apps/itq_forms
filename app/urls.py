@@ -24,6 +24,7 @@ from surveys import schema
 urlpatterns = [
     path("", include("django_prometheus.urls")),
     path("api/v1/forms/graphql", csrf_exempt(AuthedGraphQLView.as_view(schema=schema.schema))),
+    path("api/v1/forms/", include("media.urls")),
     path("healthz/", healthz, name="healthz"),
     path("readyz/", readyz, name="readyz"),
     path("startupz/", startupz, name="startupz"),

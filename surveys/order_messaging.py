@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from accounts.models import User
 from surveys.models import Survey, Usage
-from surveys.media_access import grant_survey_access, revoke_survey_access
+from media.grants import grant_survey_access, revoke_survey_access
 
 logger = logging.getLogger(__name__)
 

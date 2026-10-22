@@ -1,4 +1,9 @@
-"""Grant/revoke media library access for restricted survey assets."""
+"""Grant/revoke media library access for restricted survey assets.
+
+Kept beside the resolve gate (media.views) while frontends still read media
+directly: the per-user grants issued from `Usage` and the visibility promote on
+publish. `client.access` is HTTP-only, so grants go through the HTTP client.
+"""
 from __future__ import annotations
 
 import logging
@@ -7,7 +12,9 @@ from typing import List
 from django.db.models import Q
 
 from surveys.models import Survey, Section, Question, AnswerSchemaOption
-from surveys.media_client import build_client
+from pkg_media import Visibility
+
+from media.client import build_client, build_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -62,19 +69,16 @@ def grant_survey_access(survey_id: int, user_id: str) -> None:
     if not asset_ids:
         return
 
-    client = build_client()
+    client = build_http_client()
     if client is None:
         logger.warning("Media library not configured, skipping access grant")
         return
 
-    try:
-        result = client.access.bulk_grant(asset_ids=asset_ids, user_id=user_id)
-        logger.info(
-            "Granted media access: survey_id=%s user_id=%s granted=%s failed=%s",
-            survey_id, user_id, result.granted, result.failed,
-        )
-    finally:
-        client.close()
+    result = client.access.bulk_grant(asset_ids=asset_ids, user_id=user_id)
+    logger.info(
+        "Granted media access: survey_id=%s user_id=%s granted=%s failed=%s",
+        survey_id, user_id, result.granted, result.failed,
+    )
 
 
 def promote_survey_assets(survey_id: int) -> None:
@@ -89,8 +93,6 @@ def promote_survey_assets(survey_id: int) -> None:
         return
 
     try:
-        from saas_media_library.models import Visibility
-
         result = client.assets.bulk_update_visibility(asset_ids, Visibility.PUBLIC)
         logger.info(
             "Promoted assets to PUBLIC: survey_id=%s updated=%s failed=%s",
@@ -98,8 +100,6 @@ def promote_survey_assets(survey_id: int) -> None:
         )
     except Exception:
         logger.exception("Failed to promote survey assets: survey_id=%s", survey_id)
-    finally:
-        client.close()
 
 
 def demote_survey_assets(survey_id: int) -> None:
@@ -114,8 +114,6 @@ def demote_survey_assets(survey_id: int) -> None:
         return
 
     try:
-        from saas_media_library.models import Visibility
-
         result = client.assets.bulk_update_visibility(asset_ids, Visibility.PRIVATE)
         logger.info(
             "Demoted assets to PRIVATE: survey_id=%s updated=%s failed=%s",
@@ -123,8 +121,6 @@ def demote_survey_assets(survey_id: int) -> None:
         )
     except Exception:
         logger.exception("Failed to demote survey assets: survey_id=%s", survey_id)
-    finally:
-        client.close()
 
 
 def revoke_survey_access(survey_id: int, user_id: str) -> None:
@@ -133,16 +129,13 @@ def revoke_survey_access(survey_id: int, user_id: str) -> None:
     if not asset_ids:
         return
 
-    client = build_client()
+    client = build_http_client()
     if client is None:
         logger.warning("Media library not configured, skipping access revoke")
         return
 
-    try:
-        result = client.access.bulk_revoke(asset_ids=asset_ids, user_id=user_id)
-        logger.info(
-            "Revoked media access: survey_id=%s user_id=%s revoked=%s",
-            survey_id, user_id, result.revoked,
-        )
-    finally:
-        client.close()
+    result = client.access.bulk_revoke(asset_ids=asset_ids, user_id=user_id)
+    logger.info(
+        "Revoked media access: survey_id=%s user_id=%s revoked=%s",
+        survey_id, user_id, result.revoked,
+    )

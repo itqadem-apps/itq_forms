@@ -10,6 +10,7 @@ from datetime import timedelta
 from app.auth_utils import with_django_user
 from app.permissions import check_permission, require_permission
 from app.platform import ensure_in_org
+from media.claims import QUESTION_SLOTS, require_claimed
 from surveys.card_anchor import anchor_of, anchor_survey_id, check_live, layout
 from surveys.flow import check_type_change
 from surveys.inputs import CardAnchorInput, QuestionInput, QuestionPlacementInput
@@ -133,6 +134,7 @@ class QuestionMutations:
 
         # `order` is not the client's to write: `renumber_questions` places the question (`forms:AD-4`).
         data = input_to_dict(input, exclude=['answer_time', 'translations', 'order'])
+        require_claimed(info, data, QUESTION_SLOTS)
         data['survey'] = survey
         data['section'] = section
         if input.answer_time is not strawberry.UNSET:
@@ -183,7 +185,9 @@ class QuestionMutations:
             check_type_change(question.pk, input.type)
 
         # `order` is ignored: a question moves only through the reorder mutations (`forms:AD-4`).
-        for field, value in input_to_dict(input, exclude=['answer_time', 'translations', 'order']).items():
+        data = input_to_dict(input, exclude=['answer_time', 'translations', 'order'])
+        require_claimed(info, data, QUESTION_SLOTS, question)
+        for field, value in data.items():
             setattr(question, field, value)
         if input.answer_time is not strawberry.UNSET:
             try:
