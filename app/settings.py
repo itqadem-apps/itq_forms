@@ -260,12 +260,9 @@ OUTBOX_RELAY_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("relay")
 CONSUMERS_HEARTBEAT_PATH = _heartbeat.path_for("consume")
 CONSUMERS_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("consume")
 
-# Media is called as forms-api (KEYCLOAK_CLIENT_SECRET) over MEDIA_TRANSPORT
-# (grpc or http; resolving is always gRPC). MEDIA_LIBRARY_URL is the HTTP
-# address, read only when MEDIA_TRANSPORT=http.
-MEDIA_TRANSPORT = os.environ.get("MEDIA_TRANSPORT", "grpc")
+# Media is called as forms-api (KEYCLOAK_CLIENT_SECRET), over gRPC only. A
+# blank MEDIA_GRPC_TARGET runs forms without media.
 MEDIA_GRPC_TARGET = os.environ.get("MEDIA_GRPC_TARGET", "media-grpc-svc.itqadem.svc.cluster.local:50051")
-MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
 
 # Structured JSON logging (picked up by Promtail -> Loki -> Grafana)
 LOGGING = {

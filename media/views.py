@@ -2,8 +2,8 @@
 `pkg_media.integrations.fastapi` (which needs FastAPI):
 
 - `POST media/resolve`, `GET media/<id>`: `create_media_router(...,
-  thumbnails=False)` over `AccessGate` and `media.access.can_access`, with
-  the gRPC client only (`build_grpc_client`).
+  thumbnails=False)` over `AccessGate` and `media.access.can_access`, on the
+  gRPC client (`build_client`).
 - `POST uploads`, `POST uploads/<id>/grant`, `POST uploads/<id>/attach`:
   `create_upload_router` with `media.profiles.UPLOAD_PROFILES`, the
   `UploadRecord` store and `claim_upload`.
@@ -44,7 +44,7 @@ from pydantic import ValidationError as BodyError
 from app.permissions import get_permission_for_kind
 from app.platform import ensure_in_org
 from media.access import Viewer, can_access
-from media.client import build_client, build_grpc_client
+from media.client import build_client
 from media.models import DjangoUploadStore
 from media.profiles import FORMS_ITEM_IMAGE, UPLOAD_PROFILES
 from survey_collections.models import SurveyCollection
@@ -102,10 +102,9 @@ _gate_client: Any = None
 
 
 def _get_gate() -> AccessGate:
-    """One gate (and link cache) per process, rebuilt if the client changes.
-    Links are resolved over gRPC only: media removes HTTP /delivery."""
+    """One gate (and link cache) per process, rebuilt if the client changes."""
     global _gate, _gate_client
-    client = build_grpc_client()
+    client = build_client()
     if client is None:
         raise _Failed(503, "Media library is not configured")
     with _gate_lock:

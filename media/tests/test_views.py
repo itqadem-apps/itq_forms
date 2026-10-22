@@ -102,7 +102,6 @@ class FakeMedia:
 def media(monkeypatch):
     fake = FakeMedia()
     monkeypatch.setattr(views, "build_client", lambda: fake)
-    monkeypatch.setattr(views, "build_grpc_client", lambda: fake)
     return fake
 
 
@@ -227,7 +226,7 @@ def test_media_failure_is_502_not_the_callers_fault(media, published):
 
 
 def test_unconfigured_media_is_503(monkeypatch, published):
-    monkeypatch.setattr(views, "build_grpc_client", lambda: None)
+    monkeypatch.setattr(views, "build_client", lambda: None)
 
     status, _ = _call(views.resolve_assets, "post", body={"assetIds": [str(published)]})
 
