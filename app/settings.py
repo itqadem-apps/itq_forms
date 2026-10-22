@@ -264,7 +264,7 @@ CONSUMERS_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("consume")
 # (grpc or http). MEDIA_LIBRARY_URL is the HTTP address: the deprecated
 # HTTP-only client.access / client.policies always use it.
 MEDIA_TRANSPORT = os.environ.get("MEDIA_TRANSPORT", "grpc")
-MEDIA_GRPC_TARGET = os.environ.get("MEDIA_GRPC_TARGET", "media-grpc-svc.itqadem.svc:50051")
+MEDIA_GRPC_TARGET = os.environ.get("MEDIA_GRPC_TARGET", "media-grpc-svc.itqadem.svc.cluster.local:50051")
 MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
 
 # Structured JSON logging (picked up by Promtail -> Loki -> Grafana)

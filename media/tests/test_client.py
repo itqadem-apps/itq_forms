@@ -76,6 +76,32 @@ def test_http_transport_shares_one_client(media) -> None:
     assert media_client.build_http_client() is client
 
 
+def test_resolving_is_grpc_whatever_the_transport(media) -> None:
+    """Media removes HTTP /delivery: the gate's client is always gRPC."""
+    assert media_client.build_grpc_client() is media_client.build_client()
+
+    media_client.reset_clients()
+    media.MEDIA_TRANSPORT = "http"
+    grpc = media_client.build_grpc_client()
+    assert grpc is not None and grpc.transport == "grpc"
+    assert grpc is not media_client.build_client()
+    assert media_client.build_grpc_client() is grpc
+
+
+def test_the_gate_is_built_on_the_grpc_client(media, monkeypatch: pytest.MonkeyPatch) -> None:
+    from media import views
+
+    media.MEDIA_TRANSPORT = "http"
+    monkeypatch.setattr(views, "_gate", None)
+    assert views._get_gate()._client.transport == "grpc"
+
+
+def test_the_default_target_is_the_cluster_name() -> None:
+    from django.conf import settings
+
+    assert settings.MEDIA_GRPC_TARGET == "media-grpc-svc.itqadem.svc.cluster.local:50051"
+
+
 def test_unknown_transport_fails_loudly(media) -> None:
     media.MEDIA_TRANSPORT = "carrier-pigeon"
     with pytest.raises(ValueError):

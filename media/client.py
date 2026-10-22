@@ -9,10 +9,12 @@ from pkg_media import MediaClient
 Transport = Literal["http", "grpc"]
 
 _lock = threading.Lock()
-# The process-wide client over MEDIA_TRANSPORT, and a second one over HTTP for
-# the deprecated HTTP-only client.access / client.policies (and file bytes,
-# which never travel over gRPC).
+# The process-wide client over MEDIA_TRANSPORT; one over gRPC for resolving
+# (media drops HTTP /delivery after its story 7.15); and one over HTTP for the
+# deprecated HTTP-only client.access / client.policies (and file bytes, which
+# never travel over gRPC).
 _client: MediaClient | None = None
+_grpc_client: MediaClient | None = None
 _http_client: MediaClient | None = None
 
 
@@ -57,6 +59,22 @@ def build_client() -> MediaClient | None:
         return _client
 
 
+def build_grpc_client() -> MediaClient | None:
+    """The process-wide client over gRPC, whatever MEDIA_TRANSPORT says: the
+    only one that resolves links (`media.views`' AccessGate). Shared like
+    build_client(): never close it."""
+    global _grpc_client
+    if not _configured("grpc"):
+        return None
+    client = build_client()
+    if client is not None and client.transport == "grpc":
+        return client
+    with _lock:
+        if _grpc_client is None:
+            _grpc_client = _new_client("grpc")
+        return _grpc_client
+
+
 def build_http_client() -> MediaClient | None:
     """The process-wide client over HTTP, whatever MEDIA_TRANSPORT says, for
     the deprecated HTTP-only client.access and client.policies. Shared like
@@ -75,9 +93,9 @@ def build_http_client() -> MediaClient | None:
 
 def reset_clients() -> None:
     """Forget the shared clients (tests, settings changes)."""
-    global _client, _http_client
+    global _client, _grpc_client, _http_client
     with _lock:
-        for client in (_client, _http_client):
+        for client in (_client, _grpc_client, _http_client):
             if client is not None:
                 client.close()
-        _client = _http_client = None
+        _client = _grpc_client = _http_client = None
