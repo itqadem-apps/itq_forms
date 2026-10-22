@@ -9,13 +9,10 @@ from pkg_media import MediaClient
 Transport = Literal["http", "grpc"]
 
 _lock = threading.Lock()
-# The process-wide client over MEDIA_TRANSPORT; one over gRPC for resolving
-# (media drops HTTP /delivery after its story 7.15); and one over HTTP for the
-# deprecated HTTP-only client.access grants (and file bytes, which
-# never travel over gRPC).
+# The process-wide client over MEDIA_TRANSPORT, and one over gRPC for resolving
+# (media drops HTTP /delivery after its story 7.15).
 _client: MediaClient | None = None
 _grpc_client: MediaClient | None = None
-_http_client: MediaClient | None = None
 
 
 def _configured(transport: str) -> bool:
@@ -75,27 +72,11 @@ def build_grpc_client() -> MediaClient | None:
         return _grpc_client
 
 
-def build_http_client() -> MediaClient | None:
-    """The process-wide client over HTTP, whatever MEDIA_TRANSPORT says, for
-    the deprecated HTTP-only client.access grants. Shared like
-    build_client(): never close it."""
-    global _http_client
-    if not _configured("http"):
-        return None
-    client = build_client()
-    if client is not None and client.transport == "http":
-        return client
-    with _lock:
-        if _http_client is None:
-            _http_client = _new_client("http")
-        return _http_client
-
-
 def reset_clients() -> None:
     """Forget the shared clients (tests, settings changes)."""
-    global _client, _grpc_client, _http_client
+    global _client, _grpc_client
     with _lock:
-        for client in (_client, _grpc_client, _http_client):
+        for client in (_client, _grpc_client):
             if client is not None:
                 client.close()
-        _client = _grpc_client = _http_client = None
+        _client = _grpc_client = None

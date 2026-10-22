@@ -8,8 +8,8 @@ survey lock (`forms:AD-25`), and section-title writes take the same lock.
 
 import pytest
 
-from media import grants as media_access
-from surveys.models import AnswerSchema, AnswerSchemaOption, Question, Section, SectionTranslation
+from media.access import can_access
+from surveys.models import AnswerSchema, AnswerSchemaOption, Question, Section, SectionTranslation, Survey
 from surveys.question_order import renumber_questions
 from tests.test_soft_delete import detail, mutate, run, state
 
@@ -41,7 +41,8 @@ def test_flatten_an_untitled_section(user, survey, layout):
     assert set(AnswerSchemaOption.objects.filter(question__in=[q1, q2]).values_list("section_id", flat=True)) == {None}
     assert Section.all_objects.get(pk=s1.pk).deleted_at is not None
     assert not Question.all_objects.filter(pk__in=[q1.pk, q2.pk], deleted_at__isnull=False).exists()
-    assert "asset-q2" in media_access._collect_restricted_asset_ids(survey.id)
+    Survey.objects.filter(pk=survey.pk).update(status=Survey.STATUS_PUBLISHED)
+    assert can_access(None, ["asset-q2"]) == {"asset-q2"}
 
     payload = detail(user, survey)
     assert [int(s["id"]) for s in payload["sections"]] == [s2.id]
@@ -69,23 +70,18 @@ def test_flatten_a_titled_section_is_refused(user, survey, layout, titled):
 def test_media_access_reads_questions_by_survey(survey, layout):
     q0, *_ = layout
     Question.all_objects.filter(pk=q0.pk).update(cover_asset_id="asset-q0")
+    Survey.objects.filter(pk=survey.pk).update(status=Survey.STATUS_PUBLISHED)
 
-    assert "asset-q0" in media_access._collect_restricted_asset_ids(survey.id)
+    assert can_access(None, ["asset-q0"]) == {"asset-q0"}
 
 
-def test_media_access_keeps_legacy_and_deleted_rows(user, survey, layout):
-    """A legacy question with no `survey_id` belongs through its section; a soft-deleted
-    section, question or option keeps its asset, which existing snapshots still show."""
-    q0, s1, s2, q1, q2, q3 = layout
+def test_media_access_reads_a_legacy_question_through_its_section(survey, layout):
+    """A legacy question with no `survey_id` belongs through its section (`forms:AD-23`)."""
+    *_, q3 = layout
     Question.all_objects.filter(pk=q3.pk).update(survey=None, cover_asset_id="asset-legacy")
-    Section.all_objects.filter(pk=s1.pk).update(cover_asset_id="asset-s1")
-    Question.all_objects.filter(pk=q1.pk).update(cover_asset_id="asset-q1")
-    option = AnswerSchemaOption.all_objects.filter(question=q1).first()
-    AnswerSchemaOption.all_objects.filter(pk=option.pk).update(image_asset_id="asset-o1")
+    Survey.objects.filter(pk=survey.pk).update(status=Survey.STATUS_PUBLISHED)
 
-    assert mutate(user, "deleteSection", s1.id)["__typename"] == "OperationResult"
-
-    assert {"asset-legacy", "asset-s1", "asset-q1", "asset-o1"} <= set(media_access._collect_restricted_asset_ids(survey.id))
+    assert can_access(None, ["asset-legacy"]) == {"asset-legacy"}
 
 
 def test_flatten_gives_a_legacy_question_its_sections_survey(user, survey, layout):

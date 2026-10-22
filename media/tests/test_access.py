@@ -14,7 +14,7 @@ from pkg_auth.authorization import MissingPermission, OrgId
 from accounts.models import Child, ChildGuardian
 from app.permissions import Permission
 from media.access import Viewer, can_access
-from surveys.models import AnswerSchemaOption, Question, Survey
+from surveys.models import AnswerSchemaOption, Question, Survey, Usage
 from user_surveys.services import enroll_user_in_assessment
 
 ORG = uuid.UUID("11111111-1111-1111-1111-111111111111")
@@ -117,6 +117,15 @@ def test_learner_keeps_their_snapshot_after_unpublish(survey, assets, user):
     _publish(survey)
     enroll_user_in_assessment(user, survey.id)
     Survey.objects.filter(pk=survey.pk).update(status=Survey.STATUS_DRAFT)
+
+    assert _items(assets) <= can_access(Viewer(user.pk), assets.values())
+
+
+def test_a_buyer_without_a_snapshot_reads_a_published_surveys_items(survey, assets, user):
+    """What the retired client.access grants gave a buyer (`Usage`) before they
+    started: the published survey's items, which the public arm already opens."""
+    Usage.objects.create(user=user, survey=survey, order_id="o-1", usage_limit=1, used_count=0)
+    _publish(survey)
 
     assert _items(assets) <= can_access(Viewer(user.pk), assets.values())
 

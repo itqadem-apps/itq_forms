@@ -4,7 +4,7 @@ The copy is independent: nothing links it to its source. It takes the question, 
 schema, its live options and every translation of the three. Every edge falls through, because
 the source's edges led on from the source. Across surveys the copy also drops what belongs to the
 source survey: each option's classification and ending flag, and every image — a shared asset id
-would let one survey's visibility change revoke the other's access (`media_access`). Score is
+would open one survey's image wherever the other survey's access rule does (`media.access`). Score is
 kept (an assumption the spine carries).
 
 Placement is the caller's: the copy is created unplaced, and the caller runs `renumber_questions`
