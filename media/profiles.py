@@ -1,7 +1,7 @@
 """What each forms upload slot accepts (`pkg_media.UploadProfile`).
 
-Limits and derivations are the ones the `surveys/*`, `collections/*` and
-`form_items/image` resource policies set (`sync_media_policies`).
+These are forms' own definitions. The media resource policies they replaced
+are retired; nothing in forms reads or syncs them.
 """
 from __future__ import annotations
 

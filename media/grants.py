@@ -27,9 +27,9 @@ def _collect_restricted_asset_ids(survey_id: int) -> List[str]:
     promoted on publish and never demoted on unpublish. It stays RESTRICTED with
     nobody holding a grant, which resolves as 403 for everyone, forever.
 
-    Question covers were omitted. They are stored by the same policy as section
-    covers and option images (form_items/image, RESTRICTED) and belong here for
-    the same reason.
+    Question covers were omitted. They are uploaded under the same profile as
+    section covers and option images (forms-item-image, RESTRICTED) and belong
+    here for the same reason.
 
     Deleted rows are read too (`all_objects`): a soft-deleted section, question or option
     (`forms:AD-21`) still shows in learner snapshots taken before the delete, so its asset is

@@ -11,7 +11,7 @@ Transport = Literal["http", "grpc"]
 _lock = threading.Lock()
 # The process-wide client over MEDIA_TRANSPORT; one over gRPC for resolving
 # (media drops HTTP /delivery after its story 7.15); and one over HTTP for the
-# deprecated HTTP-only client.access / client.policies (and file bytes, which
+# deprecated HTTP-only client.access grants (and file bytes, which
 # never travel over gRPC).
 _client: MediaClient | None = None
 _grpc_client: MediaClient | None = None
@@ -77,7 +77,7 @@ def build_grpc_client() -> MediaClient | None:
 
 def build_http_client() -> MediaClient | None:
     """The process-wide client over HTTP, whatever MEDIA_TRANSPORT says, for
-    the deprecated HTTP-only client.access and client.policies. Shared like
+    the deprecated HTTP-only client.access grants. Shared like
     build_client(): never close it."""
     global _http_client
     if not _configured("http"):

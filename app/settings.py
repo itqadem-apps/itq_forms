@@ -262,7 +262,7 @@ CONSUMERS_HEARTBEAT_MAX_AGE = _heartbeat.max_age_for("consume")
 
 # Media is called as forms-api (KEYCLOAK_CLIENT_SECRET) over MEDIA_TRANSPORT
 # (grpc or http). MEDIA_LIBRARY_URL is the HTTP address: the deprecated
-# HTTP-only client.access / client.policies always use it.
+# HTTP-only client.access grants always use it.
 MEDIA_TRANSPORT = os.environ.get("MEDIA_TRANSPORT", "grpc")
 MEDIA_GRPC_TARGET = os.environ.get("MEDIA_GRPC_TARGET", "media-grpc-svc.itqadem.svc.cluster.local:50051")
 MEDIA_LIBRARY_URL = os.environ.get("MEDIA_LIBRARY_URL", "")
