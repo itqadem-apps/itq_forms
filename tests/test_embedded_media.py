@@ -384,3 +384,15 @@ def test_leaving_the_file_out_keeps_it_and_null_clears_it(file_attempt, user):
 
     _answer(user, user_survey, question, file=None)
     assert UserAnswer.objects.get(user_survey=user_survey, question=question).file_asset_id is None
+
+
+def test_a_respondent_opens_their_own_claimed_upload_before_answering(file_attempt, user, user2):
+    from media.access import Viewer
+
+    user_survey, question = file_attempt
+    asset = _id()
+    _claim(user, user_survey, question, asset)
+
+    assert can_access(Viewer(user.pk), [asset]) == {asset}
+    assert can_access(Viewer(user2.pk), [asset]) == set()
+    assert can_access(None, [asset]) == set()

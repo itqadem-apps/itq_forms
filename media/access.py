@@ -13,6 +13,8 @@ stores are ever allowed, so the endpoints never serve another service's asset.
   `UserAnswerOption`) and answer files (`UserAnswer`): the submissions the caller may read, which are their
   own plus, for `submissions:read`, those of children their organization
   supervises (`visible_submissions`, the `userSurvey` query's rule).
+- An answer file the caller uploaded and claimed themselves, before the
+  answer holds it (the upload widget shows its progress through resolve).
 """
 from __future__ import annotations
 
@@ -148,5 +150,24 @@ def can_access(viewer: Optional[Viewer], asset_ids: Iterable[UUID | str]) -> Set
 
     # Model orderings (`-created_at`) are not allowed inside a compound statement.
     first, *rest = (arm.order_by() for arm in arms)
-    found = first.union(*rest)
-    return {a.lower() for a in found if a} & wanted
+    found = {a.lower() for a in first.union(*rest) if a}
+    if viewer is not None:
+        found |= _own_answer_uploads(viewer, wanted)
+    return found & wanted
+
+
+def _own_answer_uploads(viewer: Viewer, wanted: Set[str]) -> Set[str]:
+    """Kept out of the UNION: `attached_asset_id` is a uuid column."""
+    from media.models import UploadRecord
+    from media.profiles import FORMS_ANSWER_FILE
+
+    ids = []
+    for a in wanted:
+        try:
+            ids.append(UUID(a))
+        except ValueError:
+            continue
+    rows = UploadRecord.objects.filter(
+        owner=viewer.user_id, profile=FORMS_ANSWER_FILE.name, attached_asset_id__in=ids
+    ).values_list("attached_asset_id", flat=True)
+    return {str(a) for a in rows}
