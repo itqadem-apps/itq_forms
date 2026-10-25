@@ -6,6 +6,9 @@ import strawberry
 import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
+from pkg_media.integrations.strawberry import EmbeddedMediaType
+
+from media import embedding
 
 from app.auth_utils import get_django_user
 from user_surveys.models import UserAnswer, UserQuestion, UserSection, UserSurvey
@@ -34,6 +37,10 @@ class SectionType:
     questions: List["QuestionType"]
     translations: List[SectionTranslationType]
 
+    @strawberry_django.field(only=['cover_asset_id', 'survey_id'], description="The section's cover.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.cover_asset_id, lambda: embedding.survey_asset_ids(self.survey_id))
+
 
 @strawberry_django.type(Question)
 class QuestionType:
@@ -51,6 +58,10 @@ class QuestionType:
     updated_at: auto
     answer_schema: Optional[AnswerSchemaType]
     translations: List[QuestionTranslationType]
+
+    @strawberry_django.field(only=['cover_asset_id', 'survey_id', 'section__survey_id'], description="The question's cover.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.cover_asset_id, lambda: embedding.survey_asset_ids(self.survey_id or (self.section.survey_id if self.section_id else None)))
 
     @strawberry.field
     def answer_time(self) -> Optional[str]:

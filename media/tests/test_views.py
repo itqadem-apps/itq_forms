@@ -332,9 +332,35 @@ def test_start_upload_opens_a_session_and_records_it(media, survey, user):
     assert opened["subject"] == user.pk
 
 
-@pytest.mark.parametrize("profile,status", [(None, 422), ("forms-answer-file", 422), ("nope", 422)])
+@pytest.mark.parametrize("profile,status", [(None, 422), ("nope", 422)])
 def test_start_upload_needs_a_known_profile(media, survey, user, profile, status):
     assert _start(user, survey, profile=profile)[0] == status
+
+
+def test_an_editor_may_not_upload_an_answer_file(media, survey, user):
+    """Editing rights over the survey are not an attempt of one's own."""
+    assert _start(user, survey, profile="forms-answer-file", mimeType="application/pdf")[0] == 403
+
+
+def test_a_respondent_uploads_an_answer_file_without_an_organization(media, survey, question, user):
+    from surveys.models import Question
+    from user_surveys.models import UserQuestion
+    from user_surveys.services import enroll_user_in_assessment
+
+    Question.all_objects.filter(pk=question.pk).update(type=Question.QUESTION_TYPE_FILE)
+    Survey.objects.filter(pk=survey.pk).update(status=Survey.STATUS_PUBLISHED)
+    user_survey, _ = enroll_user_in_assessment(user, survey.id)
+    snapshot_q = UserQuestion.objects.get(user_survey=user_survey, type=UserQuestion.TYPE_FILE)
+    context = {"userSurveyId": user_survey.pk, "questionId": snapshot_q.pk}
+
+    status, body = _call(
+        views.start_upload, "post", user=user.pk, auth=None,
+        body={"mimeType": "application/pdf", "sizeBytes": 1000, "filename": "scan.pdf",
+              "profile": "forms-answer-file", "context": context},
+    )
+
+    assert status == 201
+    assert UploadRecord.objects.get(pk=body["sessionId"]).context == context
 
 
 @pytest.mark.parametrize("overrides,status,reason", [

@@ -9,6 +9,8 @@ from strawberry import auto
 from django.db.models import Prefetch
 from strawberry.scalars import JSON
 from strawberry.types import Info
+from pkg_media.integrations.strawberry import EmbeddedMediaType
+from media import embedding
 
 from surveys.question_order import flat_question_ids, in_flat_order
 from surveys.usage_access import (
@@ -157,6 +159,10 @@ class UserSectionType:
     updated_at: auto
     questions: List["UserQuestionType"]
 
+    @strawberry_django.field(only=["cover_asset_id", "user_survey_id"], description="The section's cover.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.cover_asset_id, lambda: embedding.attempt_asset_ids(self.user_survey_id))
+
     @strawberry.field
     def translations(self) -> List[SectionTranslation]:
         return _parse_translations(
@@ -188,6 +194,10 @@ class UserAnswerOptionType:
     ending_option: auto
     order: auto
     classification: Optional["UserClassificationType"]
+
+    @strawberry_django.field(only=["image_asset_id", "user_survey_id"], description="The option's image.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.image_asset_id, lambda: embedding.attempt_asset_ids(self.user_survey_id))
 
     @strawberry.field
     def translations(self) -> List[OptionTranslation]:
@@ -297,6 +307,10 @@ class UserQuestionType:
     updated_at: auto
     answer_schema: Optional[UserAnswerSchemaType]
 
+    @strawberry_django.field(only=["cover_asset_id", "user_survey_id"], description="The question's cover.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.cover_asset_id, lambda: embedding.attempt_asset_ids(self.user_survey_id))
+
     @strawberry.field
     def translations(self) -> List[QuestionTranslation]:
         return _parse_translations(
@@ -374,6 +388,15 @@ class UserSurveyType:
     score_basis: auto
     cover_id: auto
     thumb_id: auto
+
+    @strawberry_django.field(only=["id", "thumb_id", "cover_id"], description="Card artwork: the thumb, else the cover.")
+    def thumb(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, embedding.thumb_id(self), lambda: (self.thumb_id, self.cover_id))
+
+    @strawberry_django.field(only=["id", "thumb_id", "cover_id"], description="Hero artwork: the cover, else the thumb.")
+    def cover(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, embedding.cover_id(self), lambda: (self.thumb_id, self.cover_id))
+
     category_id_snapshot: auto
     sponsor: auto
     survey_created_at: auto
@@ -579,6 +602,13 @@ class UserAnswerType:
     order: auto
     answered_at: auto
     selected_options: List[UserAnswerOptionType]
+
+    @strawberry_django.field(
+        only=["file_asset_id", "user_survey_id"],
+        description="A file question's upload; open to whoever may read this submission.",
+    )
+    def file(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.file_asset_id, lambda: embedding.attempt_asset_ids(self.user_survey_id))
 
     @strawberry.field(description="Where the attempt goes after this answer (`forms:AD-6`): the next on-path question, or why it ended. The solver follows it and never derives the next question itself.")
     def advance(self) -> AdvanceResult:

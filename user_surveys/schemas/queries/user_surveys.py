@@ -2,6 +2,8 @@ from dataclasses import fields as dc_fields
 from typing import Optional
 
 import strawberry
+
+from media import embedding
 from strawberry.types import Info
 from django.db.models import Q, QuerySet
 from django.contrib.auth.base_user import AbstractBaseUser
@@ -139,4 +141,5 @@ class UserSurveyQuery:
         total = base_qs.count()
         items = list(base_qs[offset : offset + limit])
         prime_max_scores(items, info, ("items", "maxScore"))
+        embedding.prime_records(info, items, ("items",))
         return UserSurveysResultsGQL(items=items, total=total)

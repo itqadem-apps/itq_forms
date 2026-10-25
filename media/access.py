@@ -10,7 +10,7 @@ stores are ever allowed, so the endpoints never serve another service's asset.
 - The same, of any survey of the caller's organization (or any, for the
   platform org), when the caller holds that survey kind's read permission.
 - Learner snapshot copies (`UserSurvey`, `UserSection`, `UserQuestion`,
-  `UserAnswerOption`): the submissions the caller may read, which are their
+  `UserAnswerOption`) and answer files (`UserAnswer`): the submissions the caller may read, which are their
   own plus, for `submissions:read`, those of children their organization
   supervises (`visible_submissions`, the `userSurvey` query's rule).
 """
@@ -27,7 +27,7 @@ from app.platform import PUBLIC_STATUS, is_platform_context
 from app.permissions import PERMISSION_MAP
 from survey_collections.models import SurveyCollection
 from surveys.models import AnswerSchemaOption, Question, Section, Survey
-from user_surveys.models import UserAnswerOption, UserQuestion, UserSection, UserSurvey
+from user_surveys.models import UserAnswer, UserAnswerOption, UserQuestion, UserSection, UserSurvey
 
 
 @dataclass(frozen=True)
@@ -37,6 +37,17 @@ class Viewer:
 
     user_id: str
     auth_context: Any = None
+
+
+def viewer_for(request) -> Optional[Viewer]:
+    """The caller of `request` (or of a GraphQL context, which carries the
+    same `identity` and `auth_context`), or None. `LoggingIdentityMiddleware` already
+    turned a stale or invalid token into None (and logged it), and
+    `OptionalAuthContextMiddleware` an unresolvable org into no context."""
+    identity = getattr(request, "identity", None)
+    if identity is None:
+        return None
+    return Viewer(user_id=identity.subject_str, auth_context=getattr(request, "auth_context", None))
 
 
 def _readable_kinds(auth_ctx) -> list[str]:
@@ -107,6 +118,8 @@ def _snapshot_arms(candidates: list[str], viewer: Viewer) -> list[QuerySet]:
         .values_list("cover_asset_id", flat=True),
         UserAnswerOption.objects.filter(user_survey__in=visible, image_asset_id__in=candidates)
         .values_list("image_asset_id", flat=True),
+        UserAnswer.objects.filter(user_survey__in=visible, file_asset_id__in=candidates)
+        .values_list("file_asset_id", flat=True),
     ]
 
 

@@ -6,6 +6,9 @@ import strawberry
 import strawberry_django
 from strawberry import auto
 from strawberry.types import Info
+from pkg_media.integrations.strawberry import EmbeddedMediaType
+
+from media import embedding
 
 from surveys.flow import has_flow
 from surveys.models import Survey, Usage
@@ -117,6 +120,14 @@ class SurveyType:
     )
     def has_flow(self) -> bool:
         return has_flow(self.pk)
+
+    @strawberry_django.field(only=["thumb_id", "cover_id"], description="Card artwork: the thumb, else the cover.")
+    def thumb(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, embedding.thumb_id(self), lambda: (self.thumb_id, self.cover_id))
+
+    @strawberry_django.field(only=["thumb_id", "cover_id"], description="Hero artwork and the share image: the cover, else the thumb.")
+    def cover(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, embedding.cover_id(self), lambda: (self.thumb_id, self.cover_id))
 
     @strawberry.field
     def collection_id(self) -> Optional[int]:

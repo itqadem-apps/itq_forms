@@ -5,7 +5,11 @@ from typing import Annotated, List, Optional
 import strawberry
 import strawberry_django
 from strawberry import auto
+from strawberry.types import Info
 
+from pkg_media.integrations.strawberry import EmbeddedMediaType
+
+from media import embedding
 from surveys.models import AnswerSchema, AnswerSchemaOption
 from .translations import AnswerSchemaOptionTranslationType, AnswerSchemaTranslationType
 
@@ -45,6 +49,11 @@ class AnswerSchemaOptionType:
         row again, so the recommendation reappeared the moment it was removed."""
         return list(self.option_recommendations.filter(deleted_at__isnull=True))
     image_asset_id: auto
+
+    @strawberry_django.field(only=["image_asset_id", "survey_id"], description="The option's image.")
+    def media(self, info: Info) -> Optional[EmbeddedMediaType]:
+        return embedding.embedded(info, self.image_asset_id, lambda: embedding.survey_asset_ids(self.survey_id))
+
     is_row: auto
     is_column: auto
     ending_option: auto

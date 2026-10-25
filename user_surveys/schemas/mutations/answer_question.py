@@ -1,3 +1,5 @@
+from typing import Annotated, Optional
+
 import strawberry
 import strawberry_django
 from strawberry.types import Info
@@ -13,6 +15,7 @@ from user_surveys.flow import ROUTING_TERMINATE, ending_count, recalculate_on_pa
 from user_surveys.services import check_time_expired, finish_assessment as finish_assessment_service
 from ..common import RequireAuth
 from app.graphql_ids import as_pk
+from media.claims import caller_id, is_claimed_for_answer
 
 
 def _opt_text(opt: UserAnswerOption) -> str | None:
@@ -42,6 +45,16 @@ class AnswerQuestionMutation:
         question_id: strawberry.ID,
         answer: list[str],
         session_token: str | None = None,
+        file_asset_id: Annotated[
+            Optional[str],
+            strawberry.argument(
+                description=(
+                    "A file question's upload, claimed through forms (`POST uploads/{id}/attach`, "
+                    "profile `forms-answer-file`, context `userSurveyId` + `questionId`). Left out "
+                    "keeps the stored file; null or empty clears it. `answer` stays the file name."
+                ),
+            ),
+        ] = strawberry.UNSET,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> UserAnswerType:
         user_survey_id = as_pk(user_survey_id)
@@ -122,6 +135,14 @@ class AnswerQuestionMutation:
             elif question.type in Q.FREE_INPUT_TYPES:
                 user_answer.selected_options.clear()
                 user_answer.answer = answer[0] if answer else ""
+                if question.type == Q.TYPE_FILE and file_asset_id is not strawberry.UNSET:
+                    if file_asset_id and file_asset_id != user_answer.file_asset_id:
+                        if not is_claimed_for_answer(caller_id(info), file_asset_id, user_survey.id, question.id):
+                            raise ValidationError(
+                                f"Asset {file_asset_id} was not uploaded through forms by you for this "
+                                "question; upload it with profile 'forms-answer-file' and attach it first."
+                            )
+                    user_answer.file_asset_id = file_asset_id or None
             elif question.type in Q.GRID_TYPES:
                 require_schema()
                 flat_ids: list[str] = []
@@ -133,6 +154,8 @@ class AnswerQuestionMutation:
                 user_answer.answer = ",".join(answer)
             else:
                 raise ValidationError("Unsupported question type.")
+            if question.type != Q.TYPE_FILE and file_asset_id:
+                raise ValidationError("Only a file question takes a file.")
 
             # ── anti-cheat: tracking (only when enabled) ──
             current_time = now()

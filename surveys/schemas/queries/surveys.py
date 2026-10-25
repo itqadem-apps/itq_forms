@@ -2,6 +2,8 @@ from dataclasses import fields as dc_fields, replace
 from typing import List, Optional
 
 import strawberry
+
+from media import embedding
 from strawberry.types import Info
 from django.db.models import F, Q
 from pkg_filters.integrations.django import DjangoQueryContext
@@ -102,7 +104,8 @@ class SurveysQuery:
         base_qs = pipeline.run(DjangoQueryContext(qs, spec)).stmt
 
         total = base_qs.count()
-        items = base_qs[surveys_list_input.offset : surveys_list_input.offset + surveys_list_input.limit]
+        items = list(base_qs[surveys_list_input.offset : surveys_list_input.offset + surveys_list_input.limit])
+        embedding.prime_records(info, items, ("items",))
 
         facets = None
         if has_any_under_prefix(paths, ("facets",)):

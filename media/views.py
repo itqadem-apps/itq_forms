@@ -28,7 +28,6 @@ from django.views.decorators.csrf import csrf_exempt
 from pkg_auth.authorization import MissingPermission
 from pkg_media import (
     AccessGate,
-    AssetUrlCache,
     GrantScope,
     MediaLibraryError,
     NotFoundError,
@@ -43,12 +42,14 @@ from pydantic import ValidationError as BodyError
 
 from app.permissions import get_permission_for_kind
 from app.platform import ensure_in_org
-from media.access import Viewer, can_access
+from media.access import Viewer, can_access, viewer_for
 from media.client import build_client
+from media.embedding import MEDIA_LINK_CACHE
 from media.models import DjangoUploadStore
-from media.profiles import FORMS_ITEM_IMAGE, UPLOAD_PROFILES
+from media.profiles import FORMS_ANSWER_FILE, FORMS_ITEM_IMAGE, UPLOAD_PROFILES
 from survey_collections.models import SurveyCollection
 from surveys.models import Survey
+from user_surveys.models import UserQuestion
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,7 @@ def _get_gate() -> AccessGate:
         if _gate is None or _gate_client is not client:
             # resolve_denied=False: an id can_access refuses never reaches
             # media, so no other service's asset is resolved with forms' token.
-            _gate = AccessGate(client, can_access, cache=AssetUrlCache(), hide_missing=True, resolve_denied=False)
+            _gate = AccessGate(client, can_access, cache=MEDIA_LINK_CACHE, hide_missing=True, resolve_denied=False)
             _gate_client = client
         return _gate
 
@@ -124,13 +125,7 @@ def _client():
 
 
 def _viewer(request: HttpRequest) -> Optional[Viewer]:
-    """The caller, or None. `LoggingIdentityMiddleware` already turned a stale
-    or invalid token into None (and logged it), and
-    `OptionalAuthContextMiddleware` an unresolvable org into no context."""
-    identity = getattr(request, "identity", None)
-    if identity is None:
-        return None
-    return Viewer(user_id=identity.subject_str, auth_context=getattr(request, "auth_context", None))
+    return viewer_for(request)
 
 
 def _signed_in(request: HttpRequest) -> Viewer:
@@ -209,12 +204,31 @@ def get_asset(request: HttpRequest, asset_id: UUID) -> JsonResponse:
 # ── Uploads ─────────────────────────────────────────────────────────────
 
 
+def may_answer_with_file(user_id: str, context: Dict[str, Any]) -> bool:
+    """A respondent's answer file: `context` names a file question
+    (`questionId`) of the caller's own attempt (`userSurveyId`) that is not
+    submitted yet. No organization is needed."""
+    try:
+        return UserQuestion.objects.filter(
+            pk=int(context.get("questionId")),
+            type=UserQuestion.TYPE_FILE,
+            user_survey_id=int(context.get("userSurveyId")),
+            user_survey__user_id=user_id,
+            user_survey__submitted_at__isnull=True,
+        ).exists()
+    except (TypeError, ValueError):
+        return False
+
+
 def _may_edit(viewer: Viewer, context: Dict[str, Any], profile: UploadProfile) -> bool:
-    """Forms' rule for starting (and attaching) an upload: a member of an
+    """Forms' rule for starting (and attaching) an upload: an answer file
+    goes by `may_answer_with_file`; anything else needs a member of an
     organization; for a survey named in `context["surveyId"]`, one of that
     organization holding the survey kind's update permission; for a
     collection (`collectionId`), one of its organization. Item images belong
     to a survey, so they need `surveyId`."""
+    if profile.name == FORMS_ANSWER_FILE.name:
+        return may_answer_with_file(viewer.user_id, context)
     auth_ctx = viewer.auth_context
     if auth_ctx is None:
         return False

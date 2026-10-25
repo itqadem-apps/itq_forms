@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError
 from pkg_media import UploadProfile
 
 from media.models import UploadRecord
-from media.profiles import FORMS_COVER, FORMS_ITEM_IMAGE, FORMS_THUMB
+from media.profiles import FORMS_ANSWER_FILE, FORMS_COVER, FORMS_ITEM_IMAGE, FORMS_THUMB
 
 ARTWORK_SLOTS = {"thumb_id": FORMS_THUMB, "cover_id": FORMS_COVER}
 SECTION_SLOTS = {"cover_asset_id": FORMS_ITEM_IMAGE}
@@ -35,6 +35,21 @@ def is_claimed(owner: str, asset_id: str, profile: UploadProfile) -> bool:
     except ValueError:
         return False
     return UploadRecord.objects.filter(owner=owner, profile=profile.name, attached_asset_id=asset).exists()
+
+
+def is_claimed_for_answer(owner: str, asset_id: str, user_survey_id: int, question_id: int) -> bool:
+    """`asset_id` was uploaded and claimed by `owner` as an answer file for
+    this attempt's question, so one attempt's file never lands on another."""
+    try:
+        asset = UUID(str(asset_id))
+    except ValueError:
+        return False
+    records = UploadRecord.objects.filter(owner=owner, profile=FORMS_ANSWER_FILE.name, attached_asset_id=asset)
+    return any(
+        str(r.context.get("userSurveyId")) == str(user_survey_id)
+        and str(r.context.get("questionId")) == str(question_id)
+        for r in records
+    )
 
 
 def require_claimed(

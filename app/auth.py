@@ -46,12 +46,15 @@ class _ContextProxy:
         identity: ``pkg_auth.authentication.IdentityContext`` or ``None``.
         auth_context: ``pkg_auth.authorization.AuthContext`` or ``None``.
         currency: value of the ``X-Currency`` header, if any.
+        response: the view's sub-response, whose headers the reply carries
+            (``media.embedding`` sets ``Cache-Control`` on it).
     """
 
-    __slots__ = ("request", "identity", "auth_context", "currency")
+    __slots__ = ("request", "identity", "auth_context", "currency", "response")
 
-    def __init__(self, request, *, currency: str | None = None) -> None:
+    def __init__(self, request, *, currency: str | None = None, response=None) -> None:
         self.request = request
+        self.response = response
         self.identity = getattr(request, "identity", None)
         self.auth_context = getattr(request, "auth_context", None)
         self.currency = currency
@@ -61,7 +64,7 @@ class AuthedGraphQLView(GraphQLView):
     def get_context(self, request, response):
         # X-Currency is ignored: old mobile builds still send a cached geo
         # currency, and every price is EGP (estate:AD-17).
-        return _ContextProxy(request, currency=SHOP_CURRENCY)
+        return _ContextProxy(request, currency=SHOP_CURRENCY, response=response)
 
 
 class LoggingIdentityMiddleware(_BaseIdentityMiddleware):

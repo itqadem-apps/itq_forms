@@ -2,6 +2,8 @@ from dataclasses import fields as dc_fields, replace
 from typing import List, Optional
 
 import strawberry
+
+from media import embedding
 from django.db.models import F, Q
 from pkg_filters.integrations.django import DjangoQueryContext
 from pkg_filters.integrations.strawberry import has_any_under_prefix, get_root_field_paths
@@ -112,6 +114,8 @@ class CollectionsQuery:
                 collections_list_input.offset : collections_list_input.offset + collections_list_input.limit
             ]
         )
+
+        embedding.prime_records(info, items, ("items",))
 
         facets = None
         if has_any_under_prefix(paths, ("facets",)):

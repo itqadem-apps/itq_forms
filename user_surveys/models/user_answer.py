@@ -22,6 +22,8 @@ class UserAnswer(models.Model):
     question = models.ForeignKey(UserQuestion, on_delete=models.SET_NULL, null=True, blank=True)
     user_survey = models.ForeignKey(UserSurvey, on_delete=models.CASCADE, null=True, blank=True)
     answer = models.TextField(default=None, blank=True, null=True)
+    # A file question's upload (`forms-answer-file`); `answer` keeps its file name.
+    file_asset_id = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=50, null=True, blank=True)
     selected_options = models.ManyToManyField(UserAnswerOption, blank=True)
     score = models.IntegerField(null=True, blank=True)

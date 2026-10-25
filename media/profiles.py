@@ -44,9 +44,8 @@ FORMS_ITEM_IMAGE = UploadProfile(
     ),
 )
 
-# Dormant: `form_answers/file` has no uploader (web and mobile send only the
-# file name). Defined so the slot exists; not offered by POST /uploads until a
-# client uploads answer files and the answer row can hold the id.
+# A respondent's file for a file question (`UserAnswer.file_asset_id`). Opened
+# by whoever may read that submission (`media.access`), never public.
 FORMS_ANSWER_FILE = UploadProfile(
     name="forms-answer-file",
     kind=AssetKind.DOCUMENT,
@@ -62,6 +61,7 @@ FORMS_ANSWER_FILE = UploadProfile(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "text/plain",
     },
+    max_size_bytes=10_000_000,
 )
 
-UPLOAD_PROFILES = {p.name: p for p in (FORMS_THUMB, FORMS_COVER, FORMS_ITEM_IMAGE)}
+UPLOAD_PROFILES = {p.name: p for p in (FORMS_THUMB, FORMS_COVER, FORMS_ITEM_IMAGE, FORMS_ANSWER_FILE)}
