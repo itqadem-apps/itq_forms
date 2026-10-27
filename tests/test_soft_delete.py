@@ -38,7 +38,7 @@ class _Context:
             user_id=UserId(user.id),
             organization_id=OrgId(ORG),
             role_names=frozenset({"org-admin"}),
-            perms=frozenset({"surveys:update", "surveys:create"}),
+            perms=frozenset({"surveys:read", "surveys:update", "surveys:create"}),
         )
 
 

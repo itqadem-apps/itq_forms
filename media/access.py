@@ -23,10 +23,9 @@ from typing import Any, Iterable, Optional, Set
 from uuid import UUID
 
 from django.db.models import Q, QuerySet
-from pkg_auth.authorization import MissingPermission
 
 from app.platform import PUBLIC_STATUS, is_platform_context
-from app.permissions import PERMISSION_MAP
+from app.permissions import readable_kinds
 from survey_collections.models import SurveyCollection
 from surveys.models import AnswerSchemaOption, Question, Section, Survey
 from user_surveys.models import UserAnswer, UserAnswerOption, UserQuestion, UserSection, UserSurvey
@@ -50,17 +49,6 @@ def viewer_for(request) -> Optional[Viewer]:
     if identity is None:
         return None
     return Viewer(user_id=identity.subject_str, auth_context=getattr(request, "auth_context", None))
-
-
-def _readable_kinds(auth_ctx) -> list[str]:
-    kinds = []
-    for kind, actions in PERMISSION_MAP.items():
-        try:
-            auth_ctx.require(actions["read"].value)
-        except MissingPermission:
-            continue
-        kinds.append(kind)
-    return kinds
 
 
 def _survey_scope(prefix: str, *, published: bool, org=None, kinds=None) -> Q:
@@ -96,7 +84,7 @@ def _item_arms(candidates: list[str], **scope) -> list[QuerySet]:
 
 
 def _staff_arms(candidates: list[str], auth_ctx) -> list[QuerySet]:
-    kinds = _readable_kinds(auth_ctx)
+    kinds = readable_kinds(auth_ctx)
     if not kinds:
         return []
     if is_platform_context(auth_ctx):

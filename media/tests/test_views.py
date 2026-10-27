@@ -393,8 +393,12 @@ def test_an_item_image_needs_its_survey(media, survey, user):
     assert _start(user, survey, context={})[0] == 403
 
 
-def test_artwork_for_a_new_survey_needs_only_an_org(media, survey, user):
-    assert _start(user, survey, profile="forms-cover", context={})[0] == 201
+def test_artwork_for_a_new_survey_needs_a_create_key(media, survey, user):
+    """A context alone is not staff (`estate:AD-29`): with no row yet, the
+    caller must hold some forms create key."""
+    assert _start(user, survey, profile="forms-cover", context={})[0] == 403
+    creator = _AuthContext(ORG, *EDITOR, Permission.SURVEY_CREATE)
+    assert _start(user, survey, profile="forms-cover", context={}, auth=creator)[0] == 201
 
 
 def test_a_failed_record_aborts_the_session(media, survey, user, monkeypatch):

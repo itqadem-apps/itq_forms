@@ -16,6 +16,7 @@ from surveys.models import Survey
 from app.facets import build_category_tree_facet, build_price_range_facet
 from surveys.types.results import SurveyResultsGQL, SurveysFacetsGQL
 from app.graphql_ids import as_pk
+from app.permissions import readable_kinds
 from app.platform import scope_listing_to_caller
 from app.status_sort import annotate_status_rank
 from pricing.currency import SHOP_CURRENCY
@@ -34,6 +35,13 @@ def _run_without(qs, spec, **cleared):
     return pipeline.run(DjangoQueryContext(qs, spec)).stmt
 
 
+def _survey_staff_q(auth_ctx) -> Q:
+    """Unpublished surveys go to a holder of their kind's read key only."""
+    if auth_ctx is None:
+        return Q(pk__in=[])
+    return Q(survey_type__in=readable_kinds(auth_ctx))
+
+
 @strawberry.type
 class SurveysQuery:
     @strawberry.field()
@@ -42,7 +50,8 @@ class SurveysQuery:
         # Cheap CASE, added unconditionally so the sort handler can order by it
         # without the pipeline having to know which sort was asked for.
         qs = annotate_status_rank(Survey.objects.filter(deleted_at__isnull=True))
-        qs = scope_listing_to_caller(qs, getattr(info.context, "auth_context", None))
+        auth_ctx = getattr(info.context, "auth_context", None)
+        qs = scope_listing_to_caller(qs, auth_ctx, staff_q=_survey_staff_q(auth_ctx))
         if has_any_under_prefix(paths, ("items", "contentType")):
             qs = qs.select_related("content_type")
 

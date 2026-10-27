@@ -4,7 +4,8 @@ from strawberry.types import Info
 from surveys.models import Survey
 from surveys.types import SurveyType
 from app.graphql_ids import as_pk
-from app.platform import PUBLIC_STATUS, ensure_in_org
+from app.permissions import readable_kinds
+from app.platform import PUBLIC_STATUS, ensure_in_org, is_platform_context
 
 
 @strawberry.type
@@ -32,4 +33,13 @@ class SurveyQuery:
             # tell it from one that does not exist.
             return survey if survey.status == PUBLIC_STATUS else None
         ensure_in_org(survey, auth_ctx)
+        # A context alone is not staff (`estate:AD-29`): inside the org an
+        # unpublished row needs its kind's read key, refused as not found. The
+        # platform context is unchanged; it needs a role (`auth:AD-2`).
+        if (
+            survey.status != PUBLIC_STATUS
+            and not is_platform_context(auth_ctx)
+            and survey.survey_type not in readable_kinds(auth_ctx)
+        ):
+            return None
         return survey

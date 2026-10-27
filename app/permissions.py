@@ -100,6 +100,24 @@ def get_permission_for_kind(assessment_type: AssessmentType, action: ActionType)
         ) from None
 
 
+def holds(auth_ctx, key: str) -> bool:
+    """Whether ``auth_ctx`` holds ``key``, without raising."""
+    try:
+        auth_ctx.require(key)
+    except MissingPermission:
+        return False
+    return True
+
+
+def readable_kinds(auth_ctx) -> list[str]:
+    """The survey kinds whose read key ``auth_ctx`` holds. Holding a kind's read
+    key is what makes a caller staff for that kind's unpublished surveys: the
+    surveys listing, ``Query.survey`` and the media gate all ask this one
+    question. Survey kinds only: the collection listing goes by
+    ``collections:read``."""
+    return [kind for kind, actions in PERMISSION_MAP.items() if holds(auth_ctx, actions["read"].value)]
+
+
 def require_permission(auth_ctx, assessment_type: AssessmentType, action: ActionType) -> None:
     """The key check `check_permission` runs, for a resolver that must also check a second row
     it names — import reads its source survey as well as updating its target."""

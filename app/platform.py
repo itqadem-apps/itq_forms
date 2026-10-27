@@ -9,6 +9,7 @@ during AppConfig.ready().
 """
 from __future__ import annotations
 
+from django.db.models import Q
 from pkg_auth.authorization import OrgId
 from pkg_auth.authorization import is_platform_context as _pkg_is_platform
 
@@ -74,7 +75,7 @@ def ensure_in_org(entity, auth_ctx, *, allow_platform_bypass: bool = True) -> No
         raise PermissionError("Resource belongs to another organization")
 
 
-def scope_listing_to_caller(qs, auth_ctx):
+def scope_listing_to_caller(qs, auth_ctx, *, staff_q):
     """Narrow a listing to the rows the caller's organization owns.
 
     SPEC-forms-permission-gates CAP-3. ``ensure_in_org`` closed single-row
@@ -121,9 +122,21 @@ def scope_listing_to_caller(qs, auth_ctx):
     they land here too rather than on the unscoped queryset they used to get.
     That path is the one that inverted the gate, handing a departed member
     strictly more than a current one; the middleware logs it.
+
+    Holding an ``AuthContext`` is not being staff (``estate:AD-29``): every
+    user is a roleless member of Itqadem, so an in-org caller gets the org's
+    published rows, plus the unpublished ones ``staff_q`` admits. The caller
+    supplies ``staff_q`` because the rule differs per model: surveys go by the
+    kind's read key (``readable_kinds``), collections by ``collections:read``.
+    A roleless member holds no keys, so ``staff_q`` admits nothing for them.
+    An empty ``Q()`` drops out of the OR, so to admit every row pass a
+    predicate that matches every row, such as ``Q(pk__isnull=False)``.
+    A platform context still sees everything; it needs a role (``auth:AD-2``).
     """
     if auth_ctx is None:
         return qs.filter(status=PUBLIC_STATUS)
     if is_platform_context(auth_ctx):
         return qs
-    return qs.filter(organization_id=auth_ctx.organization_id.value)
+    return qs.filter(organization_id=auth_ctx.organization_id.value).filter(
+        Q(status=PUBLIC_STATUS) | staff_q
+    )

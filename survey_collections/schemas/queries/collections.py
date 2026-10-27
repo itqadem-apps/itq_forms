@@ -22,6 +22,7 @@ from app.facets import build_category_tree_facet, build_price_range_facet
 from external_references.query import apply_external_reference_filter, has_external_reference_filter
 from survey_collections.models import SurveyCollection
 from app.graphql_ids import as_pk
+from app.permissions import Permission, holds
 from app.platform import scope_listing_to_caller
 from app.status_sort import annotate_status_rank
 from pricing.currency import SHOP_CURRENCY
@@ -40,6 +41,15 @@ def _run_without(qs, spec, **cleared):
     return collections_pipeline.run(DjangoQueryContext(qs, spec)).stmt
 
 
+def _collection_staff_q(auth_ctx) -> Q:
+    """Unpublished collections go to a holder of ``collections:read`` only."""
+    if auth_ctx is None or not holds(auth_ctx, Permission.COLLECTION_READ.value):
+        return Q(pk__in=[])
+    # Not `Q()`: an empty Q is dropped from an OR, which would leave
+    # published-only for staff too.
+    return Q(pk__isnull=False)
+
+
 @strawberry.type
 class CollectionsQuery:
     @strawberry.field()
@@ -50,7 +60,8 @@ class CollectionsQuery:
         qs = alias_title_sort(
             annotate_status_rank(SurveyCollection.objects.filter(deleted_at__isnull=True))
         )
-        qs = scope_listing_to_caller(qs, getattr(info.context, "auth_context", None))
+        auth_ctx = getattr(info.context, "auth_context", None)
+        qs = scope_listing_to_caller(qs, auth_ctx, staff_q=_collection_staff_q(auth_ctx))
         filters_input = collections_list_input.filters or SurveyCollectionFiltersInput()
 
         if filters_input.has_discount is not None:

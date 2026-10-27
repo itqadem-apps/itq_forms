@@ -40,7 +40,7 @@ from pkg_media.service_uploads import UploadRecord as Record
 from pydantic import BaseModel, Field
 from pydantic import ValidationError as BodyError
 
-from app.permissions import get_permission_for_kind
+from app.permissions import PERMISSION_MAP, Permission, get_permission_for_kind, holds
 from app.platform import ensure_in_org
 from media.access import Viewer, can_access, viewer_for
 from media.client import build_client
@@ -220,13 +220,21 @@ def may_answer_with_file(user_id: str, context: Dict[str, Any]) -> bool:
         return False
 
 
+_CREATE_KEYS = tuple(actions["create"].value for actions in PERMISSION_MAP.values()) + (
+    Permission.COLLECTION_CREATE.value,
+)
+
+
 def _may_edit(viewer: Viewer, context: Dict[str, Any], profile: UploadProfile) -> bool:
     """Forms' rule for starting (and attaching) an upload: an answer file
     goes by `may_answer_with_file`; anything else needs a member of an
     organization; for a survey named in `context["surveyId"]`, one of that
     organization holding the survey kind's update permission; for a
-    collection (`collectionId`), one of its organization. Item images belong
-    to a survey, so they need `surveyId`."""
+    collection (`collectionId`), one of its organization holding
+    `collections:update`. Item images belong to a survey, so they need
+    `surveyId`. With neither id, the artwork is for a row not created yet, so
+    the caller must hold some forms create key: a context alone is not staff,
+    since every user is a roleless member (`estate:AD-29`)."""
     if profile.name == FORMS_ANSWER_FILE.name:
         return may_answer_with_file(viewer.user_id, context)
     auth_ctx = viewer.auth_context
@@ -237,6 +245,9 @@ def _may_edit(viewer: Viewer, context: Dict[str, Any], profile: UploadProfile) -
     if profile.name == FORMS_ITEM_IMAGE.name and survey_id is None:
         return False
     try:
+        if survey_id is None and collection_id is None:
+            if not any(holds(auth_ctx, key) for key in _CREATE_KEYS):
+                raise PermissionError("Upload needs a forms create permission")
         if survey_id is not None:
             survey = Survey.objects.filter(pk=int(survey_id), deleted_at__isnull=True).first()
             if survey is None:
@@ -248,6 +259,7 @@ def _may_edit(viewer: Viewer, context: Dict[str, Any], profile: UploadProfile) -
             if collection is None:
                 return False
             ensure_in_org(collection, auth_ctx)
+            auth_ctx.require(Permission.COLLECTION_UPDATE.value)
     except (TypeError, ValueError, PermissionError, MissingPermission) as exc:
         logger.info("Upload refused for %s: %s: %s", viewer.user_id, type(exc).__name__, exc)
         return False
