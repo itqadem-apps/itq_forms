@@ -26,6 +26,7 @@ from .models import (
     UserSurveyClassification,
     UserSurveyRecommendation,
 )
+from media.asset_claims import claim_attempt
 from surveys.models import FlowAction, ScoreBasis, Survey
 from surveys.question_order import assert_forward_only, flat_order, flat_question_ids
 from survey_collections.models import SurveyCollection
@@ -356,6 +357,9 @@ def create_survey_snapshot(survey: Survey, user_survey: UserSurvey) -> None:
     snapshot = UserQuestion.objects.filter(user_survey=user_survey)
     positions = {pk: i for i, pk in enumerate(flat_question_ids(snapshot), start=1)}
     assert_forward_only(user_survey, positions, field="flow_target")
+
+    # The snapshot's copies of the survey's media, claimed in media after commit.
+    claim_attempt(user_survey)
 
 
 def _shuffle_questions(user_survey: UserSurvey) -> None:

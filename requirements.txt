@@ -11,7 +11,7 @@ django-environ==0.12.0
 pkg-filters[all] @ https://github.com/itqadem-apps/pkg_filters/releases/download/pkg_filters-v1.14.0/pkg_filters-1.14.0-py3-none-any.whl
 pkg-auth[acl-django,acl-sqlalchemy]==3.4.0
 unimessaging[broker,outbox] @ https://github.com/fritill-team/pkg_unimessaging/releases/download/pkg_unimessaging-v0.21.0/unimessaging-0.21.0-py3-none-any.whl
-pkg-media[grpc,strawberry] @ git+https://github.com/Itqadem/pkg_media.git@v1.0.1
+pkg-media[grpc,strawberry] @ git+https://github.com/Itqadem/pkg_media.git@v2.0.0
 xhtml2pdf==0.2.17
 python-json-logger==3.3.0
 django-prometheus==2.3.1

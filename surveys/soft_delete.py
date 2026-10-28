@@ -24,6 +24,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils import timezone
 
+from media.asset_claims import release_soft_deleted
 from surveys.models import AnswerSchemaOption, FlowAction, Question, Section
 from surveys.models.signals import resequence_options
 from surveys.question_order import renumber_questions
@@ -70,6 +71,7 @@ def soft_delete(kind: Kind, obj, survey_id: int) -> None:
 
     if kind == "option":
         AnswerSchemaOption.all_objects.filter(pk=obj.pk).update(deleted_at=stamp)
+        release_soft_deleted(AnswerSchemaOption, [obj.pk])
         resequence_options(obj.schema_id)
         return
 
@@ -87,6 +89,12 @@ def soft_delete(kind: Kind, obj, survey_id: int) -> None:
     if kind == "section":
         Section.all_objects.filter(submit_action_target_id=obj.pk).update(submit_action_target=None)
         Section.all_objects.filter(pk=obj.pk).update(deleted_at=stamp)
+    option_ids = list(AnswerSchemaOption.objects.filter(question_id__in=question_ids).values_list("id", flat=True))
     Question.objects.filter(pk__in=question_ids).update(deleted_at=stamp)
-    AnswerSchemaOption.objects.filter(question_id__in=question_ids).update(deleted_at=stamp)
+    AnswerSchemaOption.all_objects.filter(pk__in=option_ids).update(deleted_at=stamp)
+    # Media claims (`media.asset_claims`): `update()` fires no signal.
+    if kind == "section":
+        release_soft_deleted(Section, [obj.pk])
+    release_soft_deleted(Question, question_ids)
+    release_soft_deleted(AnswerSchemaOption, option_ids)
     renumber_questions(survey_id)
