@@ -40,3 +40,27 @@ class SurveyResponseSubmitted(DomainEvent):
     # The attempt's denominator under its own basis (`forms:AD-10`); null whenever `score` is.
     max_score: int | None = None
     submitted_at: datetime | None = None
+    # A scored attempt marked by hand: `score` is null here and arrives later in
+    # `SurveyResponseEvaluated`, so a consumer must not read the null as a grade.
+    awaiting_evaluation: bool = False
+
+
+@dataclass(slots=True)
+class SurveyResponseEvaluated(DomainEvent):
+    """Emitted when a hand-marked attempt is marked, and again on every re-mark: the
+    attempt's final score. Also re-published for past first attempts by the regrade apply.
+
+    ``first_attempt`` is true when this is the learner's earliest submitted attempt on the
+    survey (by ``submitted_at``, then id), the one a first-submission-wins consumer recorded.
+    """
+    aggregate_type: str = "survey_response"
+    aggregate_id: int | str | None = None  # user_survey.id
+    event: str = "SurveyResponseEvaluated"
+
+    survey_id: int | None = None
+    user_survey_id: int | None = None
+    respondent_user_id: int | None = None
+    score: int | None = None
+    max_score: int | None = None
+    evaluated_at: datetime | None = None
+    first_attempt: bool = False

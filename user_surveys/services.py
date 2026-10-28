@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
@@ -726,4 +727,37 @@ def _finish_locked(user_survey: UserSurvey, reason: str) -> None:
         # score / max_score; null when unscored or awaiting manual evaluation.
         max_score=max_score(user_survey) if user_survey.use_score and user_survey.score is not None else None,
         submitted_at=user_survey.submitted_at,
+        awaiting_evaluation=(
+            user_survey.use_score and user_survey.evaluation_type == UserSurvey.EVALUATION_TYPE_MANUAL
+        ),
+    ))
+
+
+def is_first_attempt(user_survey: UserSurvey) -> bool:
+    """No earlier submitted attempt by this learner on this survey (``submitted_at``, then id)."""
+    earlier = UserSurvey.objects.filter(
+        user_id=user_survey.user_id,
+        survey_id=user_survey.survey_id,
+        submitted_at__isnull=False,
+    ).filter(
+        Q(submitted_at__lt=user_survey.submitted_at)
+        | Q(submitted_at=user_survey.submitted_at, id__lt=user_survey.id)
+    )
+    return not earlier.exists()
+
+
+def publish_evaluated(user_survey: UserSurvey, *, first_attempt: bool | None = None) -> None:
+    """Publish a scored, submitted attempt's final score (outbox: the caller's transaction)."""
+    from app.messaging.publisher import publish
+    from user_surveys.events import SurveyResponseEvaluated
+
+    publish(SurveyResponseEvaluated(
+        aggregate_id=user_survey.id,
+        survey_id=user_survey.survey_id,
+        user_survey_id=user_survey.id,
+        respondent_user_id=user_survey.user_id,
+        score=user_survey.score,
+        max_score=max_score(user_survey),
+        evaluated_at=user_survey.evaluated_at,
+        first_attempt=is_first_attempt(user_survey) if first_attempt is None else first_attempt,
     ))

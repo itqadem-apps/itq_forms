@@ -15,7 +15,7 @@ from user_surveys.models import (
     UserSurveyClassification,
     UserSurveyRecommendation,
 )
-from user_surveys.services import evaluate_assessment
+from user_surveys.services import evaluate_assessment, publish_evaluated
 from user_surveys.types import FinishAssessmentResult
 from user_surveys.types.user_survey import UserAnswerType
 from ..common import RequireAuth
@@ -160,6 +160,10 @@ class ManualEvaluationMutation:
                 update_fields.append("action")
             if update_fields:
                 user_survey.save(update_fields=update_fields)
+
+            # The marked score is final only here; courses graded the submission as pending.
+            if user_survey.use_score and user_survey.score is not None:
+                publish_evaluated(user_survey)
 
         if refusal:
             raise ValidationError(refusal)
