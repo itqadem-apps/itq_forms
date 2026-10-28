@@ -5,7 +5,8 @@ context with no keys is an ordinary customer. Gate-audit rows #1, #2 and #4
 (`.agent/planning/audits/roleless-membership-gates.md`): the listings,
 `Query.survey` and upload start used to treat any context as staff.
 Unpublished rows now need the kind's read key (`collections:read` for
-collections), and upload start needs a permission.
+collections), and upload start needs a permission. Row #3 (story 1.17):
+creating a collection needs `collections:create`.
 """
 import logging
 import os
@@ -24,8 +25,9 @@ import app.platform as platform
 from media.access import Viewer
 from media.profiles import FORMS_THUMB
 from media.views import _may_edit
-from survey_collections.inputs import SurveyCollectionsListInput
+from survey_collections.inputs import SurveyCollectionInput, SurveyCollectionsListInput
 from survey_collections.models import SurveyCollection
+from survey_collections.schemas.mutations.collections import SurveyCollectionMutations
 from survey_collections.schemas.queries.collections import CollectionsQuery
 from surveys.inputs import SurveysListInput
 from surveys.models import Survey
@@ -226,3 +228,48 @@ def test_staff_may_start_an_upload(collections):
     assert _may_upload(
         _ctx({"collections:update"}), {"collectionId": str(collections["draft"].pk)}
     ) is True
+
+
+# --- collection create ------------------------------------------------------
+
+def _create_collection(auth_ctx, **fields):
+    fn = SurveyCollectionMutations.create_survey_collection
+    while hasattr(fn, "__wrapped__"):
+        fn = fn.__wrapped__
+    return fn(
+        SurveyCollectionMutations(), _Info(auth_ctx),
+        input=SurveyCollectionInput(**fields), django_user=None,
+    )
+
+
+@pytest.mark.parametrize(
+    "auth_ctx",
+    [
+        pytest.param(_ctx(), id="roleless"),
+        pytest.param(_ctx({"collections:read", "collections:update", "collections:delete", "surveys:create"}), id="wrong-keys"),
+        pytest.param(_ctx(org=PLATFORM_ORG, roles={"platform-admin"}), id="platform-without-key"),
+    ],
+)
+def test_creating_a_collection_needs_collections_create(db, auth_ctx):
+    with pytest.raises(PermissionError, match="collections:create"):
+        _create_collection(auth_ctx, status="draft")
+    assert not SurveyCollection.objects.exists()
+
+
+def test_the_create_refusal_comes_before_claim_validation(db):
+    with pytest.raises(PermissionError, match="collections:create"):
+        _create_collection(_ctx(), thumb_id=str(uuid.uuid4()))
+    assert not SurveyCollection.objects.exists()
+
+
+def test_create_without_a_context_is_still_refused(db):
+    with pytest.raises(PermissionError, match="X-Organization-Id"):
+        _create_collection(None, status="draft")
+    assert not SurveyCollection.objects.exists()
+
+
+def test_staff_create_a_collection_in_their_organization(db):
+    collection = _create_collection(_ctx({"collections:create"}), status="draft")
+    assert SurveyCollection.objects.get().pk == collection.pk
+    assert collection.organization_id == ORG
+    assert collection.status == "draft"

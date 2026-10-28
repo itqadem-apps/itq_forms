@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pytest
 import strawberry
 from django.core.exceptions import ValidationError
-from pkg_auth.authorization import OrgId
+from pkg_auth.authorization import AuthContext, OrgId, UserId
 
 import surveys.schemas.schema  # noqa: F401  (resolves the mutation import cycle)
 from media.models import UploadRecord
@@ -173,9 +173,17 @@ def test_collection_artwork(user, collection):
     with pytest.raises(ValidationError):
         update(SurveyCollectionMutations(), _info(user), id=collection.pk,
                input=SurveyCollectionInput(cover_id=str(uuid.uuid4())))
+    # Create checks collections:create before claims, so this caller holds it.
+    creator = SimpleNamespace(context=SimpleNamespace(
+        identity=SimpleNamespace(subject_str=user.pk),
+        auth_context=AuthContext(
+            user_id=UserId(user.pk), organization_id=OrgId(ORG),
+            role_names=frozenset(), perms=frozenset({"collections:create"}),
+        ),
+    ))
     with pytest.raises(ValidationError):
         _resolver(SurveyCollectionMutations, "create_survey_collection")(
-            SurveyCollectionMutations(), _info(user), input=SurveyCollectionInput(thumb_id=str(uuid.uuid4())),
+            SurveyCollectionMutations(), creator, input=SurveyCollectionInput(thumb_id=str(uuid.uuid4())),
         )
 
     cover = _claimed(user, profile="forms-cover")

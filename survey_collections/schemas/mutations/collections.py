@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now
 
 from app.auth_utils import with_django_user
-from app.permissions import check_permission
+from app.permissions import Permission, check_permission, holds
 from app.schema_common import RequireAuth, OperationResult
 from media.claims import ARTWORK_SLOTS, require_claimed
 from pricing.services import upsert_prices_for_parent
@@ -33,19 +33,26 @@ class SurveyCollectionMutations:
         input: SurveyCollectionInput,
         django_user: strawberry.Private[AbstractBaseUser] = None,
     ) -> SurveyCollectionType:
+        # RequireAuth proves identity only, and collections are not a
+        # PERMISSION_MAP kind, so check_permission cannot gate this resolver:
+        # the org context and the key are both checked here, before claims or
+        # any write. A context alone is not staff (estate:AD-29): every user is
+        # a roleless member of Itqadem. A null-owned row is what the CAP-2 row
+        # gate refuses to serve back, and what migration 0040 had to repair.
+        auth_ctx = getattr(info.context, "auth_context", None)
+        if auth_ctx is None:
+            raise PermissionError("Missing X-Organization-Id header")
+        if not holds(auth_ctx, Permission.COLLECTION_CREATE.value):
+            raise PermissionError(
+                f"Permission denied. Required permission: {Permission.COLLECTION_CREATE.value}"
+            )
+
         data = input_to_dict(input, exclude=['category_id', 'translations', 'prices'])
         require_claimed(info, data, ARTWORK_SLOTS)
 
         # The owning organization is bound from the caller's auth context, never
         # taken from client input — the same contract create_survey follows, see
-        # SPEC-forms-permission-gates CAP-1. Unlike the survey mutations there is
-        # no check_permission here to have proven an org context already, and
-        # RequireAuth only proves identity, so it is checked explicitly: a
-        # null-owned row is exactly what the CAP-2 row gate refuses to serve
-        # back, and what migration 0040 had to repair.
-        auth_ctx = getattr(info.context, "auth_context", None)
-        if auth_ctx is None:
-            raise PermissionError("Missing X-Organization-Id header")
+        # SPEC-forms-permission-gates CAP-1.
         data['organization_id'] = auth_ctx.organization_id.value
 
         if input.category_id is not strawberry.UNSET and input.category_id is not None:
