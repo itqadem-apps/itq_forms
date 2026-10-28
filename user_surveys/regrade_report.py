@@ -77,6 +77,20 @@ def plan():
     }
 
 
+def to_publish():
+    """The first attempts the apply re-publishes as `SurveyResponseEvaluated` (`estate:AD-31`):
+    scored ones whose courses grade is wrong, i.e. the grade changes under score / max_score, or
+    the attempt was marked by hand (courses stored 100 at submit)."""
+    candidates = [us for us in _first_attempts() if us.use_score and us.score is not None]
+    maxes = max_scores(candidates)
+    out = []
+    for us in candidates:
+        old, new = grades(us.score, maxes[us.id])
+        if abs(new - old) > _EPSILON or us.evaluation_type == UserSurvey.EVALUATION_TYPE_MANUAL:
+            out.append(us)
+    return out
+
+
 def _counts(row):
     return (
         f"candidates={row['candidates']} changed={row['changed']} score_over_100={row['over_100']}"

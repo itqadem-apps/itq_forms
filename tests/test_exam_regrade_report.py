@@ -255,3 +255,21 @@ def test_grades_clamp_and_fall_back():
     assert grades(-10, 50) == (0.0, 0.0)
     assert grades(0, 0) == (0.0, 0.0)
     assert grades(72, -1) == (72.0, 72.0)
+
+
+def test_the_fresh_report_adds_how_many_the_apply_publishes(user, user2, survey, capsys):
+    """`0033` prints `0030`'s lines plus `would_publish`: a changed grade or a hand-marked one."""
+    from user_surveys.regrade_report import to_publish
+
+    _worth(survey, 100)
+    manual = _attempt(user, survey, 50, evaluation_type=UserSurvey.EVALUATION_TYPE_MANUAL)
+    _attempt(user2, survey, 50)  # 50 of 100 is unchanged and automatic: courses already holds it
+    before = _snapshot()
+
+    importlib.import_module("user_surveys.migrations.0033_report_exam_regrade_again").forwards(None, None)
+
+    assert _snapshot() == before
+    out = capsys.readouterr().out
+    assert "exam_regrade_report would_publish=1" in out
+    assert _survey_line(survey, 2, 0, manual=1) in out
+    assert [us.pk for us in to_publish()] == [manual.pk]
