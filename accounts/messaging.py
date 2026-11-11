@@ -9,6 +9,11 @@ from accounts.models import User, Child, ChildGuardian
 
 logger = logging.getLogger(__name__)
 
+# Allowlist, not a fall-through: only these events upsert a relation (with the
+# status they carry), GuardianRelationEnded marks it ended, and every other
+# event (GuardianRelationRejected, GuardianParentSet, future ones) is dropped.
+_CHILD_GUARDIAN_UPSERT_EVENTS = frozenset({"GuardianRelationCreated", "GuardianRelationApproved"})
+
 
 @sync_to_async
 def _upsert_user(user: dict[str, Any]) -> tuple[User, bool]:
@@ -132,4 +137,8 @@ async def handle_child_guardian_event(payload: dict[str, Any], subject: str | No
         await _mark_child_guardian_ended(payload.get("aggregate_id"), payload)
         return
 
-    await _upsert_child_guardian(guardian_payload, payload)
+    if event in _CHILD_GUARDIAN_UPSERT_EVENTS:
+        await _upsert_child_guardian(guardian_payload, payload)
+        return
+
+    logger.debug("Ignoring child_guardian event %r", event)
