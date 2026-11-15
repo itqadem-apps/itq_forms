@@ -9,10 +9,13 @@ Access for an organization is derived from the child's active supervisor
 relation — the consent path the guardian approved and can revoke — so these
 tests pin the derivation, not a stored column.
 """
+import uuid
+
 import pytest
 from pkg_auth.authorization import MissingPermission
 
 from accounts.models import Child, ChildGuardian
+from surveys.models import Survey
 from app.permissions import Permission
 from user_surveys.models import UserSurvey
 from user_surveys.schemas.queries import user_surveys as module
@@ -92,6 +95,36 @@ def test_org_admin_does_not_see_adult_self_submissions(user, user2, platform):
 
     ctx = _AuthContext(ORG, {Permission.SUBMISSION_READ.value})
     assert adult not in _visible(ctx, user)
+
+
+def test_org_admin_sees_adult_self_submissions_on_its_own_surveys(user, user2, platform):
+    """Report #125: the survey's owner reads a user's self-submissions to it."""
+    org = uuid.uuid4()
+    ours = UserSurvey.objects.create(user=user2, survey=Survey.objects.create(organization_id=org))
+    theirs = UserSurvey.objects.create(user=user2, survey=Survey.objects.create(organization_id=uuid.uuid4()))
+
+    visible = _visible(_AuthContext(str(org), {Permission.SUBMISSION_READ.value}), user)
+
+    assert ours in visible
+    assert theirs not in visible
+
+
+def test_own_survey_does_not_open_another_orgs_child(user, user2, platform):
+    """Owning the survey is no supervisor relation: a child's row stays closed."""
+    org = uuid.uuid4()
+    child = Child.objects.create(id="child-elsewhere", name="child-elsewhere")
+    row = UserSurvey.objects.create(
+        user=user2, child=child, survey=Survey.objects.create(organization_id=org)
+    )
+
+    assert row not in _visible(_AuthContext(str(org), {Permission.SUBMISSION_READ.value}), user)
+
+
+def test_own_survey_needs_submissions_read(user, user2, platform):
+    org = uuid.uuid4()
+    row = UserSurvey.objects.create(user=user2, survey=Survey.objects.create(organization_id=org))
+
+    assert row not in _visible(_AuthContext(str(org)), user)
 
 
 def test_org_admin_sees_submissions_predating_the_relation(user, user2, platform):

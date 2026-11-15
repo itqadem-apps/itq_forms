@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import fields as dc_fields
 from typing import Optional
 
@@ -57,7 +58,9 @@ def _submissions_visible_to(info: Info, django_user) -> QuerySet:
     - a ``submissions:read`` holder in a tenant context reads the submissions
       of the children its organization actively supervises;
     - adult self-submissions have no child and so no relation to derive from:
-      they stay private to their submitter and platform admins;
+      a ``submissions:read`` holder reads them only on surveys its own
+      organization owns (report #125: Itqadem's admins could not see what a
+      user had solved on Itqadem's surveys); another organization never does;
     - everyone reads their own, whatever else they hold.
 
     The supervisor relation is read through ``accounts.ChildGuardian``, a
@@ -86,7 +89,12 @@ def visible_submissions(auth_ctx, user_id) -> QuerySet:
         return UserSurvey.objects.filter(own)
 
     supervised = Q(child_id__in=supervised_child_ids_for_org(organization_id))
-    return UserSurvey.objects.filter(own | supervised)
+    try:
+        owner = uuid.UUID(str(organization_id))
+    except ValueError:
+        return UserSurvey.objects.filter(own | supervised)
+    on_own_surveys = Q(child__isnull=True, survey__organization_id=owner)
+    return UserSurvey.objects.filter(own | supervised | on_own_surveys)
 
 
 @strawberry.type
