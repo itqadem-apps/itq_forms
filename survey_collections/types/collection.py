@@ -10,7 +10,7 @@ from strawberry.types import Info
 from pkg_media.integrations.strawberry import EmbeddedMediaType
 
 from media import embedding
-from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
+from survey_collections.models import CollectionMembership, SurveyCollection, SurveyCollectionTranslation
 from pricing.types import PriceType
 
 
@@ -40,7 +40,13 @@ class SurveyCollectionType:
 
     @strawberry.field
     def assessments(self) -> List[Annotated["SurveyType", strawberry.lazy("surveys.types.survey")]]:
-        return list(self.assessments.filter(deleted_at__isnull=True))
+        memberships = (
+            CollectionMembership.objects
+            .filter(surveycollection=self, survey__deleted_at__isnull=True)
+            .select_related("survey")
+            .order_by("order", "id")
+        )
+        return [m.survey for m in memberships]
 
 
 @strawberry_django.type(SurveyCollectionTranslation)

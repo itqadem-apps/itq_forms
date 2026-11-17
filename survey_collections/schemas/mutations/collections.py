@@ -1,8 +1,11 @@
+from typing import List
+
 import strawberry
 import strawberry_django
 from strawberry.types import Info
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db import transaction
 from django.utils.timezone import now
 
 from app.auth_utils import with_django_user
@@ -12,11 +15,12 @@ from media.claims import ARTWORK_SLOTS, require_claimed
 from pricing.services import upsert_prices_for_parent
 from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.types import SurveyCollectionType
-from survey_collections.models import SurveyCollection, SurveyCollectionTranslation
+from survey_collections.models import CollectionMembership, SurveyCollection, SurveyCollectionTranslation
 from surveys.models import Survey
 from surveys.schemas.utils import input_to_dict
 from taxonomy.models import Category
 from app.graphql_ids import as_pk
+from app.platform import ensure_in_org
 
 
 def _type_from_survey_id(info, survey_id, **kw):
@@ -152,7 +156,49 @@ class SurveyCollectionMutations:
         survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
-        collection.assessments.add(survey)
+        collection.append_member(survey)
+        return collection
+
+    @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)
+    @with_django_user
+    @transaction.atomic
+    def reorder_collection_surveys(
+        self,
+        info: Info,
+        collection_id: strawberry.ID,
+        survey_ids: List[strawberry.ID],
+        django_user: strawberry.Private[AbstractBaseUser] = None,
+    ) -> SurveyCollectionType:
+        """Save a collection's member order: `survey_ids` names every live member once."""
+        auth_ctx = getattr(info.context, "auth_context", None)
+        if auth_ctx is None:
+            raise PermissionError("Missing X-Organization-Id header")
+        if not holds(auth_ctx, Permission.COLLECTION_UPDATE.value):
+            raise PermissionError(
+                f"Permission denied. Required permission: {Permission.COLLECTION_UPDATE.value}"
+            )
+        collection = SurveyCollection.objects.select_for_update().get(
+            pk=as_pk(collection_id), deleted_at__isnull=True
+        )
+        ensure_in_org(collection, auth_ctx)
+
+        wanted = [as_pk(i) for i in survey_ids]
+        memberships = list(
+            CollectionMembership.objects.filter(surveycollection=collection)
+            .select_related("survey")
+            .order_by("order", "id")
+        )
+        live = {m.survey_id: m for m in memberships if m.survey.deleted_at is None}
+        if len(wanted) != len(set(wanted)) or set(wanted) != set(live):
+            raise ValidationError(
+                "The new order must name every survey in the collection exactly once."
+            )
+
+        # Soft-deleted members are never shown, so they keep their relative place after the rest.
+        ordered = [live[i] for i in wanted] + [m for m in memberships if m.survey_id not in live]
+        for position, membership in enumerate(ordered):
+            membership.order = position
+        CollectionMembership.objects.bulk_update(ordered, ["order"])
         return collection
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)

@@ -146,7 +146,7 @@ class SurveyMutations:
         survey = Survey.objects.create(**data)
 
         if target_collection is not None:
-            target_collection.assessments.add(survey)
+            target_collection.append_member(survey)
 
         if input.translations is not UNSET and input.translations:
             for t in input.translations:

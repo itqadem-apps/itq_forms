@@ -13,6 +13,7 @@ from external_references.query import apply_external_reference_filter, has_exter
 from surveys.filters import SurveyProjection, SurveySpec, pipeline, survey_sort_input_to_spec
 from surveys.inputs import SurveyFilters, SurveyFiltersInput, SurveysListInput
 from surveys.models import Survey
+from survey_collections.ordering import order_by_collection
 from app.facets import build_category_tree_facet, build_price_range_facet
 from surveys.types.results import SurveyResultsGQL, SurveysFacetsGQL
 from app.graphql_ids import as_pk
@@ -111,6 +112,8 @@ class SurveysQuery:
             sort=survey_sort_input_to_spec(surveys_list_input.sort),
         )
         base_qs = pipeline.run(DjangoQueryContext(qs, spec)).stmt
+        if spec.sort is None and filters_data.get("collection_id") is not None:
+            base_qs = order_by_collection(base_qs, filters_data["collection_id"])
 
         total = base_qs.count()
         items = list(base_qs[surveys_list_input.offset : surveys_list_input.offset + surveys_list_input.limit])

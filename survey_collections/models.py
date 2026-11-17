@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
@@ -55,8 +55,22 @@ class SurveyCollection(models.Model):
         Survey,
         related_name="collections",
         blank=True,
+        through="CollectionMembership",
         help_text=_("Assessments included in this collection."),
     )
+
+    def append_member(self, survey):
+        """Add `survey` after the existing members; a no-op if it is already one."""
+        with transaction.atomic():
+            # The same row lock as reorder_collection_surveys, so concurrent appends and saves serialize.
+            list(SurveyCollection.objects.select_for_update().filter(pk=self.pk).values_list("pk", flat=True))
+            memberships = CollectionMembership.objects.filter(surveycollection=self)
+            if memberships.filter(survey=survey).exists():
+                return
+            last = memberships.aggregate(m=models.Max("order"))["m"]
+            CollectionMembership.objects.create(
+                surveycollection=self, survey=survey, order=0 if last is None else last + 1
+            )
 
     @property
     def title(self):
@@ -91,3 +105,24 @@ class SurveyCollectionTranslation(models.Model):
     short_description = models.TextField(null=True, blank=True)
     slug = models.CharField(max_length=255, null=True, blank=True)
     seo = models.JSONField(null=True, blank=True)
+
+
+class CollectionMembership(models.Model):
+    """A collection's member, in the order the admin set (report #128).
+
+    Adopts the table Django created for the plain M2M, so the column names are
+    the auto-generated ones; migration 0016 added `order` without moving a row.
+    """
+
+    surveycollection = models.ForeignKey(
+        SurveyCollection, on_delete=models.CASCADE, related_name="memberships"
+    )
+    survey = models.ForeignKey(
+        Survey, on_delete=models.CASCADE, related_name="collection_memberships"
+    )
+    # db_default: inserts that name only the two ids (the pre-release pod mid-rollout, legacy_load) still succeed.
+    order = models.PositiveIntegerField(default=0, db_default=0)
+
+    class Meta:
+        db_table = "survey_collections_surveycollection_assessments"
+        unique_together = [("surveycollection", "survey")]
