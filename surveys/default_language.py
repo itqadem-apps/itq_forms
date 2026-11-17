@@ -2,8 +2,8 @@
 stories default-language-translations 1.1 and 1.2).
 
 The admin Build page reads only a real language, so classification names, recommendation texts and
-action titles and descriptions labelled "default" show as empty boxes. Story 1.2 relabels them to
-their survey's primary language; this module decides, for every "default" row of the three tables,
+action titles and descriptions labelled "default" show as empty boxes. Story 1.2 relabels the
+relabellable ones to their survey's primary language and leaves every other bucket; this module decides, for every "default" row of the three tables,
 which one bucket it falls in, checked in this order:
 
 - **parent deleted**: the classification or recommendation has `deleted_at` set (actions have no
@@ -16,8 +16,9 @@ which one bucket it falls in, checked in this order:
   text (blank = every text field null or empty once HTML tags and whitespace are removed);
 - **relabellable**: everything else, grouped by the primary language it would take.
 
-Reads only. The report ships as surveys migration 0061 (writes nothing); story 1.2's apply reuses
-`find_default_rows` so the number it relabels is the number reported.
+`find_default_rows` and `summary` only read; the report ships as surveys migration 0061 (writes
+nothing). `apply` is story 1.2's write (surveys migration 0062): it relabels the relabellable bucket
+and nothing else, so the number it relabels is the number reported.
 """
 
 from __future__ import annotations
@@ -174,4 +175,28 @@ def summary(found: list[TableFound]) -> list[str]:
         lines.append(f"{t.table}: relabellable but the survey or option is deleted: {len(t.survey_deleted)}")
         lines.append(f"{t.table}: relabellable but the default text itself is blank: {len(t.default_blank)}")
         lines.append(f"{t.table}: labelled a \"default\" variant (other case or spaces), not counted above: {t.variants}")
+    return lines
+
+
+def apply(found: list[TableFound]) -> list[str]:
+    """Relabel each table's relabellable rows to their survey's primary language, changing only the
+    `language` column, and return the log lines: per table, the count relabelled to each language
+    and the count left labelled "default". Every other bucket is left as it is (clash rows keep the
+    primary-language text, ruled 2026-11-17). Raises on a count mismatch so the caller's transaction
+    rolls back."""
+    from django.apps import apps
+
+    lines: list[str] = []
+    for spec, t in zip(SPECS, found, strict=True):
+        model = apps.get_model(spec.translation)
+        relabelled = 0
+        for language, ids in sorted(t.relabellable_by_language.items()):
+            updated = model._base_manager.filter(id__in=ids, language=DEFAULT).update(language=language)
+            if updated != len(ids):
+                raise RuntimeError(
+                    f"default-language: {t.table}: relabelled {updated} to {language}, expected {len(ids)}"
+                )
+            relabelled += updated
+            lines.append(f"{t.table}: relabelled to {language}: {updated}")
+        lines.append(f"{t.table}: left labelled \"default\": {t.total - relabelled}")
     return lines

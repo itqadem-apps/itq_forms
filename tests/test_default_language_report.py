@@ -273,7 +273,7 @@ def test_ids_line_is_capped(db):
     assert line.count(",") == dl.MAX_IDS
 
 
-def test_report_sits_on_the_current_leaves():
+def test_report_depends_on_the_leaves_it_was_written_on():
     # pytest.ini's --no-migrations blanks MIGRATION_MODULES; read the graph from disk.
     with override_settings(MIGRATION_MODULES={}):
         loader = MigrationLoader(None, ignore_no_migrations=True)
@@ -284,4 +284,3 @@ def test_report_sits_on_the_current_leaves():
         ("classifications", "0003_remove_classification_name"),
         ("recommendations", "0006_report_empty_recommendations"),
     }
-    assert loader.graph.leaf_nodes("surveys") == [("surveys", "0061_report_default_language_rows")]
