@@ -12,7 +12,8 @@ stores are ever allowed, so the endpoints never serve another service's asset.
 - Learner snapshot copies (`UserSurvey`, `UserSection`, `UserQuestion`,
   `UserAnswerOption`) and answer files (`UserAnswer`): the submissions the caller may read, which are their
   own plus, for `submissions:read`, those of children their organization
-  supervises (`visible_submissions`, the `userSurvey` query's rule).
+  supervises and every one to a survey it owns (`visible_submissions`, the
+  `userSurvey` query's rule).
 - An answer file the caller uploaded and claimed themselves, before the
   answer holds it (the upload widget shows its progress through resolve).
 """

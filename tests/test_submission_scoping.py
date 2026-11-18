@@ -109,15 +109,22 @@ def test_org_admin_sees_adult_self_submissions_on_its_own_surveys(user, user2, p
     assert theirs not in visible
 
 
-def test_own_survey_does_not_open_another_orgs_child(user, user2, platform):
-    """Owning the survey is no supervisor relation: a child's row stays closed."""
+def test_own_survey_opens_an_unsupervised_childs_row(user, user2, platform):
+    """Report #137: the survey's owner reads what a parent filled in for a child it does not
+    supervise, on its own surveys only."""
     org = uuid.uuid4()
     child = Child.objects.create(id="child-elsewhere", name="child-elsewhere")
-    row = UserSurvey.objects.create(
+    ours = UserSurvey.objects.create(
         user=user2, child=child, survey=Survey.objects.create(organization_id=org)
     )
+    theirs = UserSurvey.objects.create(
+        user=user2, child=child, survey=Survey.objects.create(organization_id=uuid.uuid4())
+    )
 
-    assert row not in _visible(_AuthContext(str(org), {Permission.SUBMISSION_READ.value}), user)
+    visible = _visible(_AuthContext(str(org), {Permission.SUBMISSION_READ.value}), user)
+
+    assert ours in visible
+    assert theirs not in visible
 
 
 def test_own_survey_needs_submissions_read(user, user2, platform):
