@@ -10,10 +10,11 @@ The tables are every model of the project's own apps, auto-created M2M through t
 whose primary key is an auto-increment field, read from the registry passed in (a migration's
 historical `apps`, so a fresh database never names a table that does not exist yet).
 
-Reads only: `last_value` is read straight from the sequence, which never advances it. The report
-ships as `surveys` migration 0063 (writes nothing); the apply (story 3.2) reuses `read_counters`
-and ships in its own release. Tables are never schema-qualified; `pg_get_serial_sequence` and the
-connection's search path resolve them.
+`read_counters` reads only: `last_value` is read straight from the sequence, which never advances
+it. The report ships as `surveys` migration 0063 (writes nothing). The apply (story 3.2) is
+`raise_behind`, shipped as `surveys` 0064 in its own release: it re-reads every counter and raises
+each one still behind to its table's live `max(id)`, never lowering one. Tables are never
+schema-qualified; `pg_get_serial_sequence` and the connection's search path resolve them.
 """
 
 from __future__ import annotations
@@ -92,6 +93,35 @@ def read_counters(apps, connection) -> list[Counter]:
             cur.execute(f"select max({qn(column)}) from {qn(table)}")
             counters.append(Counter(table, sequence, last_value, is_called, cur.fetchone()[0]))
     return counters
+
+
+def raise_behind(apps, connection) -> list[tuple[str, int, int]]:
+    """Raise every counter still behind to its table's `max(id)`; (table, next before, next after)
+    for each one raised.
+
+    The pre-read only picks the tables. The counter and `max(id)` are read inside the one statement
+    that writes, which does nothing once the counter is past `max(id)`; sequences are
+    non-transactional, so a `nextval` could land only inside that statement, and on prod the old
+    pod's `nextval` values sit far below `max(id)`.
+    """
+    raised = []
+    qn = connection.ops.quote_name
+    columns = dict(serial_tables(apps))
+    with connection.cursor() as cur:
+        for counter in read_counters(apps, connection):
+            if not counter.behind:
+                continue
+            seq = counter.sequence
+            cur.execute(
+                f"select setval(%s, m) from (select max({qn(columns[counter.table])}) as m "
+                f"from {qn(counter.table)}) x where m is not null and m >= "
+                f"(select case when is_called then last_value + 1 else last_value end from {seq})",
+                [seq],
+            )
+            row = cur.fetchone()
+            if row is not None:
+                raised.append((counter.table, counter.next_id, row[0] + 1))
+    return raised
 
 
 def summary(counters: list[Counter]) -> list[str]:

@@ -14,6 +14,7 @@ from surveys import id_counters
 from surveys.id_counters import Counter
 
 MIGRATION = ("surveys", "0063_report_id_counters")
+APPLY = ("surveys", "0064_apply_id_counters")
 
 
 def _loader():
@@ -58,7 +59,8 @@ def test_summary_formats_every_case():
 
 
 @pytest.mark.skipif(connection.vendor == "postgresql", reason="Postgres path: test_id_counters_postgres.py")
-def test_forwards_on_sqlite_only_skips(db, capsys):
+@pytest.mark.parametrize("name", [MIGRATION[1], APPLY[1]])
+def test_forwards_on_sqlite_only_skips(db, capsys, name):
     Recommendation.objects.create()
     before = sorted(Recommendation._base_manager.values_list("id", "survey_id", "deleted_at"))
 
@@ -67,7 +69,7 @@ def test_forwards_on_sqlite_only_skips(db, capsys):
 
     editor = Editor()
     editor.connection = connection
-    importlib.import_module("surveys.migrations.0063_report_id_counters").forwards(None, editor)
+    importlib.import_module(f"surveys.migrations.{name}").forwards(None, editor)
 
     assert sorted(Recommendation._base_manager.values_list("id", "survey_id", "deleted_at")) == before
     out = [line for line in capsys.readouterr().out.splitlines() if line.strip()]
@@ -78,7 +80,8 @@ def test_report_sits_on_every_leaf():
     loader = _loader()
     migration = loader.get_migration(*MIGRATION)
 
-    assert loader.graph.leaf_nodes("surveys") == [MIGRATION]
+    assert loader.graph.leaf_nodes("surveys") == [APPLY]
+    assert loader.get_migration(*APPLY).dependencies == [MIGRATION]
     for label in id_counters.PROJECT_APPS:
         if label == "surveys":
             continue
