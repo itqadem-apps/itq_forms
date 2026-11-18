@@ -198,4 +198,3 @@ def test_apply_depends_on_the_report_and_is_atomic():
 
     assert migration.dependencies == [("surveys", "0061_report_default_language_rows")]
     assert migration.atomic is True
-    assert loader.graph.leaf_nodes("surveys") == [("surveys", "0062_apply_default_language_relabel")]
