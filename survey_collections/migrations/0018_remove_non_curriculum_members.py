@@ -29,16 +29,18 @@ def forwards(apps, schema_editor):
     from survey_collections import rule_report
 
     membership = apps.get_model("survey_collections", "CollectionMembership")
+    reference = apps.get_model("external_references", "ExternalReference")
     print("\n  collection-rules: apply (remove non-curriculum members)")
-    for line in rule_report.apply(membership):
+    for line in rule_report.apply(membership, reference):
         print(f"  collection-rules: {line}")
-    for line in rule_report.summary(rule_report.find(membership)):
+    for line in rule_report.summary(rule_report.find(membership, reference)):
         print(f"  collection-rules: after apply: {line}")
 
 
 class Migration(migrations.Migration):
     dependencies = [
         ("survey_collections", "0017_report_rule_breaking_members"),
+        ("external_references", "0001_initial"),
     ]
 
     operations = [

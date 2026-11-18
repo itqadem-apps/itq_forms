@@ -18,7 +18,10 @@ def forwards(apps, schema_editor):
 
     print("\n  collection-rules: report (nothing written)")
     for line in rule_report.summary(
-        rule_report.find(apps.get_model("survey_collections", "CollectionMembership"))
+        rule_report.find(
+            apps.get_model("survey_collections", "CollectionMembership"),
+            apps.get_model("external_references", "ExternalReference"),
+        )
     ):
         print(f"  collection-rules: {line}")
 
@@ -27,6 +30,8 @@ class Migration(migrations.Migration):
     dependencies = [
         ("survey_collections", "0016_collection_member_order"),
         ("surveys", "0062_apply_default_language_relabel"),
+        # Story 2.2: the rule skips course collections, found through their courses reference.
+        ("external_references", "0001_initial"),
     ]
 
     operations = [

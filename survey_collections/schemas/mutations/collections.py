@@ -13,6 +13,7 @@ from app.permissions import Permission, check_permission, holds
 from app.schema_common import RequireAuth, OperationResult
 from media.claims import ARTWORK_SLOTS, require_claimed
 from pricing.services import upsert_prices_for_parent
+from survey_collections import rule_report
 from survey_collections.inputs import SurveyCollectionInput
 from survey_collections.types import SurveyCollectionType
 from survey_collections.models import CollectionMembership, SurveyCollection, SurveyCollectionTranslation
@@ -156,7 +157,14 @@ class SurveyCollectionMutations:
         survey_id = as_pk(survey_id)
         collection = SurveyCollection.objects.get(pk=collection_id)
         survey = Survey.objects.get(pk=survey_id)
-        collection.append_member(survey)
+        with transaction.atomic():
+            # Lock the survey so two adds of one curriculum to two collections cannot both pass
+            # the one-collection check before either is stored.
+            list(Survey.objects.select_for_update().filter(pk=survey.pk).values_list("pk", flat=True))
+            refused = rule_report.refusal(collection, survey)
+            if refused is not None:
+                raise ValidationError(refused)
+            collection.append_member(survey)
         return collection
 
     @strawberry_django.mutation(permission_classes=[RequireAuth], handle_django_errors=True)

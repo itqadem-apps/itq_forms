@@ -165,7 +165,7 @@ def test_count_mismatch_raises_and_rolls_back(monkeypatch):
     monkeypatch.setattr(
         rule_report,
         "find_not_curricula",
-        lambda model=None: [*found(model), rule_report.Breaker(missing, 0, 0, 0, "exam")],
+        lambda model=None, reference_model=None: [*found(model, reference_model), rule_report.Breaker(missing, 0, 0, 0, "exam")],
     )
 
     with pytest.raises(RuntimeError, match="removed 1 memberships, expected 2"):
