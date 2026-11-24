@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 import environ
 from django.core.exceptions import ImproperlyConfigured
@@ -88,6 +89,12 @@ INSTALLED_APPS = [
     "media",
     "unimessaging.outbox_django",
 ]
+
+# The relay and consume roles (forms:AD-26) serve no GraphQL; loading the app
+# would import Strawberry and graphql-core into each worker for nothing (~13 MiB).
+_WORKER_COMMANDS = ("relay", "consume")
+if sys.argv[1:2] and sys.argv[1] in _WORKER_COMMANDS:
+    INSTALLED_APPS.remove("strawberry.django")
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
